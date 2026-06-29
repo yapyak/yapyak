@@ -1,4 +1,4 @@
-import type { DiagnosticsBlock } from '@yapyak/doc-compiler';
+import type { DiagnosticBlock } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#components/box';
 import type { Language } from '#lib/tokenize';
 
@@ -8,10 +8,10 @@ import { CodeBlockToken } from '#components/code-block-token';
 import { XIcon } from '#components/x-icon';
 import { tokenize } from '#lib/tokenize';
 
-import styles from './block-renderer-node-diagnostics.module.css';
+import styles from './block-renderer-node-diagnostic.module.css';
 
 export type BlockRendererNodeDiagnosticsProps = BoxProps<'code'> & {
-  block: DiagnosticsBlock;
+  block: DiagnosticBlock;
 };
 
 const SUPPORTED_LANGUAGES: Set<string> = new Set<Language>([
@@ -34,7 +34,7 @@ function isSupportedLanguage(value: string): value is Language {
   return SUPPORTED_LANGUAGES.has(value);
 }
 
-export function BlockRendererNodeDiagnostics(
+export function BlockRendererNodeDiagnostic(
   props: BlockRendererNodeDiagnosticsProps,
 ) {
   const { block, className, ...restProps } = props;

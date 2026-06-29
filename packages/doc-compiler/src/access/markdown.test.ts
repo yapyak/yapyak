@@ -385,7 +385,7 @@ describe('blocksToMarkdown', () => {
     expect(
       blocksToMarkdown([
         {
-          kind: 'diagnostics',
+          kind: 'diagnostic',
           language: 'ts',
           lines: [
             {

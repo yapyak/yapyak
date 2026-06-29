@@ -3,9 +3,9 @@ import type {
   Block,
   CalloutBlock,
   CodeBlock,
-  DiagnosticsBlock,
-  DiagnosticsLine,
-  DiagnosticsStatus,
+  DiagnosticBlock,
+  DiagnosticLine,
+  DiagnosticStatus,
   OutputBlock,
   OutputLine,
   TableBlock,
@@ -222,13 +222,13 @@ function toBlocks(node: unknown): Block[] {
           buildTerminalBlock(codeBlock.source),
         ];
       }
-      const diagnostics = tryBuildDiagnosticsFromCode(
+      const diagnostic = tryBuildDiagnosticFromCode(
         codeBlock.source,
         codeBlock.language ?? '',
       );
-      if (diagnostics !== null) {
+      if (diagnostic !== null) {
         return [
-          diagnostics,
+          diagnostic,
         ];
       }
       const outputs = tryBuildExampleOutputsFromCode(
@@ -297,7 +297,7 @@ function toBlocks(node: unknown): Block[] {
       ];
     case 'Diagnostics':
       return [
-        buildDiagnostics(node.attributes),
+        buildDiagnostic(node.attributes),
       ];
     default:
       throw new Error(`parseMarkdoc: unknown tag "${node.name}"`);
@@ -480,7 +480,7 @@ function splitCodeAndComment(line: string): [
 
 function parseDiagnosticsAnnotation(annotation: string): {
   message: string | null;
-  status: DiagnosticsStatus;
+  status: DiagnosticStatus;
 } {
   if (annotation === 'ok' || annotation === 'yes') {
     return {
@@ -514,12 +514,10 @@ function parseDiagnosticsAnnotation(annotation: string): {
   };
 }
 
-function buildDiagnostics(
-  attributes: Record<string, unknown>,
-): DiagnosticsBlock {
+function buildDiagnostic(attributes: Record<string, unknown>): DiagnosticBlock {
   const content = getStringAttribute(attributes.content) ?? '';
   const language = getStringAttribute(attributes.language) ?? 'ts';
-  return buildDiagnosticsBlock(content, language);
+  return buildDiagnosticBlock(content, language);
 }
 
 type TerminalTagKind = Extract<
@@ -657,11 +655,11 @@ function matchTerminalTag(
   };
 }
 
-function buildDiagnosticsBlock(
+function buildDiagnosticBlock(
   content: string,
   language: string,
-): DiagnosticsBlock {
-  const lines: DiagnosticsLine[] = [];
+): DiagnosticBlock {
+  const lines: DiagnosticLine[] = [];
   for (const raw of content.split('\n')) {
     if (raw.trim().length === 0) {
       continue;
@@ -683,7 +681,7 @@ function buildDiagnosticsBlock(
     });
   }
   return {
-    kind: 'diagnostics',
+    kind: 'diagnostic',
     language,
     lines,
   };
@@ -691,10 +689,10 @@ function buildDiagnosticsBlock(
 
 const DIAGNOSTICS_KEYWORD_RX = /^(ok|yes|no|error)(?:[:\s]|$)/;
 
-export function tryBuildDiagnosticsFromCode(
+export function tryBuildDiagnosticFromCode(
   content: string,
   language: string,
-): DiagnosticsBlock | null {
+): DiagnosticBlock | null {
   const hasAnnotation = content.split('\n').some((line) => {
     const [, annotation] = splitCodeAndComment(line);
     return annotation !== null && DIAGNOSTICS_KEYWORD_RX.test(annotation);
@@ -702,7 +700,7 @@ export function tryBuildDiagnosticsFromCode(
   if (!hasAnnotation) {
     return null;
   }
-  return buildDiagnosticsBlock(content, language);
+  return buildDiagnosticBlock(content, language);
 }
 
 const LOCALE_PREFIX_RX = /^([a-z]{2,3}(?:-[A-Za-z0-9]+){0,3}):[ \t]+(.+)$/;

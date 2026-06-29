@@ -2,6 +2,6 @@ export { extractMarkdown } from './extract';
 export {
   parseFrontmatterOnly,
   parseMarkdown,
-  tryBuildDiagnosticsFromCode,
+  tryBuildDiagnosticFromCode,
   tryBuildExampleOutputsFromCode,
 } from './parse';

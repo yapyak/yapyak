@@ -146,7 +146,7 @@ describe('blockToText', () => {
   it('returns the code and message of a `diagnostics` line', () => {
     expect(
       blockToText({
-        kind: 'diagnostics',
+        kind: 'diagnostic',
         language: 'ts',
         lines: [
           {
@@ -162,7 +162,7 @@ describe('blockToText', () => {
   it('returns the code of a `diagnostics` line when message is `null`', () => {
     expect(
       blockToText({
-        kind: 'diagnostics',
+        kind: 'diagnostic',
         language: 'ts',
         lines: [
           {

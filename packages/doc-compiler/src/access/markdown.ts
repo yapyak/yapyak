@@ -65,8 +65,8 @@ function renderBlock(block: Block): string {
       return renderCallout(block.variant, block.title, block.children);
     case 'output':
       return renderOutput(block.lines);
-    case 'diagnostics':
-      return renderDiagnostics(block.language, block.lines);
+    case 'diagnostic':
+      return renderDiagnostic(block.language, block.lines);
     case 'eyebrow':
       return renderEyebrow(block);
     case 'code-location':
@@ -214,7 +214,7 @@ function renderOutput(
   return `\`\`\`output\n${body}\n\`\`\``;
 }
 
-function renderDiagnostics(
+function renderDiagnostic(
   language: string,
   lines: {
     code: string;

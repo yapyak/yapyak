@@ -15,7 +15,7 @@ export type Block =
   | LinkBlock
   | ListBlock
   | ListItemBlock
-  | DiagnosticsBlock
+  | DiagnosticBlock
   | OnlyBlock
   | OutputBlock
   | ParagraphBlock
@@ -200,18 +200,18 @@ export type TerminalBlock = {
   kind: 'terminal';
 };
 
-export type DiagnosticsStatus = 'error' | 'ok';
+export type DiagnosticStatus = 'error' | 'ok';
 
-export type DiagnosticsLine = {
+export type DiagnosticLine = {
   code: string;
   message: string | null;
-  status: DiagnosticsStatus;
+  status: DiagnosticStatus;
 };
 
-export type DiagnosticsBlock = {
+export type DiagnosticBlock = {
   language: string;
-  lines: DiagnosticsLine[];
-  kind: 'diagnostics';
+  lines: DiagnosticLine[];
+  kind: 'diagnostic';
 };
 
 export type ExportKind =

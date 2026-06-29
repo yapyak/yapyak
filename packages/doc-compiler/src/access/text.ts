@@ -39,7 +39,7 @@ export function blockToText(block: Block): string {
           line.locale === null ? line.value : `${line.locale}: ${line.value}`,
         )
         .join('\n');
-    case 'diagnostics':
+    case 'diagnostic':
       return block.lines
         .map((line) => {
           if (line.message === null) {

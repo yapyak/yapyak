@@ -345,7 +345,7 @@ describe('parseMarkdown', () => {
     const source = '{% diagnostics %}\nHello // ok\n{% /diagnostics %}';
     expect(parseMarkdown(source).blocks).toEqual([
       {
-        kind: 'diagnostics',
+        kind: 'diagnostic',
         language: 'ts',
         lines: [
           {
@@ -363,7 +363,7 @@ describe('parseMarkdown', () => {
       '{% diagnostics %}\nHello // error: World\n{% /diagnostics %}';
     expect(parseMarkdown(source).blocks).toEqual([
       {
-        kind: 'diagnostics',
+        kind: 'diagnostic',
         language: 'ts',
         lines: [
           {

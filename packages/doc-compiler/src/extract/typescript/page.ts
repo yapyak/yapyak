@@ -31,7 +31,7 @@ import { slugify } from '../../slugify';
 import { buildSymbolHref } from '../../symbol-path';
 import {
   parseMarkdown,
-  tryBuildDiagnosticsFromCode,
+  tryBuildDiagnosticFromCode,
   tryBuildExampleOutputsFromCode,
 } from '../markdown';
 import { classifyMemberDisplayKind } from './classify';
@@ -1489,12 +1489,9 @@ function buildExampleBlocks(example: ReferenceExample): Block[] {
       level: 3,
     });
   }
-  const diagnostics = tryBuildDiagnosticsFromCode(
-    example.code,
-    example.language,
-  );
-  if (diagnostics !== null) {
-    result.push(diagnostics);
+  const diagnostic = tryBuildDiagnosticFromCode(example.code, example.language);
+  if (diagnostic !== null) {
+    result.push(diagnostic);
     return result;
   }
   const outputs = tryBuildExampleOutputsFromCode(
