@@ -174,7 +174,7 @@ Exactly 2 `describe` sub-blocks: `with defaults` and `with overrides`.
 
 ### `it` naming — forbidden patterns
 
-| ✗ Bad | Why | ✓ Good |
+| ✗ Wrong | Why | ✓ Right |
 | --- | --- | --- |
 | `it('should return X')` | `should` | `it('returns X')` |
 | `it('works correctly')` | Non-specific | Use formula |

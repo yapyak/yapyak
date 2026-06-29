@@ -118,7 +118,7 @@ import { Sidebar } from './sidebar';
 // ✓ Cross-module via barrel
 import { parseSourceFile } from './parser';
 
-// ✗ Forbidden — `../` to reach a different module
+// ✗ `../` to reach a different module
 import { Button } from '../../components/button';
 ```
 

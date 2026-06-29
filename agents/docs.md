@@ -326,14 +326,14 @@ One canonical set used everywhere. Don't invent throwaway examples.
 Guide code examples target what a *reader would write*, not what the library's `isolatedDeclarations` setting enforces internally. Inference is the everyday TypeScript flow. Don't import `ReactElement` / `JSX.Element` just to annotate the return.
 
 ```tsx
-// ✗ Banned in examples
-import type { ReactElement } from 'react';
-function Component(): ReactElement {
+// ✓ Inferred return
+function Component() {
   // ...
 }
 
-// ✓ Acceptable in examples
-function Component() {
+// ✗ Annotated return
+import type { ReactElement } from 'react';
+function Component(): ReactElement {
   // ...
 }
 ```

@@ -198,10 +198,10 @@ Neither holds → bundling is forbidden. Required fields go positional, optional
 
 | Function | Required positional if split | Consumers | Bundle? |
 | --- | --- | --- | --- |
-| `migrateLocales` | 5+ | 1 | ✅ Forced |
-| `autoTranslate` (LocaleContext used by 4) | 4 | 4 | ✅ Shared |
-| `createTranslator` (1 req + 4 opt) | 1 | 1 | ❌ `createTranslator(translate, options?)` |
-| `walkSourceFiles` (2 req) | 2 | 1 | ❌ `walkSourceFiles(filter, projectRoot)` |
+| `migrateLocales` | 5+ | 1 | ✓ Forced |
+| `autoTranslate` (LocaleContext used by 4) | 4 | 4 | ✓ Shared |
+| `createTranslator` (1 req + 4 opt) | 1 | 1 | ✗ `createTranslator(translate, options?)` |
+| `walkSourceFiles` (2 req) | 2 | 1 | ✗ `walkSourceFiles(filter, projectRoot)` |
 
 #### Exception A — extending an upstream API
 

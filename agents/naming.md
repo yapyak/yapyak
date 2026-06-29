@@ -289,8 +289,8 @@ function extractFile(input: ExtractFileInput): ExtractFileResult { ... }
 
 **Forbidden reasoning:**
 
-- ❌ "This `*Options` type has a required field → must be `*Input`." Wrong — Q11 does not ask about optionality.
-- ❌ "All-optional bundles must be `*Options`, anything else `*Input`." Wrong — same reason.
+- ✗ "This `*Options` type has a required field → must be `*Input`." Wrong — Q11 does not ask about optionality.
+- ✗ "All-optional bundles must be `*Options`, anything else `*Input`." Wrong — same reason.
 
 **Inside a `*Config` union, each pure-object variant gets `*Options`:**
 
@@ -378,10 +378,10 @@ UseLocaleHookReturn                     // Hook + Return
 type Event = { type: EventType; ... };
 type EventType = 'click' | 'submit' | ...;
 
-// ✗ Banned — internal discriminator uses `kind`, so its category is `*Kind`, never `*Type`
+// ✗ Internal discriminator uses `kind`, so its category is `*Kind`, never `*Type`
 type Token = { kind: TokenKind; value: string };   // internal IR → kind → TokenKind
 
-// ✗ Banned — redundant: Options/Config are ALREADY types, "Type" adds nothing
+// ✗ Redundant: Options/Config are ALREADY types, "Type" adds nothing
 type OptionsType = { ... };   // → Options
 type ConfigType = { ... };    // → Config
 ```
