@@ -218,15 +218,13 @@ function findUnknownFlags(
     return [];
   }
   const unknown: string[] = [];
-  for (const argument of args) {
-    if (!argument.startsWith('-')) {
+  for (const arg of args) {
+    if (!arg.startsWith('-')) {
       continue;
     }
-    const flagName = argument.includes('=')
-      ? argument.slice(0, argument.indexOf('='))
-      : argument;
+    const flagName = arg.includes('=') ? arg.slice(0, arg.indexOf('=')) : arg;
     if (!known.has(flagName)) {
-      unknown.push(argument);
+      unknown.push(arg);
     }
   }
   return unknown;

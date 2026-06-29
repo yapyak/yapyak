@@ -569,7 +569,23 @@ type ExtractTParams<S extends string, Acc = unknown> = ...
 
 Use the full domain word. Forbidden: `cfg`, `opts`, `ctx`, `arg`, `req`, `res`, `tmp`, single letters (`e`, `i`, `j`, `k`), filler placeholders (`data`, `info`, `item`, `thing`, `foo`, `bar`).
 
-**Exception:** `Array.prototype.sort` comparators use `(a, b)` — canonical idiom.
+**Exceptions:**
+
+- `Array.prototype.sort` comparators use `(a, b)` — canonical idiom.
+- **`arg` as the element of a real `args` signature.** `arg` is allowed **only** as the element variable of `args` where `args` is the actual function/CLI argument list **declared in a signature** (a `args: string[]` parameter, `process.argv`, a rest parameter). The singular-of-`args` pairing is idiomatic there:
+
+  ```ts
+  function findUnknownFlags(args: string[]) {   // `args` is the signature's argument list
+    for (const arg of args) { ... }             // ✓ `arg` is one of those arguments
+  }
+  ```
+
+  The exception binds to **arguments coming from a signature** — not to any local that conceptually relates to "arguments". A variable that merely points *at* an argument (a token index, an AST node, a single extracted value) is **not** a signature argument and expands to `argument`:
+
+  ```ts
+  const argumentIndex = findNextSignificant(tokens, next + 1);  // ✗ not a signature arg — it's an index
+  const argumentToken = tokens[argumentIndex];                  // ✗ a parsed token, not an arg parameter
+  ```
 
 ```ts
 items.sort((a, b) => a.order - b.order);
