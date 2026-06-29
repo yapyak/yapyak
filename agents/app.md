@@ -33,12 +33,12 @@ Apps have two layers with two different conventions. **Never mix them.**
 
 ```ts
 // ✓ Domain
-interface CalloutBlock {
+type CalloutBlock = {
   type: "callout";
   title: string | null; // stable shape, null = author didn't provide
   variant: CalloutVariant;
   children: Block[];
-}
+};
 ```
 
 **UI components use `?:` optional fields.** React-idiomatic, `undefined` for missing. Components are vanilla React building blocks — they don't know about domain conventions, and they don't accept `null` in their props.

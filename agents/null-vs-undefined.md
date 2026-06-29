@@ -102,40 +102,7 @@ Rule: if the field is `T | null` AND the value is `T | undefined`, wrap in `null
 
 ### App layer — domain vs UI
 
-App code has two layers with two different conventions. Never mix them.
-
-**Domain types use `null` for missing optional values.** Treat parsed/loaded content as if it came from a backend. Stable shape (the field is always present), explicit "intentionally absent" semantics, serializable to JSON. Applies to route loaders, parsed content, anything cached or sent over a wire.
-
-```ts
-// ✓ Domain
-type CalloutBlock = {
-  type: "callout";
-  title: string | null; // stable shape, null = author did not provide
-  variant: CalloutVariant;
-  children: Block[];
-};
-```
-
-**UI components use `?:` optional fields.** React-idiomatic, `undefined` for missing. Components do not accept `null` in their props.
-
-```ts
-// ✓ UI
-type CalloutProps = BoxProps<"aside"> & {
-  title?: string;
-  variant: CalloutVariant;
-};
-```
-
-**The conversion lives inline at the dispatcher node** — the boundary between layers. Per-prop `?? undefined` translates domain-null to UI-undefined. Do not hide this in adapter functions; the visible `?? undefined` IS the layer-boundary marker.
-
-```tsx
-// ✓ Dispatcher node — translation visible at the boundary
-<Callout title={block.title ?? undefined} variant={block.variant}>
-  ...
-</Callout>
-```
-
-**Display defaults belong in the UI, not in the dispatcher.** If a callout has no title, the `Callout` component decides what to show. The dispatcher only translates absence.
+App code layers domain-`null` over UI-`undefined`, converted at the dispatcher — see [[app]].
 
 ### Mechanical verification
 

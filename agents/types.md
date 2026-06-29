@@ -305,7 +305,7 @@ const name = user.profile.name;
 
 ### Return types — no `T | null` for "no work done"
 
-A function that processes input and returns a typed result always returns that type. `T | null` is reserved for genuine not-found lookups and input-driven absences.
+A function that processes input and returns a typed result always returns that type; signal "no change" with a flag, never a nullable return. When `T | null` is legitimately allowed (platform returns, wire formats): see [[null-vs-undefined]].
 
 ```ts
 // ✗ Wrong

@@ -59,11 +59,7 @@ export { sharedHelper } from './domain/helper';
 export type { InternalShape } from './options';
 ```
 
-`packages/foo/tsdown.config.ts`:
-
-```ts
-entry: ['src/index.ts', 'src/internal.ts'];
-```
+Add `src/internal.ts` to the `tsdown` `entry` — wiring details in [[packages]].
 
 Consumers in other monorepo packages:
 
@@ -93,8 +89,10 @@ The domain barrel is intrinsically private — not listed in `package.json expor
 
 1. Used only in one file → keep unexported.
 2. Used across files in this package → export from domain barrel.
-3. Used across packages, not by external users → export from `src/internal.ts`. Add `./internal` to `package.json exports`. Add to `tsdown` `entry`.
-4. Used by external users → export from `src/index.ts`. Add to `package.json exports` at `.`.
+3. Used across packages, not by external users → export from `src/internal.ts` (reached via the `./internal` subpath).
+4. Used by external users → export from `src/index.ts` (the `.` entry).
+
+Wiring a new subpath's `package.json exports` + `tsdown` `entry`: see [[packages]].
 
 ### `@internal` JSDoc and `stripInternal` are forbidden
 

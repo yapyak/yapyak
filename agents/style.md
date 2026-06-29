@@ -18,6 +18,18 @@ Apply to every line. Each yields keep, rewrite, or delete.
 | T8 | No preamble | Sentence under a header restates the header | DELETE |
 | T9 | Index | Pointer line is a sentence | REWRITE as `path — topic, topic` |
 
+### Five set invariants
+
+The nine tests govern prose **inside** a file. These five govern the **set** of files.
+
+| # | Invariant | Mechanical test |
+|---|---|---|
+| I1 | Trigger cohesion | Every rule in a file fires on one "when you…". Two unrelated triggers → split. |
+| I2 | Merge | Two files become one **iff** their triggers mutually imply — you always load A exactly when you load B. |
+| I3 | Content single-source | Each rule is defined in exactly one file; every other mention cross-references it, never restates. |
+| I4 | Scope single-source | A file's tier (when it loads) is encoded once — in the `AGENTS.md` that selects it — never in its path. ⇒ flat bank, no tier sub-folders. |
+| I5 | Derivable name | filename = the trigger's subject noun, kebab-case, singular, no prefix. A shared prefix (`css-*`) is an I2 violation in disguise. |
+
 ### Minimal ≠ incomplete
 
 Two orthogonal axes:

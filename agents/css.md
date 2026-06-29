@@ -1,20 +1,56 @@
-## CSS — modules
+## CSS
+
+### Design tokens
+
+Tokens live in `src/styles/tokens.css`.
+
+#### Tier 1 — Palette (`--color-*`)
+
+A small set of raw palette colors, named after their identity (what the color IS).
+
+```css
+--color-mint:   oklab(0.87 -0.24 0.06);
+--color-aqua:   oklab(0.88 -0.21 0.01);
+--color-coral:  #ff9aa0;
+--color-silver: #e6e6e6;
+--color-ink:    #141414;
+```
+
+Components must never reference `--color-*` directly. The palette only exists to feed tier 2.
+
+#### Tier 2 — Semantic (everything else)
+
+What components actually use. Named after intent (what the color DOES).
+
+- Color intent (`--brand`, `--accent`, `--danger`) — assigns a palette color to a semantic role. Swap these to re-theme.
+- Variants (`--brand-soft`, `--brand-glow-strong`, `--accent-soft`) — derived from `--brand` / `--accent` via `color-mix(in oklch, var(--brand) X%, transparent)`. Never from `--color-*` directly.
+- Surfaces, rings, text (`--surface`, `--ring`, `--text-soft`) — derived from `--color-silver` or `--color-ink`.
+- Effects (`--shadow-brand-glow`, `--gradient-brand`) — composite values derived from semantic tokens.
+
+#### Rules
+
+1. Components only use tier 2. Never `var(--color-mint)` in a component CSS — use `var(--brand)`.
+2. Tier 2 variants derive from tier 2 intent, not from palette. `--brand-soft` mixes from `--brand`, not from `--color-mint`. This keeps the swap chain working: change `--brand` → all `--brand-*` variants follow.
+3. No raw hex/rgba/oklab in component CSS. If you need a translucent brand color, write `color-mix(in oklch, var(--brand) X%, transparent)` inline. Don't inline `oklab(0.87 -0.24 0.06 / X)`.
+4. Re-theming is a swap: change `--brand: var(--color-aqua)` and the entire site updates without touching components.
+
+### Modules
 
 All component/route styling uses CSS Modules with CSS custom properties from the design token system.
 
-### File placement
+#### File placement
 
 - Components: `ComponentName.module.css` next to `ComponentName.tsx`.
 - Routes: `route.module.css` next to `route.tsx`.
 
-### Import
+#### Import
 
 ```tsx
 import styles from './route.module.css';
 import styles from './Button.module.css';
 ```
 
-### Class naming — deterministic algorithm
+#### Class naming — deterministic algorithm
 
 Every class name ends with an ElementType from the fixed vocabulary below. The only exception is the component root, which is the component name.
 
@@ -25,7 +61,7 @@ CLASS NAME = [Role]ElementType
              └─optional┘└─required, from fixed vocab─┘
 ```
 
-#### Fixed ElementType vocabulary
+##### Fixed ElementType vocabulary
 
 Every class name must end with one of these. Nothing else is valid.
 
@@ -135,7 +171,7 @@ Table cells:
 
 If the element you need doesn't fit any of these, the vocabulary needs expanding — discuss and extend the list. Never invent a suffix ad-hoc.
 
-#### Picking the Role (prefix)
+##### Picking the Role (prefix)
 
 Role is picked by strict priority — stop at the first match:
 
@@ -154,7 +190,7 @@ Role is picked by strict priority — stop at the first match:
    | Function | `Search`, `Submit`, `Cancel`, `Confirm`, `Close`, `Empty` |
 4. No role — only when the element has no semantic role AND there is only one such element in its parent.
 
-#### Examples
+##### Examples
 
 ```
 .ActionBanner              // root (component name)
@@ -168,7 +204,7 @@ Role is picked by strict priority — stop at the first match:
 .Chevron                   // no role (lone decoration), type: Chevron
 ```
 
-#### Wrapper form (special)
+##### Wrapper form (special)
 
 A wrapper is an element with exactly one child, existing only for layout/positioning. Its class name is `[ChildClassName]Wrapper`:
 
@@ -179,11 +215,11 @@ A wrapper is an element with exactly one child, existing only for layout/positio
 
 Never create chained wrappers. If a layout property can go on the child directly, the wrapper must not exist.
 
-#### Root form (only exception)
+##### Root form (only exception)
 
 The component's root class is just the component name (no Role, no ElementType suffix): `.Button`, `.Dialog`, `.Route`.
 
-#### Forbidden
+##### Forbidden
 
 - Class names NOT ending with a vocabulary ElementType:
   - ✗ `.Description` (must be `.DescriptionParagraph`)
@@ -194,7 +230,7 @@ The component's root class is just the component name (no Role, no ElementType s
 
 If no rule matches unambiguously, the structure is wrong, not the name. Fix the structure.
 
-### CSS nesting mirrors DOM structure — strict
+#### CSS nesting mirrors DOM structure — strict
 
 Every nested rule reflects the actual element hierarchy. A class lives at the exact same nesting depth in CSS as its element lives in the DOM. No flattened descendant selectors. No shortcuts.
 
@@ -250,7 +286,7 @@ No combined descendant selectors at the top level. This includes `>` (child) com
 
 If a class is shared across **multiple components** (not just sub-trees), it lives in a global `style.css` at top level — documented as a global utility.
 
-### Never flatten nested selectors
+#### Never flatten nested selectors
 
 Always open a new nested block for each state/variant — never chain state and descendant in one selector.
 
@@ -272,7 +308,7 @@ Always open a new nested block for each state/variant — never chain state and 
 }
 ```
 
-### State selectors
+#### State selectors
 
 - Root states go on the component root class only — never on a child. This covers `data-*`, `aria-*`, `:has()`, `:not()`. Child styling under a root state is done by nesting child selectors inside the state block on root.
 - Pseudo-class states on interactive leaf elements stay on the element. `:hover`, `:focus`, `:focus-visible`, `:active`, `:disabled`, `:checked` on `Button`, `Link`, `Input`, `Textarea`, `Select`, `Option` belong on the element — don't hoist to root.
@@ -280,7 +316,7 @@ Always open a new nested block for each state/variant — never chain state and 
 - `::placeholder`, `::selection`, `::marker`, `::first-letter`, and other browser-rendered pseudo-elements are allowed — they style content the browser already renders, with no real-element alternative. They stay on the element.
 - State blocks come last in a rule — after own properties and all child selectors.
 
-### CSS selector order
+#### CSS selector order
 
 Within a selector block:
 
@@ -305,7 +341,7 @@ Within a selector block:
 }
 ```
 
-### CSS variable defaults
+#### CSS variable defaults
 
 Always declare defaults at the top of the root class — never use the `var(--x, default)` fallback syntax.
 
@@ -332,7 +368,7 @@ Consumers override via inline `style`:
 <Button style={{ '--button-size': '32px' }} />
 ```
 
-### Cross-component identity — pass `className` from parent, never data attributes
+#### Cross-component identity — pass `className` from parent, never data attributes
 
 When a parent's CSS module needs to position, lay out, or control visibility of a child component, pass a class from the parent's module to the child as `className`. The child merges it with its own root class. Never tag the child with a `data-*` attribute to act as a CSS hook.
 
@@ -393,7 +429,7 @@ When a parent's CSS module needs to position, lay out, or control visibility of 
 }
 ```
 
-### State and variant styling
+#### State and variant styling
 
 Use data attributes on the **root element** for state and variants. Child elements are styled via parent nesting — they never carry data attributes themselves.
 
@@ -428,3 +464,324 @@ Use data attributes on the **root element** for state and variants. Child elemen
 ```
 
 Route files rarely need data attributes — if a route element needs variants, extract it into a component.
+
+### Rules
+
+#### Cascade layer
+
+All component/route CSS is wrapped in `@layer components`. Lets design tokens and resets sit in their own layers without specificity wars.
+
+#### Use design tokens, never hardcoded values
+
+```css
+/* ✓ */
+padding: var(--spacing-4);
+border: 1px solid var(--rule);
+color: var(--intent-danger);
+
+/* ✗ */
+padding: 16px;
+border: 1px solid #e6e6e6;
+color: #d23030;
+```
+
+If a needed value doesn't have a token, add the token to the design-token layer first, then use it.
+
+#### Never reset element defaults in component CSS
+
+The global reset (under `@layer reset`) strips browser defaults. Typical resets handled:
+
+| Element / Property | What's reset |
+|---|---|
+| `*, *::before, *::after` | `box-sizing: border-box`, `margin: 0`, `padding: 0` |
+| `ul`, `ol` | `list-style: none` |
+| `a` | `color: inherit`, `text-decoration: none` |
+| `button` | `font: inherit`, `color: inherit`, `cursor: pointer`, `background: none`, `border: 0` |
+| `input`, `textarea`, `select` | `font: inherit` |
+| `img`, `video`, `svg` | `display: block`, `max-width: 100%` |
+| `h1`–`h6` | `font-size: inherit`, `font-weight: inherit` |
+| `th` | `text-align: left` |
+
+Never write any of these properties in a component CSS to "reset" them — the reset already did. If a property looks like a reset, ask: would the element have this anyway? If yes → delete. If no → it's component-specific styling and belongs.
+
+If a new reset is needed broadly, add it to the global reset file — not per-component.
+
+#### Never write vendor prefixes
+
+Build pipeline auto-prefixes via Lightning CSS based on browserslist targets. Write the standard property only:
+
+```css
+/* ✓ */
+user-select: none;
+appearance: none;
+
+/* ✗ — manual prefixes, dead code */
+-webkit-user-select: none;
+-moz-appearance: none;
+```
+
+#### Prefer `flex` / `grid` + `gap` over `margin`
+
+Default to gap when laying out siblings — restructure the parent into a flex/grid container when possible.
+
+Use `margin` only when gap can't express the spacing cleanly (asymmetric per-child spacing, non-uniform offsets between specific siblings, or when adding a parent flex container would cascade unwanted side-effects).
+
+When you reach for margin, make sure it's because gap genuinely doesn't fit — not because you skipped restructuring.
+
+#### TOTALLY FORBIDDEN: `flex-grow`, `flex-shrink`, `flex-basis`
+
+Always use the `flex` shorthand. No exceptions.
+
+```css
+/* ✗ Wrong */
+flex-shrink: 0;
+flex-grow: 1;
+flex-basis: 0;
+
+/* ✓ Right — common cases */
+flex: none;       /* don't grow, don't shrink, basis auto (= 0 0 auto) */
+flex: 1;          /* grow, shrink, basis 0 (greedy fill) */
+flex: 0 0 auto;   /* don't grow, don't shrink, basis auto (explicit) */
+flex: 1 0 auto;   /* grow, don't shrink, basis auto */
+flex: auto;       /* grow, shrink, basis auto (= 1 1 auto) */
+```
+
+#### Never leave unnecessary properties
+
+Every property must pay for itself. Common dead properties to prune:
+
+- `display: inline-block` on a flex/grid item (flex/grid overrides it)
+- `width: 100%` on a block element that already fills its container
+- Redundant `color` matching the inherited value
+- `margin: 0` on an element that has no default margin
+- `overflow: hidden` when nothing overflows
+- Duplicate properties across sibling rules that could be merged
+
+#### Use `background-color`, not `background` shorthand
+
+Unless you're setting multiple background properties (image + position + repeat), use the specific property:
+
+```css
+/* ✓ */
+background-color: var(--surface);
+
+/* ✗ — shorthand resets everything else */
+background: var(--surface);
+```
+
+#### Nesting is for structure and state only
+
+Child elements are nested (mirroring DOM). Pseudo-classes and data attributes are nested. Other top-level rules are not.
+
+#### Always wrap `:hover` in `@media (hover: hover)`
+
+Bare `:hover` styles "stick" on touch devices: after a tap, the hover stays until something else is tapped. Always gate hover styles behind `@media (hover: hover)` so touch devices skip them entirely and only `:active` drives feedback.
+
+```css
+/* ✓ Right */
+.Button {
+  background-color: var(--surface);
+  transition: background-color var(--transition);
+
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--surface-strong);
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+/* ✗ Wrong — sticky hover on iOS/Android */
+.Button {
+  &:hover {
+    background-color: var(--surface-strong);
+  }
+}
+```
+
+`:focus-visible` and `:active` are **not** wrapped — they work the same across input modalities.
+
+#### Every interactive element needs an `:active` state
+
+Because `:hover` is now gated behind `@media (hover: hover)`, touch devices skip hover styles entirely. Without `:active`, a tap produces zero visual feedback — feels broken.
+
+If an element has `:hover` (now always wrapped), it MUST also have `:active`. And any element without a hover style still needs an `:active` if it's clickable/tappable at all.
+
+```css
+/* ✓ Right — hover for desktop, active for everyone */
+.Button {
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--surface-strong);
+    }
+  }
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+/* ✗ Wrong — touch users get no feedback */
+.Button {
+  @media (hover: hover) {
+    &:hover {
+      background-color: var(--surface-strong);
+    }
+  }
+}
+```
+
+The typical `:active` is `transform: scale(0.96)` for solid buttons or a subtle color/opacity shift for text-style controls.
+
+#### Gate state effects behind `&:enabled` for disablable elements
+
+Elements that support the native `disabled` attribute (`<button>`, `<input>`, `<textarea>`, `<select>`) must wrap their `:hover`/`:active`/`:focus-visible` styles in `&:enabled` so disabled instances don't react to interaction.
+
+```css
+/* ✓ Right */
+.Button {
+  transition:
+    background-color var(--transition),
+    transform var(--transition);
+
+  &:enabled {
+    @media (hover: hover) {
+      &:hover {
+        background-color: var(--surface-strong);
+      }
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &:focus-visible {
+      outline-width: 4px;
+      outline-color: var(--accent-soft);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+/* ✗ Wrong — disabled button still bounces on tap */
+.Button {
+  &:hover { background-color: var(--surface-strong); }
+  &:active { transform: scale(0.96); }
+  &:disabled { opacity: 0.4; }
+}
+```
+
+Use the native `disabled` HTML attribute, not a `data-disabled` attribute. `:enabled`/`:disabled` only work with the native attribute and they also flip ARIA semantics correctly for free.
+
+Anchor (`<a>`) elements can't be `:disabled` — they're either rendered as links or not. No `:enabled` wrap needed there.
+
+#### Mobile-first responsive
+
+One layout-shift breakpoint: `min-width: 1024px` — threshold where layouts shift from mobile (stacked, 1-col) to desktop (multi-col).
+
+Mobile-first. Default CSS targets mobile. `@media (min-width: 1024px)` enhances for desktop. Never use `max-width` queries — they invert the model and lead to harder-to-maintain stylesheets.
+
+```css
+/* ✓ mobile-first */
+.Component {
+  grid-template-columns: 1fr;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ✗ desktop-first — don't */
+.Component {
+  grid-template-columns: 1fr 1fr;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+```
+
+If a different threshold is needed for a specific component (rare), document why. Generally everything that shifts between mobile and desktop uses 1024px.
+
+#### Length units — `px` for layout, `rem` only for font-size
+
+`rem` is reserved for `font-size` declarations and font-size design tokens (`--font-size-*`). Every other length — widths, heights, paddings, margins, gaps, breakpoints, border-radius, gap, max-width — uses `px`.
+
+```css
+/* ✓ Right */
+font-size: var(--font-size-md);   /* rem in the token: 1.0625rem */
+max-width: 720px;
+padding: 16px 24px;
+gap: 12px;
+border-radius: 8px;
+
+@media (min-width: 1024px) {
+  grid-template-columns: 220px 1fr;
+}
+
+/* ✗ Wrong — rem for layout */
+max-width: 45rem;
+padding: 1rem 1.5rem;
+gap: 0.75rem;
+border-radius: 0.5rem;
+
+@media (min-width: 60rem) {
+  grid-template-columns: 15rem 1fr;
+}
+```
+
+**Exception:** `em` inside `letter-spacing` is allowed because `em` is font-size-relative by definition and that's the correct unit.
+
+Use the project's spacing tokens (`--spacing-*`) for paddings, gaps, and margins — those tokens are themselves in `px`.
+
+#### Even numbers only
+
+Every `px` value uses an even integer. No fractional pixels, no odd numbers.
+
+```css
+/* ✓ Right */
+gap: 4px;
+width: 220px;
+outline-width: 2px;
+text-underline-offset: 4px;
+box-shadow: inset 2px 0 0 0 var(--accent);
+
+/* ✗ Wrong */
+gap: 5px;
+width: 219px;
+outline-width: 3px;
+text-underline-offset: 3px;
+width: 1.5px;
+height: calc(var(--spacing-4) + 25px);
+```
+
+Three exceptions:
+
+1. `1px` — hairlines, borders, fine dividers. Always allowed.
+2. Semantic infinity — `999px` and `9999px` for `border-radius` when the visual intent is "fully rounded" / pill shape.
+3. Computed values — `calc()`, `clamp()`, `min()`, `max()` results don't count because the inputs are constrained by the rules above and the output is the result of math, not a hand-picked number.
+
+Any even integer is valid — `2px`, `4px`, `6px`, ..., `22px`, `24px`, `26px`, `28px`, `30px`, and so on. The spacing tokens (`--spacing-*`) cover the common values, but bare even px values are equally fine when no token fits the exact need.
+
+When tempted to use an odd number, round to the **nearest even number**:
+
+```css
+/* ✗ */
+padding: 25px;
+margin-top: 13px;
+gap: 7px;
+
+/* ✓ — nearest even value */
+padding: 24px;     /* or var(--spacing-6) */
+margin-top: 14px;
+gap: 8px;          /* or var(--spacing-2) */
+```
+
+Prefer spacing tokens for paddings/gaps/margins where the value matches the scale, but don't force a token when an off-scale even value is the right call (e.g., `26px`, `38px`).
