@@ -1230,7 +1230,7 @@ describe('transformFile', () => {
           return [
             {
               code: source,
-              lang: 'ts',
+              language: 'ts',
               originalOffset: 0,
               type: 'script',
             },
@@ -1239,7 +1239,7 @@ describe('transformFile', () => {
         return [
           {
             code: source.slice(prefix.length),
-            lang: 'ts',
+            language: 'ts',
             originalOffset: prefix.length,
             type: 'script',
           },

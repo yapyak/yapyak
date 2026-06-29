@@ -11,7 +11,7 @@ function makeSourceFile(source: string): ts.SourceFile {
 
 const fragment: Fragment = {
   code: '',
-  lang: 'ts',
+  language: 'ts',
   originalOffset: 0,
   type: 'script',
 };

@@ -31,9 +31,9 @@ export type ElisionContext = {
  */
 export type Fragment = {
   code: string;
-  elision?: ElisionContext;
+  elisionContext?: ElisionContext;
   type: 'script' | 'template-expression';
-  lang: 'js' | 'ts';
+  language: 'js' | 'ts';
   originalOffset: number;
 };
 

@@ -34,7 +34,7 @@ export function injectComponentHooks(input: InjectComponentHooksInput): void {
       fragment.code,
       ts.ScriptTarget.ESNext,
       true,
-      getScriptKind(input.fileId, fragment.lang),
+      getScriptKind(input.fileId, fragment.language),
     );
     const insertionPositions = new Set<number>();
     walkForInjectionTargets(

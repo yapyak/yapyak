@@ -4,7 +4,7 @@ import ts from 'typescript';
 
 export function getScriptKind(
   fileId: string,
-  lang: Fragment['lang'],
+  language: Fragment['language'],
 ): ts.ScriptKind {
   if (fileId.endsWith('.tsx')) {
     return ts.ScriptKind.TSX;
@@ -12,7 +12,7 @@ export function getScriptKind(
   if (fileId.endsWith('.jsx')) {
     return ts.ScriptKind.JSX;
   }
-  if (lang === 'js') {
+  if (language === 'js') {
     return ts.ScriptKind.JS;
   }
   return ts.ScriptKind.TS;

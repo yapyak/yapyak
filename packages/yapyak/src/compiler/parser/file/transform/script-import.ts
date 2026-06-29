@@ -27,7 +27,7 @@ export function transformScriptImports(
       fragment.code,
       ts.ScriptTarget.ESNext,
       true,
-      getScriptKind(input.fileId, fragment.lang),
+      getScriptKind(input.fileId, fragment.language),
     );
     for (const declaration of extractCoreImports(declarationAst)) {
       transformImportDeclaration({
@@ -62,7 +62,7 @@ function parseFragmentReferenceAst(
     postTransformCode,
     ts.ScriptTarget.ESNext,
     true,
-    getScriptKind(input.fileId, fragment.lang),
+    getScriptKind(input.fileId, fragment.language),
   );
 }
 

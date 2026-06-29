@@ -89,7 +89,7 @@ export function astro(): Processor {
         return [
           {
             code: source,
-            lang: 'ts',
+            language: 'ts',
             originalOffset: 0,
             type: 'script',
           },
@@ -113,7 +113,7 @@ function frontmatterFragment(
   const codeEnd = frontmatter.end - FRONTMATTER_DELIMITER_LENGTH;
   return {
     code: source.slice(codeStart, codeEnd),
-    lang: 'ts',
+    language: 'ts',
     originalOffset: codeStart,
     type: 'script',
   };
@@ -202,8 +202,8 @@ function fragmentsFromExpression(
   return [
     {
       code: source.slice(expression.start, expression.end),
-      elision: elision && embedded.length === 0 ? elision : undefined,
-      lang: 'ts',
+      elisionContext: elision && embedded.length === 0 ? elision : undefined,
+      language: 'ts',
       originalOffset: expression.start,
       type: 'template-expression',
     },

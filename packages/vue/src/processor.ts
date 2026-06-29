@@ -106,7 +106,7 @@ function loadCompiler(): typeof VueSfc {
 function toScriptFragment(block: SFCScriptBlock): Fragment {
   return {
     code: block.content,
-    lang: block.lang === 'ts' || block.lang === 'typescript' ? 'ts' : 'js',
+    language: block.lang === 'ts' || block.lang === 'typescript' ? 'ts' : 'js',
     originalOffset: block.loc.start.offset,
     type: 'script',
   };
@@ -144,7 +144,7 @@ function fragmentsFromInterpolation(
   return [
     {
       code: mustache.code,
-      elision: {
+      elisionContext: {
         mode: 'text',
         range: rangeFromOffsets(
           source,
@@ -152,7 +152,7 @@ function fragmentsFromInterpolation(
           mustache.endOffset,
         ),
       },
-      lang: 'ts',
+      language: 'ts',
       originalOffset: mustache.codeOffset,
       type: 'template-expression',
     },
@@ -188,13 +188,13 @@ function fragmentsFromDirective(
   }
   const fragment: Fragment = {
     code: expression.content,
-    lang: 'ts',
+    language: 'ts',
     originalOffset: expression.loc.start.offset,
     type: 'template-expression',
   };
   const attributeName = readVBindAttributeName(prop);
   if (attributeName) {
-    fragment.elision = {
+    fragment.elisionContext = {
       attributeName,
       mode: 'attribute',
       range: rangeFromOffsets(

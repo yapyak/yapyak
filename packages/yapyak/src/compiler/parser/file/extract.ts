@@ -26,7 +26,7 @@ import { getScriptKind } from '../script-kind';
 const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
   {
     code: source,
-    lang: 'ts',
+    language: 'ts',
     originalOffset: 0,
     type: 'script',
   },
@@ -199,7 +199,7 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
       callSite.paramsExpression = fragmentCall.paramsExpression;
     }
     const elision =
-      fragment.elision ??
+      fragment.elisionContext ??
       detectJsxElision(fragmentCall.node, sourceFile, fragment, originalSource);
     if (elision) {
       callSite.elision = elision;
@@ -259,7 +259,7 @@ function createFragmentSourceFile(
     fragment.code,
     ts.ScriptTarget.ESNext,
     true,
-    getScriptKind(fileId, fragment.lang),
+    getScriptKind(fileId, fragment.language),
   );
 }
 

@@ -49,7 +49,7 @@ describe('createProcessor', () => {
       parseFragments: (source) => [
         {
           code: source,
-          lang: 'ts',
+          language: 'ts',
           originalOffset: 0,
           type: 'script',
         },
@@ -60,7 +60,7 @@ describe('createProcessor', () => {
     expect(fragments).toEqual([
       {
         code: 'let x = 1;',
-        lang: 'ts',
+        language: 'ts',
         originalOffset: 0,
         type: 'script',
       },

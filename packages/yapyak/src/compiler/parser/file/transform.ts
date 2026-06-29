@@ -64,7 +64,7 @@ const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
 const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
   {
     code: source,
-    lang: 'ts',
+    language: 'ts',
     originalOffset: 0,
     type: 'script',
   },
