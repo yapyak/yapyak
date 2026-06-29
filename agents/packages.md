@@ -12,7 +12,7 @@ The npm name communicates stability commitment.
 
 | Tier | Naming | What it signals | Examples |
 |---|---|---|---|
-| **Semi-OSS** | `@skiftle/*` | Internal-first. Source-shipped. No stability promises. Breaking changes without deprecation cycles. | `@skiftle/ui`, `@skiftle/intl`, `@skiftle/form` |
+| **Semi-OSS** | An internal-first `@scope/*` | Source-shipped. No stability promises. Breaking changes without deprecation cycles. | — |
 | **Real OSS** | Unscoped (`yapyak`) or dedicated scope (`@yapyak/*`) | Semver discipline. Deprecation cycles. Stable public API. | `yapyak`, `@yapyak/doc-compiler` |
 
 - Never mix tiers under one scope.

@@ -103,25 +103,25 @@ A component's name ends with the name of its root JSX element: `SortIcon` render
 
 - Domain components live in `components/`, take props, and do one thing.
 - Components never use route-data hooks (`useLoaderData()`, `getRouteApi()`). All data comes through props.
-- Types for props come from the API contract — never invented domain types in components.
+- Prop types come from the parsed content shapes or yapyak's public exports — never invented domain types in components.
 - The route file's `Component` function is the page — it calls route-data hooks, composes domain components, and adds page-level markup.
 
 ```tsx
 // ✓ Right
 export const Route = createFileRoute('...')({
   component: Component,
-  async loader({ context, params }) {
-    const { clients } = await context.api.accounts.clients.index({ ... });
-    return { clients };
+  async loader() {
+    const guides = await loadGuides();
+    return { guides };
   },
 });
 
 function Component() {
-  const { clients } = Route.useLoaderData();
+  const { guides } = Route.useLoaderData();
   return (
     <div>
-      <h1>Kunder</h1>
-      <ClientTable clients={clients} />
+      <h1>Guides</h1>
+      <GuideNav guides={guides} />
     </div>
   );
 }
@@ -129,26 +129,26 @@ function Component() {
 
 ### Domain naming
 
-- Singular resource in component names: `ClientTable`, never `ClientsTable`.
-- Domain components named `[Resource][Element]`: `ClientTable`, `EmployeeCard`, `AccountNavigation`.
+- Singular resource in component names: `GuideCard`, never `GuidesCard`.
+- Domain components named `[Resource][Element]`: `GuideCard`, `ReferenceTable`, `GuideNavigation`.
 - No "Page" components — the route `Component` function handles page layout.
-- **Dispatcher components:** when a base component renders a different sub-component based on a type/variant, name the variants `[Parent][Variant]`. `ActivityItem` dispatches to `ActivityItemComment` and `ActivityItemEvent` based on `activitableType`.
+- **Dispatcher components:** when a base component renders a different sub-component based on a type/variant, name the variants `[Parent][Variant]`. `Block` dispatches to `BlockCallout` and `BlockCode` based on the block's kind.
 
 ### Layout vs domain name
 
 | Chrome switches between | Suffix |
 | --- | --- |
 | Different instances (master-detail list) | `*Layout` |
-| Different peer domains (Clients vs Employees vs Billing) | `*Layout` |
-| Different aspects of one instance (Overview vs Sites tabs) | domain name (`*Detail`, `*Card`, `*Summary`) |
+| Different peer domains (Guides vs Reference vs Changelog) | `*Layout` |
+| Different aspects of one instance (Overview vs Examples tabs) | domain name (`*Detail`, `*Card`, `*Summary`) |
 
 Pattern across nesting depth: list-shell = Layout, instance-shell = Detail.
 
 ```
-ClientLayout              (list of clients, master-detail shell)
-  └─ ClientDetail         (one client, tabs for facets)
-       └─ ClientRateLayout
-            └─ ClientRateDetail
+GuideLayout              (list of guides, master-detail shell)
+  └─ GuideDetail         (one guide, tabs for facets)
+       └─ ExampleLayout
+            └─ ExampleDetail
 ```
 
 REST verbs in component names are forbidden (`*ShowLayout`, `*IndexLayout`).
@@ -312,18 +312,18 @@ A `.map` callback that produces JSX gets extracted into its own component. No si
 
 ```tsx
 // ✓
-<EmployeeList>
-  {employees.map((employee) => (
-    <EmployeeListItem key={employee.id} employee={employee} />
+<GuideList>
+  {guides.map((guide) => (
+    <GuideListItem key={guide.slug} guide={guide} />
   ))}
-</EmployeeList>
+</GuideList>
 
-function EmployeeListItem(props: { employee: Employee }) {
-  const { employee } = props;
+function GuideListItem(props: { guide: Guide }) {
+  const { guide } = props;
   return (
     <li>
-      <span>{employee.name}</span>
-      <span>{formatRole(employee.role)}</span>
+      <span>{guide.title}</span>
+      <span>{formatSection(guide.section)}</span>
     </li>
   );
 }
