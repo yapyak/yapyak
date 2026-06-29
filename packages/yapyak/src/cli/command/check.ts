@@ -113,19 +113,19 @@ export function check(config: Config, projectRoot: string): number {
   }
 
   if (errors.length > 0) {
-    printDiagnosticGroup({
-      colorize: color.red,
-      diagnostics: errors,
-      label: `${errors.length} error${errors.length === 1 ? '' : 's'}`,
-    });
+    printDiagnosticGroup(
+      color.red,
+      errors,
+      `${errors.length} error${errors.length === 1 ? '' : 's'}`,
+    );
   }
 
   if (warnings.length > 0) {
-    printDiagnosticGroup({
-      colorize: color.yellow,
-      diagnostics: warnings,
-      label: `${warnings.length} warning${warnings.length === 1 ? '' : 's'}`,
-    });
+    printDiagnosticGroup(
+      color.yellow,
+      warnings,
+      `${warnings.length} warning${warnings.length === 1 ? '' : 's'}`,
+    );
   }
 
   if (report.missing.length > 0) {
@@ -147,22 +147,24 @@ export function check(config: Config, projectRoot: string): number {
   return 0;
 }
 
-function printDiagnosticGroup(input: {
-  colorize: (text: string) => string;
-  diagnostics: Diagnostic[];
-  label: string;
-}): void {
-  process.stdout.write(`  ${symbol.cross} ${input.colorize(input.label)}\n\n`);
+function printDiagnosticGroup(
+  colorize: (text: string) => string,
+  diagnostics: Diagnostic[],
+  label: string,
+): void {
+  process.stdout.write(`  ${symbol.cross} ${colorize(label)}\n\n`);
   const sorted = [
-    ...input.diagnostics,
-  ].sort((a, b) => {
-    if (a.fileId !== b.fileId) {
-      return a.fileId < b.fileId ? -1 : 1;
+    ...diagnostics,
+  ].sort((leftDiagnostic, rightDiagnostic) => {
+    if (leftDiagnostic.fileId !== rightDiagnostic.fileId) {
+      return leftDiagnostic.fileId < rightDiagnostic.fileId ? -1 : 1;
     }
-    if (a.code !== b.code) {
-      return a.code < b.code ? -1 : 1;
+    if (leftDiagnostic.code !== rightDiagnostic.code) {
+      return leftDiagnostic.code < rightDiagnostic.code ? -1 : 1;
     }
-    return a.range.start.offset - b.range.start.offset;
+    return (
+      leftDiagnostic.range.start.offset - rightDiagnostic.range.start.offset
+    );
   });
   let lastFileId = '';
   for (const diagnostic of sorted) {

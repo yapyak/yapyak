@@ -176,8 +176,8 @@ function registerBindings(
       (ts.NodeFlags.Let | ts.NodeFlags.Const | ts.NodeFlags.Using)
     );
     const targetScope = isVar ? findFunctionOrModuleScope(scope) : scope;
-    for (const decl of node.declarationList.declarations) {
-      registerVariableDeclaration(decl, targetScope, context);
+    for (const declaration of node.declarationList.declarations) {
+      registerVariableDeclaration(declaration, targetScope, context);
     }
     return;
   }
@@ -193,8 +193,8 @@ function registerBindings(
   if (ts.isForInStatement(node) || ts.isForOfStatement(node)) {
     const initializer = node.initializer;
     if (ts.isVariableDeclarationList(initializer)) {
-      for (const decl of initializer.declarations) {
-        registerVariableDeclaration(decl, scope, context);
+      for (const declaration of initializer.declarations) {
+        registerVariableDeclaration(declaration, scope, context);
       }
     }
     return;
@@ -202,37 +202,37 @@ function registerBindings(
   if (ts.isForStatement(node) && node.initializer) {
     const initializer = node.initializer;
     if (ts.isVariableDeclarationList(initializer)) {
-      for (const decl of initializer.declarations) {
-        registerVariableDeclaration(decl, scope, context);
+      for (const declaration of initializer.declarations) {
+        registerVariableDeclaration(declaration, scope, context);
       }
     }
   }
 }
 
 function registerVariableDeclaration(
-  decl: ts.VariableDeclaration,
+  declaration: ts.VariableDeclaration,
   scope: Scope,
   context: WalkContext,
 ): void {
   if (
-    ts.isIdentifier(decl.name) &&
-    decl.initializer &&
-    ts.isIdentifier(decl.initializer)
+    ts.isIdentifier(declaration.name) &&
+    declaration.initializer &&
+    ts.isIdentifier(declaration.initializer)
   ) {
     const target = findBinding(
       context.scopeByNode,
-      decl.initializer.text,
-      decl,
+      declaration.initializer.text,
+      declaration,
     );
     if (target) {
-      scope.bindings.set(decl.name.text, {
+      scope.bindings.set(declaration.name.text, {
         kind: target.kind === 'namespace' ? 'namespace' : 'wrapper',
-        localName: decl.name.text,
+        localName: declaration.name.text,
       });
       return;
     }
   }
-  registerShadowPattern(decl.name, scope, context.shadowableNames);
+  registerShadowPattern(declaration.name, scope, context.shadowableNames);
 }
 
 function registerShadowPattern(

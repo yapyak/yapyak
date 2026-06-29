@@ -83,12 +83,12 @@ export function exportCommand(
   const variantsByFile = buildVariantsByFile(report.messages);
   let snapshot: Snapshot;
   try {
-    snapshot = buildSnapshot({
-      defaultLocale: report.defaultLocale,
-      localesDir: join(projectRoot, config.localesDir),
+    snapshot = buildSnapshot(
+      report.defaultLocale,
+      join(projectRoot, config.localesDir),
       targetLocales,
       variantsByFile,
-    });
+    );
   } catch (error) {
     if (error instanceof CorruptLocaleFileError) {
       process.stderr.write(
@@ -175,39 +175,39 @@ function buildVariantsByFile(
   return variantsByFile;
 }
 
-function buildSnapshot(args: {
-  defaultLocale: string;
-  localesDir: string;
-  targetLocales: string[];
-  variantsByFile: Map<string, ExportVariant[]>;
-}): Snapshot {
+function buildSnapshot(
+  defaultLocale: string,
+  localesDir: string,
+  targetLocales: string[],
+  variantsByFile: Map<string, ExportVariant[]>,
+): Snapshot {
   const snapshot: Snapshot = {};
-  for (const locale of args.targetLocales) {
-    snapshot[locale] = buildLocaleFile({
-      defaultLocale: args.defaultLocale,
+  for (const locale of targetLocales) {
+    snapshot[locale] = buildLocaleFile(
+      defaultLocale,
       locale,
-      localePath: join(args.localesDir, `${locale}.json`),
-      variantsByFile: args.variantsByFile,
-    });
+      join(localesDir, `${locale}.json`),
+      variantsByFile,
+    );
   }
   return snapshot;
 }
 
-function buildLocaleFile(args: {
-  defaultLocale: string;
-  locale: string;
-  localePath: string;
-  variantsByFile: Map<string, ExportVariant[]>;
-}): LocaleFile {
-  const isDefault = args.locale === args.defaultLocale;
+function buildLocaleFile(
+  defaultLocale: string,
+  locale: string,
+  localePath: string,
+  variantsByFile: Map<string, ExportVariant[]>,
+): LocaleFile {
+  const isDefault = locale === defaultLocale;
   let onDisk: LocaleFile;
   if (isDefault) {
     onDisk = {};
   } else {
-    onDisk = readLocaleFile(args.localePath);
+    onDisk = readLocaleFile(localePath);
   }
   const localeFile: LocaleFile = {};
-  for (const [fileId, variants] of args.variantsByFile) {
+  for (const [fileId, variants] of variantsByFile) {
     const fileEntries = onDisk[fileId];
     const byContextBySource = new Map<
       string,

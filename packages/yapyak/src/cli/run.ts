@@ -93,9 +93,9 @@ export async function run(argv: string[]): Promise<number> {
       }
       if (command === 'retranslate') {
         const source = rest.find((entry) => !entry.startsWith('-')) ?? '';
-        const asValue = flagValue(rest, '--as');
-        const fileValue = flagValue(rest, '--file');
-        const localeValue = flagValue(rest, '--locale');
+        const asValue = findFlagValue(rest, '--as');
+        const fileValue = findFlagValue(rest, '--file');
+        const localeValue = findFlagValue(rest, '--locale');
         return retranslate(config, projectRoot, source, {
           ...(asValue !== undefined && {
             as: asValue,
@@ -175,7 +175,7 @@ const FALSE_FLAG_VALUES = new Set([
   'off',
 ]);
 
-function flagValue(entries: string[], flag: string): string | undefined {
+function findFlagValue(entries: string[], flag: string): string | undefined {
   const prefix = `${flag}=`;
   for (let index = 0; index < entries.length; index++) {
     const entry = entries[index];
