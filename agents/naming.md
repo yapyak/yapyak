@@ -625,6 +625,18 @@ return (
 const { sidebarOpen } = useContext(Context);    // destructure-out, no alias
 ```
 
+**Exception — pure forward.** A fresh boolean keeps the bare property name (no prefix) when its only references are its initializer and same-key object-property values — a value defaulted from a property and passed straight on under the same key. The prefix is required the moment it is read in a boolean position (an `if` / `while` / ternary condition, `!`, `&&` / `||`, a comparison, or a standalone boolean return).
+
+```ts
+// ✓ — defaulted, forwarded under the same key, never tested → bare
+const force = options?.force ?? false;
+extractStubs({ force, messages }, context);
+
+// ✓ — read in a condition → prefix required
+const shouldPreserve = options?.preserve ?? false;
+value = shouldPreserve ? previous : '';
+```
+
 #### Standalone variables and function returns — required prefixes
 
 | Prefix | Meaning | Example |

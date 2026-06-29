@@ -123,7 +123,7 @@ export function migrateLocales(
     };
   }
 
-  const preserveTranslations = options?.preserveTranslations ?? false;
+  const shouldPreserveTranslations = options?.preserveTranslations ?? false;
 
   for (const locale of context.locales) {
     if (locale === context.defaultLocale) {
@@ -179,7 +179,7 @@ export function migrateLocales(
         hasChanged = true;
         continue;
       }
-      next[rename.to] = preserveTranslations ? (previousValue ?? '') : '';
+      next[rename.to] = shouldPreserveTranslations ? (previousValue ?? '') : '';
       staleEntries.push({
         locale,
         source: rename.to,

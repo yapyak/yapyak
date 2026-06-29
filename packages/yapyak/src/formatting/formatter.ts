@@ -52,7 +52,7 @@ function buildFormatter<T>(
   if (isCurrencyConstruction(ctor, options)) {
     const code = (options as Intl.NumberFormatOptions).currency as string;
     if (!isCurrency(code)) {
-      warnUnsupportedCurrencyOnce(code, locale, null);
+      warnUnsupportedCurrencyOnce(code, locale);
       return buildCurrencyFallback(locale, code, options) as T;
     }
   }
@@ -147,7 +147,7 @@ function isTimeZoneConstruction(
 function warnUnsupportedCurrencyOnce(
   code: string,
   locale: string,
-  cause: unknown,
+  cause?: unknown,
 ): void {
   const dedupKey = `${locale}|${code}`;
   if (warnedCurrencyKeys.has(dedupKey)) {
@@ -158,7 +158,7 @@ function warnUnsupportedCurrencyOnce(
     currency: code,
     locale,
   };
-  if (cause !== null) {
+  if (cause !== undefined) {
     meta.cause = cause;
   }
   warnDiagnostic(

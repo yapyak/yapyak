@@ -155,7 +155,14 @@ type NormalizerOptions = {
 };
 ```
 
-If you would otherwise write a `?? true` default for a flag, remove the flag and make the behavior unconditional instead. A boolean flag may only ever default to `false`.
+If you would otherwise write a bare `?? true` default for a flag, remove the flag and make the behavior unconditional instead. A boolean flag's default is either `false` or a derived expression (see below) — never a bare `?? true`.
+
+**Exception — derived default.** A boolean MAY default to an expression computed from another already-resolved config field. Mechanical test on the `??` fallback: `false` is the norm; a bare `true` is forbidden; an expression referencing ≥ 1 other config field is allowed — a context-derived default (sometimes `true`, sometimes `false` by context), not a blanket opt-out.
+
+```ts
+// ✓ — default derived from another field, not a literal
+preserveTranslationsOnRename: config.preserveTranslationsOnRename ?? !config.translator,
+```
 
 ### Argument shape — positional vs options
 

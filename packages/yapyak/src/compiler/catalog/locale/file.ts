@@ -478,7 +478,7 @@ export function syncLocaleFiles(
     }
   }
 
-  const orphansChanged = mergeOrphans(
+  const hasOrphansChanged = mergeOrphans(
     droppedTranslations,
     options?.now ?? (() => new Date().toISOString()),
     orphans,
@@ -501,7 +501,7 @@ export function syncLocaleFiles(
   }
   writeLocaleFiles(writes);
 
-  if (orphansChanged) {
+  if (hasOrphansChanged) {
     writeOrphans(yapyakDir, orphans);
   }
 
