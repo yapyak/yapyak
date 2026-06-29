@@ -28,13 +28,13 @@ describe('buildMarkdownSidebar', () => {
     expect(sidebar).toEqual([
       {
         href: '/guide/hello',
+        kind: 'link',
         label: 'Hello',
-        type: 'link',
       },
       {
         href: '/guide/world',
+        kind: 'link',
         label: 'World',
-        type: 'link',
       },
     ]);
   });
@@ -57,13 +57,13 @@ describe('buildMarkdownSidebar', () => {
         children: [
           {
             href: '/guide/getting-started/hello',
+            kind: 'link',
             label: 'Hello',
-            type: 'link',
           },
         ],
         collapsible: false,
+        kind: 'group',
         label: 'Getting started',
-        type: 'group',
       },
     ]);
   });
@@ -89,8 +89,8 @@ describe('buildMarkdownSidebar', () => {
     expect(sidebar).toEqual([
       {
         href: '/guide/hello',
+        kind: 'link',
         label: 'Hello',
-        type: 'link',
       },
     ]);
   });

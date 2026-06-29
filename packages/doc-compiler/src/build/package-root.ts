@@ -53,8 +53,8 @@ export function buildPackageRoot(
     children,
     collapsible,
     href: `/${collectionName}/${packageSlug}`,
+    kind: 'group',
     label,
-    type: 'group',
     ...(collapsible && {
       defaultOpen: expanded,
     }),
@@ -89,7 +89,7 @@ function moduleChildren(
           variant: 'deprecated' as const,
         },
       }),
-      type: 'link',
+      kind: 'link',
     });
   }
   const subModules = (childrenByParentId.get(module.id) ?? [])
@@ -101,8 +101,8 @@ function moduleChildren(
       children: moduleChildren(child, modulesById, childrenByParentId, context),
       collapsible: true,
       href: `/${collectionName}/${packageSlug}/${childSlug}`,
+      kind: 'group',
       label: lastSegment(child.id),
-      type: 'group',
     });
   }
   return nodes;
@@ -131,8 +131,8 @@ function topLevelSubpathChildren(
     children: moduleChildren(child, modulesById, childrenByParentId, context),
     collapsible: true,
     href: `/${collectionName}/${packageSlug}/${child.id.slice(prefix.length)}`,
+    kind: 'group',
     label: lastSegment(child.id),
-    type: 'group',
   }));
 }
 

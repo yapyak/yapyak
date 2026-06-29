@@ -71,16 +71,16 @@ function resolveBlocks(blocks: Block[], pageHref: string): Block[] {
 }
 
 function resolveBlock(block: Block, pageHref: string): Block {
-  if (block.type === 'link') {
-    const { href, kind } = resolveLinkData(block.href, pageHref);
+  if (block.kind === 'link') {
+    const { href, linkKind } = resolveLinkData(block.href, pageHref);
     return {
       ...block,
       children: resolveBlocks(block.children, pageHref),
       href,
-      kind,
+      linkKind,
     };
   }
-  if (block.type === 'table') {
+  if (block.kind === 'table') {
     return {
       ...block,
       body: block.body.map((row) => resolveBlock(row, pageHref) as typeof row),
@@ -89,7 +89,7 @@ function resolveBlock(block: Block, pageHref: string): Block {
         : null,
     };
   }
-  if (block.type === 'switch') {
+  if (block.kind === 'switch') {
     return {
       ...block,
       branches: Object.fromEntries(
@@ -111,26 +111,26 @@ function resolveBlock(block: Block, pageHref: string): Block {
 
 type LinkData = {
   href: string;
-  kind: 'external' | 'internal';
+  linkKind: 'external' | 'internal';
 };
 
 function resolveLinkData(href: string, pageHref: string): LinkData {
   if (/^([a-z][a-z0-9+.-]*:|\/\/)/i.test(href)) {
     return {
       href,
-      kind: 'external',
+      linkKind: 'external',
     };
   }
   if (href.startsWith('/')) {
     return {
       href,
-      kind: 'internal',
+      linkKind: 'internal',
     };
   }
   if (href.startsWith('#')) {
     return {
       href: `${pageHref}${href}`,
-      kind: 'internal',
+      linkKind: 'internal',
     };
   }
   const [pathPart = '', fragment = ''] = href.split('#');
@@ -155,7 +155,7 @@ function resolveLinkData(href: string, pageHref: string): LinkData {
     '/';
   return {
     href: fragment ? `${resolved}#${fragment}` : resolved,
-    kind: 'internal',
+    linkKind: 'internal',
   };
 }
 

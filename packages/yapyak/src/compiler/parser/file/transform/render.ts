@@ -157,7 +157,7 @@ function renderNode(
       return `${localFor('count')}()`;
     case 'plural':
       usedFactories.add('plural');
-      return `${localFor('plural')}(${JSON.stringify(node.name)},${JSON.stringify(node.type)},${renderBranches(node.branches, usedFactories, localsByFactory)})`;
+      return `${localFor('plural')}(${JSON.stringify(node.name)},${JSON.stringify(node.pluralKind)},${renderBranches(node.branches, usedFactories, localsByFactory)})`;
     case 'select':
       usedFactories.add('select');
       return `${localFor('select')}(${JSON.stringify(node.name)},${renderBranches(node.branches, usedFactories, localsByFactory)})`;

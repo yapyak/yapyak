@@ -32,7 +32,7 @@ export type ElisionContext = {
 export type Fragment = {
   code: string;
   elision?: ElisionContext;
-  kind: 'script' | 'template-expression';
+  type: 'script' | 'template-expression';
   lang: 'js' | 'ts';
   originalOffset: number;
 };

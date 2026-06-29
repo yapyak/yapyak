@@ -89,9 +89,9 @@ export function astro(): Processor {
         return [
           {
             code: source,
-            kind: 'script',
             lang: 'ts',
             originalOffset: 0,
+            type: 'script',
           },
         ];
       }
@@ -113,9 +113,9 @@ function frontmatterFragment(
   const codeEnd = frontmatter.end - FRONTMATTER_DELIMITER_LENGTH;
   return {
     code: source.slice(codeStart, codeEnd),
-    kind: 'script',
     lang: 'ts',
     originalOffset: codeStart,
+    type: 'script',
   };
 }
 
@@ -203,9 +203,9 @@ function fragmentsFromExpression(
     {
       code: source.slice(expression.start, expression.end),
       elision: elision && embedded.length === 0 ? elision : undefined,
-      kind: 'template-expression',
       lang: 'ts',
       originalOffset: expression.start,
+      type: 'template-expression',
     },
     ...embedded.flatMap((node) => fragmentsFromBodyNode(node, source)),
   ];

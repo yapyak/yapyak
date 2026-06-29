@@ -24,16 +24,16 @@ describe('getInternalLinks', () => {
               {
                 children: [
                   {
-                    type: 'text',
+                    kind: 'text',
                     value: 'Settings',
                   },
                 ],
                 href: '/guide/settings',
-                kind: 'internal',
-                type: 'link',
+                kind: 'link',
+                linkKind: 'internal',
               },
             ],
-            type: 'paragraph',
+            kind: 'paragraph',
           },
         ]),
       ),
@@ -54,16 +54,16 @@ describe('getInternalLinks', () => {
               {
                 children: [
                   {
-                    type: 'text',
+                    kind: 'text',
                     value: 'Hello',
                   },
                 ],
                 href: 'https://example.com',
-                kind: 'external',
-                type: 'link',
+                kind: 'link',
+                linkKind: 'external',
               },
             ],
-            type: 'paragraph',
+            kind: 'paragraph',
           },
         ]),
       ),

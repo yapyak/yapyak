@@ -18,7 +18,7 @@ describe('blockToText', () => {
   it('returns the value of a `text` block', () => {
     expect(
       blockToText({
-        type: 'text',
+        kind: 'text',
         value: 'Hello',
       }),
     ).toBe('Hello');
@@ -27,7 +27,7 @@ describe('blockToText', () => {
   it('returns the value of an `inline-code` block', () => {
     expect(
       blockToText({
-        type: 'inline-code',
+        kind: 'inline-code',
         value: 'Settings',
       }),
     ).toBe('Settings');
@@ -38,15 +38,15 @@ describe('blockToText', () => {
       blockToText({
         children: [
           {
-            type: 'text',
+            kind: 'text',
             value: 'Hello',
           },
           {
-            type: 'text',
+            kind: 'text',
             value: ' World',
           },
         ],
-        type: 'paragraph',
+        kind: 'paragraph',
       }),
     ).toBe('Hello World');
   });
@@ -58,24 +58,24 @@ describe('blockToText', () => {
           {
             children: [
               {
-                type: 'text',
+                kind: 'text',
                 value: 'Hello',
               },
             ],
-            type: 'list-item',
+            kind: 'list-item',
           },
           {
             children: [
               {
-                type: 'text',
+                kind: 'text',
                 value: 'World',
               },
             ],
-            type: 'list-item',
+            kind: 'list-item',
           },
         ],
+        kind: 'list',
         ordered: false,
-        type: 'list',
       }),
     ).toBe('Hello\nWorld');
   });
@@ -83,11 +83,11 @@ describe('blockToText', () => {
   it('returns the `source` of a `code-block`', () => {
     expect(
       blockToText({
+        kind: 'code-block',
         label: null,
         language: 'ts',
         path: null,
         source: 'Hello',
-        type: 'code-block',
       }),
     ).toBe('Hello');
   });
@@ -98,19 +98,19 @@ describe('blockToText', () => {
         branches: {
           react: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'Hello',
             },
           ],
           vue: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'World',
             },
           ],
         },
         group: 'framework',
-        type: 'switch',
+        kind: 'switch',
       }),
     ).toBe('Hello\n\nWorld');
   });
@@ -118,13 +118,13 @@ describe('blockToText', () => {
   it('returns the locale-prefixed value of an `output` line', () => {
     expect(
       blockToText({
+        kind: 'output',
         lines: [
           {
             locale: 'en',
             value: 'Hello',
           },
         ],
-        type: 'output',
       }),
     ).toBe('en: Hello');
   });
@@ -132,13 +132,13 @@ describe('blockToText', () => {
   it('returns the value of an `output` line when locale is `null`', () => {
     expect(
       blockToText({
+        kind: 'output',
         lines: [
           {
             locale: null,
             value: 'Hello',
           },
         ],
-        type: 'output',
       }),
     ).toBe('Hello');
   });
@@ -146,6 +146,7 @@ describe('blockToText', () => {
   it('returns the code and message of a `diagnostics` line', () => {
     expect(
       blockToText({
+        kind: 'diagnostics',
         language: 'ts',
         lines: [
           {
@@ -154,7 +155,6 @@ describe('blockToText', () => {
             status: 'error',
           },
         ],
-        type: 'diagnostics',
       }),
     ).toBe('Hello — World');
   });
@@ -162,6 +162,7 @@ describe('blockToText', () => {
   it('returns the code of a `diagnostics` line when message is `null`', () => {
     expect(
       blockToText({
+        kind: 'diagnostics',
         language: 'ts',
         lines: [
           {
@@ -170,7 +171,6 @@ describe('blockToText', () => {
             status: 'ok',
           },
         ],
-        type: 'diagnostics',
       }),
     ).toBe('Hello');
   });
@@ -184,15 +184,15 @@ describe('blockToText', () => {
               {
                 children: [
                   {
-                    type: 'text',
+                    kind: 'text',
                     value: 'World',
                   },
                 ],
                 header: false,
-                type: 'table-cell',
+                kind: 'table-cell',
               },
             ],
-            type: 'table-row',
+            kind: 'table-row',
           },
         ],
         head: {
@@ -200,17 +200,17 @@ describe('blockToText', () => {
             {
               children: [
                 {
-                  type: 'text',
+                  kind: 'text',
                   value: 'Hello',
                 },
               ],
               header: true,
-              type: 'table-cell',
+              kind: 'table-cell',
             },
           ],
-          type: 'table-row',
+          kind: 'table-row',
         },
-        type: 'table',
+        kind: 'table',
       }),
     ).toBe('Hello\nWorld');
   });
@@ -224,19 +224,19 @@ describe('blockToText', () => {
               {
                 children: [
                   {
-                    type: 'text',
+                    kind: 'text',
                     value: 'Hello',
                   },
                 ],
                 header: false,
-                type: 'table-cell',
+                kind: 'table-cell',
               },
             ],
-            type: 'table-row',
+            kind: 'table-row',
           },
         ],
         head: null,
-        type: 'table',
+        kind: 'table',
       }),
     ).toBe('Hello');
   });
@@ -245,8 +245,8 @@ describe('blockToText', () => {
     expect(
       blockToText({
         alt: 'Hello',
+        kind: 'image',
         src: 'https://example.com/hello.png',
-        type: 'image',
       }),
     ).toBe('Hello');
   });
@@ -255,8 +255,8 @@ describe('blockToText', () => {
     expect(
       blockToText({
         alt: null,
+        kind: 'image',
         src: 'https://example.com/hello.png',
-        type: 'image',
       }),
     ).toBe('');
   });
@@ -264,10 +264,10 @@ describe('blockToText', () => {
   it('returns the `kind` of an `eyebrow` when set', () => {
     expect(
       blockToText({
-        kind: 'function',
+        exportKind: 'function',
+        kind: 'eyebrow',
         module: 'yapyak',
         sourceHref: null,
-        type: 'eyebrow',
       }),
     ).toBe('function');
   });
@@ -275,10 +275,10 @@ describe('blockToText', () => {
   it('returns the `module` of an `eyebrow` when `kind` is `null`', () => {
     expect(
       blockToText({
-        kind: null,
+        exportKind: null,
+        kind: 'eyebrow',
         module: 'yapyak',
         sourceHref: null,
-        type: 'eyebrow',
       }),
     ).toBe('yapyak');
   });
@@ -288,8 +288,8 @@ describe('blockToText', () => {
       blockToText({
         file: 'src/a.ts',
         href: null,
+        kind: 'code-location',
         line: 42,
-        type: 'code-location',
       }),
     ).toBe('src/a.ts:42');
   });
@@ -297,7 +297,7 @@ describe('blockToText', () => {
   it('returns an empty string for a `divider`', () => {
     expect(
       blockToText({
-        type: 'divider',
+        kind: 'divider',
       }),
     ).toBe('');
   });
@@ -305,7 +305,7 @@ describe('blockToText', () => {
   it('returns an empty string for a `line-break`', () => {
     expect(
       blockToText({
-        type: 'line-break',
+        kind: 'line-break',
       }),
     ).toBe('');
   });
@@ -319,20 +319,20 @@ describe('getText', () => {
           {
             children: [
               {
-                type: 'text',
+                kind: 'text',
                 value: 'Hello',
               },
             ],
-            type: 'paragraph',
+            kind: 'paragraph',
           },
           {
             children: [
               {
-                type: 'text',
+                kind: 'text',
                 value: 'World',
               },
             ],
-            type: 'paragraph',
+            kind: 'paragraph',
           },
         ]),
       ),
@@ -344,7 +344,7 @@ describe('getText', () => {
       getText(
         page([
           {
-            type: 'divider',
+            kind: 'divider',
           },
         ]),
       ),

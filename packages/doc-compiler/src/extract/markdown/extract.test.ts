@@ -60,16 +60,16 @@ describe('extractMarkdown', () => {
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'World',
             },
           ],
           href: '/guide/guide/world',
-          kind: 'internal',
-          type: 'link',
+          kind: 'link',
+          linkKind: 'internal',
         },
       ],
-      type: 'paragraph',
+      kind: 'paragraph',
     });
   });
 

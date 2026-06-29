@@ -18,11 +18,11 @@ function paragraph(text: string): Page['blocks'][number] {
   return {
     children: [
       {
-        type: 'text',
+        kind: 'text',
         value: text,
       },
     ],
-    type: 'paragraph',
+    kind: 'paragraph',
   };
 }
 
@@ -65,7 +65,7 @@ describe('getExcerpt', () => {
         getExcerpt(
           page([
             {
-              type: 'divider',
+              kind: 'divider',
             },
             paragraph('Hello'),
           ]),
@@ -78,7 +78,7 @@ describe('getExcerpt', () => {
         getExcerpt(
           page([
             {
-              type: 'divider',
+              kind: 'divider',
             },
           ]),
         ),

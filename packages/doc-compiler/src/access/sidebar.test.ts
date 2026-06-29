@@ -18,8 +18,8 @@ describe('getSidebar', () => {
     const sidebar: SidebarNode[] = [
       {
         href: '/guide/settings',
+        kind: 'link',
         label: 'Settings',
-        type: 'link',
       },
     ];
     expect(

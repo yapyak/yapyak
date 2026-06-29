@@ -182,13 +182,13 @@ describe('buildModulePage', () => {
     expect(page.blocks).toContainEqual({
       children: [
         {
-          type: 'text',
+          kind: 'text',
           value: 'Exports',
         },
       ],
       id: 'exports',
+      kind: 'heading',
       level: 2,
-      type: 'heading',
     });
   });
 
@@ -210,8 +210,8 @@ describe('buildModulePage', () => {
 
     const hasExportsHeading = page.blocks.some(
       (block) =>
-        block.type === 'heading' &&
-        block.children[0]?.type === 'text' &&
+        block.kind === 'heading' &&
+        block.children[0]?.kind === 'text' &&
         block.children[0]?.value === 'Exports',
     );
     expect(hasExportsHeading).toBe(false);
@@ -227,10 +227,10 @@ describe('buildPackageIndexPage', () => {
     });
 
     expect(page.blocks[0]).toEqual({
-      kind: null,
+      exportKind: null,
+      kind: 'eyebrow',
       module: 'yapyak',
       sourceHref: null,
-      type: 'eyebrow',
     });
   });
 
@@ -250,13 +250,13 @@ describe('buildPackageIndexPage', () => {
     expect(page.blocks).toContainEqual({
       children: [
         {
-          type: 'text',
+          kind: 'text',
           value: 'Subpaths',
         },
       ],
       id: 'subpaths',
+      kind: 'heading',
       level: 2,
-      type: 'heading',
     });
   });
 
@@ -296,21 +296,21 @@ describe('buildSymbolPage', () => {
       SYMBOL_PAGE_INPUT,
     );
 
-    const callout = page.blocks.find((block) => block.type === 'callout');
+    const callout = page.blocks.find((block) => block.kind === 'callout');
     expect(callout).toEqual({
       children: [
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'Use `createProcessor`',
             },
           ],
-          type: 'paragraph',
+          kind: 'paragraph',
         },
       ],
+      kind: 'callout',
       title: 'Deprecated',
-      type: 'callout',
       variant: 'warning',
     });
   });
@@ -319,9 +319,9 @@ describe('buildSymbolPage', () => {
     const page = buildSymbolPage(functionSymbol(), CONTEXT, SYMBOL_PAGE_INPUT);
 
     const headings = page.blocks
-      .filter((block) => block.type === 'heading')
+      .filter((block) => block.kind === 'heading')
       .map((block) =>
-        block.type === 'heading' && block.children[0]?.type === 'text'
+        block.kind === 'heading' && block.children[0]?.kind === 'text'
           ? block.children[0].value
           : '',
       );
@@ -336,8 +336,8 @@ describe('buildSymbolPage', () => {
 
     const hasTypeHeading = page.blocks.some(
       (block) =>
-        block.type === 'heading' &&
-        block.children[0]?.type === 'text' &&
+        block.kind === 'heading' &&
+        block.children[0]?.kind === 'text' &&
         block.children[0]?.value === 'Type',
     );
     expect(hasTypeHeading).toBe(true);
@@ -361,8 +361,8 @@ describe('buildSymbolPage', () => {
 
     const hasExamplesHeading = page.blocks.some(
       (block) =>
-        block.type === 'heading' &&
-        block.children[0]?.type === 'text' &&
+        block.kind === 'heading' &&
+        block.children[0]?.kind === 'text' &&
         block.children[0]?.value === 'Examples',
     );
     expect(hasExamplesHeading).toBe(true);
@@ -384,8 +384,8 @@ describe('buildSymbolPage', () => {
 
     const hasThrowsHeading = page.blocks.some(
       (block) =>
-        block.type === 'heading' &&
-        block.children[0]?.type === 'text' &&
+        block.kind === 'heading' &&
+        block.children[0]?.kind === 'text' &&
         block.children[0]?.value === 'Throws',
     );
     expect(hasThrowsHeading).toBe(true);
@@ -404,8 +404,8 @@ describe('buildSymbolPage', () => {
 
     const hasSeeAlsoHeading = page.blocks.some(
       (block) =>
-        block.type === 'heading' &&
-        block.children[0]?.type === 'text' &&
+        block.kind === 'heading' &&
+        block.children[0]?.kind === 'text' &&
         block.children[0]?.value === 'See also',
     );
     expect(hasSeeAlsoHeading).toBe(true);
@@ -420,11 +420,11 @@ describe('buildSymbolPage', () => {
     });
 
     expect(page.blocks[0]).toEqual({
-      kind: 'function',
+      exportKind: 'function',
+      kind: 'eyebrow',
       module: 'yapyak',
       sourceHref:
         'https://github.com/yapyak/yapyak/blob/main/yapyak/src/index.ts#L1',
-      type: 'eyebrow',
     });
   });
 
@@ -432,10 +432,10 @@ describe('buildSymbolPage', () => {
     const page = buildSymbolPage(functionSymbol(), CONTEXT, SYMBOL_PAGE_INPUT);
 
     expect(page.blocks[0]).toEqual({
-      kind: 'function',
+      exportKind: 'function',
+      kind: 'eyebrow',
       module: 'yapyak',
       sourceHref: null,
-      type: 'eyebrow',
     });
   });
 
@@ -468,13 +468,13 @@ describe('buildSymbolPage', () => {
     expect(link).toEqual({
       children: [
         {
-          type: 'text',
+          kind: 'text',
           value: 'createTranslator',
         },
       ],
       href: '/reference/yapyak/translator/createTranslator',
-      kind: 'internal',
-      type: 'link',
+      kind: 'link',
+      linkKind: 'internal',
     });
   });
 
@@ -527,13 +527,13 @@ describe('buildSymbolPage', () => {
     expect(link).toEqual({
       children: [
         {
-          type: 'text',
+          kind: 'text',
           value: 'createTranslator',
         },
       ],
       href: '/reference/yapyak/translator/createTranslator',
-      kind: 'internal',
-      type: 'link',
+      kind: 'link',
+      linkKind: 'internal',
     });
   });
 
@@ -624,13 +624,13 @@ describe('buildMethodPage', () => {
     expect(page.blocks).toContainEqual({
       children: [
         {
-          type: 'text',
+          kind: 'text',
           value: 'See also',
         },
       ],
       id: 'see-also',
+      kind: 'heading',
       level: 2,
-      type: 'heading',
     });
 
     const hrefs = collectHrefs(page.blocks);
@@ -748,13 +748,13 @@ function collectHrefs(blocks: Block[]): string[] {
 
 function walkHrefs(blocks: Block[], out: string[]): void {
   for (const block of blocks) {
-    if (block.type === 'link') {
+    if (block.kind === 'link') {
       out.push(block.href);
     }
     if ('children' in block && Array.isArray(block.children)) {
       walkHrefs(block.children, out);
     }
-    if (block.type === 'table') {
+    if (block.kind === 'table') {
       if (block.head !== null) {
         walkHrefs(
           [
@@ -770,7 +770,7 @@ function walkHrefs(blocks: Block[], out: string[]): void {
 
 function findFirstLink(blocks: Block[]): LinkBlock | undefined {
   for (const block of blocks) {
-    if (block.type === 'link') {
+    if (block.kind === 'link') {
       return block;
     }
     if ('children' in block && Array.isArray(block.children)) {
@@ -779,7 +779,7 @@ function findFirstLink(blocks: Block[]): LinkBlock | undefined {
         return nested;
       }
     }
-    if (block.type === 'table') {
+    if (block.kind === 'table') {
       const head =
         block.head === null
           ? []
@@ -807,14 +807,14 @@ function collectText(blocks: Block[]): string {
 
 function walkText(blocks: Block[], out: string[]): void {
   for (const block of blocks) {
-    if (block.type === 'text' || block.type === 'inline-code') {
+    if (block.kind === 'text' || block.kind === 'inline-code') {
       out.push(block.value);
       continue;
     }
     if ('children' in block && Array.isArray(block.children)) {
       walkText(block.children, out);
     }
-    if (block.type === 'table') {
+    if (block.kind === 'table') {
       if (block.head !== null) {
         walkText(
           [

@@ -24,7 +24,7 @@ export function ContentNavigation(props: ContentNavigationProps) {
       ]}
     >
       {tree.map((node) =>
-        node.type === 'group' ? (
+        node.kind === 'group' ? (
           <ContentNavigationGroup
             className={
               node.collapsible ? styles.CollapsibleGroup : styles.StaticGroup

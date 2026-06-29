@@ -22,14 +22,14 @@ function buildSidebar(): SidebarNode[] {
         {
           badge: undefined,
           href: '/guide/getting-started/installation',
+          kind: 'link',
           label: 'Installation',
-          type: 'link',
         },
       ],
       collapsible: false,
       href: undefined,
+      kind: 'group',
       label: 'Getting started',
-      type: 'group',
     },
   ];
 }
@@ -95,11 +95,11 @@ describe('buildAgentArtifact', () => {
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'Step 1.',
             },
           ],
-          type: 'paragraph',
+          kind: 'paragraph',
         },
       ],
       description: 'Install yapyak.',

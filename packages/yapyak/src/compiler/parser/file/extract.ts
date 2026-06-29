@@ -26,9 +26,9 @@ import { getScriptKind } from '../script-kind';
 const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
   {
     code: source,
-    kind: 'script',
     lang: 'ts',
     originalOffset: 0,
+    type: 'script',
   },
 ];
 
@@ -83,7 +83,7 @@ export function extractFile(
   let ambientAnchor: ts.SourceFile | undefined;
 
   for (const fragment of fragments) {
-    if (fragment.kind !== 'script') {
+    if (fragment.type !== 'script') {
       continue;
     }
     const sourceFile = createFragmentSourceFile(fileId, fragment);
@@ -112,7 +112,7 @@ export function extractFile(
       : undefined;
 
   for (const fragment of fragments) {
-    if (fragment.kind === 'script') {
+    if (fragment.type === 'script') {
       continue;
     }
     const sourceFile = createFragmentSourceFile(fileId, fragment);

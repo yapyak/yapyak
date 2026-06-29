@@ -21,7 +21,7 @@ export const Route = createFileRoute('/reference/$')({
     }
     const { page } = loaderData;
     const eyebrow = page.blocks.find(
-      (block): block is EyebrowBlock => block.type === 'eyebrow',
+      (block): block is EyebrowBlock => block.kind === 'eyebrow',
     );
     const module = eyebrow?.module;
     const hideModule = module == null || module === page.title;

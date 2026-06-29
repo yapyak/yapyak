@@ -23,7 +23,7 @@ export function getHeadings(
   const result: HeadingEntry[] = [];
   for (const block of page.blocks) {
     if (
-      block.type === 'heading' &&
+      block.kind === 'heading' &&
       block.level >= minLevel &&
       block.level <= maxLevel
     ) {

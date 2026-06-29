@@ -106,9 +106,9 @@ function loadCompiler(): typeof VueSfc {
 function toScriptFragment(block: SFCScriptBlock): Fragment {
   return {
     code: block.content,
-    kind: 'script',
     lang: block.lang === 'ts' || block.lang === 'typescript' ? 'ts' : 'js',
     originalOffset: block.loc.start.offset,
+    type: 'script',
   };
 }
 
@@ -152,9 +152,9 @@ function fragmentsFromInterpolation(
           mustache.endOffset,
         ),
       },
-      kind: 'template-expression',
       lang: 'ts',
       originalOffset: mustache.codeOffset,
+      type: 'template-expression',
     },
   ];
 }
@@ -188,9 +188,9 @@ function fragmentsFromDirective(
   }
   const fragment: Fragment = {
     code: expression.content,
-    kind: 'template-expression',
     lang: 'ts',
     originalOffset: expression.loc.start.offset,
+    type: 'template-expression',
   };
   const attributeName = readVBindAttributeName(prop);
   if (attributeName) {

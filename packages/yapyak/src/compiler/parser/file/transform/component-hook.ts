@@ -26,7 +26,7 @@ export function injectComponentHooks(input: InjectComponentHooksInput): void {
     }
   }
   for (const fragment of input.fragments) {
-    if (fragment.kind !== 'script') {
+    if (fragment.type !== 'script') {
       continue;
     }
     const sourceFile = ts.createSourceFile(

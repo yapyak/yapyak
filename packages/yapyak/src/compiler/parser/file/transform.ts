@@ -64,9 +64,9 @@ const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
 const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
   {
     code: source,
-    kind: 'script',
     lang: 'ts',
     originalOffset: 0,
+    type: 'script',
   },
 ];
 const FACTORY_ORDER = [

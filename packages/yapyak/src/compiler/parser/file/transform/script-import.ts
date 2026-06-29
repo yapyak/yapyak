@@ -19,7 +19,7 @@ export function transformScriptImports(
     .map((fragment) => parseFragmentReferenceAst(input, fragment))
     .filter((ast): ast is ts.SourceFile => ast !== null);
   for (const fragment of input.fragments) {
-    if (fragment.kind !== 'script') {
+    if (fragment.type !== 'script') {
       continue;
     }
     const declarationAst = ts.createSourceFile(

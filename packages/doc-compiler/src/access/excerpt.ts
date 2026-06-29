@@ -12,7 +12,7 @@ export function getExcerpt(
 ): string {
   const maxLength = options.maxLength ?? 160;
   for (const block of page.blocks) {
-    if (block.type !== 'paragraph') {
+    if (block.kind !== 'paragraph') {
       continue;
     }
     const text = blockToText(block).trim();

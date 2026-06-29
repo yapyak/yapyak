@@ -12,7 +12,7 @@ export function getInternalLinks(page: Page): InternalLinkEntry[] {
   const links: InternalLinkEntry[] = [];
   for (const block of page.blocks) {
     walkBlocks(block, (current) => {
-      if (current.type === 'link' && current.kind === 'internal') {
+      if (current.kind === 'link' && current.linkKind === 'internal') {
         links.push({
           href: current.href,
           text: current.children.map(blockToText).join(''),

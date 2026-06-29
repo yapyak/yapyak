@@ -28,7 +28,7 @@ export type PluralNode = {
   branches: Record<string, Template>;
   kind: 'plural';
   name: string;
-  type: 'cardinal' | 'ordinal';
+  pluralKind: 'cardinal' | 'ordinal';
 };
 
 export type SelectNode = {

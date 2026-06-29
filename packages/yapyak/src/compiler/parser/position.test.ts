@@ -11,9 +11,9 @@ function makeSourceFile(source: string): ts.SourceFile {
 
 const fragment: Fragment = {
   code: '',
-  kind: 'script',
   lang: 'ts',
   originalOffset: 0,
+  type: 'script',
 };
 
 describe('remapPosition', () => {

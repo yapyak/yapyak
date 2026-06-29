@@ -359,20 +359,21 @@ UseLocaleHookReturn                     // Hook + Return
 | `*Interface` | Meta-jargon |
 | `*Impl` / `*Implementation` | The implementation IS the type |
 
-**`*Type` exception — category of a distinct concrete thing.** `*Type` is allowed when the `Type` is **load-bearing**: the base noun names a concrete value/struct, and `*Type` names its *category/classification* (a distinct concept), AND `*Type` is the established term of art in that domain. The test: is there a separate `Foo` value whose category `FooType` describes?
+**`*Type` exception — a discriminator category on the public surface.** `*Type` is allowed only when it names the category of a **public** discriminated union whose field is `type` (see § Discriminator fields). The type name and field must agree: field `type` ↔ type `*Type`; field `kind` ↔ type `*Kind`.
 
 ```ts
-// ✓ Allowed — Token is the struct, TokenType is its category (ecosystem-idiomatic, à la TS `SyntaxKind`)
-type Token = { type: TokenType; value: string };
-type TokenType = 'keyword' | 'string' | 'punct' | ...;
+// ✓ Allowed — public discriminator, field is `type`, so the named category is `*Type`
+//   (load-bearing: the base noun is a concrete value, `*Type` is its category, à la `ContentType`/`MediaType`)
+type Event = { type: EventType; ... };
+type EventType = 'click' | 'submit' | ...;
 
-// ✓ Allowed — Event is the object, EventType its category; ContentType, NodeType, MediaType similarly
+// ✗ Banned — internal discriminator uses `kind`, so its category is `*Kind`, never `*Type`
+type Token = { kind: TokenKind; value: string };   // internal IR → kind → TokenKind
+
 // ✗ Banned — redundant: Options/Config are ALREADY types, "Type" adds nothing
 type OptionsType = { ... };   // → Options
 type ConfigType = { ... };    // → Config
 ```
-
-When `*Type` is allowed, its discriminator field keeps the matching name (`token.type: TokenType`) — do not rename the field to `kind`, since the field and type must agree.
 
 **Past-participle prefix pattern.** A type representing the post-processed form of a base type uses the participle as a prefix:
 
@@ -667,6 +668,74 @@ When a field or parameter holds a value of a specific named type, the name is th
 function handleAttributeNode(node: AttributeNode): void { ... }
 function resolveCallSite(site: CallSite): ResolvedSite { ... }
 ```
+
+### Discriminator fields — `type` vs `kind`
+
+The discriminator field of a tagged union is named by a single mechanical rule. No judgment.
+
+> **The field is `type` if and only if its type is reachable from a *public* export of a package that is NOT `"private": true`. Every other discriminator field is `kind`.**
+
+A "public export" is any entry in the package's `package.json` `exports` map **except an `/internal` subpath** (`./internal`, `./compiler/internal`, …). `/internal` subpaths are library-internal cross-package plumbing, not the external-user surface.
+
+A two-step lookup, applied to the type that declares the field:
+
+1. Open the declaring package's `package.json`. Is `"private": true`? → **`kind`**. Done.
+2. Else: is the type re-exported (transitively) from any public export — the `.` entry **or any non-`/internal` subpath** (`./config`, `./processor`, `./adapter`, …)? **Yes → `type`. No (only via an `/internal` subpath, or unexported) → `kind`.**
+
+That is the whole rule. Free of "is this a value or a node?", "does it mirror TypeScript?", or any other call.
+
+**Why this cut.** `type` is the discriminator the **public API exposes to external users**, who live in the config/data ecosystem where `type` is the universal tag (Redux, config files, `node.type`). `kind` is the discriminator on the **internal machinery** — compiler IR, AST nodes, private-package output — where the compiler idiom rules: it matches TypeScript's own `SyntaxKind`, and avoids the cognitive collision between a `type` field and the `type` keyword in type-heavy traversal code. Public contract speaks the ecosystem's language; internals speak the compiler's.
+
+| Type | Package | Reachable from a public export? | Field |
+|---|---|---|---|
+| `RichTextNode` | `yapyak` (published) | yes — `.` | `type` |
+| `PersistenceConfig` | `yapyak` (published) | yes — `./config` | `type` |
+| `ProcessorFragment` | `yapyak` (published) | yes — `./processor` | `type` |
+| `TemplateNode` | `yapyak` (published) | no — only `./compiler/internal` | `kind` |
+| anything in `@yapyak/doc-compiler` | private | — | `kind` |
+| anything in `@yapyak/docs` | private | — | `kind` |
+
+The discriminator **type name** (when named) matches the field: field `type` ↔ `*Type` (per the § Forbidden suffixes exception); field `kind` ↔ `*Kind`. The discriminator **values** are kebab-case regardless (next section).
+
+A type has exactly one home package and one public/internal status, so its field name is fixed at declaration — it never changes based on where it is used.
+
+**Lineage rule — a derived form inherits its source's name.** The two-step lookup decides **original** types (a tagged union first introduced as its own concept, or built from untyped input like raw text). A **derived** type — a normalized, resolved, or otherwise remapped form of another *typed* union — **inherits that source union's discriminator field name**, even when the derived form lives behind an `/internal` subpath. The name is decided once, at the data's first typed origin, and **never flips along a transformation chain**.
+
+```ts
+// PersistenceConfig is public → `type`.
+type PersistenceConfig = { type: 'cookie'; ... } | { type: 'url'; ... } | ...;
+
+// NormalizedPersistenceConfig is the normalized form of PersistenceConfig.
+// It lives only in ./config/internal — but it INHERITS `type`. Never `type`→`kind`.
+type NormalizedPersistenceConfig = { type: 'cookie'; ... } | { type: 'url'; ... };
+```
+
+So the only thing that decides `type` vs `kind` for a derived union is **its source**, not its own visibility. A union never changes discriminator name just because a transformed copy of it crossed into internal code.
+
+**Upstream-mirror exception.** A type that merely **declares the shape of an external library's runtime value** — so the code can read that value — mirrors the library's own discriminator field name; the rule above does not apply. yapyak does not own that shape and cannot rename a field the upstream object actually carries.
+
+```ts
+// `parse()` from @astrojs/compiler returns nodes tagged with `type`. The local
+// declaration mirrors that runtime shape — it stays `type`, regardless of visibility.
+type AstroRoot = { type: 'AstroRoot'; children: BodyNode[] };
+const ast = parse(source).ast as AstroRoot;   // the object literally has `.type`
+```
+
+This is the discriminator-level case of [[#platform-api-mirroring]]: mirror the platform/library key verbatim.
+
+This closes the only seam the base rule could create. A public union (`type`) and its internal normalized form both read `type`; a public union built from internal nodes still only ever contains its own `type`-tagged shapes (the internal nodes are a separate union, never interleaved).
+
+**Collision rule — the discriminator wins the canonical name.** When the rule assigns a discriminator a name that already exists as a *secondary* field on the same object, the **discriminator keeps the canonical name** (`type`/`kind`); the secondary field is renamed to `<noun>Kind`/`<noun>Type` describing what it classifies. A union variant never carries two `kind` (or two `type`) fields.
+
+```ts
+// ✗ Collision — Block is private → discriminator `kind`, but a secondary `kind` already exists
+type LinkBlock = { kind: 'link'; kind: 'external' | 'internal'; href: string };
+
+// ✓ Discriminator keeps `kind`; the secondary becomes `linkKind`
+type LinkBlock = { kind: 'link'; linkKind: 'external' | 'internal'; href: string };
+```
+
+Likewise a secondary `type` field next to a `kind` discriminator is renamed (`type: 'cardinal' | 'ordinal'` next to `kind: 'plural'` → `pluralKind`), so the two tag-like fields never sit unprefixed on one object.
 
 ### String-literal values
 

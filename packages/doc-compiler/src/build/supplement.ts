@@ -52,8 +52,8 @@ export async function buildSupplement(
     links.push({
       node: {
         href: page.href,
+        kind: 'link',
         label,
-        type: 'link',
       },
       order,
       slug,
@@ -78,8 +78,8 @@ export async function buildSupplement(
     group: {
       children: links.map((link) => link.node),
       collapsible,
+      kind: 'group',
       label: supplement.label,
-      type: 'group',
       ...(hasIndex && {
         href: indexHref,
       }),

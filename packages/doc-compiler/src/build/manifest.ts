@@ -86,14 +86,14 @@ export type SidebarGroup = {
   defaultOpen?: boolean;
   href?: string;
   label: string;
-  type: 'group';
+  kind: 'group';
 };
 
 export type SidebarLink = {
   badge?: SidebarBadge;
   href: string;
   label: string;
-  type: 'link';
+  kind: 'link';
 };
 
 export async function buildManifest(config: Config): Promise<Manifest> {
@@ -610,8 +610,8 @@ async function buildTypeScriptCollection(
     sidebar.push({
       children,
       collapsible: false,
+      kind: 'group',
       label: groupLabel,
-      type: 'group',
     });
   }
   sidebar.push(...supplementNodes);

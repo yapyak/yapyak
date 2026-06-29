@@ -67,7 +67,7 @@ function collectLink(
   const lines: string[] = [];
   const indent = '  '.repeat(depth);
   for (const node of nodes) {
-    if (node.type === 'link') {
+    if (node.kind === 'link') {
       const page = findPageByHref(pages, node.href);
       const description = page?.description ?? '';
       const url = `${siteUrl}${node.href}`;

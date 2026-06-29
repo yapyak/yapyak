@@ -109,7 +109,7 @@ describe('interpret', () => {
           },
           kind: 'plural',
           name: 'count',
-          type: 'cardinal',
+          pluralKind: 'cardinal',
         },
       ];
       expect(
@@ -149,7 +149,7 @@ describe('interpret', () => {
         },
         kind: 'plural',
         name: 'count',
-        type: 'cardinal',
+        pluralKind: 'cardinal',
       },
     ];
 
@@ -208,7 +208,7 @@ describe('interpret', () => {
           },
           kind: 'plural',
           name: 'count',
-          type: 'cardinal',
+          pluralKind: 'cardinal',
         },
       ];
       expect(
@@ -241,7 +241,7 @@ describe('interpret', () => {
           },
           kind: 'plural',
           name: 'count',
-          type: 'cardinal',
+          pluralKind: 'cardinal',
         },
       ];
       expect(
@@ -280,7 +280,7 @@ describe('interpret', () => {
           },
           kind: 'plural',
           name: 'count',
-          type: 'cardinal',
+          pluralKind: 'cardinal',
         },
       ];
       expect(
@@ -319,7 +319,7 @@ describe('interpret', () => {
           },
           kind: 'plural',
           name: 'count',
-          type: 'cardinal',
+          pluralKind: 'cardinal',
         },
       ];
       expect(
@@ -358,7 +358,7 @@ describe('interpret', () => {
           },
           kind: 'plural',
           name: 'count',
-          type: 'cardinal',
+          pluralKind: 'cardinal',
         },
       ];
       expect(
@@ -385,7 +385,7 @@ describe('interpret', () => {
           },
           kind: 'plural',
           name: 'count',
-          type: 'cardinal',
+          pluralKind: 'cardinal',
         },
       ];
       expect(
@@ -432,7 +432,7 @@ describe('interpret', () => {
           },
           kind: 'plural',
           name: 'count',
-          type: 'cardinal',
+          pluralKind: 'cardinal',
         },
       ];
       expect(
@@ -534,7 +534,7 @@ describe('interpret', () => {
           },
           kind: 'plural',
           name: 'count',
-          type: 'cardinal',
+          pluralKind: 'cardinal',
         },
       ];
       expect(
@@ -881,7 +881,7 @@ describe('interpret', () => {
             },
             kind: 'plural',
             name: 'count',
-            type: 'cardinal',
+            pluralKind: 'cardinal',
           },
         ],
         {
@@ -917,7 +917,7 @@ describe('interpret', () => {
             },
             kind: 'plural',
             name: 'count',
-            type: 'cardinal',
+            pluralKind: 'cardinal',
           },
         ],
         {
@@ -956,7 +956,7 @@ describe('interpret', () => {
             },
             kind: 'plural',
             name: 'count',
-            type: 'cardinal',
+            pluralKind: 'cardinal',
           },
         ],
         {
@@ -993,7 +993,7 @@ describe('interpret', () => {
             },
             kind: 'plural',
             name: 'count',
-            type: 'cardinal',
+            pluralKind: 'cardinal',
           },
         ],
         {},
@@ -1022,7 +1022,7 @@ describe('interpret', () => {
             },
             kind: 'plural',
             name: 'count',
-            type: 'cardinal',
+            pluralKind: 'cardinal',
           },
         ],
         {

@@ -30,7 +30,7 @@ export type Block =
   | TextBlock;
 
 export type TextBlock = {
-  type: 'text';
+  kind: 'text';
   value: string;
 };
 
@@ -38,88 +38,88 @@ export type HeadingBlock = {
   children: Block[];
   id: string;
   level: 1 | 2 | 3 | 4 | 5 | 6;
-  type: 'heading';
+  kind: 'heading';
 };
 
 export type ParagraphBlock = {
   children: Block[];
-  type: 'paragraph';
+  kind: 'paragraph';
 };
 
 export type LinkBlock = {
   children: Block[];
   href: string;
-  kind: 'external' | 'internal';
-  type: 'link';
+  linkKind: 'external' | 'internal';
+  kind: 'link';
 };
 
 export type ImageBlock = {
   alt: string | null;
   src: string;
-  type: 'image';
+  kind: 'image';
 };
 
 export type ListBlock = {
   children: ListItemBlock[];
   ordered: boolean;
   size?: 'lg' | 'md' | 'sm';
-  type: 'list';
+  kind: 'list';
 };
 
 export type ListItemBlock = {
   children: Block[];
-  type: 'list-item';
+  kind: 'list-item';
 };
 
 export type EmphasisBlock = {
   children: Block[];
-  type: 'emphasis';
+  kind: 'emphasis';
 };
 
 export type StrongBlock = {
   children: Block[];
-  type: 'strong';
+  kind: 'strong';
 };
 
 export type StrikethroughBlock = {
   children: Block[];
-  type: 'strikethrough';
+  kind: 'strikethrough';
 };
 
 export type InlineCodeBlock = {
-  type: 'inline-code';
+  kind: 'inline-code';
   value: string;
 };
 
 export type QuoteBlock = {
   children: Block[];
-  type: 'quote';
+  kind: 'quote';
 };
 
 export type DividerBlock = {
-  type: 'divider';
+  kind: 'divider';
 };
 
 export type LineBreakBlock = {
-  type: 'line-break';
+  kind: 'line-break';
 };
 
 export type TableBlock = {
   body: TableRowBlock[];
   head: TableRowBlock | null;
-  type: 'table';
+  kind: 'table';
 };
 
 export type TableRowBlock = {
   children: TableCellBlock[];
-  type: 'table-row';
+  kind: 'table-row';
 };
 
 export type TableCellBlock = {
   children: Block[];
   column?: TableCellColumn;
   header: boolean;
-  type: 'table-cell';
+  kind: 'table-cell';
 };
 
 export type TableCellColumn = 'identifier' | 'literal' | 'prose';
@@ -129,37 +129,37 @@ export type CodeBlock = {
   language: string | null;
   path: string | null;
   source: string;
-  type: 'code-block';
+  kind: 'code-block';
 };
 
 export type CodeExpressionBlock = {
   children: Block[];
-  type: 'code-expression';
+  kind: 'code-expression';
 };
 
 export type SwitchBlock = {
   branches: Record<string, Block[]>;
   fallback?: Block[];
   group: string;
-  type: 'switch';
+  kind: 'switch';
 };
 
 export type OnlyBlock = {
   children: Block[];
   group: string;
-  type: 'only';
+  kind: 'only';
   value: string;
 };
 
 export type PickerBlock = {
   group: string;
-  type: 'picker';
+  kind: 'picker';
 };
 
 export type CalloutBlock = {
   children: Block[];
   title: string | null;
-  type: 'callout';
+  kind: 'callout';
   variant: 'danger' | 'info' | 'tip' | 'warning';
 };
 
@@ -170,7 +170,7 @@ export type OutputLine = {
 
 export type OutputBlock = {
   lines: OutputLine[];
-  type: 'output';
+  kind: 'output';
 };
 
 export type TerminalSegmentKind =
@@ -185,19 +185,19 @@ export type TerminalSegmentKind =
   | 'yellow';
 
 export type TerminalSegment = {
-  kind: TerminalSegmentKind;
-  type: 'terminal-segment';
+  segmentKind: TerminalSegmentKind;
+  kind: 'terminal-segment';
   value: string;
 };
 
 export type TerminalLine = {
   segments: TerminalSegment[];
-  type: 'terminal-line';
+  kind: 'terminal-line';
 };
 
 export type TerminalBlock = {
   lines: TerminalLine[];
-  type: 'terminal';
+  kind: 'terminal';
 };
 
 export type DiagnosticsStatus = 'error' | 'ok';
@@ -211,7 +211,7 @@ export type DiagnosticsLine = {
 export type DiagnosticsBlock = {
   language: string;
   lines: DiagnosticsLine[];
-  type: 'diagnostics';
+  kind: 'diagnostics';
 };
 
 export type ExportKind =
@@ -224,22 +224,22 @@ export type ExportKind =
   | 'variable';
 
 export type EyebrowBlock = {
-  kind: ExportKind | null;
+  exportKind: ExportKind | null;
   module: string | null;
   sourceHref: string | null;
-  type: 'eyebrow';
+  kind: 'eyebrow';
 };
 
 export type KindBadgeBlock = {
-  kind: ExportKind;
-  type: 'kind-badge';
+  exportKind: ExportKind;
+  kind: 'kind-badge';
 };
 
 export type CodeLocationBlock = {
   file: string;
   href: string | null;
   line: number;
-  type: 'code-location';
+  kind: 'code-location';
 };
 
 export function walkBlocks(
@@ -260,14 +260,14 @@ export function walkBlocks(
     }
   }
 
-  if (block.type === 'table') {
+  if (block.kind === 'table') {
     if (block.head !== null) {
       walkBlocks(block.head, visit);
     }
     walkBlocks(block.body, visit);
   }
 
-  if (block.type === 'switch') {
+  if (block.kind === 'switch') {
     for (const branchBlocks of Object.values(block.branches)) {
       walkBlocks(branchBlocks, visit);
     }

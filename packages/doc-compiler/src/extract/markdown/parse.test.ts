@@ -23,11 +23,11 @@ describe('parseMarkdown', () => {
       {
         children: [
           {
-            type: 'text',
+            kind: 'text',
             value: 'Hello',
           },
         ],
-        type: 'paragraph',
+        kind: 'paragraph',
       },
     ]);
   });
@@ -37,13 +37,13 @@ describe('parseMarkdown', () => {
       {
         children: [
           {
-            type: 'text',
+            kind: 'text',
             value: 'Hello World',
           },
         ],
         id: 'hello-world',
+        kind: 'heading',
         level: 2,
-        type: 'heading',
       },
     ]);
   });
@@ -55,16 +55,16 @@ describe('parseMarkdown', () => {
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'Hello',
             },
           ],
           href: 'https://example.com',
-          kind: 'external',
-          type: 'link',
+          kind: 'link',
+          linkKind: 'external',
         },
       ],
-      type: 'paragraph',
+      kind: 'paragraph',
     });
   });
 
@@ -75,16 +75,16 @@ describe('parseMarkdown', () => {
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'Settings',
             },
           ],
           href: '/guide/settings',
-          kind: 'internal',
-          type: 'link',
+          kind: 'link',
+          linkKind: 'internal',
         },
       ],
-      type: 'paragraph',
+      kind: 'paragraph',
     });
   });
 
@@ -93,11 +93,11 @@ describe('parseMarkdown', () => {
     expect(paragraph).toEqual({
       children: [
         {
-          type: 'inline-code',
+          kind: 'inline-code',
           value: 'Settings',
         },
       ],
-      type: 'paragraph',
+      kind: 'paragraph',
     });
   });
 
@@ -108,14 +108,14 @@ describe('parseMarkdown', () => {
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'Hello',
             },
           ],
-          type: 'strong',
+          kind: 'strong',
         },
       ],
-      type: 'paragraph',
+      kind: 'paragraph',
     });
   });
 
@@ -123,11 +123,11 @@ describe('parseMarkdown', () => {
     const source = '```ts\nHello\n```';
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'code-block',
         label: null,
         language: 'ts',
         path: null,
         source: 'Hello\n',
-        type: 'code-block',
       },
     ]);
   });
@@ -136,11 +136,11 @@ describe('parseMarkdown', () => {
     const source = '```ts [Hello]\nWorld\n```';
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'code-block',
         label: 'Hello',
         language: 'ts',
         path: null,
         source: 'World\n',
-        type: 'code-block',
       },
     ]);
   });
@@ -149,11 +149,11 @@ describe('parseMarkdown', () => {
     const source = '```ts [src/a.ts]\nHello\n```';
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'code-block',
         label: null,
         language: 'ts',
         path: 'src/a.ts',
         source: 'Hello\n',
-        type: 'code-block',
       },
     ]);
   });
@@ -162,11 +162,11 @@ describe('parseMarkdown', () => {
     const source = '```[.gitignore]\n.yapyak\n```';
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'code-block',
         label: null,
         language: null,
         path: '.gitignore',
         source: '.yapyak\n',
-        type: 'code-block',
       },
     ]);
   });
@@ -179,15 +179,15 @@ describe('parseMarkdown', () => {
           {
             children: [
               {
-                type: 'text',
+                kind: 'text',
                 value: 'Hello',
               },
             ],
-            type: 'paragraph',
+            kind: 'paragraph',
           },
         ],
+        kind: 'callout',
         title: null,
-        type: 'callout',
         variant: 'info',
       },
     ]);
@@ -204,27 +204,27 @@ describe('parseMarkdown', () => {
           {
             children: [
               {
-                type: 'text',
+                kind: 'text',
                 value: 'Hello',
               },
             ],
-            type: 'paragraph',
+            kind: 'paragraph',
           },
         ],
         vue: [
           {
             children: [
               {
-                type: 'text',
+                kind: 'text',
                 value: 'World',
               },
             ],
-            type: 'paragraph',
+            kind: 'paragraph',
           },
         ],
       },
       group: 'framework',
-      type: 'switch',
+      kind: 'switch',
     });
   });
 
@@ -232,20 +232,20 @@ describe('parseMarkdown', () => {
     const source = "```ts\nt('Save'); // output: 'Spara'\n```";
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'code-block',
         label: null,
         language: 'ts',
         path: null,
         source: "t('Save');",
-        type: 'code-block',
       },
       {
+        kind: 'output',
         lines: [
           {
             locale: null,
             value: "'Spara'",
           },
         ],
-        type: 'output',
       },
     ]);
   });
@@ -261,13 +261,14 @@ describe('parseMarkdown', () => {
     ].join('\n');
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'code-block',
         label: null,
         language: 'ts',
         path: null,
         source: "format.number(199, { style: 'currency', currency: 'EUR' });",
-        type: 'code-block',
       },
       {
+        kind: 'output',
         lines: [
           {
             locale: 'en-US',
@@ -278,7 +279,6 @@ describe('parseMarkdown', () => {
             value: "'199,00 €'",
           },
         ],
-        type: 'output',
       },
     ]);
   });
@@ -288,13 +288,14 @@ describe('parseMarkdown', () => {
       "```ts\nt('Save');\n// output: en: 'Save'\n// output: sv: 'Spara'\n```";
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'code-block',
         label: null,
         language: 'ts',
         path: null,
         source: "t('Save');",
-        type: 'code-block',
       },
       {
+        kind: 'output',
         lines: [
           {
             locale: 'en',
@@ -305,23 +306,23 @@ describe('parseMarkdown', () => {
             value: "'Spara'",
           },
         ],
-        type: 'output',
       },
     ]);
   });
 
   it('extracts a multi-line `// output:` continuation with preserved indentation', () => {
     const source =
-      "```ts\nparseRichText(t('Hello'));\n// output: [\n//   { type: 'text', text: 'Hello' },\n// ]\n```";
+      "```ts\nparseRichText(t('Hello'));\n// output: [\n//   { kind: 'text', text: 'Hello' },\n// ]\n```";
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'code-block',
         label: null,
         language: 'ts',
         path: null,
         source: "parseRichText(t('Hello'));",
-        type: 'code-block',
       },
       {
+        kind: 'output',
         lines: [
           {
             locale: null,
@@ -329,14 +330,13 @@ describe('parseMarkdown', () => {
           },
           {
             locale: null,
-            value: "  { type: 'text', text: 'Hello' },",
+            value: "  { kind: 'text', text: 'Hello' },",
           },
           {
             locale: null,
             value: ']',
           },
         ],
-        type: 'output',
       },
     ]);
   });
@@ -345,6 +345,7 @@ describe('parseMarkdown', () => {
     const source = '{% diagnostics %}\nHello // ok\n{% /diagnostics %}';
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'diagnostics',
         language: 'ts',
         lines: [
           {
@@ -353,7 +354,6 @@ describe('parseMarkdown', () => {
             status: 'ok',
           },
         ],
-        type: 'diagnostics',
       },
     ]);
   });
@@ -363,6 +363,7 @@ describe('parseMarkdown', () => {
       '{% diagnostics %}\nHello // error: World\n{% /diagnostics %}';
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'diagnostics',
         language: 'ts',
         lines: [
           {
@@ -371,7 +372,6 @@ describe('parseMarkdown', () => {
             status: 'error',
           },
         ],
-        type: 'diagnostics',
       },
     ]);
   });
@@ -386,11 +386,11 @@ describe('parseMarkdown', () => {
     expect(result.blocks[0]).toEqual({
       children: [
         {
-          type: 'text',
+          kind: 'text',
           value: 'Hello',
         },
       ],
-      type: 'paragraph',
+      kind: 'paragraph',
     });
   });
 
@@ -404,8 +404,8 @@ describe('parseMarkdown', () => {
     ].join('\n');
     const [block] = parseMarkdown(source).blocks;
 
-    expect(block?.type).toBe('table');
-    if (block?.type !== 'table') {
+    expect(block?.kind).toBe('table');
+    if (block?.kind !== 'table') {
       return;
     }
     expect(block.body[0]?.children[0]?.column).toBe('identifier');
@@ -421,8 +421,8 @@ describe('parseMarkdown', () => {
     ].join('\n');
     const [block] = parseMarkdown(source).blocks;
 
-    expect(block?.type).toBe('table');
-    if (block?.type !== 'table') {
+    expect(block?.kind).toBe('table');
+    if (block?.kind !== 'table') {
       return;
     }
     expect(block.body[0]?.children[0]?.column).toBe('identifier');
@@ -437,8 +437,8 @@ describe('parseMarkdown', () => {
     ].join('\n');
     const [block] = parseMarkdown(source).blocks;
 
-    expect(block?.type).toBe('table');
-    if (block?.type !== 'table') {
+    expect(block?.kind).toBe('table');
+    if (block?.kind !== 'table') {
       return;
     }
     expect(block.body[0]?.children[0]?.column).toBeUndefined();
@@ -448,19 +448,19 @@ describe('parseMarkdown', () => {
     const source = '```terminal\nHello world\n```';
     expect(parseMarkdown(source).blocks).toEqual([
       {
+        kind: 'terminal',
         lines: [
           {
+            kind: 'terminal-line',
             segments: [
               {
-                kind: 'text',
-                type: 'terminal-segment',
+                kind: 'terminal-segment',
+                segmentKind: 'text',
                 value: 'Hello world',
               },
             ],
-            type: 'terminal-line',
           },
         ],
-        type: 'terminal',
       },
     ]);
   });
@@ -476,39 +476,39 @@ describe('parseMarkdown', () => {
     const [block] = parseMarkdown(source).blocks;
 
     expect(block).toEqual({
+      kind: 'terminal',
       lines: [
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: 'Header',
             },
           ],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: '    indented once',
             },
           ],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: '      indented twice',
             },
           ],
-          type: 'terminal-line',
         },
       ],
-      type: 'terminal',
     });
   });
 
@@ -523,33 +523,33 @@ describe('parseMarkdown', () => {
     const [block] = parseMarkdown(source).blocks;
 
     expect(block).toEqual({
+      kind: 'terminal',
       lines: [
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: 'First section',
             },
           ],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: 'Second section',
             },
           ],
-          type: 'terminal-line',
         },
       ],
-      type: 'terminal',
     });
   });
 
@@ -558,34 +558,34 @@ describe('parseMarkdown', () => {
     const [block] = parseMarkdown(source).blocks;
 
     expect(block).toEqual({
+      kind: 'terminal',
       lines: [
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: 'sv  ',
             },
             {
-              kind: 'bar-fill',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'bar-fill',
               value: '████',
             },
             {
-              kind: 'bar-empty',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'bar-empty',
               value: '░░',
             },
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: '  50%',
             },
           ],
-          type: 'terminal-line',
         },
       ],
-      type: 'terminal',
     });
   });
 
@@ -599,69 +599,69 @@ describe('parseMarkdown', () => {
     const [block] = parseMarkdown(source).blocks;
 
     expect(block).toEqual({
+      kind: 'terminal',
       lines: [
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'bold',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'bold',
               value: 'Translation status',
             },
           ],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'dim',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'dim',
               value: 'Locales',
             },
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: ' · ',
             },
             {
-              kind: 'green',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'green',
               value: '✔',
             },
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: ' ok · ',
             },
             {
-              kind: 'red',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'red',
               value: '✗',
             },
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: ' err · ',
             },
             {
-              kind: 'yellow',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'yellow',
               value: '⚠',
             },
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: ' warn · ',
             },
             {
-              kind: 'cyan',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'cyan',
               value: 'arrow',
             },
           ],
-          type: 'terminal-line',
         },
       ],
-      type: 'terminal',
     });
   });
 
@@ -670,24 +670,24 @@ describe('parseMarkdown', () => {
     const [block] = parseMarkdown(source).blocks;
 
     expect(block).toEqual({
+      kind: 'terminal',
       lines: [
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'bar-fill',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'bar-fill',
               value: '████',
             },
             {
-              kind: 'bar-empty',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'bar-empty',
               value: '░░░',
             },
           ],
-          type: 'terminal-line',
         },
       ],
-      type: 'terminal',
     });
   });
 
@@ -696,19 +696,19 @@ describe('parseMarkdown', () => {
     const [block] = parseMarkdown(source).blocks;
 
     expect(block).toEqual({
+      kind: 'terminal',
       lines: [
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: '<x>not a tag</x>',
             },
           ],
-          type: 'terminal-line',
         },
       ],
-      type: 'terminal',
     });
   });
 
@@ -726,63 +726,63 @@ describe('parseMarkdown', () => {
     const [block] = parseMarkdown(source).blocks;
 
     expect(block).toEqual({
+      kind: 'terminal',
       lines: [
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: 'Header',
             },
           ],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: '✗ orphans',
             },
           ],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: '  sv — entry',
             },
           ],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: '  de — entry',
             },
           ],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: 'Run yapyak clean',
             },
           ],
-          type: 'terminal-line',
         },
       ],
-      type: 'terminal',
     });
   });
 
@@ -796,29 +796,29 @@ describe('parseMarkdown', () => {
     const [block] = parseMarkdown(source).blocks;
 
     expect(block).toEqual({
+      kind: 'terminal',
       lines: [
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: 'Header',
             },
           ],
-          type: 'terminal-line',
         },
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: '  child',
             },
           ],
-          type: 'terminal-line',
         },
       ],
-      type: 'terminal',
     });
   });
 
@@ -835,19 +835,19 @@ describe('parseMarkdown', () => {
     const [block] = parseMarkdown(source).blocks;
 
     expect(block).toEqual({
+      kind: 'terminal',
       lines: [
         {
+          kind: 'terminal-line',
           segments: [
             {
-              kind: 'text',
-              type: 'terminal-segment',
+              kind: 'terminal-segment',
+              segmentKind: 'text',
               value: 'Content',
             },
           ],
-          type: 'terminal-line',
         },
       ],
-      type: 'terminal',
     });
   });
 });

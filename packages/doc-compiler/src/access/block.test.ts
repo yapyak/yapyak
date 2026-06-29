@@ -11,12 +11,12 @@ function collect(block: Block | Block[]): Block[] {
 }
 
 const TEXT_HELLO: Block = {
-  type: 'text',
+  kind: 'text',
   value: 'Hello',
 };
 
 const TEXT_WORLD: Block = {
-  type: 'text',
+  kind: 'text',
   value: 'World',
 };
 
@@ -44,7 +44,7 @@ describe('walkBlocks', () => {
       children: [
         TEXT_HELLO,
       ],
-      type: 'paragraph',
+      kind: 'paragraph',
     };
     expect(collect(paragraph)).toEqual([
       paragraph,
@@ -60,10 +60,10 @@ describe('walkBlocks', () => {
             TEXT_HELLO,
           ],
           header: true,
-          type: 'table-cell' as const,
+          kind: 'table-cell' as const,
         },
       ],
-      type: 'table-row' as const,
+      kind: 'table-row' as const,
     };
     const bodyRow = {
       children: [
@@ -72,17 +72,17 @@ describe('walkBlocks', () => {
             TEXT_WORLD,
           ],
           header: false,
-          type: 'table-cell' as const,
+          kind: 'table-cell' as const,
         },
       ],
-      type: 'table-row' as const,
+      kind: 'table-row' as const,
     };
     const table: TableBlock = {
       body: [
         bodyRow,
       ],
       head,
-      type: 'table',
+      kind: 'table',
     };
     const visited = collect(table);
 
@@ -100,17 +100,17 @@ describe('walkBlocks', () => {
             TEXT_HELLO,
           ],
           header: false,
-          type: 'table-cell' as const,
+          kind: 'table-cell' as const,
         },
       ],
-      type: 'table-row' as const,
+      kind: 'table-row' as const,
     };
     const table: TableBlock = {
       body: [
         bodyRow,
       ],
       head: null,
-      type: 'table',
+      kind: 'table',
     };
 
     expect(collect(table)).toContain(bodyRow);
@@ -127,7 +127,7 @@ describe('walkBlocks', () => {
         ],
       },
       group: 'framework',
-      type: 'switch',
+      kind: 'switch',
     };
     const visited = collect(switchBlock);
 

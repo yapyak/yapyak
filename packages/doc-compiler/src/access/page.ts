@@ -85,7 +85,7 @@ export function findAdjacentPages(
 
 function findFirstHref(nodes: SidebarNode[]): string | undefined {
   for (const node of nodes) {
-    if (node.type === 'link') {
+    if (node.kind === 'link') {
       return node.href;
     }
     if (node.href) {
@@ -118,7 +118,7 @@ function findPageByHref(manifest: Manifest, href: string): Page | undefined {
 function flattenLinks(nodes: SidebarNode[], parentLabel?: string): FlatEntry[] {
   const result: FlatEntry[] = [];
   for (const node of nodes) {
-    if (node.type === 'link') {
+    if (node.kind === 'link') {
       result.push({
         link: node,
         parentLabel,
@@ -129,8 +129,8 @@ function flattenLinks(nodes: SidebarNode[], parentLabel?: string): FlatEntry[] {
           link: {
             badge: node.badge,
             href: node.href,
+            kind: 'link',
             label: node.label,
-            type: 'link',
           },
           parentLabel,
         });

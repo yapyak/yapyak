@@ -32,7 +32,7 @@ describe('buildSupplement', () => {
     });
 
     expect(group.label).toBe('Diagnostics');
-    expect(group.type).toBe('group');
+    expect(group.kind).toBe('group');
   });
 
   it('builds a child `link` per markdown file under the supplement root', async () => {
@@ -51,13 +51,13 @@ describe('buildSupplement', () => {
     expect(group.children).toEqual([
       {
         href: '/reference/diagnostics/YAP0001',
+        kind: 'link',
         label: 'Hello',
-        type: 'link',
       },
       {
         href: '/reference/diagnostics/YAP0007',
+        kind: 'link',
         label: 'World',
-        type: 'link',
       },
     ]);
   });
@@ -76,8 +76,8 @@ describe('buildSupplement', () => {
 
     expect(group.children[0]).toEqual({
       href: '/reference/diagnostics/YAP0001',
+      kind: 'link',
       label: 'YAP0001',
-      type: 'link',
     });
   });
 

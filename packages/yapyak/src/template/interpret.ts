@@ -132,7 +132,7 @@ function interpretPlural(
     }
   }
   const category = resolveFormatter(Intl.PluralRules, locale, {
-    type: node.type,
+    type: node.pluralKind,
   }).select(count);
   const branch = node.branches[category] ?? node.branches.other ?? [];
   return interpretNodes(branch, params, locale, formattedCount);

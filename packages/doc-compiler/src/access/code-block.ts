@@ -7,7 +7,7 @@ export function getCodeBlocks(page: Page): CodeBlock[] {
   const blocks: CodeBlock[] = [];
   for (const block of page.blocks) {
     walkBlocks(block, (current) => {
-      if (current.type === 'code-block') {
+      if (current.kind === 'code-block') {
         blocks.push(current);
       }
     });

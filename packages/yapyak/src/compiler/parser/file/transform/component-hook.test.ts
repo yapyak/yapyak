@@ -11,9 +11,9 @@ const COMPONENT_NAME_RX = /^[A-Z]|^use[A-Z]/;
 function buildFragment(source: string): Fragment {
   return {
     code: source,
-    kind: 'script',
     lang: 'ts',
     originalOffset: 0,
+    type: 'script',
   };
 }
 

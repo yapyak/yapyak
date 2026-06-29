@@ -265,8 +265,8 @@ function parseTokenBody(
         bodyEnd: innerEnd,
         bodyStart,
         name,
+        pluralKind: 'cardinal',
         tokenRange,
-        type: 'cardinal',
       },
       context,
     );
@@ -277,8 +277,8 @@ function parseTokenBody(
         bodyEnd: innerEnd,
         bodyStart,
         name,
+        pluralKind: 'ordinal',
         tokenRange,
-        type: 'ordinal',
       },
       context,
     );
@@ -361,7 +361,7 @@ type BuildPluralNodeInput = {
   bodyStart: number;
   name: string;
   tokenRange: TemplateRange;
-  type: 'cardinal' | 'ordinal';
+  pluralKind: 'cardinal' | 'ordinal';
 };
 
 function buildPluralNode(
@@ -395,7 +395,7 @@ function buildPluralNode(
     branches,
     kind: 'plural',
     name: input.name,
-    type: input.type,
+    pluralKind: input.pluralKind,
   };
 }
 

@@ -99,8 +99,8 @@ async function buildLink(absolutePath: string, href: string) {
   return {
     node: {
       href,
+      kind: 'link' as const,
       label,
-      type: 'link' as const,
     },
     order,
   };
@@ -138,8 +138,8 @@ async function buildGroup(
     node: {
       children: items,
       collapsible: false,
+      kind: 'group' as const,
       label,
-      type: 'group' as const,
     },
     order,
   };

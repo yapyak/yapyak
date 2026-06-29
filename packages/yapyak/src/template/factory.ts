@@ -33,14 +33,14 @@ export function count(): CountNode {
 
 export function plural(
   name: string,
-  type: 'cardinal' | 'ordinal',
+  pluralKind: 'cardinal' | 'ordinal',
   branches: Record<string, Template>,
 ): PluralNode {
   return {
     branches: toNullProtoDict(branches),
     kind: 'plural',
     name,
-    type,
+    pluralKind,
   };
 }
 

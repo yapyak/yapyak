@@ -9,7 +9,7 @@ export function getText(page: Page): string {
 }
 
 export function blockToText(block: Block): string {
-  switch (block.type) {
+  switch (block.kind) {
     case 'text':
     case 'inline-code':
       return block.value;
@@ -67,7 +67,7 @@ export function blockToText(block: Block): string {
     case 'image':
       return block.alt ?? '';
     case 'eyebrow':
-      return block.kind ?? block.module ?? '';
+      return block.exportKind ?? block.module ?? '';
     case 'code-location':
       return `${block.file}:${block.line}`;
     case 'divider':

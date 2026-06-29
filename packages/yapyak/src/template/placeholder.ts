@@ -55,7 +55,7 @@ function walkNode(
       registerPlaceholder(
         placeholdersByName,
         node.name,
-        node.type === 'ordinal' ? 'selectordinal' : 'plural',
+        node.pluralKind === 'ordinal' ? 'selectordinal' : 'plural',
       );
       for (const branch of Object.values(node.branches)) {
         walkTemplate(branch, placeholdersByName);

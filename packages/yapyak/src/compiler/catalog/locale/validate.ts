@@ -367,7 +367,7 @@ function walkForBranches(template: Template, out: BranchesByName): void {
       if (!out.has(node.name)) {
         out.set(node.name, {
           branches: new Set(Object.keys(node.branches)),
-          kind: node.type === 'ordinal' ? 'selectordinal' : 'plural',
+          kind: node.pluralKind === 'ordinal' ? 'selectordinal' : 'plural',
         });
       }
       for (const branch of Object.values(node.branches)) {

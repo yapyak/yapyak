@@ -85,7 +85,7 @@ describe('parseTemplate', () => {
         return;
       }
       expect(node.name).toBe('count');
-      expect(node.type).toBe('cardinal');
+      expect(node.pluralKind).toBe('cardinal');
       expect(node.branches.one).toEqual([
         {
           kind: 'literal',
@@ -109,7 +109,7 @@ describe('parseTemplate', () => {
       if (node?.kind !== 'plural') {
         return;
       }
-      expect(node.type).toBe('ordinal');
+      expect(node.pluralKind).toBe('ordinal');
     });
 
     it('parses exact `=N` branches', () => {

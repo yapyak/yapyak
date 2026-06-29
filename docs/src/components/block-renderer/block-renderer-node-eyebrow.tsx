@@ -23,7 +23,7 @@ export function BlockRendererNodeEyebrow(props: BlockRendererNodeEyebrowProps) {
         className,
       ]}
     >
-      {block.kind && <KindBadge variant={block.kind} />}
+      {block.exportKind && <KindBadge variant={block.exportKind} />}
       {block.module && (
         <Box
           as="span"

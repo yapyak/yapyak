@@ -40,8 +40,8 @@ function manifest(collections: Manifest['collections']): Manifest {
 function link(href: string, label: string): SidebarNode {
   return {
     href,
+    kind: 'link',
     label,
-    type: 'link',
   };
 }
 
@@ -161,8 +161,8 @@ describe('getFirstPage', () => {
                   link('/guide/hello', 'Hello'),
                 ],
                 collapsible: false,
+                kind: 'group',
                 label: 'Getting started',
-                type: 'group',
               },
             ],
           },

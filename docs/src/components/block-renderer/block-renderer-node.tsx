@@ -38,7 +38,7 @@ export type BlockRendererNodeProps = {
 export function BlockRendererNode(props: BlockRendererNodeProps) {
   const { block } = props;
 
-  switch (block.type) {
+  switch (block.kind) {
     case 'text':
       return <BlockRendererNodeText block={block} />;
     case 'heading':
@@ -100,7 +100,7 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
         <KindBadge
           appearance="plain"
           size="sm"
-          variant={block.kind}
+          variant={block.exportKind}
         />
       );
     default:

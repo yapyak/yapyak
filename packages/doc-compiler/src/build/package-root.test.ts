@@ -69,14 +69,14 @@ describe('buildPackageRoot', () => {
       children: [
         {
           href: '/reference/yapyak/createTranslator',
+          kind: 'link',
           label: 'createTranslator()',
-          type: 'link',
         },
       ],
       collapsible: false,
       href: '/reference/yapyak',
+      kind: 'group',
       label: 'yapyak',
-      type: 'group',
     });
   });
 
@@ -108,7 +108,7 @@ describe('buildPackageRoot', () => {
       },
     );
 
-    if (result.type !== 'group') {
+    if (result.kind !== 'group') {
       throw new Error('expected a group');
     }
     expect(result.children).toEqual([
@@ -116,14 +116,14 @@ describe('buildPackageRoot', () => {
         children: [
           {
             href: '/reference/yapyak/processor/createProcessor',
+            kind: 'link',
             label: 'createProcessor()',
-            type: 'link',
           },
         ],
         collapsible: true,
         href: '/reference/yapyak/processor',
+        kind: 'group',
         label: 'processor',
-        type: 'group',
       },
     ]);
   });
@@ -149,7 +149,7 @@ describe('buildPackageRoot', () => {
       },
     );
 
-    if (result.type !== 'group') {
+    if (result.kind !== 'group') {
       throw new Error('expected a group');
     }
     expect(result.children).toEqual([
@@ -157,14 +157,14 @@ describe('buildPackageRoot', () => {
         children: [
           {
             href: '/reference/yapyak/processor/createProcessor',
+            kind: 'link',
             label: 'createProcessor()',
-            type: 'link',
           },
         ],
         collapsible: true,
         href: '/reference/yapyak/processor',
+        kind: 'group',
         label: 'processor',
-        type: 'group',
       },
     ]);
   });
@@ -198,14 +198,14 @@ describe('buildPackageRoot', () => {
       },
     );
 
-    if (result.type !== 'group') {
+    if (result.kind !== 'group') {
       throw new Error('expected a group');
     }
     expect(result.children).toEqual([
       {
         href: '/reference/yapyak/Settings',
+        kind: 'link',
         label: 'Settings',
-        type: 'link',
       },
     ]);
   });
@@ -231,7 +231,7 @@ describe('buildPackageRoot', () => {
       },
     );
 
-    if (result.type !== 'group') {
+    if (result.kind !== 'group') {
       throw new Error('expected a group');
     }
     expect(result.children).toEqual([
@@ -240,8 +240,8 @@ describe('buildPackageRoot', () => {
           variant: 'deprecated',
         },
         href: '/reference/yapyak/createTranslator',
+        kind: 'link',
         label: 'createTranslator()',
-        type: 'link',
       },
     ]);
   });

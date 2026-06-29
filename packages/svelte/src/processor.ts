@@ -98,9 +98,9 @@ function fragmentsFromScript(script: AST.Script, source: string): Fragment[] {
   return [
     {
       code: source.slice(start, end),
-      kind: 'script',
       lang: getScriptLang(script),
       originalOffset: start,
+      type: 'script',
     },
   ];
 }
@@ -343,9 +343,9 @@ function fragmentsFromExpression(
   }
   const fragment: Fragment = {
     code,
-    kind: 'template-expression',
     lang: 'ts',
     originalOffset: start,
+    type: 'template-expression',
   };
   if (elision) {
     fragment.elision = elision;

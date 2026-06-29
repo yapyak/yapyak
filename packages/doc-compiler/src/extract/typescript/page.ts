@@ -99,15 +99,15 @@ export function buildSymbolPage(
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: symbol.deprecated,
             },
           ],
-          type: 'paragraph',
+          kind: 'paragraph',
         },
       ],
+      kind: 'callout',
       title: 'Deprecated',
-      type: 'callout',
       variant: 'warning',
     });
   }
@@ -153,7 +153,7 @@ export function buildSymbolPage(
           children: [
             tokensToCodeExpression(resolveTypeTokens(returnTokens)),
           ],
-          type: 'paragraph',
+          kind: 'paragraph',
         });
       }
     }
@@ -179,7 +179,7 @@ export function buildSymbolPage(
         children: [
           tokensToCodeExpression(resolveTypeTokens(symbol.type)),
         ],
-        type: 'paragraph',
+        kind: 'paragraph',
       });
     }
     if (
@@ -206,11 +206,11 @@ export function buildSymbolPage(
     } else if (symbol.callSignatures.length > 0) {
       blocks.push(buildHeading2Block('Call signatures'));
       blocks.push({
+        kind: 'code-block',
         label: null,
         language: 'ts',
         path: null,
         source: symbol.callSignatures.map((sig) => sig.signature).join('\n'),
-        type: 'code-block',
       });
     }
     const interfaceProperties = symbol.members.filter(
@@ -372,7 +372,7 @@ export function buildPropertyMemberPage(
       children: [
         tokensToCodeExpression(resolveTypeTokens(member.type)),
       ],
-      type: 'paragraph',
+      kind: 'paragraph',
     });
   }
 
@@ -450,15 +450,15 @@ export function buildMethodPage(
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: member.deprecated,
             },
           ],
-          type: 'paragraph',
+          kind: 'paragraph',
         },
       ],
+      kind: 'callout',
       title: 'Deprecated',
-      type: 'callout',
       variant: 'warning',
     });
   }
@@ -508,7 +508,7 @@ export function buildMethodPage(
         children: [
           tokensToCodeExpression(resolveTypeTokens(methodReturnTokens)),
         ],
-        type: 'paragraph',
+        kind: 'paragraph',
       });
     }
   }
@@ -590,10 +590,10 @@ export function buildPackageIndexPage(
   const blocks: Block[] = [];
 
   blocks.push({
-    kind: null,
+    exportKind: null,
+    kind: 'eyebrow',
     module: context.packageName,
     sourceHref: input.sourceHref ?? null,
-    type: 'eyebrow',
   });
 
   if (input.subpaths.length > 0) {
@@ -625,13 +625,13 @@ function buildSubpathsTable(
             {
               children: [
                 {
-                  type: 'inline-code',
+                  kind: 'inline-code',
                   value: entry.subpath,
                 },
               ],
               href: entry.href,
-              kind: 'internal',
-              type: 'link',
+              kind: 'link',
+              linkKind: 'internal',
             },
           ],
           'identifier',
@@ -641,13 +641,13 @@ function buildSubpathsTable(
           'prose',
         ),
       ],
-      type: 'table-row',
+      kind: 'table-row',
     })),
     head: buildTableHeaderRow([
       'Subpath',
       'Description',
     ]),
-    type: 'table',
+    kind: 'table',
   };
 }
 
@@ -662,10 +662,10 @@ export function buildModulePage(
   const blocks: Block[] = [];
 
   blocks.push({
-    kind: null,
+    exportKind: null,
+    kind: 'eyebrow',
     module: module.id,
     sourceHref: input.sourceHref ?? null,
-    type: 'eyebrow',
   });
 
   if (module.description) {
@@ -699,7 +699,7 @@ function buildExportsTable(
       'Kind',
       'Description',
     ]),
-    type: 'table',
+    kind: 'table',
   };
 }
 
@@ -720,21 +720,21 @@ function buildExportRow(
           {
             children: [
               {
-                type: 'inline-code',
+                kind: 'inline-code',
                 value: entry.label,
               },
             ],
             href,
-            kind: 'internal',
-            type: 'link',
+            kind: 'link',
+            linkKind: 'internal',
           },
         ],
         'identifier',
       ),
       buildTableBodyCell([
         {
-          kind: entry.kind,
-          type: 'kind-badge',
+          exportKind: entry.kind,
+          kind: 'kind-badge',
         },
       ]),
       buildTableBodyCell(
@@ -742,7 +742,7 @@ function buildExportRow(
         'prose',
       ),
     ],
-    type: 'table-row',
+    kind: 'table-row',
   };
 }
 
@@ -757,21 +757,21 @@ function getFirstSentence(text: string): string {
 
 function buildFunctionSignatureBlock(overloads: ReferenceOverload[]): Block {
   return {
+    kind: 'code-block',
     label: null,
     language: 'ts',
     path: null,
     source: overloads.map((overload) => overload.signature).join('\n'),
-    type: 'code-block',
   };
 }
 
 function buildShapeBlock(shape: string): Block {
   return {
+    kind: 'code-block',
     label: null,
     language: 'ts',
     path: null,
     source: shape.trim(),
-    type: 'code-block',
   };
 }
 
@@ -833,11 +833,11 @@ function normalizeInlineType(text: string): string {
 function buildTypeAliasBlock(symbol: ReferenceTypeAlias): Block {
   const raw = symbol.resolvedType.map((token) => token.text).join('');
   return {
+    kind: 'code-block',
     label: null,
     language: 'ts',
     path: null,
     source: dedentMultilineSignature(raw),
-    type: 'code-block',
   };
 }
 
@@ -942,10 +942,10 @@ function buildEyebrowBlock(
   sourceHref: string | undefined,
 ): Block {
   return {
-    kind,
+    exportKind: kind,
+    kind: 'eyebrow',
     module: moduleId,
     sourceHref: nullify(sourceHref),
-    type: 'eyebrow',
   };
 }
 
@@ -957,11 +957,11 @@ function buildImportSnippet(
   const prefix =
     kind === 'interface' || kind === 'type' ? 'import type' : 'import';
   return {
+    kind: 'code-block',
     label: null,
     language: 'ts',
     path: null,
     source: `${prefix} { ${symbolName} } from '${moduleId}';`,
-    type: 'code-block',
   };
 }
 
@@ -969,13 +969,13 @@ function buildHeading2Block(text: string): Block {
   return {
     children: [
       {
-        type: 'text',
+        kind: 'text',
         value: text,
       },
     ],
     id: slugify(text),
+    kind: 'heading',
     level: 2,
-    type: 'heading',
   };
 }
 
@@ -983,13 +983,13 @@ function buildHeading3Block(text: string, id: string): Block {
   return {
     children: [
       {
-        type: 'text',
+        kind: 'text',
         value: text,
       },
     ],
     id,
+    kind: 'heading',
     level: 3,
-    type: 'heading',
   };
 }
 
@@ -1033,7 +1033,7 @@ function buildMethodSummary(
       {
         children: [
           {
-            type: 'inline-code',
+            kind: 'inline-code',
             value: formatSymbolLabel(
               `${variableName}.${method.name}`,
               classifyMemberDisplayKind(method),
@@ -1041,20 +1041,20 @@ function buildMethodSummary(
           },
         ],
         href,
-        kind: 'internal',
-        type: 'link',
+        kind: 'link',
+        linkKind: 'internal',
       },
     ];
     if (summary !== '') {
       paragraphChildren.push({
-        type: 'text',
+        kind: 'text',
         value: ' — ',
       });
       paragraphChildren.push(...markdownToInline(summary));
     }
     blocks.push({
       children: paragraphChildren,
-      type: 'paragraph',
+      kind: 'paragraph',
     });
   }
   return blocks;
@@ -1088,7 +1088,7 @@ function buildTypeParametersTable(
       'Default',
       'Description',
     ]),
-    type: 'table',
+    kind: 'table',
   };
 }
 
@@ -1100,7 +1100,7 @@ function buildTypeParameterRow(
       buildTableBodyCell(
         [
           {
-            type: 'inline-code',
+            kind: 'inline-code',
             value: typeParameter.name,
           },
         ],
@@ -1110,7 +1110,7 @@ function buildTypeParameterRow(
         typeParameter.constraint === null
           ? [
               {
-                type: 'text',
+                kind: 'text',
                 value: '',
               },
             ]
@@ -1123,7 +1123,7 @@ function buildTypeParameterRow(
         typeParameter.defaultType === null
           ? [
               {
-                type: 'text',
+                kind: 'text',
                 value: '',
               },
             ]
@@ -1134,7 +1134,7 @@ function buildTypeParameterRow(
       ),
       buildTableBodyCell(markdownToInline(typeParameter.description), 'prose'),
     ],
-    type: 'table-row',
+    kind: 'table-row',
   };
 }
 
@@ -1160,7 +1160,7 @@ function buildParametersTable(parameters: ReferenceParameter[]): Block {
             'Description',
           ],
     ),
-    type: 'table',
+    kind: 'table',
   };
 }
 
@@ -1184,7 +1184,7 @@ function buildMembersTable(properties: ReferencePropertyMember[]): Block {
             'Description',
           ],
     ),
-    type: 'table',
+    kind: 'table',
   };
 }
 
@@ -1199,7 +1199,7 @@ function buildParameterRow(
     buildTableBodyCell(
       [
         {
-          type: 'inline-code',
+          kind: 'inline-code',
           value: parameter.name + (parameter.optional ? '?' : ''),
         },
       ],
@@ -1218,7 +1218,7 @@ function buildParameterRow(
         parameter.defaultValue === null
           ? [
               {
-                type: 'text',
+                kind: 'text',
                 value: '',
               },
             ]
@@ -1232,7 +1232,7 @@ function buildParameterRow(
   );
   return {
     children,
-    type: 'table-row',
+    kind: 'table-row',
   };
 }
 
@@ -1244,7 +1244,7 @@ function buildMemberRow(
     buildTableBodyCell(
       [
         {
-          type: 'inline-code',
+          kind: 'inline-code',
           value: member.name + (member.optional ? '?' : ''),
         },
       ],
@@ -1263,7 +1263,7 @@ function buildMemberRow(
         member.defaultValue === null
           ? [
               {
-                type: 'text',
+                kind: 'text',
                 value: '',
               },
             ]
@@ -1277,7 +1277,7 @@ function buildMemberRow(
   );
   return {
     children,
-    type: 'table-row',
+    kind: 'table-row',
   };
 }
 
@@ -1291,7 +1291,7 @@ function buildTableBodyCell(
       column,
     }),
     header: false,
-    type: 'table-cell',
+    kind: 'table-cell',
   };
 }
 
@@ -1300,14 +1300,14 @@ function buildTableHeaderRow(labels: string[]): TableRowBlock {
     children: labels.map((label) => ({
       children: [
         {
-          type: 'text' as const,
+          kind: 'text' as const,
           value: label,
         },
       ],
       header: true,
-      type: 'table-cell' as const,
+      kind: 'table-cell' as const,
     })),
-    type: 'table-row',
+    kind: 'table-row',
   };
 }
 
@@ -1320,24 +1320,24 @@ function tokensToCodeExpression(tokens: TypeToken[]): CodeExpressionBlock {
       children.push({
         children: [
           {
-            type: 'text',
+            kind: 'text',
             value: token.text,
           },
         ],
         href: entry.href,
-        kind: 'internal',
-        type: 'link',
+        kind: 'link',
+        linkKind: 'internal',
       });
     } else {
       children.push({
-        type: 'text',
+        kind: 'text',
         value: token.text,
       });
     }
   }
   return {
     children,
-    type: 'code-expression',
+    kind: 'code-expression',
   };
 }
 
@@ -1367,14 +1367,14 @@ function markdownToInline(source: string): Block[] {
   if (source === '') {
     return [
       {
-        type: 'text',
+        kind: 'text',
         value: '',
       },
     ];
   }
   const parsed = parseMarkdown(source);
   const blocks = resolveSymbolLinkBlocks(parsed.blocks);
-  if (blocks.length === 1 && blocks[0] && blocks[0].type === 'paragraph') {
+  if (blocks.length === 1 && blocks[0] && blocks[0].kind === 'paragraph') {
     return blocks[0].children;
   }
   return blocks;
@@ -1389,7 +1389,7 @@ function appendCallableSuffix(children: Block[], reference: string): Block[] {
     return children;
   }
   const last = children[children.length - 1];
-  if (last === undefined || last.type !== 'text') {
+  if (last === undefined || last.kind !== 'text') {
     return children;
   }
   if (last.value !== reference) {
@@ -1398,14 +1398,14 @@ function appendCallableSuffix(children: Block[], reference: string): Block[] {
   return [
     ...children.slice(0, -1),
     {
-      type: 'text',
+      kind: 'text',
       value: `${last.value}()`,
     },
   ];
 }
 
 function resolveSymbolLinksInBlock(block: Block): Block[] {
-  if (block.type === 'link' && block.href.startsWith(SYMBOL_HREF_PREFIX)) {
+  if (block.kind === 'link' && block.href.startsWith(SYMBOL_HREF_PREFIX)) {
     const reference = block.href.slice(SYMBOL_HREF_PREFIX.length);
     const resolvedChildren = resolveSymbolLinkBlocks(block.children);
     const entry = resolveSymbolLink(
@@ -1423,22 +1423,22 @@ function resolveSymbolLinksInBlock(block: Block): Block[] {
       {
         children: displayChildren,
         href: entry.href,
-        kind: 'internal',
-        type: 'link',
+        kind: 'link',
+        linkKind: 'internal',
       },
     ];
   }
-  if (block.type === 'table') {
+  if (block.kind === 'table') {
     return [
       {
         body: block.body.map(resolveSymbolLinksInTableRow),
         head:
           block.head === null ? null : resolveSymbolLinksInTableRow(block.head),
-        type: 'table',
+        kind: 'table',
       },
     ];
   }
-  if (block.type === 'switch') {
+  if (block.kind === 'switch') {
     const branches: Record<string, Block[]> = {};
     for (const [key, value] of Object.entries(block.branches)) {
       branches[key] = resolveSymbolLinkBlocks(value);
@@ -1447,7 +1447,7 @@ function resolveSymbolLinksInBlock(block: Block): Block[] {
       {
         branches,
         group: block.group,
-        type: 'switch',
+        kind: 'switch',
       },
     ];
   }
@@ -1470,7 +1470,7 @@ function resolveSymbolLinksInTableRow(row: TableRowBlock): TableRowBlock {
       ...cell,
       children: resolveSymbolLinkBlocks(cell.children),
     })),
-    type: 'table-row',
+    kind: 'table-row',
   };
 }
 
@@ -1480,13 +1480,13 @@ function buildExampleBlocks(example: ReferenceExample): Block[] {
     result.push({
       children: [
         {
-          type: 'text',
+          kind: 'text',
           value: example.title,
         },
       ],
       id: slugify(example.title),
+      kind: 'heading',
       level: 3,
-      type: 'heading',
     });
   }
   const diagnostics = tryBuildDiagnosticsFromCode(
@@ -1507,11 +1507,11 @@ function buildExampleBlocks(example: ReferenceExample): Block[] {
     return result;
   }
   result.push({
+    kind: 'code-block',
     label: null,
     language: example.language,
     path: example.path,
     source: example.code,
-    type: 'code-block',
   });
   return result;
 }
@@ -1523,7 +1523,7 @@ function buildThrowsTable(throws: ReferenceThrows[]): Block {
       'Error',
       'When',
     ]),
-    type: 'table',
+    kind: 'table',
   };
 }
 
@@ -1534,13 +1534,13 @@ function buildThrowsRow(entry: ReferenceThrows): TableRowBlock {
         entry.errorClass
           ? [
               {
-                type: 'inline-code',
+                kind: 'inline-code',
                 value: entry.errorClass,
               },
             ]
           : [
               {
-                type: 'text',
+                kind: 'text',
                 value: '',
               },
             ],
@@ -1548,7 +1548,7 @@ function buildThrowsRow(entry: ReferenceThrows): TableRowBlock {
       ),
       buildTableBodyCell(markdownToInline(entry.condition), 'prose'),
     ],
-    type: 'table-row',
+    kind: 'table-row',
   };
 }
 
@@ -1556,11 +1556,11 @@ function buildSeeAlsoList(entries: string[]): Block {
   return {
     children: entries.map((entry) => ({
       children: resolveSeeAlsoEntry(entry),
-      type: 'list-item',
+      kind: 'list-item',
     })),
+    kind: 'list',
     ordered: false,
     size: 'sm',
-    type: 'list',
   };
 }
 
@@ -1785,13 +1785,13 @@ function resolveSeeAlsoEntry(entry: string): Block[] {
       {
         children: [
           {
-            type: 'text',
+            kind: 'text',
             value: label,
           },
         ],
         href: resolved.href,
-        kind: 'internal',
-        type: 'link',
+        kind: 'link',
+        linkKind: 'internal',
       },
     ];
   }

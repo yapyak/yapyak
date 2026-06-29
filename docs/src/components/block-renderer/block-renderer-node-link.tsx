@@ -22,7 +22,7 @@ export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
     />
   ));
 
-  if (block.kind === 'internal') {
+  if (block.linkKind === 'internal') {
     return (
       <Box
         as={Link}

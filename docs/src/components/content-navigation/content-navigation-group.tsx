@@ -19,7 +19,7 @@ export function ContentNavigationGroup(props: ContentNavigationGroupProps) {
 }
 
 export function renderChild(child: SidebarNode, depth: number): ReactNode {
-  if (child.type === 'group') {
+  if (child.kind === 'group') {
     return (
       <ContentNavigationGroup
         depth={depth}
@@ -31,7 +31,7 @@ export function renderChild(child: SidebarNode, depth: number): ReactNode {
 }
 
 export function getKey(node: SidebarNode): string {
-  if (node.type === 'link') {
+  if (node.kind === 'link') {
     return node.href;
   }
   return `group:${node.label}`;
@@ -42,10 +42,10 @@ export function childrenContainPath(
   pathname: string,
 ): boolean {
   for (const node of nodes) {
-    if (node.type === 'link' && pathname.startsWith(node.href)) {
+    if (node.kind === 'link' && pathname.startsWith(node.href)) {
       return true;
     }
-    if (node.type === 'group' && childrenContainPath(node.children, pathname)) {
+    if (node.kind === 'group' && childrenContainPath(node.children, pathname)) {
       return true;
     }
   }

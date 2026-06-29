@@ -19,13 +19,13 @@ function heading(level: HeadingBlock['level'], text: string): HeadingBlock {
   return {
     children: [
       {
-        type: 'text',
+        kind: 'text',
         value: text,
       },
     ],
     id: text.toLowerCase(),
+    kind: 'heading',
     level,
-    type: 'heading',
   };
 }
 
@@ -64,7 +64,7 @@ describe('getHeadings', () => {
         getHeadings(
           page([
             {
-              type: 'divider',
+              kind: 'divider',
             },
           ]),
         ),

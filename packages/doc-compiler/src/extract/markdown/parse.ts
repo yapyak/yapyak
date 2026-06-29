@@ -62,7 +62,7 @@ function toBlocks(node: unknown): Block[] {
   if (typeof node === 'string') {
     return [
       {
-        type: 'text',
+        kind: 'text',
         value: node,
       },
     ];
@@ -70,7 +70,7 @@ function toBlocks(node: unknown): Block[] {
   if (typeof node === 'number' || typeof node === 'boolean') {
     return [
       {
-        type: 'text',
+        kind: 'text',
         value: String(node),
       },
     ];
@@ -92,15 +92,15 @@ function toBlocks(node: unknown): Block[] {
         {
           children,
           id: getStringAttribute(node.attributes.id) ?? '',
+          kind: 'heading',
           level: Number(node.name.slice(1)) as 1 | 2 | 3 | 4 | 5 | 6,
-          type: 'heading',
         },
       ];
     case 'p':
       return [
         {
           children,
-          type: 'paragraph',
+          kind: 'paragraph',
         },
       ];
     case 'a': {
@@ -109,8 +109,8 @@ function toBlocks(node: unknown): Block[] {
         {
           children,
           href,
-          kind: href.startsWith('/') ? 'internal' : 'external',
-          type: 'link',
+          kind: 'link',
+          linkKind: href.startsWith('/') ? 'internal' : 'external',
         },
       ];
     }
@@ -118,8 +118,8 @@ function toBlocks(node: unknown): Block[] {
       return [
         {
           alt: nullify(getStringAttribute(node.attributes.alt)),
+          kind: 'image',
           src: getStringAttribute(node.attributes.src) ?? '',
-          type: 'image',
         },
       ];
     case 'ul':
@@ -127,42 +127,42 @@ function toBlocks(node: unknown): Block[] {
       return [
         {
           children: children.filter(isListItem),
+          kind: 'list',
           ordered: node.name === 'ol',
-          type: 'list',
         },
       ];
     case 'li':
       return [
         {
           children,
-          type: 'list-item',
+          kind: 'list-item',
         },
       ];
     case 'em':
       return [
         {
           children,
-          type: 'emphasis',
+          kind: 'emphasis',
         },
       ];
     case 'strong':
       return [
         {
           children,
-          type: 'strong',
+          kind: 'strong',
         },
       ];
     case 's':
       return [
         {
           children,
-          type: 'strikethrough',
+          kind: 'strikethrough',
         },
       ];
     case 'code':
       return [
         {
-          type: 'inline-code',
+          kind: 'inline-code',
           value: extractText(node.children),
         },
       ];
@@ -170,19 +170,19 @@ function toBlocks(node: unknown): Block[] {
       return [
         {
           children,
-          type: 'quote',
+          kind: 'quote',
         },
       ];
     case 'hr':
       return [
         {
-          type: 'divider',
+          kind: 'divider',
         },
       ];
     case 'br':
       return [
         {
-          type: 'line-break',
+          kind: 'line-break',
         },
       ];
     case 'table':
@@ -196,7 +196,7 @@ function toBlocks(node: unknown): Block[] {
       return [
         {
           children: children.filter(isCell),
-          type: 'table-row',
+          kind: 'table-row',
         },
       ];
     case 'th':
@@ -204,7 +204,7 @@ function toBlocks(node: unknown): Block[] {
         {
           children,
           header: true,
-          type: 'table-cell',
+          kind: 'table-cell',
         },
       ];
     case 'td':
@@ -212,7 +212,7 @@ function toBlocks(node: unknown): Block[] {
         {
           children,
           header: false,
-          type: 'table-cell',
+          kind: 'table-cell',
         },
       ];
     case 'CodeBlock': {
@@ -268,7 +268,7 @@ function toBlocks(node: unknown): Block[] {
             fallback,
           }),
           group,
-          type: 'switch',
+          kind: 'switch',
         },
       ];
     }
@@ -280,7 +280,7 @@ function toBlocks(node: unknown): Block[] {
         {
           children,
           group: getStringAttribute(node.attributes.group) ?? '',
-          type: 'only',
+          kind: 'only',
           value: getStringAttribute(node.attributes.value) ?? '',
         },
       ];
@@ -288,7 +288,7 @@ function toBlocks(node: unknown): Block[] {
       return [
         {
           group: getStringAttribute(node.attributes.group) ?? '',
-          type: 'picker',
+          kind: 'picker',
         },
       ];
     case 'Callout':
@@ -315,12 +315,12 @@ function buildTable(children: unknown[]): TableBlock {
     if (child.name === 'thead') {
       const rows = child.children
         .flatMap(toBlocks)
-        .filter((block): block is TableRowBlock => block.type === 'table-row');
+        .filter((block): block is TableRowBlock => block.kind === 'table-row');
       head = rows[0];
     } else if (child.name === 'tbody') {
       const rows = child.children
         .flatMap(toBlocks)
-        .filter((block): block is TableRowBlock => block.type === 'table-row');
+        .filter((block): block is TableRowBlock => block.kind === 'table-row');
       body.push(...rows);
     }
   }
@@ -328,7 +328,7 @@ function buildTable(children: unknown[]): TableBlock {
   return {
     body: classifyColumns(body),
     head: nullify(head),
-    type: 'table',
+    kind: 'table',
   };
 }
 
@@ -394,32 +394,32 @@ function findSingleInlineCode(blocks: Block[]): string | null {
   if (first === undefined) {
     return null;
   }
-  if (first.type === 'inline-code') {
+  if (first.kind === 'inline-code') {
     return first.value;
   }
-  if (first.type === 'link' && first.children.length === 1) {
+  if (first.kind === 'link' && first.children.length === 1) {
     const inner = first.children[0];
-    if (inner !== undefined && inner.type === 'inline-code') {
+    if (inner !== undefined && inner.kind === 'inline-code') {
       return inner.value;
     }
   }
-  if (first.type === 'paragraph') {
+  if (first.kind === 'paragraph') {
     return findSingleInlineCode(first.children);
   }
   return null;
 }
 
 function isBlank(block: Block): boolean {
-  return block.type === 'text' && block.value.trim() === '';
+  return block.kind === 'text' && block.value.trim() === '';
 }
 
 function buildCodeBlock(attributes: Record<string, unknown>): CodeBlock {
   return {
+    kind: 'code-block',
     label: nullify(getStringAttribute(attributes.label)),
     language: nullify(getStringAttribute(attributes.language)),
     path: nullify(getStringAttribute(attributes.path)),
     source: getStringAttribute(attributes.source) ?? '',
-    type: 'code-block',
   };
 }
 
@@ -438,8 +438,8 @@ function buildCallout(
   }
   return {
     children,
+    kind: 'callout',
     title: nullify(getStringAttribute(attributes.title)),
-    type: 'callout',
     variant,
   };
 }
@@ -523,7 +523,7 @@ function buildDiagnostics(
 }
 
 type TerminalTagKind = Extract<
-  TerminalSegment['kind'],
+  TerminalSegment['segmentKind'],
   'bold' | 'cyan' | 'dim' | 'green' | 'red' | 'yellow'
 >;
 
@@ -546,12 +546,12 @@ function buildTerminalBlock(content: string): TerminalBlock {
   }
   const dedented = dedentTerminalLines(rawLines);
   const lines: TerminalLine[] = dedented.map((raw) => ({
+    kind: 'terminal-line',
     segments: segmentTerminalLine(raw),
-    type: 'terminal-line',
   }));
   return {
+    kind: 'terminal',
     lines,
-    type: 'terminal',
   };
 }
 
@@ -584,11 +584,11 @@ function segmentTerminalLine(line: string): TerminalSegment[] {
     if (buffer.length === 0) {
       return;
     }
-    const kind: TerminalSegment['kind'] =
+    const kind: TerminalSegment['segmentKind'] =
       currentBarKind ?? currentStyle ?? 'text';
     segments.push({
-      kind,
-      type: 'terminal-segment',
+      kind: 'terminal-segment',
+      segmentKind: kind,
       value: buffer,
     });
     buffer = '';
@@ -683,9 +683,9 @@ function buildDiagnosticsBlock(
     });
   }
   return {
+    kind: 'diagnostics',
     language,
     lines,
-    type: 'diagnostics',
   };
 }
 
@@ -729,8 +729,8 @@ function buildOutputBlock(rawLines: string[]): OutputBlock {
     });
   }
   return {
+    kind: 'output',
     lines,
-    type: 'output',
   };
 }
 
@@ -812,11 +812,11 @@ export function tryBuildExampleOutputsFromCode(
       continue;
     }
     blocks.push({
+      kind: 'code-block',
       label: null,
       language,
       path,
       source,
-      type: 'code-block',
     });
   }
   return blocks;
@@ -853,14 +853,14 @@ function extractRawText(node: RawMarkdocNode): string {
 function isListItem(block: Block): block is Extract<
   Block,
   {
-    type: 'list-item';
+    kind: 'list-item';
   }
 > {
-  return block.type === 'list-item';
+  return block.kind === 'list-item';
 }
 
 function isCell(block: Block): block is TableCellBlock {
-  return block.type === 'table-cell';
+  return block.kind === 'table-cell';
 }
 
 function getStringAttribute(value: unknown): string | undefined {

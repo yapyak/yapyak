@@ -16,7 +16,7 @@ export function blocksToMarkdown(blocks: Block[]): string {
 }
 
 function renderBlock(block: Block): string {
-  switch (block.type) {
+  switch (block.kind) {
     case 'text':
       return block.value;
     case 'heading':
@@ -98,7 +98,7 @@ function renderListItemContent(blocks: Block[]): string {
   const parts: string[] = [];
   let inline = '';
   for (const block of blocks) {
-    if (block.type === 'paragraph') {
+    if (block.kind === 'paragraph') {
       if (inline !== '') {
         parts.push(inline);
         inline = '';
@@ -106,7 +106,7 @@ function renderListItemContent(blocks: Block[]): string {
       parts.push(renderInline(block.children));
       continue;
     }
-    if (block.type === 'list') {
+    if (block.kind === 'list') {
       if (inline !== '') {
         parts.push(inline);
         inline = '';

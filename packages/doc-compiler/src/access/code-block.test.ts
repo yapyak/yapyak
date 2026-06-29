@@ -16,19 +16,19 @@ function page(blocks: Page['blocks']): Page {
 }
 
 const HELLO_CODE_BLOCK: CodeBlock = {
+  kind: 'code-block',
   label: null,
   language: 'ts',
   path: null,
   source: 'Hello',
-  type: 'code-block',
 };
 
 const WORLD_CODE_BLOCK: CodeBlock = {
+  kind: 'code-block',
   label: null,
   language: 'ts',
   path: null,
   source: 'World',
-  type: 'code-block',
 };
 
 describe('getCodeBlocks', () => {
@@ -53,11 +53,11 @@ describe('getCodeBlocks', () => {
           {
             children: [
               {
-                type: 'text',
+                kind: 'text',
                 value: 'Hello',
               },
             ],
-            type: 'paragraph',
+            kind: 'paragraph',
           },
         ]),
       ),

@@ -90,7 +90,7 @@ describe('plural', () => {
       },
       kind: 'plural',
       name: 'count',
-      type: 'cardinal',
+      pluralKind: 'cardinal',
     });
   });
 });

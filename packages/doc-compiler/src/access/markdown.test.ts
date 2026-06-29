@@ -8,11 +8,11 @@ function paragraph(text: string): Block {
   return {
     children: [
       {
-        type: 'text',
+        kind: 'text',
         value: text,
       },
     ],
-    type: 'paragraph',
+    kind: 'paragraph',
   };
 }
 
@@ -27,13 +27,13 @@ describe('blocksToMarkdown', () => {
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'Installation',
             },
           ],
           id: 'installation',
+          kind: 'heading',
           level: 1,
-          type: 'heading',
         },
       ]),
     ).toBe('# Installation');
@@ -45,13 +45,13 @@ describe('blocksToMarkdown', () => {
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'H',
             },
           ],
           id: 'h',
+          kind: 'heading',
           level: level as 1 | 2 | 3 | 4 | 5 | 6,
-          type: 'heading',
         },
       ]);
       expect(result).toBe(`${'#'.repeat(level)} H`);
@@ -81,33 +81,33 @@ describe('blocksToMarkdown', () => {
         {
           children: [
             {
-              type: 'text',
+              kind: 'text',
               value: 'mix ',
             },
             {
               children: [
                 {
-                  type: 'text',
+                  kind: 'text',
                   value: 'bold',
                 },
               ],
-              type: 'strong',
+              kind: 'strong',
             },
             {
-              type: 'text',
+              kind: 'text',
               value: ' and ',
             },
             {
               children: [
                 {
-                  type: 'text',
+                  kind: 'text',
                   value: 'em',
                 },
               ],
-              type: 'emphasis',
+              kind: 'emphasis',
             },
           ],
-          type: 'paragraph',
+          kind: 'paragraph',
         },
       ]),
     ).toBe('mix **bold** and *em*');
@@ -119,11 +119,11 @@ describe('blocksToMarkdown', () => {
         {
           children: [
             {
-              type: 'inline-code',
+              kind: 'inline-code',
               value: "t('Save')",
             },
           ],
-          type: 'paragraph',
+          kind: 'paragraph',
         },
       ]),
     ).toBe("`t('Save')`");
@@ -137,16 +137,16 @@ describe('blocksToMarkdown', () => {
             {
               children: [
                 {
-                  type: 'text',
+                  kind: 'text',
                   value: 'Docs',
                 },
               ],
               href: 'https://yapyak.dev',
-              kind: 'external',
-              type: 'link',
+              kind: 'link',
+              linkKind: 'external',
             },
           ],
-          type: 'paragraph',
+          kind: 'paragraph',
         },
       ]),
     ).toBe('[Docs](https://yapyak.dev)');
@@ -161,17 +161,17 @@ describe('blocksToMarkdown', () => {
               children: [
                 paragraph('first'),
               ],
-              type: 'list-item',
+              kind: 'list-item',
             },
             {
               children: [
                 paragraph('second'),
               ],
-              type: 'list-item',
+              kind: 'list-item',
             },
           ],
+          kind: 'list',
           ordered: false,
-          type: 'list',
         },
       ]),
     ).toBe('- first\n- second');
@@ -186,17 +186,17 @@ describe('blocksToMarkdown', () => {
               children: [
                 paragraph('one'),
               ],
-              type: 'list-item',
+              kind: 'list-item',
             },
             {
               children: [
                 paragraph('two'),
               ],
-              type: 'list-item',
+              kind: 'list-item',
             },
           ],
+          kind: 'list',
           ordered: true,
-          type: 'list',
         },
       ]),
     ).toBe('1. one\n2. two');
@@ -206,11 +206,11 @@ describe('blocksToMarkdown', () => {
     expect(
       blocksToMarkdown([
         {
+          kind: 'code-block',
           label: null,
           language: 'ts',
           path: null,
           source: "import { t } from 'yapyak';",
-          type: 'code-block',
         },
       ]),
     ).toBe("```ts\nimport { t } from 'yapyak';\n```");
@@ -220,11 +220,11 @@ describe('blocksToMarkdown', () => {
     expect(
       blocksToMarkdown([
         {
+          kind: 'code-block',
           label: null,
           language: 'ts',
           path: 'vite.config.ts',
           source: 'export default {};',
-          type: 'code-block',
         },
       ]),
     ).toBe('```ts [vite.config.ts]\nexport default {};\n```');
@@ -234,7 +234,7 @@ describe('blocksToMarkdown', () => {
     expect(
       blocksToMarkdown([
         {
-          type: 'divider',
+          kind: 'divider',
         },
       ]),
     ).toBe('---');
@@ -247,7 +247,7 @@ describe('blocksToMarkdown', () => {
           children: [
             paragraph('Be brief.'),
           ],
-          type: 'quote',
+          kind: 'quote',
         },
       ]),
     ).toBe('> Be brief.');
@@ -260,8 +260,8 @@ describe('blocksToMarkdown', () => {
           children: [
             paragraph('Use it.'),
           ],
+          kind: 'callout',
           title: null,
-          type: 'callout',
           variant: 'tip',
         },
       ]),
@@ -278,25 +278,25 @@ describe('blocksToMarkdown', () => {
                 {
                   children: [
                     {
-                      type: 'text',
+                      kind: 'text',
                       value: 'a',
                     },
                   ],
                   header: false,
-                  type: 'table-cell',
+                  kind: 'table-cell',
                 },
                 {
                   children: [
                     {
-                      type: 'text',
+                      kind: 'text',
                       value: 'b',
                     },
                   ],
                   header: false,
-                  type: 'table-cell',
+                  kind: 'table-cell',
                 },
               ],
-              type: 'table-row',
+              kind: 'table-row',
             },
           ],
           head: {
@@ -304,27 +304,27 @@ describe('blocksToMarkdown', () => {
               {
                 children: [
                   {
-                    type: 'text',
+                    kind: 'text',
                     value: 'Col 1',
                   },
                 ],
                 header: true,
-                type: 'table-cell',
+                kind: 'table-cell',
               },
               {
                 children: [
                   {
-                    type: 'text',
+                    kind: 'text',
                     value: 'Col 2',
                   },
                 ],
                 header: true,
-                type: 'table-cell',
+                kind: 'table-cell',
               },
             ],
-            type: 'table-row',
+            kind: 'table-row',
           },
-          type: 'table',
+          kind: 'table',
         },
       ]),
     ).toBe('| Col 1 | Col 2 |\n| --- | --- |\n| a | b |');
@@ -343,7 +343,7 @@ describe('blocksToMarkdown', () => {
             ],
           },
           group: 'framework',
-          type: 'switch',
+          kind: 'switch',
         },
       ]),
     ).toContain('#### framework: react');
@@ -354,7 +354,7 @@ describe('blocksToMarkdown', () => {
       blocksToMarkdown([
         {
           group: 'framework',
-          type: 'picker',
+          kind: 'picker',
         },
         paragraph('Below'),
       ]),
@@ -365,6 +365,7 @@ describe('blocksToMarkdown', () => {
     expect(
       blocksToMarkdown([
         {
+          kind: 'output',
           lines: [
             {
               locale: 'en-US',
@@ -375,7 +376,6 @@ describe('blocksToMarkdown', () => {
               value: "'17 juni 2026'",
             },
           ],
-          type: 'output',
         },
       ]),
     ).toBe("```output\nen-US: 'June 17, 2026'\nsv-SE: '17 juni 2026'\n```");
@@ -385,6 +385,7 @@ describe('blocksToMarkdown', () => {
     expect(
       blocksToMarkdown([
         {
+          kind: 'diagnostics',
           language: 'ts',
           lines: [
             {
@@ -398,7 +399,6 @@ describe('blocksToMarkdown', () => {
               status: 'error',
             },
           ],
-          type: 'diagnostics',
         },
       ]),
     ).toBe(
