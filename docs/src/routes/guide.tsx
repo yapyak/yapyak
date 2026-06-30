@@ -62,6 +62,53 @@ function Component() {
     </>
   );
 
+  const sidebarTrigger = !isSidebarInline && (
+    <DialogTrigger
+      dialog={(dialogProps) => (
+        <Drawer
+          {...dialogProps}
+          direction="start"
+        >
+          {sidebarContent}
+        </Drawer>
+      )}
+    >
+      {(triggerProps) => (
+        <IconButton
+          {...triggerProps}
+          aria-label={t('Open menu')}
+          icon={<SidebarIcon />}
+        >
+          {t('Menu')}
+        </IconButton>
+      )}
+    </DialogTrigger>
+  );
+
+  const outlineTrigger = !isOutlineInline && headings.length > 0 && (
+    <DialogTrigger
+      dialog={(dialogProps) => (
+        <Drawer
+          {...dialogProps}
+          direction="end"
+        >
+          {outlineContent}
+        </Drawer>
+      )}
+    >
+      {(triggerProps) => (
+        <IconButton
+          {...triggerProps}
+          aria-label={t('Open page outline')}
+          icon={<OutlineIcon />}
+          iconPosition="trailing"
+        >
+          {t('Page')}
+        </IconButton>
+      )}
+    </DialogTrigger>
+  );
+
   return (
     <ContentLayout>
       {isSidebarInline && (
@@ -69,53 +116,10 @@ function Component() {
       )}
 
       <ContentLayout.Content>
-        <ContentLayout.ContentHeader>
-          {!isSidebarInline && (
-            <DialogTrigger
-              dialog={(dialogProps) => (
-                <Drawer
-                  {...dialogProps}
-                  direction="start"
-                >
-                  {sidebarContent}
-                </Drawer>
-              )}
-            >
-              {(triggerProps) => (
-                <IconButton
-                  {...triggerProps}
-                  aria-label={t('Open menu')}
-                  icon={<SidebarIcon />}
-                >
-                  {t('Menu')}
-                </IconButton>
-              )}
-            </DialogTrigger>
-          )}
-          {!isOutlineInline && headings.length > 0 && (
-            <DialogTrigger
-              dialog={(dialogProps) => (
-                <Drawer
-                  {...dialogProps}
-                  direction="end"
-                >
-                  {outlineContent}
-                </Drawer>
-              )}
-            >
-              {(triggerProps) => (
-                <IconButton
-                  {...triggerProps}
-                  aria-label={t('Open page outline')}
-                  icon={<OutlineIcon />}
-                  iconPosition="trailing"
-                >
-                  {t('Page')}
-                </IconButton>
-              )}
-            </DialogTrigger>
-          )}
-        </ContentLayout.ContentHeader>
+        <ContentLayout.ContentHeader
+          end={outlineTrigger}
+          start={sidebarTrigger}
+        />
 
         <ContentLayout.ContentContent>
           <Outlet />

@@ -3,15 +3,28 @@
     position: sticky;
     top: var(--header-height);
     z-index: 90;
-    display: flex;
-    gap: var(--spacing-2);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
-    justify-content: space-between;
     width: 100%;
     height: var(--content-header-height);
     padding: 0 var(--spacing-4);
     background-color: var(--canvas);
     border-bottom: var(--px) solid var(--rule);
+
+    .Start,
+    .End {
+      display: flex;
+      align-items: center;
+    }
+
+    .Start {
+      justify-self: start;
+    }
+
+    .End {
+      justify-self: end;
+    }
 
     @media (min-width: 1324px) {
       display: none;
