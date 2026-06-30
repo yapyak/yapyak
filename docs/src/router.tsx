@@ -12,7 +12,6 @@ export function getRouter() {
       block: 'start',
     },
     defaultPreload: 'intent',
-    defaultViewTransition: true,
     routeTree,
     scrollRestoration: true,
     scrollToTopSelectors: [
