@@ -23,13 +23,14 @@
       z-index: 1;
       display: flex;
       flex-direction: column;
+      padding: var(--spacing-4);
       overflow: hidden;
       pointer-events: auto;
       background-color: var(--background-color);
-      border: var(--px) solid var(--ring);
       border-radius: var(--border-radius-md);
-      box-shadow: 0 16px 80px
-        color-mix(in oklab, var(--color-black) 60%, transparent);
+      box-shadow:
+        0 0 0 var(--px) var(--ring-strong),
+        0 16px 80px color-mix(in oklab, var(--color-black) 60%, transparent);
       scale: 1;
       transition: scale 120ms ease-out;
     }
@@ -50,7 +51,7 @@
         overflow: visible;
 
         .ArrowOuter {
-          fill: var(--ring);
+          fill: var(--ring-strong);
         }
 
         .ArrowInner {
