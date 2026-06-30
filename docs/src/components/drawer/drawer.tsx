@@ -27,7 +27,7 @@ export function Drawer(props: DrawerProps): ReactElement {
           onClose={onClose}
         >
           <Backdrop
-            data-animate={animateProps['data-animate']}
+            {...animateProps}
             onClick={onClose}
             opaque={true}
           />
