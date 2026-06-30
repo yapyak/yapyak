@@ -24,6 +24,7 @@ import {
   OptionProvider,
   buildPrepaintScript,
 } from '#components/option-provider';
+import { Root } from '#components/root';
 import { assetUrl } from '#utils/asset';
 
 import { doc } from 'virtual:doc-compiler';
@@ -157,7 +158,9 @@ function ShellComponent(props: ShellComponentProps) {
         />
       </head>
       <body>
-        <OptionProvider>{children}</OptionProvider>
+        <OptionProvider>
+          <Root>{children}</Root>
+        </OptionProvider>
         <Scripts />
       </body>
     </html>

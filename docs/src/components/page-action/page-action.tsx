@@ -1,11 +1,11 @@
 import type { BoxProps } from '#components/box';
 
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
 import { Box } from '#components/box';
 import { ChevronIcon } from '#components/chevron-icon';
-import { Popover } from '#components/popover';
+import { Popover, PopoverTrigger } from '#components/popover';
 
 import styles from './page-action.module.css';
 import { PageActionChatItem } from './page-action-chat-item';
@@ -51,8 +51,6 @@ export function PageAction(props: PageActionProps) {
   const [isCopied, setIsCopied] = useState(false);
   const [origin, setOrigin] = useState<string | undefined>(undefined);
   const timeoutRef = useRef<number | undefined>(undefined);
-  const popoverId = useId();
-  const anchorName = `--anchor${popoverId.replace(/[^a-z0-9-]/gi, '-')}`;
 
   useEffect(() => {
     setOrigin(window.location.origin);
@@ -132,44 +130,48 @@ export function PageAction(props: PageActionProps) {
             {t('Open markdown')}
           </Box>
         </Box>
-        <Box
-          as="button"
-          className={[
-            styles.Item,
-            styles.ChatItem,
-          ]}
-          popoverTarget={popoverId}
-          style={{
-            '--trigger-anchor': anchorName,
-          }}
-          type="button"
+        <PopoverTrigger
+          popover={(popoverProps) => (
+            <Popover
+              {...popoverProps}
+              alignment="end"
+              placement="bottom"
+            >
+              {CHAT_PROVIDERS.map((provider) => (
+                <PageActionChatItem
+                  href={buildChatHref(provider)}
+                  key={provider.value}
+                  label={provider.label}
+                  value={provider.value}
+                />
+              ))}
+            </Popover>
+          )}
         >
-          <Box
-            as="span"
-            className={styles.Text}
-          >
-            {t('Chat')}
-          </Box>
-          <ChevronIcon
-            className={styles.TrailingIcon}
-            direction="right"
-          />
-        </Box>
+          {(triggerProps) => (
+            <Box
+              {...triggerProps}
+              as="button"
+              className={[
+                styles.Item,
+                styles.ChatItem,
+              ]}
+              type="button"
+            >
+              <Box
+                as="span"
+                className={styles.Text}
+              >
+                {t('Chat')}
+              </Box>
+              <ChevronIcon
+                className={styles.TrailingIcon}
+                direction="right"
+              />
+            </Box>
+          )}
+        </PopoverTrigger>
       </Box>
-      <Popover
-        align="end"
-        anchorName={anchorName}
-        id={popoverId}
-      >
-        {CHAT_PROVIDERS.map((provider) => (
-          <PageActionChatItem
-            href={buildChatHref(provider)}
-            key={provider.value}
-            label={provider.label}
-            value={provider.value}
-          />
-        ))}
-      </Popover>
     </Box>
   );
 }

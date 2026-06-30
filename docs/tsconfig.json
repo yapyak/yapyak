@@ -6,6 +6,9 @@
       "#components/*": [
         "./src/components/*"
       ],
+      "#constants": [
+        "./src/constants.ts"
+      ],
       "#docs/*": [
         "./src/docs/*"
       ],
@@ -17,6 +20,9 @@
       ],
       "#styles/*": [
         "./src/styles/*"
+      ],
+      "#systems/*": [
+        "./src/systems/*"
       ],
       "#types": [
         "./src/types.ts"

@@ -1,0 +1,10 @@
+@layer components {
+  .Backdrop {
+    position: fixed;
+    inset: 0;
+
+    &[data-opaque] {
+      background-color: color-mix(in srgb, var(--color-black) 40%, transparent);
+    }
+  }
+}

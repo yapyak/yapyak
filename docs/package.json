@@ -4,10 +4,12 @@
   "type": "module",
   "imports": {
     "#components/*": "./src/components/*",
+    "#constants": "./src/constants.ts",
     "#docs/*": "./src/docs/*",
     "#hooks/*": "./src/hooks/*",
     "#lib/*": "./src/lib/*",
     "#styles/*": "./src/styles/*",
+    "#systems/*": "./src/systems/*",
     "#types": "./src/types.ts",
     "#utils/*": "./src/utils/*"
   },
