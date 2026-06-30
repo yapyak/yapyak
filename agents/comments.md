@@ -1,6 +1,9 @@
 ## Comments
 
-No comments in code. Exceptions: functional comments (linter suppressions, magic comments, compiler hints), documentation comments on public API in library code per [[jsdoc]].
+No comments in code. Two exceptions, nothing else:
+
+- **Functional comments** — exactly: `biome-ignore` (below), the `@ts-nocheck` fixture exception (below), `/* @__PURE__ */`, and bundler magic comments (`/* @vite-ignore */`, `/* webpackChunkName: "..." */`).
+- **Documentation comments** on public API in library code, per [[jsdoc]].
 
 ### `biome-ignore`
 

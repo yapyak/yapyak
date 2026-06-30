@@ -17,12 +17,18 @@ Q2: Type owned by a platform or 3rd-party library?
      parser ASTs: @formatjs/*, typescript.*, @markdoc/*;
      Node: process.X, fs callbacks)
     YES → mirror the upstream type's exact nullability verbatim (`T | null`, `T | undefined`, or `T`). Never substitute.
+          A field that ALSO serializes (Q3) stays `T | null` — Q3 wins; `nullify()` the mirrored value into it.
     NO  → Q3
 
 Q3: Does the value cross a JSON.stringify boundary
     where the key MUST appear in the output?
     (on-disk JSON, persisted state, wire format between packages, RPC payloads)
     YES → `T | null` (and the field is NON-optional: `field: T | null`)
+    NO  → Q3b
+
+Q3b: In-memory value that must distinguish "explicitly cleared" (`null`)
+    from "untouched" (absent)?
+    YES → `field?: T | null` (optional AND nullable — the one 3-state case)
     NO  → Q4
 
 Q4: Runtime typeof-quirk guard?

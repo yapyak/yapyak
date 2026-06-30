@@ -2,7 +2,9 @@
 
 ### Always render `Box` for every HTML element
 
-**Every** `<div>`, `<h1>`, `<p>`, `<span>`, `<button>`, etc. in component code becomes `<Box as="...">`. Not just the root — every element.
+**Every** content element — `<div>`, `<h1>`, `<p>`, `<span>`, `<button>`, etc. — in component code **and route-file markup** becomes `<Box as="...">`. Not just the root — every element.
+
+Raw exceptions: the **document shell** (`<html>`, `<head>`, `<body>`, `<title>`, `<meta>`, `<link>`, `<base>`, `<script>`, in `__root`) and the **SVG leaf** (below).
 
 ```tsx
 // ✓ Right — Box everywhere
@@ -18,9 +20,9 @@
 </Box>
 ```
 
-### SVG is the only exception
+### SVG leaf components
 
-SVG components render raw `<svg>` with `SVGProps<SVGSVGElement>` and spread `{...props}` directly.
+A component whose root *and entire body* is one `<svg>` (a leaf icon — `Icon` in [[element-type]]) renders raw `<svg>` with `SVGProps<SVGSVGElement>` and spreads `{...props}` directly. An `<svg>` nested inside other elements is `<Box as="svg">` like anything else.
 
 ```tsx
 export function ChevronIcon(props: SVGProps<SVGSVGElement>) {

@@ -12,7 +12,7 @@ The npm name communicates stability commitment.
 
 | Tier | Naming | What it signals | Examples |
 |---|---|---|---|
-| **Semi-OSS** | An internal-first `@scope/*` | Source-shipped. No stability promises. Breaking changes without deprecation cycles. | — |
+| **Semi-OSS** | A non-product `@scope/*` (not `@yapyak/*`) | Source-shipped. No stability promises. Breaking changes without deprecation cycles. | — |
 | **Real OSS** | Unscoped (`yapyak`) or dedicated scope (`@yapyak/*`) | Semver discipline. Deprecation cycles. Stable public API. | `yapyak`, `@yapyak/doc-compiler` |
 
 - Never mix tiers under one scope.
@@ -191,7 +191,7 @@ Adding a public subpath → add to BOTH `entry` AND `exports` in the same change
 
 `tsdown` auto-externalizes anything in `dependencies` and `peerDependencies`. Use `neverBundle` only when:
 
-- **Frameworks the consumer owns** — `react`, `vue`, `svelte`, `@sveltejs/kit`, `vite`. Bundling a second copy breaks singletons.
+- **Single-instance runtimes** — a dependency whose runtime relies on one shared instance: frameworks the consumer owns (`react`, `vue`, `svelte`, `@sveltejs/kit`, `vite`), React-context owners, plugin registries. Bundling a second copy breaks the singleton.
 - **Sibling workspace runtime imports** — `yapyak/runtime` replaced at consumer build time.
 - **Vendor compilers pulled in only for types/AST** — `@vue/compiler-sfc`.
 
@@ -210,4 +210,4 @@ Every `packages/*` README has a blockquote one line under the title:
 ```
 
 - `Internal` added when `"private": true` or package is workspace-consumed only.
-- Omit the runtime classifier iff the package's `dist` ships no `.js` with runtime logic (every export is a type, or the only `.js` is a passthrough `defineConfig`). Otherwise classify Node-only / Browser-only / Universal by the `engines`/`browser` fields.
+- Omit the runtime classifier iff the package's `dist` ships no `.js` with runtime logic (every export is a type, or the only `.js` is a passthrough `defineConfig`). Otherwise classify by the `engines` / `browser` fields: `browser` set → Browser-only; `engines.node` only → Node-only; neither field → Universal.

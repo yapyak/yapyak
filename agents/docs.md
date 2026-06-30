@@ -352,7 +352,7 @@ When the *call shape itself* differs per framework — `<RichText>` with render-
 
 **Framework-agnostic API — use a single React example.**
 
-When the call shape is identical JS that happens to sit inside a component (`t()`, `t.as()`, `t.in()`, `format.number()`, `parseRichText()`), the framework is just wrapping context for the call. A reader on Vue or Svelte understands the React snippet immediately because the only difference is the surrounding JSX. Repeating the same example three times dilutes the lesson and falsely signals "this is framework-specific."
+When the call shape is identical JS that happens to sit inside a component (`t()`, `t.as()`, `t.in()`, `format.number()`, `parseRichText()`), the framework is just wrapping context for the call. The example body is the bare API call plus standard JS — no framework hook, rune, slot, or lifecycle — so a Vue or Svelte reader applies it directly. Repeating the same example three times dilutes the lesson and falsely signals "this is framework-specific."
 
 Default to React for the single example. Never add an 'identical in Vue/Svelte' note — the framework-agnostic-API rule already implies it.
 
@@ -424,11 +424,11 @@ import { t } from 'yapyak';
 
 **Astro is never in the framework switch for API examples.** yapyak has no Astro component bindings — only the SSR adapter. Astro users call the same JS APIs and read whichever single-framework example we show. Cover Astro on its adapter page where it actually matters.
 
-The trigger is **renders-as-a-component**. If the snippet would compile into a UI element a user sees, all three variants are required.
+The trigger is **call-shape divergence** (§ above): show all three when a framework hook, rune, slot, or render-prop appears in the body, or the import path differs across React/Vue/Svelte. Rendering as a component is a sufficient sign of divergence, not a necessary one — a value-returning hook like `useLocale()` still diverges.
 
 #### Page-type templates
 
-yapyak's three canonical page skeletons. Mirror them exactly.
+yapyak's three canonical page skeletons. Mirror them exactly. Pick by the page: a per-section `index.md` → Concept introduction; a page documenting one provider / adapter / implementation → Detail; any other page → Topic.
 
 **Concept introduction page** (the per-section `index.md`, e.g. `guide/translating/index.md`, `guide/formatting/index.md`, `guide/switching/index.md`):
 

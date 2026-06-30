@@ -157,7 +157,7 @@ type NormalizerOptions = {
 
 If you would otherwise write a bare `?? true` default for a flag, remove the flag and make the behavior unconditional instead. A boolean flag's default is either `false` or a derived expression (see below) — never a bare `?? true`.
 
-**Exception — derived default.** A boolean MAY default to an expression computed from another already-resolved config field. Mechanical test on the `??` fallback: `false` is the norm; a bare `true` is forbidden; an expression referencing 1+ other config fields is allowed — a context-derived default (sometimes `true`, sometimes `false` by context), not a blanket opt-out.
+**Exception — derived default.** A boolean MAY default to an expression computed from another already-resolved config field. Mechanical test on the `??` fallback: `false` is the norm; a bare `true` is forbidden; an expression referencing 1+ already-resolved fields of the same options object is allowed — a context-derived default (sometimes `true`, sometimes `false` by context), not a blanket opt-out. An external probe (`?? isCI()`, `?? import.meta.env.PROD`) is forbidden — resolve it into a named field first.
 
 ```ts
 // ✓ — default derived from another field, not a literal
@@ -196,6 +196,8 @@ Required fields MAY be bundled when one holds:
 
 Neither holds → bundling is forbidden. Required fields go positional, optional fields go in a `*Options` object.
 
+When only a subset of required fields meets Forced/Shared, bundle that subset; the remaining required fields stay positional in conceptual order.
+
 | Function | Required positional if split | Consumers | Bundle? |
 | --- | --- | --- | --- |
 | `migrateLocales` | 5+ | 1 | ✓ Forced |
@@ -223,6 +225,7 @@ For factory-by-name (function named after domain object) or `create*` factory:
 
 - No required fields → `*Options` (paired with `options`).
 - Any required field → `*Input` (paired with `input`).
+- A bundled `*Input` whose fields include a recipe-qualifying cluster (2+ fields shared by 2+ functions) splits per § Refactor recipe; otherwise it stays one `*Input`.
 
 ```ts
 // ✓ Factory-by-name

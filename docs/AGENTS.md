@@ -9,6 +9,7 @@ React app on TanStack Start, CSS Modules. Extends root [AGENTS.md](../AGENTS.md)
 - [../agents/react.md](../agents/react.md) — components, hooks, refs, JSX rules
 - [../agents/box.md](../agents/box.md) — `Box` primitive: render `Box` for every element, `BoxProps<T>`, `data-*` passthrough, `className` forwarding
 - [../agents/css.md](../agents/css.md) — design tokens, CSS Modules class-naming, DOM-mirrored nesting, cascade/units/layout
+- [../agents/element-type.md](../agents/element-type.md) — the closed ElementType vocabulary ending class names (`[Role]ElementType`) and component names (`[Resource]ElementType`)
 - [../agents/tanstack-start.md](../agents/tanstack-start.md) — route files, route-scoped hooks, loaders, `.server.ts`, server functions
 
 ### App-code TypeScript

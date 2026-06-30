@@ -10,6 +10,8 @@ Classify the package itself before applying the symbol-level model.
 | **Internal** | Transitively installed via other packages. Consumed by sibling packages. | No | No | No — the package itself is the boundary | No |
 | **Workspace-private** | `"private": true`. Not published. | No | No | No | No |
 
+Classify by `package.json`: `"private": true` → Workspace-private (even when sibling packages consume it); else published but not end-user-installed → Internal; else Public.
+
 An internal package does not need a `/internal` subpath — the whole package IS the boundary. An internal package MUST NOT declare a `/internal` subpath. If one exists, remove it.
 
 **JSDoc exception for re-exported types:** if an internal package defines a type that a public package re-exports to end users (e.g. `YapyakConfig` from `@yapyak/config` re-exported by `@yapyak/vite/config`), JSDoc on that type stays.
@@ -25,11 +27,11 @@ An internal package does not need a `/internal` subpath — the whole package IS
 
 ### Default to NOT exposing
 
-Adding a public export later is non-breaking; removing one is breaking. Default private. Promote to public only when a Consumption / Annotation / Extension example exists (see the test below).
+Adding a public export later is non-breaking; removing one is breaking. Default private. Promote to public only when a Consumption / Annotation / Extension / Reference example exists (see the test below).
 
 ### The "would a realistic user type this name" test
 
-A symbol is public iff a concrete example exists in at least one of these three categories: Consumption, Annotation, Extension. No other example justifies promotion.
+A symbol is public iff a concrete example exists in at least one of these four categories: Consumption, Annotation, Extension, Reference. No other example justifies promotion.
 
 A symbol is legitimately public if it serves at least one:
 
@@ -38,6 +40,7 @@ A symbol is legitimately public if it serves at least one:
 | **Consumption** | User invokes it | `createTranslator`, `t` |
 | **Annotation** | User references the name as a type | `const opts: CreateClientOptions`, `throw new ConfigurationError` |
 | **Extension** | User subclasses or implements against it | `class MyContract extends BaseContract` |
+| **Reference** | User passes the value by name (preset, sentinel, default) | `[...defaultProcessors]`, `retry: DEFAULT_RETRY` |
 
 ### Cross-package semi-public — the `/internal` subpath
 
@@ -87,10 +90,12 @@ The domain barrel is intrinsically private — not listed in `package.json expor
 
 ### Decision flow
 
-1. Used only in one file → keep unexported.
-2. Used across files in this package → export from domain barrel.
-3. Used across packages, not by external users → export from `src/internal.ts` (reached via the `./internal` subpath).
-4. Used by external users → export from `src/index.ts` (the `.` entry).
+Classify by the widest consumer. First match wins.
+
+1. An external user → `src/index.ts` (the `.` entry).
+2. A sibling package, not external → `src/internal.ts` (reached via the `./internal` subpath).
+3. 2+ files in this package only → export from the domain barrel.
+4. One file only → keep unexported.
 
 Wiring a new subpath's `package.json exports` + `tsdown` `entry`: see [[packages]].
 
@@ -125,6 +130,7 @@ Transitive closure applies to types the user names at the API boundary. Helpers 
 | Parameter type | ✓ | `function f(x: Foo)` → `Foo` exported |
 | Return type | ✓ | `function f(): Bar` → `Bar` exported |
 | Property type on exported type | ✓ | `type Opts = { x: Persist }` → `Persist` exported |
+| Inferred or explicit type of an exported default value | ✓ | `function f(x = DEFAULT)` → `typeof DEFAULT` exported |
 | Helper in a type alias body | ✗ | `type TParams<T> = ... ExtractTParams<T> ...` → internal |
 | Conditional/mapped type computation | ✗ | `T extends ... ? Helper<T> : ...` → internal |
 | Post-processed internal shape | ✗ | `NormalizedOptions` |

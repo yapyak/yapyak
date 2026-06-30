@@ -151,16 +151,18 @@ Apply the decision tree top-down. First match wins.
 | Name `find*` / `lookup*`, returns `T \| undefined` | Finder | "Finds [what] by [key]. Returns `undefined` if [condition]." |
 | Name `parse*` | Parser | "Parses [input] into [output]." |
 | Name `validate*` / `check*`, throws on failure | Validator | "Validates [target]. Throws if [condition]." |
+| Name `validate*` / `check*`, returns `boolean` | Predicate | "Whether [subject] [predicate]." |
 | Name `to*` / `from*`, pure transform | Converter | "Converts [from] to [to]." |
-| Returns `Promise<T>` | Async | (apply base category) + "Resolves to [value]." |
-| Side effects, returns `void` or mutated value | Mutator | "[Verb] [target]." |
+| Side effects, returns `void` or mutated value, name not in the Action verb list | Mutator | "[Verb] [target]." |
 | Name starts with an imperative verb from the Action verb list | Action | "[Verbs-3p] [target]." |
 | Name `with*`, takes a value and a `fn` callback | Scope binder | "Runs `fn` with [value] bound to [scope]." |
 | Const named `middleware` / `handle` / `integration` with host-framework type | Host integration | "[Capitalized symbol-name] for [package identifier]. Provides yapyak's per-request locale context." |
 | Const exported as a framework-specific reactive primitive | Reactive binding | "Reactive [identifier] [binding-kind]." |
 | Otherwise (returns derived value, noun-named) | Getter | "The [thing]." |
 
-`provider identifier` = an Identifier in the [Package identifier and role table](#package-identifier-and-role-table) whose role is `translator`.
+**Async is a modifier, not a category.** Pick the base category first; if the return type is `Promise<T>`, append " Resolves to [value]." to the formula.
+
+`provider identifier` = a function whose name, after an optional `create`/`make` prefix, is an Identifier in the [Package identifier and role table](#package-identifier-and-role-table) with role `translator` — so `anthropic` and `createAnthropic` both match.
 
 `host-framework type` = a type imported from a framework in `neverBundle` (`react` / `vue` / `svelte` / `@sveltejs/kit` / `vite`) or a `peerDependencies` framework.
 
@@ -191,7 +193,7 @@ The `[identifier]` slot is the symbol name verbatim.
 
 ### Type / interface category formulas
 
-Suffix-driven, matches the type suffix vocabulary in [[naming]].
+Suffix-driven. Listed suffixes use the formula below; any named suffix not listed falls to the § deterministic first sentence.
 
 | Suffix | Formula |
 |---|---|
@@ -205,7 +207,6 @@ Suffix-driven, matches the type suffix vocabulary in [[naming]].
 | `*Entry` | "A single [item] in [container]." |
 | `*Item` | "An item in [collection]." |
 | `*State` | "State of [thing]." |
-| `*Context` | "[Type] context for [purpose]." |
 | `*Error` | "Error thrown when [condition]." |
 | `*Tag` / `*Kind` | "Discriminator for [union type]." |
 | `*Props` | "Props for {@link Component}." |
@@ -664,7 +665,7 @@ When the same conceptual symbol exists in multiple framework packages (`RichText
   - non-trivial flow = the factory reads 1+ option field to branch, OR returns an object with 2+ methods (trivial = a single `new`/closure, no branching).
   - type-guard non-trivial = narrows to a union member or a generic (trivial = narrows a primitive).
   - builder = a Factory whose returned instance exposes chainable methods; callback-as-arg = a function whose signature includes a callback/`fn` parameter.
-- **Optional for:** predicates, simple converters, getters, components with obvious props.
+- **Optional for:** every category not listed as Required — predicates, converters, getters, components, parsers, finders, validators, mutators, actions, and trivial factories / type-guards.
 - **Code must be runnable.**
 - **No trailing commas.** Mechanical: if the next non-whitespace character is `}`, `]`, or `)`, the preceding comma is trailing → remove it. Applies to every example block.
 - **Always include imports.** Every `@example` ships the necessary `import` statements.

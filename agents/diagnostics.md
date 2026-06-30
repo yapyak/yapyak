@@ -49,9 +49,9 @@ export function docsUrl(code: YapCode): string {
 Sequential. Append-only. Never reused.
 
 1. **Allocating a new code:** find the highest existing number in `codes.ts`, add one, append a new constant. Never insert between existing entries.
-2. **Retiring a code:** mark the constant `[RETIRED]` in its line comment and keep it in the file. **Never delete. Never reuse the number.**
+2. **Retiring a code:** mark the constant with a line comment `// YAPnnnn [RETIRED vX.Y]: superseded by <codes>` and keep it in the file. **Never delete. Never reuse the number.**
 3. **Re-purposing an existing code is forbidden.** If meaning changes, retire the old one and allocate a new one.
-4. **A code describes exactly one state.** If two situations need different diagnostic context, allocate two codes. Two situations are the same state iff they share an identical fix sentence AND an identical observation template (placeholders aside). If either differs, allocate separate codes.
+4. **A code describes exactly one state.** If two situations need different diagnostic context, allocate two codes. A compile-time diagnostic and a runtime `warn()` are never the same state — always separate codes. Otherwise two situations are the same state iff they share an identical fix sentence AND an identical observation template (placeholders aside). If either differs, allocate separate codes.
 
 ```ts
 // ✓ Right — sequential allocation, single-purpose
@@ -66,7 +66,7 @@ export const YAP = {
 export const YAP = {
   PARSER_NO_SOURCE: 'YAP0001',
   PARSER_TEMPLATE_LITERAL: 'YAP0002',
-  // YAP0003 — [RETIRED v2.0] superseded by YAP0042 + YAP0043
+  // YAP0003 [RETIRED v2.0]: superseded by YAP0042, YAP0043
   PARSER_SPREAD_PARAMS: 'YAP0004',
 } as const;
 
@@ -263,11 +263,17 @@ summary: [One-line present-tense, no period, max 80 chars]
 ---
 ```
 
-**Body — pick one shape based on the diagnostic's category:**
+`severity` is `error` for a compile-time diagnostic (emitted during parse/compile), `warning` for a runtime `warn()` emission.
+
+**Body — pick one shape by subsystem (first match wins):**
+
+- `PARSER` / `CONTEXT` / `RICHTEXT` → Shape A
+- `CATALOG` / `PLACEHOLDER` → Shape B
+- `RUNTIME` / `PERSISTENCE` / `LOCALE` / `TRANSLATE` / `FORMAT` → Shape C
 
 #### Shape A: Source-code violations
 
-For diagnostics triggered by user code in `t()` calls or source strings (parser, placeholder, context, richtext).
+For diagnostics triggered by user code in `t()` calls or source strings (parser, context, richtext).
 
 ````md
 [One-sentence intro stating when this fires.]

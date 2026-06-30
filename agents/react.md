@@ -98,7 +98,7 @@ The plural is encoded in the element type (`List`, `Stack`, `Section`, `Grid`), 
 
 A component's name ends with the name of its root JSX element: `ChevronIcon` renders `<Icon>`, `ReferenceRow` renders `<tr>`, `OptionPickList` renders `<ul>`.
 
-**Exception:** components whose root is `*Base`, `Box`, or `Icon` carry no element-derived suffix. An `Icon`-based component takes the icon's own name (`ChevronIcon` → `Chevron`, `CopyIcon` → `Copy`) — mechanical. A `Box`/`*Base`-based one: the coined noun MUST be an ElementType from [[css]]'s group/layout vocabulary, selected by DOM shape (column→`Stack`, row→`Row`, grid→`Grid`, landmark→`Section`).
+**Exception:** components whose root is `*Base`, `Box`, or `Icon` carry no element-derived suffix. An `Icon`-based component takes the icon's own name (`ChevronIcon` → `Chevron`, `CopyIcon` → `Copy`) — mechanical. A `Box`/`*Base`-based one: the coined noun MUST be an ElementType from [[element-type]]'s layout group, selected by DOM shape (column→`Stack`, row→`Row`, grid→`Grid`, landmark→`Section`, no layout→`Wrapper`).
 
 ### Component architecture
 
@@ -120,10 +120,10 @@ export const Route = createFileRoute('...')({
 function Component() {
   const { guides } = Route.useLoaderData();
   return (
-    <div>
-      <h1>Guides</h1>
+    <Box>
+      <Box as="h1">Guides</Box>
       <GuideNav guides={guides} />
-    </div>
+    </Box>
   );
 }
 ```
@@ -173,64 +173,20 @@ No triggers fire → inline.
 
 #### Step 2: Classify
 
+First match wins.
+
 | Condition | Classification |
 | --- | --- |
-| T1 + master-detail / workspace shell | LAYOUT |
 | T1 + instance shell | DETAIL |
+| T1 (any other route shell) | LAYOUT |
 | T6 (structural slot, no domain logic) | COMPOUND SLOT |
 | Any other trigger | DOMAIN COMPONENT |
 
 #### Step 3: Pick suffix from closed vocabulary
 
-A component's name IS its root CSS class.
+A component's name IS its root CSS class — its suffix is an ElementType from [[element-type]]: the type of its root element, or a composite type it implements (`Layout`, `Detail`, `Summary`, `Card`, `Table`, `PickList`, `ActionsBar`, `SearchInput`, `EmptyMessage`).
 
-**Element vocabulary (DOMAIN COMPONENTS):**
-
-```
-ROUTE SHELLS (wrap <Outlet />)
-  Layout              list-shell or workspace shell
-  Detail              instance shell
-
-INSTANCE VIEWS
-  Summary             <dl> of fields (read-only)
-  Card                bordered preview block
-
-COLLECTION VIEWS
-  Table               <table>
-  PickList            <ul> of selectable rows
-  List                generic <ul>
-  Row                 single row
-
-CHROME
-  Navigation          set of route-links (tabs, side-nav)
-  ActionsBar          generic actions strip
-
-ATOMIC
-  Badge               status pill
-  SearchInput         wrapped search input
-  Input               wrapped generic input
-  EmptyMessage        empty state
-```
-
-**Slot vocabulary (COMPOUND SLOTS):**
-
-```
-TOP-LEVEL Layout/Detail SLOTS
-  Header              top region (title, actions)
-  Bar                 horizontal slot below Header
-  Content             main area
-  Footer              bottom region
-  Sidebar             side region
-  Main                outermost page layout only
-
-SIDEBAR SUB-SLOTS
-  Header              search/filter
-  Content             scroll area
-  Footer              pagination
-
-HEADER SUB-SLOTS
-  Title               title cluster (h1 + optional badge)
-```
+A compound slot's suffix is its region's element-type — a landmark (`Header` / `Content` / `Footer` / `Sidebar` / `Main`), `Bar`, or `Title`.
 
 #### Step 4: Compose
 
@@ -245,7 +201,7 @@ A sub-component is `Parent.Slot` iff it is a pure layout shell:
 - No hardcoded `to=` route links
 - No hooks
 - No domain switch/if
-- No domain data as prop
+- No domain data as prop, beyond a single field rendered inline
 
 If any are present → standalone `ParentName` component (own folder).
 
@@ -302,7 +258,7 @@ If rendering `*Item` outside its `*List` happens — the abstraction is wrong.
 
 ### `.map` callbacks as their own component
 
-A `.map` callback that produces JSX gets extracted into its own component. No size threshold. Named after what it renders (typically a `*Item` paired with the parent `*List`).
+A `.map` callback that produces JSX gets extracted into its own component. No size threshold. Named after its root element-type per [[element-type]] — `*Item` when the row is an `<li>` in a `*List`, otherwise the root's own type (a card row is `*Card`).
 
 ```tsx
 // ✓

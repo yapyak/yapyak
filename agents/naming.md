@@ -10,13 +10,13 @@ Every rule here is a deterministic operation on an export or type name. The only
 
 ### Mechanical filename derivation
 
-Filename derives from the primary export through a deterministic algorithm. No closed list of verbs to maintain.
+Filename derives from the primary export through a deterministic algorithm. No closed list of verbs to maintain. The **primary export** is the one the file's concept is named for; with 2+ co-equal exports it is the public entry point the others support (per [[modules]] § Coherent module), and if still tied, the first in source order.
 
 **Two keep-the-name exceptions:** `utils/` (whole name, step 0) and `use*` hooks (keep the `use` prefix, step 2). Everything else drops the leading verb.
 
 ```
 ALGORITHM:
-  0. If the file is in `utils/`, filename = kebab-case(primary export name) verbatim — skip steps 2–6 (no verb-drop, no singularize). A concept name is equally valid; see § `utils/` and `helpers/`.
+  0. If the file is in `utils/`, filename = kebab-case(primary export name) verbatim — skip steps 2–6 (no verb-drop, no singularize). A concept name applies only when 2+ functions share the file; see § `utils/` and `helpers/`.
   1. Kebab-case the primary export name.
   2. Drop the FIRST segment (the verb — always, no list lookup). Exception: a leading `use` is kept (React hooks: `useLocale` → `use-locale.ts`).
   3. While first remaining segment is in PREPOSITION list, drop it.
@@ -48,12 +48,13 @@ HOST-INTEGRATION FILENAMES (4):
 
 Step 4 drops a leading segment **iff it is literally in the MODIFIER closed list** — never by judging meaning. (`internal` is not in the list → kept; `first` is → dropped.)
 
-**Singularize rules:**
+**Singularize rules** — apply top-down, first match wins:
 
-- Trailing `s` → drop (`pages` → `page`). Skip singularization when the trailing segment ends in `ss`, or is in this closed exception list: `status`, `address`, `process`, `bias`, `lens`, `series`, `news`, `props`.
-- Trailing `ies` → `y` (`entries` → `entry`)
-- Trailing `es` after sibilants → drop `es` only when the stem ends in `s`, `x`, `z`, `ch`, or `sh`; otherwise apply the trailing-`s` rule (`boxes` → `box`)
-- Irregulars per the closed list
+- Irregular plural in the closed list → its singular.
+- Trailing `ies` → `y` (`entries` → `entry`).
+- Trailing `es` after a sibilant stem (ends `s`, `x`, `z`, `ch`, `sh`) → drop `es` (`boxes` → `box`).
+- Trailing segment ends in `ss`, `us`, or `is`, or is in the closed exception list (`status`, `address`, `process`, `bias`, `lens`, `series`, `news`, `props`) → leave unchanged.
+- Trailing `s` → drop (`pages` → `page`).
 
 **Worked examples:**
 
@@ -188,7 +189,7 @@ When you can name the file after the noun the types share (`persistence`, `bindi
 
 **Step 2 — no role applies:**
 
-- Value is a **single named type** → its plural: `Record<string, Template>` → `Templates`.
+- Value is a **single named type** → its plural: `Record<string, Template>` → `Templates`. If the value type is already plural or carries a type suffix, fall through to the primitive/union rule below.
 - Value is a **primitive or union** → a plural noun for what the values represent — the one place a concept is coined; it must be a plural noun:
 
 ```ts
@@ -211,7 +212,7 @@ Forbidden in **library code** (published `packages/*`). Every utility has a conc
 
 **App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for **pure, domain-agnostic** helpers (the `lib/` vs `utils/` split lives in [[modules]] § `lib/` vs `utils/` in apps). Domain-aware code goes in `lib/`, never `utils/`. `helpers/` stays forbidden everywhere, library and app alike.
 
-A single-function `utils/` file is named after **either** its concept (`pluralize.ts`) **or** its full function name — kebab-cased with no verb-drop and no singularization (`mergeRefs` → `merge-refs.ts`, `normalizeProps` → `normalize-props.ts`). The general filename algorithm's stripping and singularizing never apply in `utils/`.
+A single-function `utils/` file is named after its **full function name** — kebab-cased with no verb-drop and no singularization (`mergeRefs` → `merge-refs.ts`, `normalizeProps` → `normalize-props.ts`). A concept name applies only when 2+ functions share the file (`string-format.ts`). The general filename algorithm's stripping and singularizing never apply in `utils/`.
 
 ### Type suffix vocabulary
 

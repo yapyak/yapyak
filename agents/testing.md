@@ -11,10 +11,10 @@ Apply in order. First match wins.
 2. Reachable from package.json `exports`?
    → MUST test. Package API contract.
 
-3. Consumed by 2+ files in the package?
-   → MUST test. Intra-package shared contract.
+3. Consumed by 2+ files in the same pnpm workspace package?
+   → MUST test. Intra-package shared contract. (Consumers in other workspace packages don't count here — they reach it via rule 2's `exports`.)
 
-4. Function has 3+ code paths?
+4. Function has 3+ code paths (1 + branching keywords, per § Counting code paths)?
    → MUST test. Branchy logic.
 
 5. File has 8+ conditional keywords total?
@@ -152,6 +152,7 @@ Exactly 2 `describe` sub-blocks: `with defaults` and `with overrides`.
 
 - `with defaults` — call with only required args. Assert every default explicitly.
 - `with overrides` — call with every accepted option set to a non-default. Assert each individually. If an option has no non-default value, assert it in the defaults test only and note it has no override.
+- A required option with no default is asserted in `with overrides` only; if every option is required, omit the `with defaults` block.
 
 ### Edge cases from signature
 

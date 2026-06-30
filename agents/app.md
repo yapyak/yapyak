@@ -21,7 +21,7 @@ export function Button(props: ButtonProps): ReactElement {
 
 **Annotate only when required:**
 
-Annotate the return type only when one holds: (a) omitting it produces a TypeScript error at a call site; (b) the inferred type is a union wider than the function's contract (includes a branch callers must not receive); (c) the function is generic and inference does not preserve the type-parameter relation in the return. Otherwise — if it compiles and callers are satisfied — do not annotate.
+Annotate the return type only when one holds: (a) omitting it produces a TypeScript error at a call site; (b) the function is exported across a package boundary AND inference widens the return to include an internal type that should not surface publicly; (c) the function is generic and inference does not preserve the type-parameter relation in the return. Otherwise — if it compiles and callers are satisfied — do not annotate.
 
 ### Domain vs UI — `null` vs `undefined`
 

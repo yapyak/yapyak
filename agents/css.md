@@ -61,115 +61,16 @@ CLASS NAME = [Role]ElementType
              └─optional┘└─required, from fixed vocab─┘
 ```
 
-##### Fixed ElementType vocabulary
+##### ElementType
 
-Every class name must end with one of these. Nothing else is valid.
+The required final segment, drawn from the closed vocabulary in [[element-type]]. Never invent one ad-hoc.
 
-Group / layout (element wraps 2+ children):
+**Landmark layout.** Landmark names come from [[element-type]]; arrange them as one trio per container, never mixed:
 
-| Name | Meaning |
-|---|---|
-| `Row` | flex-direction: row |
-| `Stack` | flex-direction: column |
-| `Grid` | display: grid |
-| `List` | `<ul>` / `<ol>` (semantic list) |
-| `DescriptionList` | `<dl>` (key/value pairs) |
-| `Term` | `<dt>` (label half of a `<dl>` pair) |
-| `Description` | `<dd>` (value half of a `<dl>` pair) |
-
-HTML5 landmarks (element IS a landmark region). Two layout trios — pick one per container, never mix.
-
-Vertical trio (stacked top-to-bottom):
-
-| Name | Meaning |
-|---|---|
-| `Header` | `as="header"` |
-| `Content` | default `<div>`, or `as="section"` if the region needs a landmark |
-| `Footer` | `as="footer"` |
-
-Horizontal trio (side-by-side):
-
-| Name | Meaning |
-|---|---|
-| `Sidebar` | `as="aside"` — used only when there is exactly ONE sidebar |
-| `Main` | `as="main"` — only at the outermost page layout. Exactly one `<main>` per page, ever. Partner of `Sidebar`. |
-| `Content` | default `<div>` — partner of `Sidebar` when `<main>` is already taken by a parent layout. Common in nested layouts. |
-| `StartBar` / `EndBar` | `as="aside"` — used when there are TWO sidebars (replaces `Sidebar`) |
-
-Other landmarks (standalone):
-
-| Name | Meaning |
-|---|---|
-| `Nav` | `as="nav"` |
-| `Section` | `as="section"` |
-| `Article` | `as="article"` |
-
-Each landmark name appears max once per component.
-
-Text content:
-
-| Name | Meaning |
-|---|---|
-| `Heading` | `<Heading>` / heading element |
-| `Paragraph` | `<p>` |
-| `Text` | `<span>` / plain text |
-| `PreformattedText` | `<pre>` |
-| `Code` | `<code>` |
-| `Label` | `<label>` |
-
-Interactive:
-
-| Name | Meaning |
-|---|---|
-| `Link` | `<a>` |
-| `Button` | `<button>` |
-
-Form:
-
-| Name | Meaning |
-|---|---|
-| `Input` | `<input>` |
-| `Textarea` | `<textarea>` |
-| `Select` | `<select>` |
-| `Form` | `<form>` |
-| `Fieldset` | `<fieldset>` |
-
-Media:
-
-| Name | Meaning |
-|---|---|
-| `Icon` | icon-role `<svg>` |
-| `Image` | `<img>` |
-
-Indicators / primitives:
-
-| Name | Meaning |
-|---|---|
-| `Badge` | pill, chip, tag (canonical name) |
-| `Divider` | `<hr>` or visual separator |
-| `Chevron` | chevron icon |
-| `Arrow` | arrow icon |
-| `Dot` | dot indicator |
-| `Caret` | text caret |
-| `Spacer` | spacer element |
-| `Overlay` | full-cover decorative layer |
-| `Skeleton` | loading placeholder block |
-
-List items:
-
-| Name | Meaning |
-|---|---|
-| `Item` | `<li>` |
-| `Option` | `<option>` |
-
-Table cells:
-
-| Name | Meaning |
-|---|---|
-| `Cell` | `<td>` |
-| `HeaderCell` | `<th>` |
-
-If the element you need doesn't fit any of these, the vocabulary needs expanding — discuss and extend the list. Never invent a suffix ad-hoc.
+- Vertical trio: `Header` / `Content` / `Footer`.
+- Horizontal trio: `Sidebar` + `Main`; or `StartBar` + `EndBar` when there are two sidebars. `Content` partners `Sidebar` when a parent layout already owns the page's one `<main>`.
+- Inside a vertical trio the middle region is always `Content` (`as="section"` only when it needs a landmark); use `Section` for a standalone landmark, never as the trio middle.
+- Each landmark name appears at most once per component.
 
 ##### Picking the Role (prefix)
 
@@ -178,7 +79,7 @@ Role is picked by strict priority — stop at the first match:
 1. Data field — if rendering a named data field, Role = PascalCase field name
    - `{action.description}` → Role `Description`
    - `{user.firstName}` → Role `FirstName`
-2. Domain concept — if the element represents a named domain concept, Role = that concept. A domain-concept Role is allowed ONLY if the name is an exported domain/resource/enum name from the content schema or yapyak public types. If it isn't, fall through to step 3 (Qualifier).
+2. Domain concept — if the element represents a named domain concept, Role = that concept. A domain-concept Role is allowed ONLY if the name is an exported domain/resource/enum name from the content schema or yapyak public types, OR a standard domain term for the rendered concept (`Endpoint`, `Method`). If neither, fall through to step 3 (Qualifier).
    - `MethodBadge + Path` together = `Endpoint` (REST term)
 3. Qualifier from fixed vocab — when multiple siblings share an ElementType:
 
@@ -189,7 +90,7 @@ Role is picked by strict priority — stop at the first match:
    | Importance | `Primary` / `Secondary` |
    | Function | `Search`, `Submit`, `Cancel`, `Confirm`, `Close`, `Empty` |
 4. No Role — when EITHER:
-   - the ElementType is an HTML5 landmark (the `Header` / `Footer` / `Content` / `Sidebar` / `Main` / `Nav` / `StartBar` / `EndBar` group) or a decorative ElementType (`Icon`, `Chevron`, `Divider`, …) appearing once in its parent; OR
+   - the ElementType is an HTML5 landmark (the `Header` / `Footer` / `Content` / `Sidebar` / `Main` / `Navigation` / `StartBar` / `EndBar` group) or a decorative ElementType (`Icon`, `Chevron`, `Divider`, …) appearing once in its parent; OR
    - steps 1–3 produced no Role and only one such element exists in its parent.
 
 ##### Examples
@@ -525,7 +426,7 @@ appearance: none;
 
 Default to gap when laying out siblings — always restructure the parent to flex/grid + `gap` unless one of the two `margin` exceptions below applies.
 
-Use `margin` only for (1) optical alignment of a single element against a container edge, or (2) spacing between siblings that are NOT in a shared flex/grid parent where creating one would change the rendered box of an unrelated element. Every other sibling-spacing case uses `gap`. If unsure, use `gap`.
+Use `margin` only for (1) optical alignment of a single element against a container edge, or (2) spacing between siblings whose nearest common parent is not yours to convert to flex/grid (third-party or shared-layout markup). Every other sibling-spacing case uses `gap`. If unsure, use `gap`.
 
 #### Never write `flex-grow`, `flex-shrink`, `flex-basis`
 
@@ -547,7 +448,7 @@ flex: auto;       /* grow, shrink, basis auto (= 1 1 auto) */
 
 #### Never leave unnecessary properties
 
-Every property must pay for itself. Prune only statically-detectable dead properties: a property whose value equals its reset-table value; a `display`/`width` that a flex/grid parent already imposes. Never prune on runtime layout guesses.
+Every property must pay for itself. Prune only a property whose value exactly equals its reset-table value. Never prune `display`/`width` by guessing what a parent imposes — that needs runtime layout.
 
 #### Use `background-color`, not `background` shorthand
 

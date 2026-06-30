@@ -93,3 +93,4 @@ When introducing a new domain term in any guide page:
 1. Add it to the table above first.
 2. Use the canonical form consistently across every page.
 3. If two writers reach for two words for the same thing, this table picks the winner — extend the table, never coin a synonym in prose.
+4. If a word you want already names another concept in any table, qualify the new term (`target locale` vs `target framework`); a bare ambiguous word is forbidden.

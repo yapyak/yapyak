@@ -6,7 +6,7 @@ Never document or assert what is not verifiable. Before writing prose about beha
 
 1. Read the implementation.
 2. Search for callers, related types, tests.
-3. Run the code if uncertain.
+3. Run the code iff behavior depends on a value reading can't determine (I/O, env, randomness, external state).
 
 If behavior is not verifiable, never document it. Applies to every claim about runtime behavior. Mechanical formulas (category formulas, naming algorithms) are deterministic and need no code-verification, but the behavior they describe still must.
 
