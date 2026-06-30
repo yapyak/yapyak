@@ -1,4 +1,7 @@
-## Workflow
+---
+name: yapyak-workflow
+description: "How to work: verify before claiming, stop signals, scope of 'kör', ambiguity handling, never invent, leave nothing behind. Always applies — read at session start."
+---
 
 ### Verify against code
 

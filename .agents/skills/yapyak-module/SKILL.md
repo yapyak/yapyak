@@ -1,4 +1,7 @@
-## Modules
+---
+name: yapyak-module
+description: "Modules: file-extraction triggers, barrels, imports and exports, folder thresholds, internal subpaths, lib/ vs utils/. Use when adding, splitting, or importing files and folders."
+---
 
 ### Export form
 
@@ -68,7 +71,7 @@ A folder always has an `index.ts` barrel. Cross-folder imports go through the ba
 
 Single-file concepts do not get folders. A standalone `parser.ts` stays a file until a second file joins it.
 
-Folder names are singular: `adapter/`, `locale/`, `runtime/`. Plural only for peer-item dictionary folders (`cli/command/`), or app framework-scaffolding (`components/`, `hooks/`, `routes/`, `styles/`) — see [[naming]] § Singular vs plural.
+Folder names are singular: `adapter/`, `locale/`, `runtime/`. Plural only for peer-item dictionary folders (`cli/command/`), or app framework-scaffolding (`components/`, `hooks/`, `routes/`, `styles/`) — see [[yapyak-name]] § Singular vs plural.
 
 #### When to split into sub-folders
 
@@ -186,4 +189,4 @@ Each group alphabetized. Blank line between groups.
 - Unit tests: `*.test.ts` co-located next to implementation.
 - Type-only tests: `*.test-d.ts`.
 - One test file per implementation file. Never a `tests/` folder.
-- Test filename mirrors source filename exactly. See [[naming]] § Test files.
+- Test filename mirrors source filename exactly. See [[yapyak-name]] § Test files.

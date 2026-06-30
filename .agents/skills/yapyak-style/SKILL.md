@@ -1,4 +1,7 @@
-## Style
+---
+name: yapyak-style
+description: "How rule files/skills are written: the I1-I5 structure invariants, the T1-T9 prose tests, symbols, the prohibition lexicon. Use when editing or adding a yapyak rule skill."
+---
 
 How every file in `agents/` is written. Each line is a RULE — an imperative the agent runs or is checked against — or it is deleted. Narration (description of the system for a human reader) changes no behavior. Cut it.
 
@@ -61,7 +64,7 @@ Every rule line: imperative, verb-first, one rule per line. No hedges (`simply`,
 
 - Absolute rule → `Never <verb>` (imperative) or `<thing> is forbidden` (predicate). `Avoid` and `not allowed` are unused.
 - `don't` / `do not` only for a soft default (documented exceptions) or a statement of behavior — never for an absolute rule.
-- `banned` marks a forbidden *word* (lexical bans — [[terminology]] "Banned alternatives", voice word-lists); `forbidden` marks a code pattern. Product copy (diagnostic message strings) follows [[diagnostics]], not this.
+- `banned` marks a forbidden *word* (lexical bans — [[yapyak-terminology]] "Banned alternatives", voice word-lists); `forbidden` marks a code pattern. Product copy (diagnostic message strings) follows [[yapyak-diagnostic]], not this.
 - A do/don't contrast table heads its columns `Do | Don't`.
 
 **Quantifiers and logic:**

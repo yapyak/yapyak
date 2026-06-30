@@ -1,4 +1,7 @@
-## CSS
+---
+name: yapyak-css
+description: "CSS Modules: [Role]ElementType class naming (vocab in yapyak-element-type), DOM-mirrored nesting, design tokens, cascade, units, layout. Use when editing *.module.css or component styles."
+---
 
 ### Design tokens
 
@@ -63,9 +66,9 @@ CLASS NAME = [Role]ElementType
 
 ##### ElementType
 
-The required final segment, drawn from the closed vocabulary in [[element-type]]. Never invent one ad-hoc.
+The required final segment, drawn from the closed vocabulary in [[yapyak-element-type]]. Never invent one ad-hoc.
 
-**Landmark layout.** Landmark names come from [[element-type]]; arrange them as one trio per container, never mixed:
+**Landmark layout.** Landmark names come from [[yapyak-element-type]]; arrange them as one trio per container, never mixed:
 
 - Vertical trio: `Header` / `Content` / `Footer`.
 - Horizontal trio: `Sidebar` + `Main`; or `StartBar` + `EndBar` when there are two sidebars. `Content` partners `Sidebar` when a parent layout already owns the page's one `<main>`.

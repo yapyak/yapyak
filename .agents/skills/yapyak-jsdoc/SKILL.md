@@ -1,4 +1,7 @@
-## JSDoc
+---
+name: yapyak-jsdoc
+description: "TSDoc on public API: category formulas, @param/@returns/@example, when an example is required, linking. Use when writing or editing JSDoc/TSDoc on an exported symbol."
+---
 
 TSDoc on public API symbols only.
 
@@ -211,7 +214,7 @@ Suffix-driven. Listed suffixes use the formula below; any named suffix not liste
 | `*Tag` / `*Kind` | "Discriminator for [union type]." |
 | `*Props` | "Props for {@link Component}." |
 
-For inline-union types (no name), put the JSDoc on the field that holds the union per [[types]] § Union types — inline vs named. When 2+ fields hold the same inline union, each field holding the inline union carries its own field-level JSDoc; there is no shared union doc.
+For inline-union types (no name), put the JSDoc on the field that holds the union per [[yapyak-type]] § Union types — inline vs named. When 2+ fields hold the same inline union, each field holding the inline union carries its own field-level JSDoc; there is no shared union doc.
 
 ### Type / interface — deterministic first sentence
 
@@ -290,7 +293,7 @@ function createTranslator(options: TranslatorOptions): Translator;
 | Callback | "Called when [event]." | "Called when the locale changes." |
 | Options bundle | "Options bundle. See {@link OptionsType}." | "Options bundle. See {@link TranslatorOptions}." |
 
-**State predicate vs behavior flag:** matches the boolean-naming rule in [[naming]]. A field named with a bare adjective is state. A field named with a verb-phrase is behavior. Description form must match field-name form.
+**State predicate vs behavior flag:** matches the boolean-naming rule in [[yapyak-name]]. A field named with a bare adjective is state. A field named with a verb-phrase is behavior. Description form must match field-name form.
 
 ### Options interface field order — alphabetical
 
@@ -677,7 +680,7 @@ When the same conceptual symbol exists in multiple framework packages (`RichText
   // import { authMiddleware } from './auth';              // ✗
   ```
 
-- **No placeholder identifiers.** Pull from the Yak Pool in [[testing]].
+- **No placeholder identifiers.** Pull from the Yak Pool in [[yapyak-test]].
 - **Return values:** show with `// output:`.
 - **Code-block language identifier:**
 
@@ -883,7 +886,7 @@ If a project explicitly tracks API maturity:
 
 ### Acronyms
 
-Project acronyms declared in [[testing]] § Lexical rules. TypeScript-specific additions:
+Project acronyms declared in [[yapyak-test]] § Lexical rules. TypeScript-specific additions:
 
 ```
 AMD, CJS, CSR, ESM, HMR, ISR, JSX, SPA, SSR, TSX, UMD

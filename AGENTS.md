@@ -25,36 +25,11 @@ Always run `pnpm check:write` after changes.
 
 ## Rule modules
 
-One file per topic, kebab-case, single source of truth.
+Detailed conventions live as portable **Agent Skills** in `.agents/skills/` — each skill carries its full prose, auto-routed by description across Claude Code, Codex, Cursor, and 40+ tools (symlinked into `.claude/skills/`). Cross-references use `[[yapyak-*]]` skill names. Always consult `yapyak-workflow` (how to work) and `yapyak-style` (how skills are written).
 
-### Process
-
-- [agents/workflow.md](agents/workflow.md) — verify, stop signals, "kör" scope, ambiguity, leave nothing behind
-- [agents/style.md](agents/style.md) — how every rule file is written: the nine tests
-
-### Code
-
-- [agents/types.md](agents/types.md) — type system, unions, defaults, argument shape, error classes, language atoms
-- [agents/naming.md](agents/naming.md) — files, folders, symbols, suffixes, verbs, booleans
-- [agents/modules.md](agents/modules.md) — imports, exports, barrels, internal subpaths, folder splitting
-- [agents/null-vs-undefined.md](agents/null-vs-undefined.md) — mechanical decision tree
-- [agents/comments.md](agents/comments.md) — biome-ignore, `@ts-*`
-
-### Library
-
-- [agents/visibility.md](agents/visibility.md) — public, semi-public, private, `/internal` subpath
-- [agents/packages.md](agents/packages.md) — `package.json`, `exports`, dependencies, `tsdown` build, scope tiers
-- [agents/jsdoc.md](agents/jsdoc.md) — TSDoc on public API
-
-### Testing
-
-- [agents/testing.md](agents/testing.md) — Vitest conventions, the Yap List, the Yak Pool, property-based testing
-
-### Yapyak-specific
-
-- [agents/diagnostics.md](agents/diagnostics.md) — `YAP00xx` code format, allocation, doc URLs
-- [agents/terminology.md](agents/terminology.md) — locked vocabulary
-
-### `docs/`
-
-App-layer rules (React, CSS, TanStack, Box, app-code TS): [docs/AGENTS.md](docs/AGENTS.md).
+- **Code:** `yapyak-type` · `yapyak-name` · `yapyak-module` · `yapyak-nullability` · `yapyak-comment`
+- **Library:** `yapyak-visibility` · `yapyak-package` · `yapyak-jsdoc`
+- **Testing:** `yapyak-test`
+- **Yapyak-specific:** `yapyak-diagnostic` · `yapyak-terminology`
+- **App (`docs/`):** `yapyak-react` · `yapyak-box` · `yapyak-css` · `yapyak-element-type` · `yapyak-tanstack-start` · `yapyak-app` · `yapyak-documentation`
+- **Process:** `yapyak-workflow` · `yapyak-style`

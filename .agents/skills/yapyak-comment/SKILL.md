@@ -1,9 +1,12 @@
-## Comments
+---
+name: yapyak-comment
+description: "Comments: the no-comment rule and its closed exceptions, the exact biome-ignore format, @ts-* directives. Use when adding a code comment or a linter/type-checker suppression."
+---
 
 No comments in code. Two exceptions, nothing else:
 
 - **Functional comments** — exactly: `biome-ignore` (below), the `@ts-nocheck` fixture exception (below), `/* @__PURE__ */`, and bundler magic comments (`/* @vite-ignore */`, `/* webpackChunkName: "..." */`).
-- **Documentation comments** on public API in library code, per [[jsdoc]].
+- **Documentation comments** on public API in library code, per [[yapyak-jsdoc]].
 
 ### `biome-ignore`
 

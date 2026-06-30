@@ -1,4 +1,7 @@
-## Testing
+---
+name: yapyak-test
+description: "Vitest conventions: the test-or-not rules, the Yap List verbs, the Yak Pool fixtures, property-based testing. Use when writing or editing a test."
+---
 
 ### Which symbols to unit test
 
@@ -431,7 +434,7 @@ describe('resolveLocale', () => {
 
 Rules:
 
-1. Imports at top per [[modules]]: `vitest` first, then the symbol via relative import.
+1. Imports at top per [[yapyak-module]]: `vitest` first, then the symbol via relative import.
 2. Always destructure named imports — never `import * as vitest`.
 3. `describe` takes the function name as a string (camelCase, exactly).
 4. `it` callbacks are arrow functions, `async` only when needed.
@@ -538,7 +541,7 @@ For larger fixtures (compiler tests with source-code samples), put them in a `fi
 | Group | Check |
 |---|---|
 | **File** | `<source>.ts` paired with `<source>.test.ts`. |
-| **Imports** | Vitest helpers first, then symbol via relative import. Per [[modules]]. |
+| **Imports** | Vitest helpers first, then symbol via relative import. Per [[yapyak-module]]. |
 | **Structure** | One `describe` per exported function, alphabetical. Order: happy-path → edge → error. |
 | **Coverage** | Function categorized; test count matches the formula. Edge cases derived from signature. |
 | **`it` names** | Formula shape + Yap List verb. No forbidden patterns. |

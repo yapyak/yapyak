@@ -1,4 +1,7 @@
-## Visibility
+---
+name: yapyak-visibility
+description: "API visibility: public vs internal vs private, the /internal subpath, transitive closure of exported types. Use when deciding whether a symbol is exported or kept internal."
+---
 
 ### Package kinds
 
@@ -62,7 +65,7 @@ export { sharedHelper } from './domain/helper';
 export type { InternalShape } from './options';
 ```
 
-Add `src/internal.ts` to the `tsdown` `entry` — wiring details in [[packages]].
+Add `src/internal.ts` to the `tsdown` `entry` — wiring details in [[yapyak-package]].
 
 Consumers in other monorepo packages:
 
@@ -97,7 +100,7 @@ Classify by the widest consumer. First match wins.
 3. 2+ files in this package only → export from the domain barrel.
 4. One file only → keep unexported.
 
-Wiring a new subpath's `package.json exports` + `tsdown` `entry`: see [[packages]].
+Wiring a new subpath's `package.json exports` + `tsdown` `entry`: see [[yapyak-package]].
 
 ### `@internal` JSDoc and `stripInternal` are forbidden
 

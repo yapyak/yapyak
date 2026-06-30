@@ -1,6 +1,9 @@
-## Docs
+---
+name: yapyak-documentation
+description: "Guide authoring: voice, what-to-cut, structure, code blocks, framework switching, page templates, tone budget. Use when writing or editing guide/docs content."
+---
 
-User-facing guide at `docs/content/guide/*.md`. JSDoc → [[jsdoc]], README → [[packages]], vocabulary → [[terminology]].
+User-facing guide at `docs/content/guide/*.md`. JSDoc → [[yapyak-jsdoc]], README → [[yapyak-package]], vocabulary → [[yapyak-terminology]].
 
 ### Voice
 
@@ -47,7 +50,7 @@ Same information, no personification, no marketing, no reassurance.
 
 ### Vocabulary
 
-Locked terms — canonical word + banned synonyms — live in [[terminology]]. Use them; never coin a synonym in prose.
+Locked terms — canonical word + banned synonyms — live in [[yapyak-terminology]]. Use them; never coin a synonym in prose.
 
 ### Output blocks
 
@@ -209,7 +212,7 @@ Only document symbols exported from the public package entry (e.g. `yapyak`, `@y
   - `import { t } from 'yapyak'`; all user-facing strings go through `t('...')`.
   - Locale switching uses `useLocale()` from `yapyak/react`.
   - The source string IS the key. No `{subject}{Component}{Prop}` key conventions.
-- **Design tokens live in `src/style.css`** as CSS custom properties (`--bg`, `--text`, `--mint`, `--space-*`, `--radius-*`, etc.). CSS Modules conventions otherwise per [[css]].
+- **Design tokens live in `src/style.css`** as CSS custom properties (`--bg`, `--text`, `--mint`, `--space-*`, `--radius-*`, etc.). CSS Modules conventions otherwise per [[yapyak-css]].
 - **No backend.** Types come from `yapyak`'s public exports and each route's own data shape.
 - **No backend mutations.** If a route needs an action (rare), use a server function or plain `fetch` directly.
 - **Loaders return Markdown content** for `/guide/$slug` routes. The shape is `{ title, description, content }` parsed from frontmatter — pass through to the component unchanged. **Never set `description` in page frontmatter:** the renderer turns it into a `<p>` directly under the `<h1>`, which becomes a second lede paragraph competing with the body's opening line. Only `title` and `order` belong in frontmatter for guide pages.
@@ -250,7 +253,7 @@ Phrasings that work:
 
 ### yapyak-specific docs conventions
 
-The generic voice and structure rules live in [[docs]]. What follows is yapyak-flavored: brand conventions, canonical examples, terminology, page templates, the tone budget.
+The generic voice and structure rules live in [[yapyak-documentation]]. What follows is yapyak-flavored: brand conventions, canonical examples, terminology, page templates, the tone budget.
 
 #### Brand conventions
 
@@ -342,7 +345,7 @@ Same rule for arrow functions. The point of the example is the surrounding logic
 
 #### Component code: when to show all frameworks
 
-The mechanics of framework/package-manager switching (the `{% switch %}` / `{% when %}` / `{% only %}` / `{% picker %}` tags, group names, output blocks) are defined once in [[docs]] — that is the source of truth. There is no `{% code-group %}` tag; framework variants use `{% switch group="framework" %}`. What follows is only the yapyak-specific editorial rule for *when* to show one framework vs all of them.
+The mechanics of framework/package-manager switching (the `{% switch %}` / `{% when %}` / `{% only %}` / `{% picker %}` tags, group names, output blocks) are defined once in [[yapyak-documentation]] — that is the source of truth. There is no `{% code-group %}` tag; framework variants use `{% switch group="framework" %}`. What follows is only the yapyak-specific editorial rule for *when* to show one framework vs all of them.
 
 Two kinds of component examples appear in the guide. Treat them differently.
 
@@ -527,7 +530,7 @@ If a page explains a concept that has a canonical home elsewhere, the page is **
 
 #### Terminology lock
 
-Every yapyak term's canonical word and banned synonyms live in [[terminology]]. Add new terms there.
+Every yapyak term's canonical word and banned synonyms live in [[yapyak-terminology]]. Add new terms there.
 
 #### Examples — good vs bad
 

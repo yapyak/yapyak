@@ -1,4 +1,7 @@
-## `null` vs `undefined`
+---
+name: yapyak-nullability
+description: "null vs undefined: the mechanical decision tree, wire boundaries, nullify(). Use when choosing null or undefined for a field, parameter, or return value."
+---
 
 Mechanical, deterministic. Two reviewers reach the same answer on any line.
 
@@ -108,7 +111,7 @@ Rule: if the field is `T | null` AND the value is `T | undefined`, wrap in `null
 
 ### App layer — domain vs UI
 
-App code layers domain-`null` over UI-`undefined`, converted at the dispatcher — see [[app]].
+App code layers domain-`null` over UI-`undefined`, converted at the dispatcher — see [[yapyak-app]].
 
 ### Mechanical verification
 

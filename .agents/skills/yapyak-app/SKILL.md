@@ -1,4 +1,7 @@
-## TypeScript — app
+---
+name: yapyak-app
+description: "App-code TypeScript: infer return types (no isolatedDeclarations), domain null vs UI undefined translated at the dispatcher, browser-side window.* timers. Use when writing app code under docs/."
+---
 
 ### TypeScript config
 
@@ -59,3 +62,21 @@ type CalloutProps = BoxProps<"aside"> & {
 ```
 
 **Display defaults belong in the UI, not in the dispatcher.** If a callout has no title, the `Callout` component decides what to show (e.g. capitalized variant name). The dispatcher only translates absence; it doesn't invent display values.
+
+## TypeScript — client
+
+Browser-only code — not Node, CLIs, or isomorphic code.
+
+### Timers — `window.*` only
+
+Always call `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval`, `requestAnimationFrame`, `cancelAnimationFrame` on `window`:
+
+```ts
+// ✓
+window.setTimeout(fn, 100);
+window.requestAnimationFrame(fn);
+
+// ✗
+setTimeout(fn, 100);
+requestAnimationFrame(fn);
+```

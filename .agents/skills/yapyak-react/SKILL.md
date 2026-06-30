@@ -1,8 +1,11 @@
-## React
+---
+name: yapyak-react
+description: "React components: component-vs-inline, classification, the slot test, props, refs, hooks. Use when writing or editing a React component under docs/."
+---
 
 ### Components
 
-- Props type is an exported `type` extending `BoxProps<T>` in the same file: `export type ComponentNameProps = BoxProps<T> & { ... }` (see [[box]]). Always `type`; a standalone object type only for the raw-SVG leaf exception.
+- Props type is an exported `type` extending `BoxProps<T>` in the same file: `export type ComponentNameProps = BoxProps<T> & { ... }` (see [[yapyak-box]]). Always `type`; a standalone object type only for the raw-SVG leaf exception.
 - Props are destructured on the first line of the function body, not in the signature.
 - Blank line between destructuring and the rest of the function body.
 - Defaults are set in the destructuring assignment.
@@ -52,7 +55,7 @@ components/
 
 #### File naming
 
-Folder name = primary component name (kebab-case). Primary component file = `<folder-name>.tsx`. Sibling files are prefix-flat — every filename starts with the folder name. This scheme governs component files; [[naming]]'s filename-derivation algorithm does not apply to them.
+Folder name = primary component name (kebab-case). Primary component file = `<folder-name>.tsx`. Sibling files are prefix-flat — every filename starts with the folder name. This scheme governs component files; [[yapyak-name]]'s filename-derivation algorithm does not apply to them.
 
 ```
 button/                            → Button
@@ -98,7 +101,7 @@ The plural is encoded in the element type (`List`, `Stack`, `Section`, `Grid`), 
 
 A component's name ends with the name of its root JSX element: `ChevronIcon` renders `<Icon>`, `ReferenceRow` renders `<tr>`, `OptionPickList` renders `<ul>`.
 
-**Exception:** components whose root is `*Base`, `Box`, or `Icon` carry no element-derived suffix. An `Icon`-based component takes the icon's own name (`ChevronIcon` → `Chevron`, `CopyIcon` → `Copy`) — mechanical. A `Box`/`*Base`-based one: the coined noun MUST be an ElementType from [[element-type]]'s layout group, selected by DOM shape (column→`Stack`, row→`Row`, grid→`Grid`, landmark→`Section`, no layout→`Wrapper`).
+**Exception:** components whose root is `*Base`, `Box`, or `Icon` carry no element-derived suffix. An `Icon`-based component takes the icon's own name (`ChevronIcon` → `Chevron`, `CopyIcon` → `Copy`) — mechanical. A `Box`/`*Base`-based one: the coined noun MUST be an ElementType from [[yapyak-element-type]]'s layout group, selected by DOM shape (column→`Stack`, row→`Row`, grid→`Grid`, landmark→`Section`, no layout→`Wrapper`).
 
 ### Component architecture
 
@@ -184,7 +187,7 @@ First match wins.
 
 #### Step 3: Pick suffix from closed vocabulary
 
-A component's name IS its root CSS class — its suffix is an ElementType from [[element-type]]: the type of its root element, or a composite type it implements (`Layout`, `Detail`, `Summary`, `Card`, `Table`, `PickList`, `ActionsBar`, `SearchInput`, `EmptyMessage`).
+A component's name IS its root CSS class — its suffix is an ElementType from [[yapyak-element-type]]: the type of its root element, or a composite type it implements (`Layout`, `Detail`, `Summary`, `Card`, `Table`, `PickList`, `ActionsBar`, `SearchInput`, `EmptyMessage`).
 
 A compound slot's suffix is its region's element-type — a landmark (`Header` / `Content` / `Footer` / `Sidebar` / `Main`), `Bar`, or `Title`.
 
@@ -258,7 +261,7 @@ If rendering `*Item` outside its `*List` happens — the abstraction is wrong.
 
 ### `.map` callbacks as their own component
 
-A `.map` callback that produces JSX gets extracted into its own component. No size threshold. Named after its root element-type per [[element-type]] — `*Item` when the row is an `<li>` in a `*List`, otherwise the root's own type (a card row is `*Card`).
+A `.map` callback that produces JSX gets extracted into its own component. No size threshold. Named after its root element-type per [[yapyak-element-type]] — `*Item` when the row is an `<li>` in a `*List`, otherwise the root's own type (a card row is `*Card`).
 
 ```tsx
 // ✓
@@ -295,7 +298,7 @@ Explicit comparisons against `undefined`, `''`, `null`, or `0` for conditional r
 
 Ternary is justified only when rendering different content (`condition ? <A /> : <B />`).
 
-This is JSX context only. Plain function logic follows [[null-vs-undefined]].
+This is JSX context only. Plain function logic follows [[yapyak-nullability]].
 
 ### Hoist constant expressions to module scope
 
@@ -347,7 +350,7 @@ function ActionButton(props: { action: Action }) {
 - `data-*` attributes never use `is`/`has` prefix: `data-active`, `data-disabled` — never `data-is-active`.
 - CSS custom properties (`style={{ '--x': value }}`) are always set on the root element.
 - Cross-component CSS variables must be prefixed with the owning component's kebab-case name (`--selection-indicator-fill-color`).
-- **Box-consumer rules** — rendering `Box` for every element, `BoxProps<T>` shape, `data-*` value passthrough (no `|| undefined`), `className` forwarding, styled-component variants over `className`, and JSX generics — live in [[box]].
+- **Box-consumer rules** — rendering `Box` for every element, `BoxProps<T>` shape, `data-*` value passthrough (no `|| undefined`), `className` forwarding, styled-component variants over `className`, and JSX generics — live in [[yapyak-box]].
 
 ### Extending component props
 
@@ -377,7 +380,7 @@ For child-element attributes, expose a `[childElement][AttributeName]` prop — 
 ### State
 
 - `useCallback` is forbidden — define functions directly in the component body.
-- Boolean state variables follow the boolean naming rule (`is*`/`has*` prefix) per [[naming]].
+- Boolean state variables follow the boolean naming rule (`is*`/`has*` prefix) per [[yapyak-name]].
 - Refs must not be written to during render — use `useEffect`.
 - Inside `useEffect` / `useLayoutEffect` callbacks, always use arrow functions:
 

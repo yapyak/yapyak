@@ -1,4 +1,7 @@
-## Naming
+---
+name: yapyak-name
+description: "Naming: filename derivation, type suffixes, discriminator fields, boolean prefixes, singular vs plural, no-abbreviation. Use when naming a file, folder, type, symbol, or boolean."
+---
 
 Every rule here is a deterministic operation on an export or type name. The only human input is coining a brand-new domain noun — itself bound by the suffix and form rules. No taste, no judgment.
 
@@ -10,7 +13,7 @@ Every rule here is a deterministic operation on an export or type name. The only
 
 ### Mechanical filename derivation
 
-Filename derives from the primary export through a deterministic algorithm. No closed list of verbs to maintain. The **primary export** is the one the file's concept is named for; with 2+ co-equal exports it is the public entry point the others support (per [[modules]] § Coherent module), and if still tied, the first in source order.
+Filename derives from the primary export through a deterministic algorithm. No closed list of verbs to maintain. The **primary export** is the one the file's concept is named for; with 2+ co-equal exports it is the public entry point the others support (per [[yapyak-module]] § Coherent module), and if still tied, the first in source order.
 
 **Two keep-the-name exceptions:** `utils/` (whole name, step 0) and `use*` hooks (keep the `use` prefix, step 2). Everything else drops the leading verb.
 
@@ -210,7 +213,7 @@ Forbidden in **library code** (published `packages/*`). Every utility has a conc
 | Multiple unrelated utilities | Split into concept files |
 | Multiple tightly-related utilities | Merge into concept file (`string-format.ts`) |
 
-**App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for **pure, domain-agnostic** helpers (the `lib/` vs `utils/` split lives in [[modules]] § `lib/` vs `utils/` in apps). Domain-aware code goes in `lib/`, never `utils/`. `helpers/` stays forbidden everywhere, library and app alike.
+**App-code exception.** Private app packages MAY keep a single top-level `src/utils/` for **pure, domain-agnostic** helpers (the `lib/` vs `utils/` split lives in [[yapyak-module]] § `lib/` vs `utils/` in apps). Domain-aware code goes in `lib/`, never `utils/`. `helpers/` stays forbidden everywhere, library and app alike.
 
 A single-function `utils/` file is named after its **full function name** — kebab-cased with no verb-drop and no singularization (`mergeRefs` → `merge-refs.ts`, `normalizeProps` → `normalize-props.ts`). A concept name applies only when 2+ functions share the file (`string-format.ts`). The general filename algorithm's stripping and singularizing never apply in `utils/`.
 

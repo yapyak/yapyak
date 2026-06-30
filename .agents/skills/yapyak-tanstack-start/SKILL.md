@@ -1,4 +1,7 @@
-## TanStack Start + Router
+---
+name: yapyak-tanstack-start
+description: "TanStack Start: route files, route component naming, loaders, route-scoped hooks, .server.ts placement, server functions. Use when editing route files or server-only code under docs/."
+---
 
 ### Route files
 
@@ -85,5 +88,5 @@ component: FooPage,
 - **Route-specific server helpers** live next to the route: `routes/post.$.server.ts` is the companion to `routes/post.$.tsx`.
 - **Cross-route shared server helpers** live in `lib/*.server.ts`.
 - **Function names inside `.server.ts`** are plain action verbs — `loadArticle`, `loadManifest`, `parseSource`. No prefix/suffix to mark them server-only; the file extension already does.
-- **Types shared between client and server live in a non-`.server.ts` file.** Functions in `lib/x.server.ts`, types in `lib/x.ts`. Client components import types via `import type` from the type file. Domain/content types live in the shared `.ts` type file and are imported. A UI `?:`-optional Props type is declared in the component file (per [[react]]) and derived from the domain type; never re-declared in the shared file.
+- **Types shared between client and server live in a non-`.server.ts` file.** Functions in `lib/x.server.ts`, types in `lib/x.ts`. Client components import types via `import type` from the type file. Domain/content types live in the shared `.ts` type file and are imported. A UI `?:`-optional Props type is declared in the component file (per [[yapyak-react]]) and derived from the domain type; never re-declared in the shared file.
 - **A type stays in a `.server.ts`** only when it references a server-only runtime value via `typeof` (e.g. `ReturnType<typeof loadArticle>`); the client then imports it via `import type` only — erased at build, no runtime leak. Otherwise it moves to the `.ts` type file.

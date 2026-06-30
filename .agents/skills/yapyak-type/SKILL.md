@@ -1,4 +1,7 @@
-## Types
+---
+name: yapyak-type
+description: "TypeScript type system: type vs interface, unions inline-vs-named, boolean and argument defaults, error classes, language atoms. Use when defining or editing a type, union, default, or function signature."
+---
 
 ### Always use `type`, never `interface`
 
@@ -177,7 +180,7 @@ A required value never lives in an `options` object.
 
 #### Suffix mechanics
 
-The suffix on the parameter type is binding (pairing with parameter name per [[naming]]):
+The suffix on the parameter type is binding (pairing with parameter name per [[yapyak-name]]):
 
 | Suffix | Parameter name | Semantics |
 | --- | --- | --- |
@@ -239,7 +242,7 @@ function createProcessor(input: CreateProcessorInput): Processor;
 
 #### Hard cap — 5+ required positional
 
-5+ required positional arguments triggers the refactor recipe. Lift recurring sub-bundles into named domain types per [[naming]] § Type suffix vocabulary.
+5+ required positional arguments triggers the refactor recipe. Lift recurring sub-bundles into named domain types per [[yapyak-name]] § Type suffix vocabulary.
 
 #### Refactor recipe
 
@@ -314,7 +317,7 @@ const name = user.profile.name;
 
 ### Return types — no `T | null` for "no work done"
 
-A function that processes input and returns a typed result always returns that type; signal "no change" with a flag, never a nullable return. When `T | null` is legitimately allowed (platform returns, wire formats): see [[null-vs-undefined]].
+A function that processes input and returns a typed result always returns that type; signal "no change" with a flag, never a nullable return. When `T | null` is legitimately allowed (platform returns, wire formats): see [[yapyak-nullability]].
 
 ```ts
 // ✗ Wrong
@@ -401,7 +404,7 @@ export class ValidationError extends Error {
 - Use `cause` for wrapped errors instead of stuffing the original into the message.
 - Never extend a domain error class to add fields. Compose via `cause` or add fields to a single base class.
 
-Document with `@throws {ErrorName} when [condition].` per [[jsdoc]].
+Document with `@throws {ErrorName} when [condition].` per [[yapyak-jsdoc]].
 
 ### Browser timers — `window.*`
 

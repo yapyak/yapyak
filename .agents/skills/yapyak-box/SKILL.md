@@ -1,4 +1,7 @@
-## Box — component consumer rules
+---
+name: yapyak-box
+description: "The Box primitive: render Box for every content element, BoxProps<T>, data-* passthrough, className forwarding, the SVG-leaf and document-shell exceptions. Use when writing component or route JSX markup."
+---
 
 ### Always render `Box` for every HTML element
 
@@ -22,7 +25,7 @@ Raw exceptions: the **document shell** (`<html>`, `<head>`, `<body>`, `<title>`,
 
 ### SVG leaf components
 
-A component whose root *and entire body* is one `<svg>` (a leaf icon — `Icon` in [[element-type]]) renders raw `<svg>` with `SVGProps<SVGSVGElement>` and spreads `{...props}` directly. An `<svg>` nested inside other elements is `<Box as="svg">` like anything else.
+A component whose root *and entire body* is one `<svg>` (a leaf icon — `Icon` in [[yapyak-element-type]]) renders raw `<svg>` with `SVGProps<SVGSVGElement>` and spreads `{...props}` directly. An `<svg>` nested inside other elements is `<Box as="svg">` like anything else.
 
 ```tsx
 export function ChevronIcon(props: SVGProps<SVGSVGElement>) {
@@ -101,7 +104,7 @@ export function Button(props: ButtonProps) {
 
 ### `className` on styled components
 
-A styled component (`Button`, `Badge`, `Link`) accepts `className` **only for cross-component layout** — position, margin, or grid-placement passed from a parent per [[css]]. Never use `className` to change its **appearance** (color, size, typography); add a variant (`size`, `appearance`, `intent`) instead. If the customization is reusable, add a variant to the component; if it is a one-off structural need, drop to a base primitive. Appearance via `className` means the component API is incomplete.
+A styled component (`Button`, `Badge`, `Link`) accepts `className` **only for cross-component layout** — position, margin, or grid-placement passed from a parent per [[yapyak-css]]. Never use `className` to change its **appearance** (color, size, typography); add a variant (`size`, `appearance`, `intent`) instead. If the customization is reusable, add a variant to the component; if it is a one-off structural need, drop to a base primitive. Appearance via `className` means the component API is incomplete.
 
 ### Never pass explicit generic type arguments in JSX
 
