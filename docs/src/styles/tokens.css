@@ -139,6 +139,7 @@
   );
 
   --header-height: 76px;
+  --content-header-height: 44px;
 
   --syntax-keyword: var(--color-lilac);
   --syntax-fn-call: var(--color-iris);

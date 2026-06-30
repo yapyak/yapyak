@@ -150,19 +150,9 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     if (!hash) {
       return;
     }
-    const targetElement = document.getElementById(hash);
-    if (!targetElement) {
-      return;
-    }
     if (headings.some((heading) => heading.id === hash)) {
       setActiveId(hash);
     }
-    window.requestAnimationFrame(() => {
-      targetElement.scrollIntoView({
-        behavior: 'auto',
-        block: 'start',
-      });
-    });
   }, [
     headings,
   ]);
