@@ -1,6 +1,6 @@
 ---
 name: yapyak-app
-description: "App-code TypeScript: infer return types (no isolatedDeclarations), domain null vs UI undefined translated at the dispatcher, browser-side window.* timers. Use when writing app code under docs/."
+description: "App-code TypeScript: inferred return types, domain `null` vs UI `undefined` at the dispatcher, `window.*` timers. Use when writing app code under `docs/`."
 ---
 
 ### TypeScript config

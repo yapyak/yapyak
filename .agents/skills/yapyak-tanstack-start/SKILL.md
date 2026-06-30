@@ -1,6 +1,6 @@
 ---
 name: yapyak-tanstack-start
-description: "TanStack Start: route files, route component naming, loaders, route-scoped hooks, .server.ts placement, server functions. Use when editing route files or server-only code under docs/."
+description: "TanStack Start: route files, route-component naming, loaders, route-scoped hooks, `.server.ts`, server functions. Use when editing route files or server-only code."
 ---
 
 ### Route files

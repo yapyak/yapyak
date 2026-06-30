@@ -1,6 +1,6 @@
 ---
 name: yapyak-terminology
-description: "Locked vocabulary for guide and API prose: the canonical word per concept and its banned alternatives. Use when writing prose that names a yapyak concept."
+description: "Terminology: the locked canonical word per concept and its banned alternatives. Use when writing prose that names a yapyak concept."
 ---
 
 Locked vocabulary for the yapyak guide. Same concept, same word, every page. Add new terms here when introducing them. Never coin synonyms at write-time. Voice rules live in [[yapyak-documentation]].

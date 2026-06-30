@@ -1,6 +1,6 @@
 ---
 name: yapyak-diagnostic
-description: "Diagnostics: the YAP00xx code format, allocation and retirement, per-code doc pages, message tone. Use when adding or editing a YAP diagnostic code or message."
+description: "Diagnostics: the `YAP00xx` code format, allocation and retirement, per-code doc pages, message tone. Use when adding or editing a `YAP` code or message."
 ---
 
 ### Code format

@@ -1,6 +1,6 @@
 ---
 name: yapyak-css
-description: "CSS Modules: [Role]ElementType class naming (vocab in yapyak-element-type), DOM-mirrored nesting, design tokens, cascade, units, layout. Use when editing *.module.css or component styles."
+description: "CSS: `[Role]ElementType` class naming, DOM-mirrored nesting, design tokens, cascade, units, layout. Use when editing `*.css` files or component styles."
 ---
 
 ### Design tokens

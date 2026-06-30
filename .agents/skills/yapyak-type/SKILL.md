@@ -1,6 +1,6 @@
 ---
 name: yapyak-type
-description: "TypeScript type system: type vs interface, unions inline-vs-named, boolean and argument defaults, error classes, language atoms. Use when defining or editing a type, union, default, or function signature."
+description: "Type system: `type` vs `interface`, inline-vs-named unions, boolean and argument defaults, error classes. Use when defining a type, union, default, or function signature."
 ---
 
 ### Always use `type`, never `interface`

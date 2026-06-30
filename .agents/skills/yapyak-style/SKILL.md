@@ -1,6 +1,6 @@
 ---
 name: yapyak-style
-description: "How rule files/skills are written: the I1-I5 structure invariants, the T1-T9 prose tests, symbols, the prohibition lexicon. Use when editing or adding a yapyak rule skill."
+description: "Rule-skill authoring: the I1-I5 structure invariants, the T1-T9 prose tests, symbols, the prohibition lexicon. Use when editing or adding a yapyak rule skill."
 ---
 
 How every file in `agents/` is written. Each line is a RULE — an imperative the agent runs or is checked against — or it is deleted. Narration (description of the system for a human reader) changes no behavior. Cut it.

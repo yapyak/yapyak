@@ -1,6 +1,6 @@
 ---
 name: yapyak-workflow
-description: "How to work: verify before claiming, stop signals, scope of 'kör', ambiguity handling, never invent, leave nothing behind. Always applies — read at session start."
+description: "Working method: verify before claiming, stop signals, scope of 'kör', ambiguity handling, never invent. Use when starting a task or reporting work done."
 ---
 
 ### Verify against code

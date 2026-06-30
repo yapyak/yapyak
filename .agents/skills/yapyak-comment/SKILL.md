@@ -1,6 +1,6 @@
 ---
 name: yapyak-comment
-description: "Comments: the no-comment rule and its closed exceptions, the exact biome-ignore format, @ts-* directives. Use when adding a code comment or a linter/type-checker suppression."
+description: "Comments: the no-comment rule, functional-comment exceptions, the `biome-ignore` format, `@ts-*` directives. Use when adding a comment or a linter or type-checker suppression."
 ---
 
 No comments in code. Two exceptions, nothing else:

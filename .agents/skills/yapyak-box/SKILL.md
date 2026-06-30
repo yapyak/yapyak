@@ -1,6 +1,6 @@
 ---
 name: yapyak-box
-description: "The Box primitive: render Box for every content element, BoxProps<T>, data-* passthrough, className forwarding, the SVG-leaf and document-shell exceptions. Use when writing component or route JSX markup."
+description: "Box primitive: render `Box` for every element, `BoxProps<T>`, `data-*` passthrough, `className` forwarding, SVG-leaf and document-shell exceptions. Use when writing component or route JSX."
 ---
 
 ### Always render `Box` for every HTML element

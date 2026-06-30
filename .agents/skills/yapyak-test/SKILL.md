@@ -1,6 +1,6 @@
 ---
 name: yapyak-test
-description: "Vitest conventions: the test-or-not rules, the Yap List verbs, the Yak Pool fixtures, property-based testing. Use when writing or editing a test."
+description: "Testing: the test-or-not rules, the Yap List verbs, the Yak Pool fixtures, property-based testing. Use when writing or editing a test."
 ---
 
 ### Which symbols to unit test

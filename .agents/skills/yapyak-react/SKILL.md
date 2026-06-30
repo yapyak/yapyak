@@ -1,6 +1,6 @@
 ---
 name: yapyak-react
-description: "React components: component-vs-inline, classification, the slot test, props, refs, hooks. Use when writing or editing a React component under docs/."
+description: "React components: component-vs-inline, classification, the slot test, props, refs, hooks. Use when writing or editing a React component."
 ---
 
 ### Components

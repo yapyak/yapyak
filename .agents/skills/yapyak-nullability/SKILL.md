@@ -1,6 +1,6 @@
 ---
 name: yapyak-nullability
-description: "null vs undefined: the mechanical decision tree, wire boundaries, nullify(). Use when choosing null or undefined for a field, parameter, or return value."
+description: "`null` vs `undefined`: the decision tree, wire boundaries, `nullify()`. Use when choosing `null` or `undefined` for a field, parameter, or return."
 ---
 
 Mechanical, deterministic. Two reviewers reach the same answer on any line.

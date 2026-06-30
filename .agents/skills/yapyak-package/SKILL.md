@@ -1,6 +1,6 @@
 ---
 name: yapyak-package
-description: "Package config: package.json, exports, dependencies, the tsdown build, scope tiers, README convention. Use when editing package.json, exports, or build config."
+description: "Packaging: `package.json`, `exports`, dependencies, the `tsdown` build, scope tiers, README convention. Use when editing package config, exports, or the build."
 ---
 
 ### TypeScript config

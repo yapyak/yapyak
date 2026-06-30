@@ -1,6 +1,6 @@
 ---
 name: yapyak-visibility
-description: "API visibility: public vs internal vs private, the /internal subpath, transitive closure of exported types. Use when deciding whether a symbol is exported or kept internal."
+description: "Visibility: public vs internal vs private, the `/internal` subpath, transitive closure of exported types. Use when deciding whether a symbol is exported or internal."
 ---
 
 ### Package kinds
