@@ -11,26 +11,32 @@
     scrollbar-color: var(--ring-stronger) transparent;
     scrollbar-width: thin;
     background-color: var(--canvas);
+    box-shadow: 0 16px 80px
+      color-mix(in oklab, var(--color-black) 60%, transparent);
     transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
 
     &[data-direction="start"] {
       left: 0;
       border-right: var(--px) solid var(--rule);
+      border-top-right-radius: var(--border-radius-lg);
+      border-bottom-right-radius: var(--border-radius-lg);
+
+      &[data-animate="enter"],
+      &[data-animate="exit"] {
+        transform: translateX(-100%);
+      }
     }
 
     &[data-direction="end"] {
       right: 0;
       border-left: var(--px) solid var(--rule);
-    }
+      border-top-left-radius: var(--border-radius-lg);
+      border-bottom-left-radius: var(--border-radius-lg);
 
-    &[data-direction="start"][data-animate="enter"],
-    &[data-direction="start"][data-animate="exit"] {
-      transform: translateX(-100%);
-    }
-
-    &[data-direction="end"][data-animate="enter"],
-    &[data-direction="end"][data-animate="exit"] {
-      transform: translateX(100%);
+      &[data-animate="enter"],
+      &[data-animate="exit"] {
+        transform: translateX(100%);
+      }
     }
   }
 }

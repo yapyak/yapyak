@@ -1,9 +1,7 @@
 @layer components {
   .Attachment {
-    --arrow-size: var(--spacing-5);
-    --arrow-x: 0;
-    --arrow-y: 0;
-    --arrow-overlap: calc(-1 * var(--arrow-size) / 2);
+    --arrow-size: var(--spacing-2);
+    --arrow-overlap: calc(-1 * var(--arrow-size) / 2 + var(--px));
     --background-color: var(--surface-elevated);
 
     position: absolute;
@@ -20,17 +18,18 @@
     transition: opacity 120ms ease-out;
 
     .Content {
+      position: relative;
       z-index: 1;
       display: flex;
       flex-direction: column;
       padding: var(--spacing-4);
-      overflow: hidden;
       pointer-events: auto;
       background-color: var(--background-color);
       border-radius: var(--border-radius-md);
       box-shadow:
-        0 0 0 var(--px) var(--ring-strong),
+        inset 0 0 0 var(--px) var(--ring),
         0 16px 80px color-mix(in oklab, var(--color-black) 60%, transparent);
+      transform-origin: var(--content-origin, top center);
       scale: 1;
       transition: scale 120ms ease-out;
     }
@@ -38,121 +37,100 @@
     .Arrow {
       position: absolute;
       z-index: 2;
-      width: var(--arrow-width);
-      height: var(--arrow-height);
+      width: var(--arrow-size);
+      height: var(--arrow-size);
       pointer-events: auto;
+      background-color: var(--background-color);
+      box-shadow: inset 0 0 0 var(--px) var(--ring);
       opacity: 0;
-      transform: translate(var(--arrow-x, 0), var(--arrow-y, 0));
+      transform: rotate(45deg);
+    }
 
-      svg {
-        display: block;
-        width: 100%;
-        height: 100%;
-        overflow: visible;
-
-        .ArrowOuter {
-          fill: var(--ring-strong);
-        }
-
-        .ArrowInner {
-          fill: var(--background-color);
-        }
+    &[data-docked]:not([data-arrow-overflow]) {
+      .Arrow {
+        opacity: 1;
       }
     }
 
-    &[data-docked]:not([data-arrow-overflow]) .Arrow {
-      opacity: 1;
-    }
-
-    &[data-placement="top"],
-    &[data-placement="bottom"] {
-      --arrow-width: var(--arrow-size);
-      --arrow-height: calc(var(--arrow-size) / 2);
+    &[data-placement="bottom"],
+    &[data-placement="top"] {
+      flex-direction: column;
     }
 
     &[data-placement="left"],
     &[data-placement="right"] {
-      --arrow-width: calc(var(--arrow-size) / 2);
-      --arrow-height: var(--arrow-size);
-    }
-
-    &[data-placement="top"] {
-      --arrow-x: var(--arrow-offset);
-      --arrow-y: 0;
-      flex-direction: column;
-
-      .Arrow {
-        bottom: var(--arrow-overlap);
-      }
-
-      &[data-alignment="start"] .Content {
-        transform-origin: bottom left;
-      }
-      &[data-alignment="center"] .Content {
-        transform-origin: bottom center;
-      }
-      &[data-alignment="end"] .Content {
-        transform-origin: bottom right;
-      }
+      flex-direction: row;
     }
 
     &[data-placement="bottom"] {
-      --arrow-x: var(--arrow-offset);
-      --arrow-y: 0;
-      flex-direction: column;
-
       .Arrow {
         top: var(--arrow-overlap);
+        left: var(--arrow-offset);
+        clip-path: polygon(0 0, 100% 0, 0 100%);
       }
 
-      &[data-alignment="start"] .Content {
-        transform-origin: top left;
+      &[data-alignment="start"] {
+        --content-origin: top left;
       }
-      &[data-alignment="center"] .Content {
-        transform-origin: top center;
+      &[data-alignment="center"] {
+        --content-origin: top center;
       }
-      &[data-alignment="end"] .Content {
-        transform-origin: top right;
+      &[data-alignment="end"] {
+        --content-origin: top right;
       }
     }
 
-    &[data-placement="left"] {
-      --arrow-x: 0;
-      --arrow-y: var(--arrow-offset);
-      flex-direction: row;
-
+    &[data-placement="top"] {
       .Arrow {
-        right: var(--arrow-overlap);
+        bottom: var(--arrow-overlap);
+        left: var(--arrow-offset);
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
       }
 
-      &[data-alignment="start"] .Content {
-        transform-origin: top right;
+      &[data-alignment="start"] {
+        --content-origin: bottom left;
       }
-      &[data-alignment="center"] .Content {
-        transform-origin: center right;
+      &[data-alignment="center"] {
+        --content-origin: bottom center;
       }
-      &[data-alignment="end"] .Content {
-        transform-origin: bottom right;
+      &[data-alignment="end"] {
+        --content-origin: bottom right;
       }
     }
 
     &[data-placement="right"] {
-      --arrow-x: 0;
-      --arrow-y: var(--arrow-offset);
-      flex-direction: row;
-
       .Arrow {
+        top: var(--arrow-offset);
         left: var(--arrow-overlap);
+        clip-path: polygon(0 0, 100% 100%, 0 100%);
       }
 
-      &[data-alignment="start"] .Content {
-        transform-origin: top left;
+      &[data-alignment="start"] {
+        --content-origin: top left;
       }
-      &[data-alignment="center"] .Content {
-        transform-origin: center left;
+      &[data-alignment="center"] {
+        --content-origin: center left;
       }
-      &[data-alignment="end"] .Content {
-        transform-origin: bottom left;
+      &[data-alignment="end"] {
+        --content-origin: bottom left;
+      }
+    }
+
+    &[data-placement="left"] {
+      .Arrow {
+        top: var(--arrow-offset);
+        right: var(--arrow-overlap);
+        clip-path: polygon(0 0, 100% 0, 100% 100%);
+      }
+
+      &[data-alignment="start"] {
+        --content-origin: top right;
+      }
+      &[data-alignment="center"] {
+        --content-origin: center right;
+      }
+      &[data-alignment="end"] {
+        --content-origin: bottom right;
       }
     }
 

@@ -81,87 +81,10 @@ export function Attachment(props: AttachmentProps): ReactElement {
         style,
       ]}
     >
-      {arrow && (
-        <Box className={styles.Arrow}>
-          <svg
-            aria-hidden={true}
-            role="presentation"
-            viewBox={getArrowViewBox(anchoredPosition.placement, arrowSize)}
-          >
-            <path
-              className={styles.ArrowOuter}
-              d={getArrowOuterPath(anchoredPosition.placement, arrowSize)}
-            />
-            <path
-              className={styles.ArrowInner}
-              d={getArrowInnerPath(anchoredPosition.placement, arrowSize)}
-            />
-          </svg>
-        </Box>
-      )}
+      {arrow && <Box className={styles.Arrow} />}
       <Box className={styles.Content}>{children}</Box>
     </Box>
   );
-}
-
-type Placement = 'bottom' | 'left' | 'right' | 'top';
-
-function getArrowDimensions(
-  placement: Placement,
-  arrowSize: number,
-): {
-  height: number;
-  width: number;
-} {
-  if (placement === 'top' || placement === 'bottom') {
-    return {
-      height: arrowSize / 2,
-      width: arrowSize,
-    };
-  }
-  return {
-    height: arrowSize,
-    width: arrowSize / 2,
-  };
-}
-
-function getArrowViewBox(placement: Placement, arrowSize: number): string {
-  const { width, height } = getArrowDimensions(placement, arrowSize);
-  return `-1 -1 ${width + 2} ${height + 2}`;
-}
-
-function getArrowOuterPath(placement: Placement, arrowSize: number): string {
-  const { width: w, height: h } = getArrowDimensions(placement, arrowSize);
-  const r = Math.SQRT1_2;
-  const d = Math.SQRT2;
-  switch (placement) {
-    case 'bottom':
-      return `M ${w / 2} 0 L 0 ${h} L ${-r} ${h - r} L ${w / 2} ${-d} L ${w + r} ${h - r} L ${w} ${h} Z`;
-    case 'top':
-      return `M ${w / 2} ${h} L 0 0 L ${-r} ${r} L ${w / 2} ${h + d} L ${w + r} ${r} L ${w} 0 Z`;
-    case 'right':
-      return `M 0 ${h / 2} L ${w} 0 L ${w - r} ${-r} L ${-d} ${h / 2} L ${w - r} ${h + r} L ${w} ${h} Z`;
-    case 'left':
-      return `M ${w} ${h / 2} L 0 0 L ${r} ${-r} L ${w + d} ${h / 2} L ${r} ${h + r} L 0 ${h} Z`;
-    default:
-      return '';
-  }
-}
-
-function getArrowInnerPath(placement: Placement, arrowSize: number): string {
-  const { width: w, height: h } = getArrowDimensions(placement, arrowSize);
-  switch (placement) {
-    case 'bottom':
-      return `M ${w / 2} 0 L ${w} ${h + 1} L 0 ${h + 1} Z`;
-    case 'top':
-      return `M ${w / 2} ${h} L ${w} -1 L 0 -1 Z`;
-    case 'right':
-      return `M 0 ${h / 2} L ${w + 1} 0 L ${w + 1} ${h} Z`;
-    case 'left':
-      return `M ${w} ${h / 2} L -1 ${h} L -1 0 Z`;
-    default:
-      return '';
-  }
 }
 
 function pxOrNone(value: number): string {
