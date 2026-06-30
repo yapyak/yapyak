@@ -10,7 +10,7 @@ import styles from './drawer.module.css';
 
 export type DrawerDirection = 'end' | 'start';
 
-export type DrawerProps = BoxProps<'aside'> & {
+export type DrawerProps = BoxProps & {
   direction: DrawerDirection;
   open: boolean;
   onClose?: () => void;
@@ -34,7 +34,6 @@ export function Drawer(props: DrawerProps): ReactElement {
           <Box
             {...restProps}
             {...animateProps}
-            as="aside"
             className={[
               styles.Drawer,
               className,

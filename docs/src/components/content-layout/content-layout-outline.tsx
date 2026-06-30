@@ -8,7 +8,7 @@ import { useMediaQuery } from '#hooks/use-media-query';
 import { useContentLayout } from './content-layout';
 import styles from './content-layout-outline.module.css';
 
-export type ContentLayoutOutlineProps = BoxProps<'aside'>;
+export type ContentLayoutOutlineProps = BoxProps;
 
 export function ContentLayoutOutline(
   props: ContentLayoutOutlineProps,

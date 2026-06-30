@@ -8,7 +8,7 @@ import { useMediaQuery } from '#hooks/use-media-query';
 import { useContentLayout } from './content-layout';
 import styles from './content-layout-sidebar.module.css';
 
-export type ContentLayoutSidebarProps = BoxProps<'aside'>;
+export type ContentLayoutSidebarProps = BoxProps;
 
 export function ContentLayoutSidebar(
   props: ContentLayoutSidebarProps,
