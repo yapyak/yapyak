@@ -6,7 +6,13 @@ import { t } from 'yapyak';
 import { ContentAnchorNavigation } from '#components/content-anchor-navigation';
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
+import { DialogTrigger } from '#components/dialog-trigger';
+import { Drawer } from '#components/drawer';
+import { IconButton } from '#components/icon-button';
+import { OutlineIcon } from '#components/outline-icon';
 import { PageAction } from '#components/page-action';
+import { SidebarIcon } from '#components/sidebar-icon';
+import { useMediaQuery } from '#hooks/use-media-query';
 
 import { doc } from 'virtual:doc-compiler';
 
@@ -24,6 +30,9 @@ export const Route = createFileRoute('/guide')({
 function Component() {
   const { sidebar } = Route.useRouteContext();
   const { page } = splatRoute.useLoaderData();
+
+  const isSidebarInline = useMediaQuery('(min-width: 1024px)');
+  const isOutlineInline = useMediaQuery('(min-width: 1324px)');
 
   const sidebarContent = (
     <ContentNavigation
@@ -43,22 +52,79 @@ function Component() {
     ],
   );
 
+  const outlineContent = (
+    <>
+      <ContentAnchorNavigation
+        headings={headings}
+        key={page.href}
+      />
+      <PageAction href={page.href} />
+    </>
+  );
+
   return (
     <ContentLayout>
-      <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
+      {isSidebarInline && (
+        <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
+      )}
+
       <ContentLayout.Content>
-        <ContentLayout.ContentHeader page={page} />
+        <ContentLayout.ContentHeader>
+          {!isSidebarInline && (
+            <DialogTrigger
+              dialog={(dialogProps) => (
+                <Drawer
+                  {...dialogProps}
+                  direction="start"
+                >
+                  {sidebarContent}
+                </Drawer>
+              )}
+            >
+              {(triggerProps) => (
+                <IconButton
+                  {...triggerProps}
+                  aria-label={t('Open menu')}
+                  icon={<SidebarIcon />}
+                >
+                  {t('Menu')}
+                </IconButton>
+              )}
+            </DialogTrigger>
+          )}
+          {!isOutlineInline && headings.length > 0 && (
+            <DialogTrigger
+              dialog={(dialogProps) => (
+                <Drawer
+                  {...dialogProps}
+                  direction="end"
+                >
+                  {outlineContent}
+                </Drawer>
+              )}
+            >
+              {(triggerProps) => (
+                <IconButton
+                  {...triggerProps}
+                  aria-label={t('Open page outline')}
+                  icon={<OutlineIcon />}
+                  iconPosition="trailing"
+                >
+                  {t('Page')}
+                </IconButton>
+              )}
+            </DialogTrigger>
+          )}
+        </ContentLayout.ContentHeader>
+
         <ContentLayout.ContentContent>
           <Outlet />
         </ContentLayout.ContentContent>
       </ContentLayout.Content>
-      <ContentLayout.Outline>
-        <ContentAnchorNavigation
-          headings={headings}
-          key={page.href}
-        />
-        <PageAction href={page.href} />
-      </ContentLayout.Outline>
+
+      {isOutlineInline && (
+        <ContentLayout.Outline>{outlineContent}</ContentLayout.Outline>
+      )}
     </ContentLayout>
   );
 }

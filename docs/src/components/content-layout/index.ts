@@ -5,4 +5,4 @@ export type { ContentLayoutContentHeaderProps } from './content-layout-content-h
 export type { ContentLayoutOutlineProps } from './content-layout-outline';
 export type { ContentLayoutSidebarProps } from './content-layout-sidebar';
 
-export { ContentLayout, useContentLayout } from './content-layout';
+export { ContentLayout } from './content-layout';

@@ -1,0 +1,41 @@
+@layer components {
+  .IconButton {
+    display: inline-flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    padding: 0 var(--spacing-2);
+    font-family: inherit;
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--foreground-soft);
+    cursor: pointer;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: 0;
+    background-color: transparent;
+    border: 0;
+    border-radius: var(--border-radius-sm);
+    transition:
+      color var(--transition),
+      outline 400ms;
+
+    .Icon {
+      display: inline-flex;
+      font-size: 18px;
+    }
+
+    .Text {
+      line-height: 1;
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--foreground);
+      }
+    }
+
+    &:focus-visible {
+      outline-width: 4px;
+      outline-color: var(--accent-soft);
+    }
+  }
+}

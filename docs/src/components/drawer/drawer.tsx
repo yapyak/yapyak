@@ -34,11 +34,13 @@ export function Drawer(props: DrawerProps): ReactElement {
           <Box
             {...restProps}
             {...animateProps}
+            aria-modal={true}
             className={[
               styles.Drawer,
               className,
             ]}
             data-direction={direction}
+            role="dialog"
           >
             {children}
           </Box>
