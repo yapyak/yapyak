@@ -24,13 +24,6 @@ function Component() {
   const { sidebar } = Route.useRouteContext();
   const { page } = splatRoute.useLoaderData();
 
-  const sidebarContent = (
-    <ContentNavigation
-      aria-label="Reference navigation"
-      tree={sidebar}
-    />
-  );
-
   const headings = useMemo(
     () =>
       getHeadings(page, {
@@ -44,7 +37,12 @@ function Component() {
 
   return (
     <ContentLayout>
-      <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
+      <ContentLayout.Sidebar>
+        <ContentNavigation
+          aria-label="Reference navigation"
+          tree={sidebar}
+        />
+      </ContentLayout.Sidebar>
       <ContentLayout.Content>
         <ContentLayout.ContentHeader page={page} />
         <ContentLayout.ContentContent>
