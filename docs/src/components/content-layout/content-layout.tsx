@@ -20,7 +20,6 @@ type ContentLayoutContextValue = {
   openOutline: () => void;
   openSidebar: () => void;
   outlineOpen: boolean;
-  resizing: boolean;
   sidebarOpen: boolean;
 };
 
@@ -30,11 +29,8 @@ const ContentLayoutContext = createContext<ContentLayoutContextValue>({
   openOutline: () => {},
   openSidebar: () => {},
   outlineOpen: false,
-  resizing: false,
   sidebarOpen: false,
 });
-
-const RESIZE_SETTLE_MS = 150;
 
 export function useContentLayout() {
   return useContext(ContentLayoutContext);
@@ -44,10 +40,7 @@ export function ContentLayout(props: ContentLayoutProps) {
   const { children, className, ...restProps } = props;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isOutlineOpen, setIsOutlineOpen] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
   const location = useLocation();
-
-  const isAnyDrawerOpen = isSidebarOpen || isOutlineOpen;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useEffect(() => {
@@ -56,27 +49,6 @@ export function ContentLayout(props: ContentLayoutProps) {
   }, [
     location.pathname,
     location.hash,
-  ]);
-
-  useEffect(() => {
-    if (!isAnyDrawerOpen) {
-      return;
-    }
-    const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsSidebarOpen(false);
-        setIsOutlineOpen(false);
-      }
-    };
-    document.addEventListener('keydown', handleKeydown);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'clip';
-    return () => {
-      document.removeEventListener('keydown', handleKeydown);
-      document.body.style.overflow = previousOverflow;
-    };
-  }, [
-    isAnyDrawerOpen,
   ]);
 
   useEffect(() => {
@@ -101,33 +73,6 @@ export function ContentLayout(props: ContentLayoutProps) {
     return () => outlineMedia.removeEventListener('change', handleOutline);
   }, []);
 
-  useEffect(() => {
-    let timeoutId: number | undefined;
-    const handleResize = () => {
-      setIsResizing(true);
-      if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
-      }
-      timeoutId = window.setTimeout(() => {
-        setIsResizing(false);
-      }, RESIZE_SETTLE_MS);
-    };
-    window.addEventListener('resize', handleResize, {
-      passive: true,
-    });
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (timeoutId !== undefined) {
-        window.clearTimeout(timeoutId);
-      }
-    };
-  }, []);
-
-  const closeAll = () => {
-    setIsSidebarOpen(false);
-    setIsOutlineOpen(false);
-  };
-
   return (
     <ContentLayoutContext
       value={{
@@ -136,7 +81,6 @@ export function ContentLayout(props: ContentLayoutProps) {
         openOutline: () => setIsOutlineOpen(true),
         openSidebar: () => setIsSidebarOpen(true),
         outlineOpen: isOutlineOpen,
-        resizing: isResizing,
         sidebarOpen: isSidebarOpen,
       }}
     >
@@ -146,13 +90,7 @@ export function ContentLayout(props: ContentLayoutProps) {
           styles.ContentLayout,
           className,
         ]}
-        data-drawer-open={isAnyDrawerOpen ? '' : undefined}
       >
-        <Box
-          aria-hidden="true"
-          className={styles.Backdrop}
-          onClick={closeAll}
-        />
         {children}
       </Box>
     </ContentLayoutContext>

@@ -1,7 +1,5 @@
 @layer components {
   .Drawer {
-    --drawer-translate-x: 0%;
-
     position: fixed;
     top: 0;
     bottom: 0;
@@ -13,27 +11,26 @@
     scrollbar-color: var(--ring-stronger) transparent;
     scrollbar-width: thin;
     background-color: var(--canvas);
-    transform: translateX(var(--drawer-translate-x));
     transition: transform 320ms cubic-bezier(0.32, 0.72, 0, 1);
 
     &[data-direction="start"] {
-      --drawer-translate-x: -100%;
       left: 0;
       border-right: var(--px) solid var(--rule);
     }
 
     &[data-direction="end"] {
-      --drawer-translate-x: 100%;
       right: 0;
       border-left: var(--px) solid var(--rule);
     }
 
-    &[data-open] {
-      --drawer-translate-x: 0%;
+    &[data-direction="start"][data-animate="enter"],
+    &[data-direction="start"][data-animate="exit"] {
+      transform: translateX(-100%);
     }
 
-    &[data-no-transition] {
-      transition: none;
+    &[data-direction="end"][data-animate="enter"],
+    &[data-direction="end"][data-animate="exit"] {
+      transform: translateX(100%);
     }
   }
 }

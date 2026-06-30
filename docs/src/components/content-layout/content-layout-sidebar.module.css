@@ -1,17 +1,23 @@
 @layer components {
   .ContentLayoutSidebar {
+    display: flex;
+    flex-direction: column;
     gap: var(--spacing-5);
     padding: var(--spacing-5) var(--spacing-4);
 
     @media (min-width: 1024px) {
+      position: fixed;
       top: var(--header-height);
-      z-index: auto;
+      bottom: 0;
+      left: 0;
       width: calc(var(--layout-sidebar-width) + var(--layout-side-bleed));
       padding: var(--spacing-5) var(--spacing-4) var(--spacing-5)
         calc(var(--spacing-3) + var(--layout-side-bleed));
+      overflow-y: auto;
+      scrollbar-color: var(--ring-stronger) transparent;
+      scrollbar-width: thin;
       background-color: transparent;
-      transform: none;
-      transition: none;
+      border-right: var(--px) solid var(--rule);
     }
   }
 }

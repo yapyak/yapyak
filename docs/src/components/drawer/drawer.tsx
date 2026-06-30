@@ -1,6 +1,10 @@
+import type { ReactElement } from 'react';
 import type { BoxProps } from '#components/box';
 
+import { Backdrop } from '#components/backdrop';
 import { Box } from '#components/box';
+import { Overlay } from '#components/overlay';
+import { Animate } from '#systems/animate';
 
 import styles from './drawer.module.css';
 
@@ -9,21 +13,37 @@ export type DrawerDirection = 'end' | 'start';
 export type DrawerProps = BoxProps<'aside'> & {
   direction: DrawerDirection;
   open: boolean;
+  onClose?: () => void;
 };
 
-export function Drawer(props: DrawerProps) {
-  const { className, direction, open, ...restProps } = props;
+export function Drawer(props: DrawerProps): ReactElement {
+  const { children, className, direction, onClose, open, ...restProps } = props;
 
   return (
-    <Box
-      {...restProps}
-      as="aside"
-      className={[
-        styles.Drawer,
-        className,
-      ]}
-      data-direction={direction}
-      data-open={open ? '' : undefined}
-    />
+    <Animate in={open}>
+      {(animateProps) => (
+        <Overlay
+          closeOnEscape={true}
+          onClose={onClose}
+        >
+          <Backdrop
+            onClick={onClose}
+            opaque={true}
+          />
+          <Box
+            {...restProps}
+            {...animateProps}
+            as="aside"
+            className={[
+              styles.Drawer,
+              className,
+            ]}
+            data-direction={direction}
+          >
+            {children}
+          </Box>
+        </Overlay>
+      )}
+    </Animate>
   );
 }

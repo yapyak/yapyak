@@ -1,16 +1,36 @@
-import type { DrawerProps } from '#components/drawer';
+import type { ReactElement } from 'react';
+import type { BoxProps } from '#components/box';
 
+import { Box } from '#components/box';
 import { Drawer } from '#components/drawer';
+import { useMediaQuery } from '#hooks/use-media-query';
 
 import { useContentLayout } from './content-layout';
 import styles from './content-layout-outline.module.css';
 
-export type ContentLayoutOutlineProps = Omit<DrawerProps, 'direction' | 'open'>;
+export type ContentLayoutOutlineProps = BoxProps<'aside'>;
 
-export function ContentLayoutOutline(props: ContentLayoutOutlineProps) {
-  const { className, ...restProps } = props;
+export function ContentLayoutOutline(
+  props: ContentLayoutOutlineProps,
+): ReactElement {
+  const { children, className, ...restProps } = props;
+  const { closeOutline, outlineOpen } = useContentLayout();
+  const isWide = useMediaQuery('(min-width: 1324px)');
 
-  const { outlineOpen, resizing } = useContentLayout();
+  if (isWide) {
+    return (
+      <Box
+        {...restProps}
+        as="aside"
+        className={[
+          styles.ContentLayoutOutline,
+          className,
+        ]}
+      >
+        {children}
+      </Box>
+    );
+  }
 
   return (
     <Drawer
@@ -19,9 +39,11 @@ export function ContentLayoutOutline(props: ContentLayoutOutlineProps) {
         styles.ContentLayoutOutline,
         className,
       ]}
-      data-no-transition={resizing ? '' : undefined}
       direction="end"
+      onClose={closeOutline}
       open={outlineOpen}
-    />
+    >
+      {children}
+    </Drawer>
   );
 }
