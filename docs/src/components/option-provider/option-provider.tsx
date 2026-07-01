@@ -1,7 +1,10 @@
 import type { OptionsRegistry } from '@yapyak/doc-compiler';
 import type { PropsWithChildren } from 'react';
+import type { SwatchAccent } from '#components/swatch';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+
+import { useFlash } from '#systems/flash';
 
 import { filterAdaptersByFramework } from '../../adapter';
 import { OptionContext } from './option-context';
@@ -27,6 +30,26 @@ export function OptionProvider(props: OptionProviderProps) {
   const [state, setState] = useState<Record<string, string>>(() =>
     readDefaults(registry),
   );
+
+  const flash = useFlash();
+  const previousFrameworkRef = useRef(state.framework);
+
+  useEffect(() => {
+    const currentFramework = state.framework;
+    if (
+      previousFrameworkRef.current !== undefined &&
+      previousFrameworkRef.current !== currentFramework &&
+      currentFramework !== undefined
+    ) {
+      flash({
+        accent: currentFramework as SwatchAccent,
+      });
+    }
+    previousFrameworkRef.current = currentFramework;
+  }, [
+    state.framework,
+    flash,
+  ]);
 
   useEffect(() => {
     const stored = window.__yapyakOptions ?? {};
