@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { FlashContext } from './flash-context';
 
-const FLASH_DURATION_MS = 500;
+const FLASH_DURATION_MS = 2400;
 
 export type FlashProviderProps = PropsWithChildren;
 

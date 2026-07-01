@@ -3,8 +3,8 @@
     0% {
       opacity: 0;
     }
-    30% {
-      opacity: 0.35;
+    10% {
+      opacity: 0.28;
     }
     100% {
       opacity: 0;
@@ -16,7 +16,7 @@
     inset: 0;
     z-index: 9999;
     pointer-events: none;
-    animation: FlashPulse 500ms ease-out forwards;
+    animation: FlashPulse 2400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 
     &[data-accent="react"] {
       background-color: var(--accent-react);
