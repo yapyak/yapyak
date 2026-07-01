@@ -5,13 +5,7 @@ order: 2
 
 yapyak installs as a Vite plugin plus a framework binding and (optionally) an SSR adapter and translator.
 
-{% picker group="framework" /%}
-
-{% picker group="adapter" /%}
-
-{% picker group="translator" /%}
-
-{% picker group="packageManager" /%}
+{% installation-wizard /%}
 
 ## Requirements
 

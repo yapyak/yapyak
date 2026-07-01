@@ -31,6 +31,7 @@ export type {
   HeadingEntry,
   ImageBlock,
   InlineCodeBlock,
+  InstallationWizardBlock,
   InternalLinkEntry,
   KindBadgeBlock,
   LineBreakBlock,

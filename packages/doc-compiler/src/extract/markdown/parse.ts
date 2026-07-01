@@ -291,6 +291,12 @@ function toBlocks(node: unknown): Block[] {
           kind: 'picker',
         },
       ];
+    case 'InstallationWizard':
+      return [
+        {
+          kind: 'installation-wizard',
+        },
+      ];
     case 'Callout':
       return [
         buildCallout(node.attributes, children),
@@ -1080,6 +1086,11 @@ const pickerTag: Schema = {
   selfClosing: true,
 };
 
+const installationWizardTag: Schema = {
+  render: 'InstallationWizard',
+  selfClosing: true,
+};
+
 const markdocConfig: Config = {
   nodes: {
     document,
@@ -1090,6 +1101,7 @@ const markdocConfig: Config = {
     callout,
     diagnostics,
     else: elseTag,
+    'installation-wizard': installationWizardTag,
     only: onlyTag,
     picker: pickerTag,
     switch: switchTag,

@@ -1,0 +1,11 @@
+@layer components {
+  .InstallationWizard {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    > * + * {
+      border-top: var(--px) solid var(--rule);
+    }
+  }
+}

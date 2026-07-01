@@ -11,6 +11,7 @@ export type Block =
   | KindBadgeBlock
   | ImageBlock
   | InlineCodeBlock
+  | InstallationWizardBlock
   | LineBreakBlock
   | LinkBlock
   | ListBlock
@@ -154,6 +155,10 @@ export type OnlyBlock = {
 export type PickerBlock = {
   group: string;
   kind: 'picker';
+};
+
+export type InstallationWizardBlock = {
+  kind: 'installation-wizard';
 };
 
 export type CalloutBlock = {

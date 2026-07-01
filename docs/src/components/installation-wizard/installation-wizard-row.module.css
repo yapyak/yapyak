@@ -1,0 +1,36 @@
+@layer components {
+  .InstallationWizardRow {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: var(--spacing-4);
+    align-items: center;
+    padding: var(--spacing-3) 0;
+
+    .Label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--foreground-softer);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+    }
+
+    .Options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-2);
+      align-items: center;
+    }
+
+    .RadioGroup {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-2);
+      align-items: center;
+    }
+
+    @media (max-width: 640px) {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-2);
+    }
+  }
+}

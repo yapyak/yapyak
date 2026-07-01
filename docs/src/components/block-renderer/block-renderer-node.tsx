@@ -13,6 +13,7 @@ import { BlockRendererNodeEyebrow } from './block-renderer-node-eyebrow';
 import { BlockRendererNodeHeading } from './block-renderer-node-heading';
 import { BlockRendererNodeImage } from './block-renderer-node-image';
 import { BlockRendererNodeInlineCode } from './block-renderer-node-inline-code';
+import { BlockRendererNodeInstallationWizard } from './block-renderer-node-installation-wizard';
 import { BlockRendererNodeLineBreak } from './block-renderer-node-line-break';
 import { BlockRendererNodeLink } from './block-renderer-node-link';
 import { BlockRendererNodeList } from './block-renderer-node-list';
@@ -85,6 +86,8 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
       return <BlockRendererNodeOutput block={block} />;
     case 'picker':
       return <BlockRendererNodePicker block={block} />;
+    case 'installation-wizard':
+      return <BlockRendererNodeInstallationWizard />;
     case 'diagnostic':
       return <BlockRendererNodeDiagnostic block={block} />;
     case 'callout':
