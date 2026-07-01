@@ -35,25 +35,22 @@ export function useStack({
     isLeaving,
   ]);
 
-  const [mounted, setMounted] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   useLayoutEffect(() => {
-    setMounted(true);
+    setIsMounted(true);
   }, []);
 
-  const isActiveComputed = mounted
-    ? stackContext.entries.at(-1)?.id === id
-    : true;
-
-  const isActive = stackContext.entries.at(-1)?.id === id;
+  const isTopOfStack = stackContext.entries.at(-1)?.id === id;
+  const isActive = isMounted ? isTopOfStack : true;
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useLayoutEffect(() => {
-    onActiveChange?.(isActive);
+    onActiveChange?.(isTopOfStack);
   }, [
-    isActive,
+    isTopOfStack,
   ]);
 
   return {
-    isActive: isActiveComputed,
+    isActive,
   };
 }

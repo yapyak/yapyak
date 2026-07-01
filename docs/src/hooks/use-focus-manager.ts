@@ -24,15 +24,15 @@ export type UseFocusManagerReturn = {
 export function useFocusManager(
   element: RefOrValue<HTMLElement | null>,
 ): UseFocusManagerReturn {
-  const focusManager = useRef<FocusManager | null>(null);
+  const focusManagerRef = useRef<FocusManager | null>(null);
 
   useLayoutEffect(() => {
     const $element = toValue(element);
 
     if ($element) {
-      focusManager.current = new FocusManager($element);
+      focusManagerRef.current = new FocusManager($element);
     } else {
-      focusManager.current = null;
+      focusManagerRef.current = null;
     }
   }, [
     element,
@@ -41,20 +41,20 @@ export function useFocusManager(
   return useMemo<UseFocusManagerReturn>(
     () => ({
       find: (predicate, options) => {
-        focusManager.current?.find(predicate, options);
+        focusManagerRef.current?.find(predicate, options);
       },
       first: (options) => {
-        focusManager.current?.first(options);
+        focusManagerRef.current?.first(options);
       },
-      getNodes: (options) => focusManager.current?.getNodes(options) ?? [],
+      getNodes: (options) => focusManagerRef.current?.getNodes(options) ?? [],
       last: (options) => {
-        focusManager.current?.last(options);
+        focusManagerRef.current?.last(options);
       },
       next: (options) => {
-        focusManager.current?.next(options);
+        focusManagerRef.current?.next(options);
       },
       previous: (options) => {
-        focusManager.current?.previous(options);
+        focusManagerRef.current?.previous(options);
       },
     }),
     [],

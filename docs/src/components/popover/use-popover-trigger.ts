@@ -37,20 +37,24 @@ export function usePopoverTrigger(
     onOpen,
   });
 
+  const handleTriggerClick = () => {
+    drawer.open();
+  };
+
+  const handlePopoverClose = () => {
+    drawer.close();
+  };
+
   const triggerProps = {
     'aria-controls': drawer.isOpen ? id : undefined,
     'aria-expanded': drawer.isOpen,
-    onClick: (): void => {
-      drawer.open();
-    },
+    onClick: handleTriggerClick,
     ref: targetElement,
   };
 
   const popoverProps = {
     id,
-    onClose: (): void => {
-      drawer.close();
-    },
+    onClose: handlePopoverClose,
     targetElement,
   };
 

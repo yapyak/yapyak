@@ -17,11 +17,11 @@ export function useIntervalHandle(
 ): UseIntervalHandleReturn {
   const { delay, immediate = false } = options;
 
-  const latestCallback = useLatest(callback);
+  const latestCallbackRef = useLatest(callback);
 
   const timeoutHandle = useTimeoutHandle(
     () => {
-      latestCallback.current();
+      latestCallbackRef.current();
       timeoutHandle.start();
     },
     {
@@ -32,7 +32,7 @@ export function useIntervalHandle(
   const start = () => {
     timeoutHandle.stop();
     if (immediate) {
-      latestCallback.current();
+      latestCallbackRef.current();
     }
     timeoutHandle.start();
   };

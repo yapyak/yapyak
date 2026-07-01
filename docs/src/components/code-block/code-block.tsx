@@ -51,7 +51,7 @@ export function CodeBlock(props: CodeBlockProps) {
         styles.CodeBlock,
         className,
       ]}
-      data-bare={bare === true ? '' : undefined}
+      data-bare={bare}
       data-language={language}
     >
       {path !== undefined && (

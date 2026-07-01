@@ -12,12 +12,12 @@ export function useRectListener(
   element: RefOrValue<HTMLElement | null>,
   callback: (rect: Rect) => void,
 ): void {
-  const stableCallback = useRef(callback);
+  const callbackRef = useRef(callback);
 
-  const rect = useRef<null | Rect>(null);
+  const rectRef = useRef<null | Rect>(null);
 
   useEffect(() => {
-    stableCallback.current = callback;
+    callbackRef.current = callback;
   }, [
     callback,
   ]);
@@ -28,13 +28,13 @@ export function useRectListener(
     if ($element) {
       const newRect = getRect($element);
 
-      if (rect.current?.isEqual(newRect)) {
+      if (rectRef.current?.isEqual(newRect)) {
         return;
       }
 
-      stableCallback.current(newRect);
+      callbackRef.current(newRect);
 
-      rect.current = newRect;
+      rectRef.current = newRect;
     }
   };
 

@@ -10,7 +10,7 @@ import { Box } from '#primitives/box';
 
 import styles from './block-renderer-node-diagnostic.module.css';
 
-export type BlockRendererNodeDiagnosticsProps = BoxProps<'code'> & {
+export type BlockRendererNodeDiagnosticProps = BoxProps<'code'> & {
   block: DiagnosticBlock;
 };
 
@@ -35,7 +35,7 @@ function isSupportedLanguage(value: string): value is Language {
 }
 
 export function BlockRendererNodeDiagnostic(
-  props: BlockRendererNodeDiagnosticsProps,
+  props: BlockRendererNodeDiagnosticProps,
 ) {
   const { block, className, ...restProps } = props;
   const language: Language = isSupportedLanguage(block.language)

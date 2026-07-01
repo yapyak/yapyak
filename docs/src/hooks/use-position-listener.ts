@@ -10,15 +10,15 @@ type Listener = () => void;
 
 const listeners = new Map<HTMLElement, Set<Listener>>();
 
-let resizeObserver: null | ResizeObserver = null;
-let mutationObserver: MutationObserver | null = null;
+let resizeObserver: ResizeObserver | undefined;
+let mutationObserver: MutationObserver | undefined;
 
 export function usePositionListener(
   element: RefOrValue<HTMLElement | null>,
   callback: () => void,
 ): void {
   const callbackRef = useRef(callback);
-  const lastRect = useRef<null | Rect>(null);
+  const lastRectRef = useRef<null | Rect>(null);
 
   useEffect(() => {
     callbackRef.current = callback;
@@ -33,11 +33,11 @@ export function usePositionListener(
     }
 
     const next = getRect($element);
-    if (lastRect.current?.isEqual(next)) {
+    if (lastRectRef.current?.isEqual(next)) {
       return;
     }
 
-    lastRect.current = next;
+    lastRectRef.current = next;
     callbackRef.current();
   };
 
@@ -113,10 +113,10 @@ function startGlobalObservers() {
 
 function stopGlobalObservers() {
   resizeObserver?.disconnect();
-  resizeObserver = null;
+  resizeObserver = undefined;
 
   mutationObserver?.disconnect();
-  mutationObserver = null;
+  mutationObserver = undefined;
 
   window.removeEventListener('resize', triggerAll);
   window.removeEventListener('scroll', triggerAll, {

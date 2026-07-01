@@ -33,7 +33,7 @@ export function Terminal(props: TerminalProps) {
             {line.segments.map((segment, segmentIndex) => (
               <Box
                 as="span"
-                className={styles[segmentClassName(segment.segmentKind)]}
+                className={styles[getSegmentClassName(segment.segmentKind)]}
                 key={segmentIndex}
               >
                 {segment.value}
@@ -58,6 +58,6 @@ const SEGMENT_CLASS_NAMES: Record<TerminalSegment['segmentKind'], string> = {
   yellow: 'Yellow',
 };
 
-function segmentClassName(kind: TerminalSegment['segmentKind']): string {
+function getSegmentClassName(kind: TerminalSegment['segmentKind']): string {
   return SEGMENT_CLASS_NAMES[kind];
 }

@@ -24,8 +24,8 @@ export const Route = createFileRoute('/reference/$')({
       (block): block is EyebrowBlock => block.kind === 'eyebrow',
     );
     const module = eyebrow?.module;
-    const hideModule = module == null || module === page.title;
-    const title = hideModule
+    const shouldHideModule = module == null || module === page.title;
+    const title = shouldHideModule
       ? `${page.title} - yapyak`
       : `${page.title} - ${module} - yapyak`;
     return {

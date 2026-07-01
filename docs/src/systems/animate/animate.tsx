@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ComposableRef } from '#types';
+import type { AnimateState } from './animate-context';
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
@@ -17,8 +18,6 @@ export type AnimateProps = {
   in: boolean;
 };
 
-type State = 'enter' | 'exit' | 'idle' | 'unmounted';
-
 export function Animate(props: AnimateProps) {
   const { children, in: inProp } = props;
 
@@ -26,7 +25,9 @@ export function Animate(props: AnimateProps) {
   const isOpen = inProp && parentState !== 'exit';
 
   const element = useRef<HTMLDivElement>(null);
-  const [state, setState] = useState<State>(isOpen ? 'enter' : 'unmounted');
+  const [state, setState] = useState<AnimateState | 'unmounted'>(
+    isOpen ? 'enter' : 'unmounted',
+  );
 
   useLayoutEffect(() => {
     setState((prev) => {
@@ -52,15 +53,15 @@ export function Animate(props: AnimateProps) {
     if (state !== 'enter') {
       return;
     }
-    let raf2 = 0;
-    const raf1 = window.requestAnimationFrame(() => {
-      raf2 = window.requestAnimationFrame(() => {
+    let secondFrame = 0;
+    const firstFrame = window.requestAnimationFrame(() => {
+      secondFrame = window.requestAnimationFrame(() => {
         setState('idle');
       });
     });
     return () => {
-      window.cancelAnimationFrame(raf1);
-      window.cancelAnimationFrame(raf2);
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
     };
   }, [
     state,
@@ -109,15 +110,10 @@ function getTransitionDuration($element: HTMLElement): number {
   const style = window.getComputedStyle($element);
   const durations = style.transitionDuration.split(',');
   const delays = style.transitionDelay.split(',');
-  let max = 0;
-  for (let i = 0; i < durations.length; i++) {
-    const total =
-      parseTime(durations[i] ?? '0s') + parseTime(delays[i] ?? '0s');
-    if (total > max) {
-      max = total;
-    }
-  }
-  return max;
+  const totals = durations.map(
+    (duration, index) => parseTime(duration) + parseTime(delays[index] ?? '0s'),
+  );
+  return Math.max(0, ...totals);
 }
 
 function parseTime(value: string): number {

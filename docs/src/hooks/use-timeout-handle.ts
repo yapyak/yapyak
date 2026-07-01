@@ -17,7 +17,7 @@ export function useTimeoutHandle(
 ): UseTimeoutHandleReturn {
   const { delay } = options;
 
-  const latestCallback = useLatest(callback);
+  const latestCallbackRef = useLatest(callback);
   const timeoutRef = useRef<number>(undefined);
 
   const stop = () => {
@@ -30,7 +30,7 @@ export function useTimeoutHandle(
   const start = () => {
     stop();
     timeoutRef.current = window.setTimeout(() => {
-      latestCallback.current();
+      latestCallbackRef.current();
     }, delay);
   };
 

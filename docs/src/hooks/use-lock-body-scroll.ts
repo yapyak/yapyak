@@ -11,22 +11,22 @@ export type UseLockBodyScrollOptions = {
 export function useLockBodyScroll({
   enabled = true,
 }: UseLockBodyScrollOptions = {}): void {
-  const isLocked = useRef(false);
+  const isLockedRef = useRef(false);
 
   useEffect(() => {
     const doc = getDocument();
 
-    if (enabled && !isLocked.current) {
+    if (enabled && !isLockedRef.current) {
       if (scrollLockCount === 0) {
         doc.body.style.overflow = 'clip';
       }
       scrollLockCount++;
-      isLocked.current = true;
+      isLockedRef.current = true;
     }
 
-    if (!enabled && isLocked.current) {
+    if (!enabled && isLockedRef.current) {
       scrollLockCount--;
-      isLocked.current = false;
+      isLockedRef.current = false;
 
       if (scrollLockCount <= 0) {
         doc.body.style.overflow = '';
@@ -38,9 +38,9 @@ export function useLockBodyScroll({
     }
 
     return () => {
-      if (isLocked.current) {
+      if (isLockedRef.current) {
         scrollLockCount--;
-        isLocked.current = false;
+        isLockedRef.current = false;
 
         if (scrollLockCount <= 0) {
           doc.body.style.overflow = '';

@@ -22,7 +22,7 @@ export const Route = createFileRoute('/guide/$')({
     if (loaderData === undefined) {
       return {};
     }
-    const section = deriveSection(params._splat ?? '');
+    const section = getSection(params._splat ?? '');
     const title =
       section === ''
         ? `${loaderData.page.title} - yapyak`
@@ -46,7 +46,7 @@ function Component() {
   return <PageArticle page={page} />;
 }
 
-function deriveSection(splat: string): string {
+function getSection(splat: string): string {
   const segments = splat.split('/');
   if (segments.length < 2) {
     return '';

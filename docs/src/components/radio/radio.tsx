@@ -22,7 +22,7 @@ export function Radio(props: RadioProps) {
         aria-hidden={true}
         className={styles.Indicator}
       />
-      {children !== undefined && (
+      {children && (
         <Box
           as="span"
           className={styles.Label}

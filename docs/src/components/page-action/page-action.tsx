@@ -50,8 +50,8 @@ export type PageActionProps = BoxProps<'nav'> & {
 export function PageAction(props: PageActionProps) {
   const { className, href, ...restProps } = props;
   const [isCopied, setIsCopied] = useState(false);
-  const [origin, setOrigin] = useState<string | undefined>(undefined);
-  const timeoutRef = useRef<number | undefined>(undefined);
+  const [origin, setOrigin] = useState<string>();
+  const timeoutRef = useRef<number>(undefined);
 
   useEffect(() => {
     setOrigin(window.location.origin);

@@ -1,6 +1,5 @@
 import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
-import { mergeClassNames } from '#utils/merge-class-names';
 
 import styles from './logo-link.module.css';
 
@@ -13,7 +12,10 @@ export function LogoLink(props: LogoLinkProps) {
 
   return (
     <LinkBase
-      className={mergeClassNames(styles.LogoLink, className)}
+      className={[
+        styles.LogoLink,
+        className,
+      ]}
       to="/home"
     >
       <Box

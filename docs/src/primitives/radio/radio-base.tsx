@@ -37,8 +37,8 @@ export function RadioBase(props: RadioBaseProps) {
     <Box
       {...restProps}
       as="label"
-      data-checked={isChecked || undefined}
-      data-disabled={isDisabled || undefined}
+      data-checked={isChecked}
+      data-disabled={isDisabled}
     >
       {children}
       <Box

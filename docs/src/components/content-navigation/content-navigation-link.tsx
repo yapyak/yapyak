@@ -15,7 +15,7 @@ export type ContentNavigationLinkProps = LinkBaseProps & {
 export function ContentNavigationLink(props: ContentNavigationLinkProps) {
   const { className, node, ...restProps } = props;
   const isDeprecated = node.badge?.variant === 'deprecated';
-  const ref = useRef<HTMLAnchorElement>(null);
+  const element = useRef<HTMLAnchorElement>(null);
   const initialPathname = useLocation({
     select: (location) => location.pathname,
   });
@@ -23,7 +23,7 @@ export function ContentNavigationLink(props: ContentNavigationLinkProps) {
 
   useEffect(() => {
     if (isActiveOnMountRef.current) {
-      ref.current?.scrollIntoView({
+      element.current?.scrollIntoView({
         block: 'nearest',
       });
     }
@@ -40,7 +40,7 @@ export function ContentNavigationLink(props: ContentNavigationLinkProps) {
         className,
       ]}
       data-deprecated={isDeprecated}
-      ref={ref}
+      ref={element}
       to={node.href}
     >
       {node.label}

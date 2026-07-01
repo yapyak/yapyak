@@ -4,6 +4,10 @@ import { Box } from '#primitives/box';
 
 import { useStack } from './use-stack';
 
+const ISOLATION_STYLE = {
+  isolation: 'isolate',
+} as const;
+
 export type StackProps = BoxProps & {
   onActiveChange?: (isActive: boolean) => void;
 };
@@ -20,9 +24,7 @@ export function Stack(props: StackProps) {
       {...restProps}
       inert={!isActive || inert}
       style={[
-        {
-          isolation: 'isolate',
-        },
+        ISOLATION_STYLE,
         style,
       ]}
     />

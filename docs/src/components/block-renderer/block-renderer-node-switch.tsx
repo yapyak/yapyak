@@ -18,18 +18,18 @@ export function BlockRendererNodeSwitch(props: BlockRendererNodeSwitchProps) {
   if (group === undefined) {
     return null;
   }
-  const active = get(block.group);
+  const activeValue = get(block.group);
 
   return (
     <Box data-switch-group={block.group}>
       {group.options.map((option) => {
         const branchBlocks =
           block.branches[option.value] ?? block.fallback ?? [];
-        const visible = option.value === active;
+        const isVisible = option.value === activeValue;
         return (
           <Box
             data-when-value={option.value}
-            hidden={!visible}
+            hidden={!isVisible}
             key={option.value}
           >
             <BlockRenderer blocks={branchBlocks} />

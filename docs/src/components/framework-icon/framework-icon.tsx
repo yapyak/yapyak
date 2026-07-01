@@ -58,6 +58,7 @@ export function FrameworkIcon(props: FrameworkIconProps) {
     case 'vue':
       return (
         <svg
+          {...restProps}
           aria-hidden="true"
           height={size}
           shapeRendering="geometricPrecision"
@@ -79,6 +80,7 @@ export function FrameworkIcon(props: FrameworkIconProps) {
     case 'svelte':
       return (
         <svg
+          {...restProps}
           aria-hidden="true"
           height={size}
           shapeRendering="geometricPrecision"
@@ -100,6 +102,7 @@ export function FrameworkIcon(props: FrameworkIconProps) {
     case 'astro':
       return (
         <svg
+          {...restProps}
           aria-hidden="true"
           height={size}
           shapeRendering="geometricPrecision"

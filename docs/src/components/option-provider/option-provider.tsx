@@ -14,12 +14,21 @@ import {
 } from './option-storage';
 import { doc } from 'virtual:doc-compiler';
 
-function readDefaults(registry: OptionsRegistry) {
-  const initial: Record<string, string> = {};
+function getDefaults(registry: OptionsRegistry) {
+  const defaults: Record<string, string> = {};
   for (const [groupId, group] of Object.entries(registry)) {
-    initial[groupId] = group.default;
+    defaults[groupId] = group.default;
   }
-  return initial;
+  return defaults;
+}
+
+function persistOption(groupId: string, value: string): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  try {
+    window.localStorage.setItem(`${OPTION_STORAGE_PREFIX}${groupId}`, value);
+  } catch {}
 }
 
 export type OptionProviderProps = PropsWithChildren;
@@ -28,7 +37,7 @@ export function OptionProvider(props: OptionProviderProps) {
   const { children } = props;
   const registry = doc.getOptions();
   const [state, setState] = useState<Record<string, string>>(() =>
-    readDefaults(registry),
+    getDefaults(registry),
   );
 
   const flash = useFlash();
@@ -96,15 +105,6 @@ export function OptionProvider(props: OptionProviderProps) {
       });
     }
   };
-
-  function persistOption(groupId: string, value: string): void {
-    if (typeof window === 'undefined') {
-      return;
-    }
-    try {
-      window.localStorage.setItem(`${OPTION_STORAGE_PREFIX}${groupId}`, value);
-    } catch {}
-  }
 
   return (
     <OptionContext

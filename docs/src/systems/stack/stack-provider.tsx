@@ -29,14 +29,15 @@ export function StackProvider(props: StackProviderProps) {
   }
 
   useLayoutEffect(() => {
-    const previous = previousEntriesRef.current;
+    const $previousEntries = previousEntriesRef.current;
 
-    const removed = previous.find(
-      (prev) => !entries.some((entry) => entry.id === prev.id),
+    const removedEntry = $previousEntries.find(
+      (previousEntry) =>
+        !entries.some((entry) => entry.id === previousEntry.id),
     );
 
-    if (entries.length < previous.length && removed) {
-      const $element = removed.lastFocusedElement;
+    if (entries.length < $previousEntries.length && removedEntry) {
+      const $element = removedEntry.lastFocusedElement;
       if ($element instanceof HTMLElement && $element.isConnected) {
         $element.focus({
           preventScroll: true,

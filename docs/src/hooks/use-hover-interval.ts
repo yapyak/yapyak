@@ -31,15 +31,15 @@ export function useHoverInterval(
     minInterval = 1,
   } = options;
 
-  const intervalDelay = useRef(delay);
-  const stepIndex = useRef(0);
+  const intervalDelayRef = useRef(delay);
+  const stepIndexRef = useRef(0);
 
   const updateInterval = () => {
-    stepIndex.current += 1;
-    let nextInterval = delay / accelerationFactor ** stepIndex.current;
+    stepIndexRef.current += 1;
+    let nextInterval = delay / accelerationFactor ** stepIndexRef.current;
     nextInterval = Math.min(nextInterval, maxInterval);
     nextInterval = Math.max(nextInterval, minInterval);
-    intervalDelay.current = nextInterval;
+    intervalDelayRef.current = nextInterval;
   };
 
   const intervalHandle = useIntervalHandle(
@@ -48,7 +48,7 @@ export function useHoverInterval(
       updateInterval();
     },
     {
-      delay: intervalDelay.current,
+      delay: intervalDelayRef.current,
       immediate,
     },
   );
@@ -57,8 +57,8 @@ export function useHoverInterval(
     if (disabled) {
       return;
     }
-    stepIndex.current = 0;
-    intervalDelay.current = delay;
+    stepIndexRef.current = 0;
+    intervalDelayRef.current = delay;
     intervalHandle.start();
   };
 

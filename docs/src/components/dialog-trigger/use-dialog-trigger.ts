@@ -58,21 +58,25 @@ export function useDialogTrigger(
     location.hash,
   ]);
 
+  const handleTriggerClick = () => {
+    drawer.open();
+  };
+
+  const handleDialogClose = () => {
+    drawer.close();
+  };
+
   const triggerProps = {
     'aria-controls': drawer.isOpen ? id : undefined,
     'aria-expanded': drawer.isOpen,
     'aria-haspopup': 'dialog' as const,
-    onClick: (): void => {
-      drawer.open();
-    },
+    onClick: handleTriggerClick,
     ref: targetElement,
   };
 
   const dialogProps = {
     id,
-    onClose: (): void => {
-      drawer.close();
-    },
+    onClose: handleDialogClose,
     open: drawer.isOpen,
   };
 

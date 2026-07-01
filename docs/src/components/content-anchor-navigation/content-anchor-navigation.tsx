@@ -29,11 +29,11 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
 
   useEffect(() => {
-    const raf = window.requestAnimationFrame(() => {
+    const frameHandle = window.requestAnimationFrame(() => {
       setIsAnimationEnabled(true);
     });
     return () => {
-      window.cancelAnimationFrame(raf);
+      window.cancelAnimationFrame(frameHandle);
     };
   }, []);
 
@@ -83,7 +83,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
           return;
         }
 
-        let lastAbove: string | null = null;
+        let lastAbove: string | undefined;
         for (const heading of headings) {
           const headingElement = document.getElementById(heading.id);
           if (!headingElement) {
@@ -95,7 +95,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
             break;
           }
         }
-        if (lastAbove !== null) {
+        if (lastAbove !== undefined) {
           setActiveId(lastAbove);
         }
       },

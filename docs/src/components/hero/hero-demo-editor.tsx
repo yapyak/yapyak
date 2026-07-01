@@ -86,7 +86,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
   const tabsElement = useRef<HTMLDivElement>(null);
   const previousFrameworkRef = useRef<Framework | null>(null);
   const [indicator, setIndicator] = useState<IndicatorState | null>(null);
-  const [animating, setAnimating] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useLayoutEffect(() => {
     const $tabsElement = tabsElement.current;
@@ -111,7 +111,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
       previousFrameworkRef.current !== null &&
       previousFrameworkRef.current !== framework
     ) {
-      setAnimating(true);
+      setIsAnimating(true);
     }
     previousFrameworkRef.current = framework;
     const observer = new ResizeObserver(updateIndicator);
@@ -131,7 +131,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
     if (event.propertyName !== 'transform') {
       return;
     }
-    setAnimating(false);
+    setIsAnimating(false);
   };
 
   return (
@@ -141,7 +141,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
         styles.HeroDemoEditor,
         className,
       ]}
-      data-animating={animating}
+      data-animating={isAnimating}
       data-saving={saving}
       style={
         indicator

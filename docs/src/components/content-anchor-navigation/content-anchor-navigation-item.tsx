@@ -37,7 +37,7 @@ export function ContentAnchorNavigationItem(
         styles.ContentAnchorNavigationItem,
         className,
       ]}
-      data-active={active ? '' : undefined}
+      data-active={active}
       data-level={heading.level}
       hash={heading.id}
       hashScrollIntoView={false}

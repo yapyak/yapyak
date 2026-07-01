@@ -39,7 +39,7 @@ export class FocusManager {
     const items = this.getNodes({
       tabbableOnly,
     });
-    const index = this.activeIndex(items);
+    const index = this.getActiveIndex(items);
     const target = items[index + 1] ?? (loop ? items[0] : undefined);
     target?.focus();
   }
@@ -49,7 +49,7 @@ export class FocusManager {
     const items = this.getNodes({
       tabbableOnly,
     });
-    const index = this.activeIndex(items);
+    const index = this.getActiveIndex(items);
     let target: HTMLElement | undefined;
     if (index === -1) {
       target = items[items.length - 1];
@@ -68,7 +68,7 @@ export class FocusManager {
     this.getNodes(options).find(predicate)?.focus();
   }
 
-  activeIndex(items: HTMLElement[]) {
+  getActiveIndex(items: HTMLElement[]) {
     const active = getDocument(this.element)
       .activeElement as HTMLElement | null;
     return active ? items.indexOf(active) : -1;

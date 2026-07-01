@@ -1,7 +1,6 @@
 import type { LinkBaseProps } from '#primitives/link';
 
 import { LinkBase } from '#primitives/link';
-import { mergeClassNames } from '#utils/merge-class-names';
 
 import styles from './navigation-link.module.css';
 
@@ -13,7 +12,10 @@ export function NavigationLink(props: NavigationLinkProps) {
   return (
     <LinkBase
       {...restProps}
-      className={mergeClassNames(styles.NavigationLink, className)}
+      className={[
+        styles.NavigationLink,
+        className,
+      ]}
     />
   );
 }

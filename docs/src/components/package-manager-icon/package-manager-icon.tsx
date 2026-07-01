@@ -30,6 +30,7 @@ export function PackageManagerIcon(props: PackageManagerIconProps) {
     case 'pnpm':
       return (
         <svg
+          {...restProps}
           aria-hidden="true"
           height={size}
           shapeRendering="geometricPrecision"
@@ -47,6 +48,7 @@ export function PackageManagerIcon(props: PackageManagerIconProps) {
     case 'bun':
       return (
         <svg
+          {...restProps}
           aria-hidden="true"
           height={size}
           shapeRendering="geometricPrecision"

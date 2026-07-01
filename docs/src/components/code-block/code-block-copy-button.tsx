@@ -20,12 +20,12 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
   const { className, source, ...restProps } = props;
 
   const [isCopied, setIsCopied] = useState(false);
-  const resetTimerRef = useRef<number | undefined>(undefined);
+  const timeoutRef = useRef<number>(undefined);
 
   useEffect(
     () => () => {
-      if (resetTimerRef.current !== undefined) {
-        window.clearTimeout(resetTimerRef.current);
+      if (timeoutRef.current !== undefined) {
+        window.clearTimeout(timeoutRef.current);
       }
     },
     [],
@@ -38,10 +38,10 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
       return;
     }
     setIsCopied(true);
-    if (resetTimerRef.current !== undefined) {
-      window.clearTimeout(resetTimerRef.current);
+    if (timeoutRef.current !== undefined) {
+      window.clearTimeout(timeoutRef.current);
     }
-    resetTimerRef.current = window.setTimeout(() => {
+    timeoutRef.current = window.setTimeout(() => {
       setIsCopied(false);
     }, RESET_DELAY_MS);
   };
@@ -54,7 +54,7 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
         styles.CodeBlockCopyButton,
         className,
       ]}
-      data-copied={isCopied ? '' : undefined}
+      data-copied={isCopied}
       onClick={handleClick}
     >
       <Box

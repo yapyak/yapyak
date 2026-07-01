@@ -31,10 +31,10 @@ export function useEventListener<
     once = false,
   }: UseEventListenerOptions = {},
 ): void {
-  const stableListener = useRef(listener);
+  const listenerRef = useRef(listener);
 
   useEffect(() => {
-    stableListener.current = listener;
+    listenerRef.current = listener;
   }, [
     listener,
   ]);
@@ -47,7 +47,7 @@ export function useEventListener<
     }
 
     const handle = (event: EventMap<T>[K]) => {
-      stableListener.current(event);
+      listenerRef.current(event);
     };
 
     $target.addEventListener(type as string, handle as EventListener, {

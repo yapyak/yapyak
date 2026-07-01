@@ -17,7 +17,7 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
   const { block, className, ...restProps } = props;
   const { get, set } = useOptionContext();
   const group = doc.getOptionsGroup(block.group);
-  const active = get(block.group);
+  const activeValue = get(block.group);
 
   if (group === undefined) {
     return null;
@@ -49,7 +49,7 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
       >
         {options.map((option) => (
           <BlockRendererNodePickerOption
-            active={option.value === active}
+            active={option.value === activeValue}
             groupId={block.group}
             key={option.value}
             label={option.label}
