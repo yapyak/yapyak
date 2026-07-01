@@ -1,7 +1,7 @@
 import type { PickerBlock } from '@yapyak/doc-compiler';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { OptionDot } from '#components/option-dot';
 import { useOptionContext } from '#components/option-provider';
 

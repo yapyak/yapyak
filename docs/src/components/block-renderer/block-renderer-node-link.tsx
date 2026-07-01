@@ -1,9 +1,9 @@
 import type { LinkBlock } from '@yapyak/doc-compiler';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { Link } from '@tanstack/react-router';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { ExternalLink } from '#components/external-link';
 
 import { BlockRendererNode } from './block-renderer-node';

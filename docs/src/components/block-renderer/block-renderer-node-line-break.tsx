@@ -1,4 +1,4 @@
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 export function BlockRendererNodeLineBreak() {
   return <Box as="br" />;

@@ -1,10 +1,10 @@
 import type { TransitionEvent } from 'react';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { useLocation } from '@tanstack/react-router';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './navigation.module.css';
 import { NavigationLink } from './navigation-link';

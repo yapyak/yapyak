@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react';
 
 import { useRef } from 'react';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { PortalProvider } from '#systems/portal';
 import { Stack, StackProvider } from '#systems/stack';
 

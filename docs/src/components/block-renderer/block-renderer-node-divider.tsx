@@ -1,4 +1,4 @@
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 export function BlockRendererNodeDivider() {
   return <Box as="hr" />;

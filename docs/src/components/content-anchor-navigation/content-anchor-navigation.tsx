@@ -1,10 +1,10 @@
 import type { HeadingEntry } from '@yapyak/doc-compiler';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './content-anchor-navigation.module.css';
 import { ContentAnchorNavigationItem } from './content-anchor-navigation-item';

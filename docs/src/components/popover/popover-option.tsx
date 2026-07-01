@@ -1,7 +1,7 @@
 import type { ElementType } from 'react';
-import type { BoxPropsWithAs } from '#components/box';
+import type { BoxPropsWithAs } from '#primitives/box';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './popover.module.css';
 

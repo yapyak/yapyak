@@ -18,6 +18,9 @@
       "#lib/*": [
         "./src/lib/*"
       ],
+      "#primitives/*": [
+        "./src/primitives/*"
+      ],
       "#styles/*": [
         "./src/styles/*"
       ],

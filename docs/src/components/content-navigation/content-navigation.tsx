@@ -1,7 +1,7 @@
 import type { SidebarNode } from '@yapyak/doc-compiler';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './content-navigation.module.css';
 import { ContentNavigationGroup } from './content-navigation-group';

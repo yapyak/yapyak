@@ -8,6 +8,7 @@
     "#docs/*": "./src/docs/*",
     "#hooks/*": "./src/hooks/*",
     "#lib/*": "./src/lib/*",
+    "#primitives/*": "./src/primitives/*",
     "#styles/*": "./src/styles/*",
     "#systems/*": "./src/systems/*",
     "#types": "./src/types.ts",

@@ -1,9 +1,9 @@
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { Link } from '@tanstack/react-router';
 import { t } from 'yapyak';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './hero.module.css';
 import { HeroDemo } from './hero-demo';

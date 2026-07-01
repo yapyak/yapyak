@@ -2,7 +2,7 @@ import type { ContentNavigationGroupProps } from './content-navigation-group';
 
 import { Link, useLocation } from '@tanstack/react-router';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import { getKey, renderChild } from './content-navigation-group';
 import styles from './content-navigation-group.module.css';

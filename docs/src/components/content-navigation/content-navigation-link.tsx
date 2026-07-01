@@ -1,10 +1,10 @@
 import type { SidebarLink } from '@yapyak/doc-compiler';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { Link, useLocation } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './content-navigation-link.module.css';
 

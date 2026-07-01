@@ -1,6 +1,6 @@
 import { t } from 'yapyak';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './not-found-view.module.css';
 

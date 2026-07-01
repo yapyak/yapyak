@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { mergeClassNames } from '#utils/merge-class-names';
 
 import styles from './logo-link.module.css';

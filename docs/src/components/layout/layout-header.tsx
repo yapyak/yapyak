@@ -1,10 +1,10 @@
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { Link, useLocation } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { t } from 'yapyak';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { OptionPickList } from '#components/option-pick-list';

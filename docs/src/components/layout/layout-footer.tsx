@@ -1,6 +1,6 @@
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './layout-footer.module.css';
 

@@ -1,9 +1,9 @@
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 import type { Framework } from './hero-demo-editor';
 
 import { useEffect, useRef, useState } from 'react';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { useDemoState } from '#hooks/use-demo-state';
 
 import styles from './hero-demo.module.css';

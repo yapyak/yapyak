@@ -1,8 +1,8 @@
 import type { Page } from '@yapyak/doc-compiler';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { BlockRenderer } from '#components/block-renderer';
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { ContentPagination } from '#components/content-pagination';
 
 import styles from './page-article.module.css';

@@ -1,0 +1,59 @@
+import type { ChangeEvent, ReactElement } from 'react';
+import type { BoxProps } from '#primitives/box';
+
+import { Box } from '#primitives/box';
+
+import styles from './radio-base.module.css';
+import { useRadioGroupContext } from './radio-group-context';
+
+export type RadioBaseProps = Omit<BoxProps<'label'>, 'onChange'> & {
+  disabled?: boolean;
+  inputProps?: BoxProps<'input'>;
+  onChange?: (event: ChangeEvent<HTMLInputElement>) => void;
+  value: string;
+};
+
+export function RadioBase(props: RadioBaseProps): ReactElement {
+  const {
+    children,
+    disabled = false,
+    inputProps,
+    onChange,
+    value,
+    ...restProps
+  } = props;
+
+  const group = useRadioGroupContext();
+  const isDisabled = disabled || group.disabled;
+  const isChecked = group.value === value;
+
+  return (
+    <Box
+      {...restProps}
+      as="label"
+      data-checked={isChecked || undefined}
+      data-disabled={isDisabled || undefined}
+    >
+      {children}
+      <Box
+        {...inputProps}
+        as="input"
+        checked={isChecked}
+        className={[
+          styles.Input,
+          inputProps?.className,
+        ]}
+        disabled={isDisabled}
+        name={group.name}
+        onChange={(event: ChangeEvent<HTMLInputElement>) => {
+          if (event.target.checked) {
+            group.setValue(value);
+          }
+          onChange?.(event);
+        }}
+        type="radio"
+        value={value}
+      />
+    </Box>
+  );
+}

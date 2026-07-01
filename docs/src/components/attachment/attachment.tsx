@@ -1,11 +1,11 @@
 import type { ReactElement } from 'react';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 import type { UseAnchoredPositionOptions } from '#hooks/use-anchored-position';
 import type { RefOrValue } from '#types';
 
 import { useRef } from 'react';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { useAnchoredPosition } from '#hooks/use-anchored-position';
 import { px } from '#utils/px';
 

@@ -1,5 +1,5 @@
 import type { OptionItem } from '@yapyak/doc-compiler';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { CheckIcon } from '#components/check-icon';
 import { OptionAtom } from '#components/option-atom';

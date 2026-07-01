@@ -1,6 +1,6 @@
 import type { SVGProps } from 'react';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './option-dot.module.css';
 

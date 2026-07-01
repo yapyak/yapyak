@@ -1,9 +1,9 @@
 import type { Page } from '@yapyak/doc-compiler';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { Link } from '@tanstack/react-router';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 
 import styles from './content-pagination.module.css';
 

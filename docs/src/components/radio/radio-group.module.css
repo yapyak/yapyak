@@ -1,0 +1,7 @@
+@layer components {
+  .RadioGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+  }
+}

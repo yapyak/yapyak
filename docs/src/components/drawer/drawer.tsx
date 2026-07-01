@@ -1,8 +1,8 @@
 import type { ReactElement } from 'react';
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 
 import { Backdrop } from '#components/backdrop';
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { Overlay } from '#components/overlay';
 import { Animate } from '#systems/animate';
 

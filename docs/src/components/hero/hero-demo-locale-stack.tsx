@@ -1,7 +1,7 @@
-import type { BoxProps } from '#components/box';
+import type { BoxProps } from '#primitives/box';
 import type { LocaleCode } from '#lib/hero-demo';
 
-import { Box } from '#components/box';
+import { Box } from '#primitives/box';
 import { CodeBlockToken } from '#components/code-block-token';
 import { LOCALES } from '#lib/hero-demo';
 
