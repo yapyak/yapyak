@@ -15,14 +15,14 @@ export function BlockRendererNodeTable(props: BlockRendererNodeTableProps) {
   return (
     <Box
       className={[
-        styles.BlockRendererNodeTableScroll,
+        styles.BlockRendererNodeTable,
         className,
       ]}
     >
       <Box
         {...restProps}
         as="table"
-        className={styles.BlockRendererNodeTable}
+        className={styles.Table}
       >
         {block.head && (
           <Box as="thead">

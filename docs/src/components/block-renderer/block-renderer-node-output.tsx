@@ -16,7 +16,7 @@ export function BlockRendererNodeOutput(props: BlockRendererNodeOutputProps) {
   return (
     <Box
       className={[
-        styles.Output,
+        styles.BlockRendererNodeOutput,
         className,
       ]}
       data-with-locales={hasLocales}

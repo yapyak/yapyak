@@ -37,7 +37,7 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
       {...restProps}
       as="section"
       className={[
-        styles.Picker,
+        styles.BlockRendererNodePicker,
         className,
       ]}
     >

@@ -19,7 +19,7 @@ export function PageActionButton(props: PageActionButtonProps) {
     <ButtonBase
       {...restProps}
       className={[
-        styles.Button,
+        styles.PageActionButton,
         className,
       ]}
     >

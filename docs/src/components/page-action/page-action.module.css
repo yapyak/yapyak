@@ -12,7 +12,7 @@
     margin-top: var(--spacing-3);
     border-top: var(--px) solid var(--rule);
 
-    :is(.Button, .Link) {
+    :is(.PageActionButton, .PageActionLink) {
       display: flex;
       gap: var(--spacing-2);
       align-items: center;

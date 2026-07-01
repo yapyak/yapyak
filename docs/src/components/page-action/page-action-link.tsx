@@ -19,7 +19,7 @@ export function PageActionLink(props: PageActionLinkProps) {
       {...restProps}
       as="a"
       className={[
-        styles.Link,
+        styles.PageActionLink,
         className,
       ]}
       href={href}

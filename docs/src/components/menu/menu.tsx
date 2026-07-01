@@ -92,7 +92,7 @@ export function Menu(props: MenuProps) {
             styles.Menu,
             className,
           ]}
-          onClose={onClose ?? (() => {})}
+          onClose={handleClose}
         >
           <SlideBar>{children}</SlideBar>
         </MenuBase>
