@@ -34,8 +34,8 @@
 
     &[data-checked] {
       color: var(--foreground);
-      background-color: var(--surface-stronger);
-      box-shadow: inset 0 0 0 var(--px) var(--ring-stronger);
+      background-color: var(--surface-strong);
+      box-shadow: inset 0 0 0 var(--px) var(--ring-strong);
     }
   }
 }

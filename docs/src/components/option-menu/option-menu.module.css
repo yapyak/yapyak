@@ -31,6 +31,7 @@
 
     .Chevron {
       display: inline-flex;
+      margin-left: auto;
       color: var(--foreground-softer);
     }
 

@@ -1,7 +1,7 @@
 import { Box } from '#primitives/box';
 
 import styles from './installation-wizard.module.css';
-import { InstallationWizardRow } from './installation-wizard-row';
+import { InstallationWizardGroup } from './installation-wizard-group';
 
 const GROUPS = [
   'packageManager',
@@ -17,7 +17,7 @@ export function InstallationWizard() {
       className={styles.InstallationWizard}
     >
       {GROUPS.map((groupId) => (
-        <InstallationWizardRow
+        <InstallationWizardGroup
           group={groupId}
           key={groupId}
         />

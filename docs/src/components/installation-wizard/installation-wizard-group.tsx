@@ -7,15 +7,15 @@ import { Box } from '#primitives/box';
 import { RadioGroupBase } from '#primitives/radio';
 
 import { visibleOptionsForGroup } from '../../adapter';
+import styles from './installation-wizard-group.module.css';
 import { InstallationWizardOption } from './installation-wizard-option';
-import styles from './installation-wizard-row.module.css';
 import { doc } from 'virtual:doc-compiler';
 
-export type InstallationWizardRowProps = {
+export type InstallationWizardGroupProps = {
   group: string;
 };
 
-export function InstallationWizardRow(props: InstallationWizardRowProps) {
+export function InstallationWizardGroup(props: InstallationWizardGroupProps) {
   const { group: groupId } = props;
   const { get, set } = useOptionContext();
   const group = doc.getOptionsGroup(groupId);
@@ -42,30 +42,28 @@ export function InstallationWizardRow(props: InstallationWizardRowProps) {
   };
 
   return (
-    <Box className={styles.InstallationWizardRow}>
+    <Box className={styles.InstallationWizardGroup}>
       <Box className={styles.Label}>{group.label}</Box>
-      <Box className={styles.Options}>
-        {isCompact ? (
-          <OptionMenu group={groupId} />
-        ) : (
-          <RadioGroupBase
-            aria-label={group.label}
-            className={styles.RadioGroup}
-            name={`installation-wizard-${groupId}`}
-            onChange={handleChange}
-            value={activeValue}
-          >
-            {options.map((option) => (
-              <InstallationWizardOption
-                accent={option.value as SwatchAccent}
-                key={option.value}
-                label={option.label}
-                value={option.value}
-              />
-            ))}
-          </RadioGroupBase>
-        )}
-      </Box>
+      {isCompact ? (
+        <OptionMenu group={groupId} />
+      ) : (
+        <RadioGroupBase
+          aria-label={group.label}
+          className={styles.RadioGroup}
+          name={`installation-wizard-${groupId}`}
+          onChange={handleChange}
+          value={activeValue}
+        >
+          {options.map((option) => (
+            <InstallationWizardOption
+              accent={option.value as SwatchAccent}
+              key={option.value}
+              label={option.label}
+              value={option.value}
+            />
+          ))}
+        </RadioGroupBase>
+      )}
     </Box>
   );
 }
