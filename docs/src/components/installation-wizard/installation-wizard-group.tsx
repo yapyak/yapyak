@@ -6,10 +6,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { OptionMenu } from '#components/option-menu';
 import { useOptionContext } from '#components/option-provider';
 import { useMediaQuery } from '#hooks/use-media-query';
+import { visibleOptionsForGroup } from '#lib/adapter';
 import { Box } from '#primitives/box';
 import { RadioGroupBase } from '#primitives/radio';
 
-import { visibleOptionsForGroup } from '../../adapter';
 import styles from './installation-wizard-group.module.css';
 import { InstallationWizardOption } from './installation-wizard-option';
 import { doc } from 'virtual:doc-compiler';

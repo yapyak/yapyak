@@ -1,17 +1,5 @@
 import type { Token } from './type';
 
-const ICU_KEYWORDS: Set<string> = new Set([
-  'plural',
-  'select',
-  'selectordinal',
-  'number',
-  'date',
-  'time',
-  'spellout',
-  'ordinal',
-  'duration',
-]);
-
 export function expandTxSourcePlaceholders(tokens: Token[]) {
   const result: Token[] = [];
   for (const token of tokens) {
@@ -334,5 +322,3 @@ function isWhitespace(character: string): boolean {
     character === '\r'
   );
 }
-
-export const ICU_KEYWORD_SET = ICU_KEYWORDS;

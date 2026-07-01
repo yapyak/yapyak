@@ -6,10 +6,10 @@ import { ChevronIcon } from '#components/chevron-icon';
 import { Menu, MenuTrigger } from '#components/menu';
 import { useOptionContext } from '#components/option-provider';
 import { Swatch } from '#components/swatch';
+import { visibleOptionsForGroup } from '#lib/adapter';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
-import { visibleOptionsForGroup } from '../../adapter';
 import styles from './option-menu.module.css';
 import { doc } from 'virtual:doc-compiler';
 

@@ -3,7 +3,8 @@ import type { PropsWithChildren } from 'react';
 
 import { useEffect, useState } from 'react';
 
-import { filterAdaptersByFramework } from '../../adapter';
+import { filterAdaptersByFramework } from '#lib/adapter';
+
 import { OptionContext } from './option-context';
 import {
   OPTION_PREPAINT_STYLE_ID,

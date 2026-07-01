@@ -2,9 +2,9 @@ import type { PickerBlock } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { useOptionContext } from '#components/option-provider';
+import { visibleOptionsForGroup } from '#lib/adapter';
 import { Box } from '#primitives/box';
 
-import { visibleOptionsForGroup } from '../../adapter';
 import styles from './block-renderer-node-picker.module.css';
 import { BlockRendererNodePickerOption } from './block-renderer-node-picker-option';
 import { doc } from 'virtual:doc-compiler';

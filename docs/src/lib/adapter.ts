@@ -1,10 +1,10 @@
-export type Adapter = {
+type Adapter = {
   frameworks: string[];
   label: string;
   value: string;
 };
 
-export const ADAPTERS: Adapter[] = [
+const ADAPTERS: Adapter[] = [
   {
     frameworks: [
       'react',

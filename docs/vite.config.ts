@@ -4,7 +4,6 @@ import { docCompiler } from '@yapyak/doc-compiler/vite';
 import { yapyak } from '@yapyak/vite';
 import { defineConfig } from 'vite';
 
-import { ADAPTERS } from './src/adapter';
 import { resolve } from 'node:path';
 
 type ReferencePackage = {
@@ -194,10 +193,24 @@ export default defineConfig({
         adapter: {
           default: 'none',
           label: 'Adapter',
-          options: ADAPTERS.map(({ label, value }) => ({
-            label,
-            value,
-          })),
+          options: [
+            {
+              label: 'None',
+              value: 'none',
+            },
+            {
+              label: 'React Router',
+              value: 'react-router',
+            },
+            {
+              label: 'TanStack Start',
+              value: 'tanstack-start',
+            },
+            {
+              label: 'SvelteKit',
+              value: 'sveltekit',
+            },
+          ],
         },
         framework: {
           default: 'react',
