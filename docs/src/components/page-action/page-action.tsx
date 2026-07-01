@@ -1,5 +1,5 @@
+import type { SwatchAccent } from '#components/swatch';
 import type { BoxProps } from '#primitives/box';
-import type { PageActionChatProvider } from './page-action-chat-menu-item';
 
 import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
@@ -8,18 +8,25 @@ import { ChatIcon } from '#components/chat-icon';
 import { CheckIcon } from '#components/check-icon';
 import { ChevronIcon } from '#components/chevron-icon';
 import { CopyIcon } from '#components/copy-icon';
+import { ExternalLinkIcon } from '#components/external-link-icon';
 import { MarkdownIcon } from '#components/markdown-icon';
-import { MenuTrigger } from '#components/menu';
+import { Menu, MenuTrigger } from '#components/menu';
+import { Swatch } from '#components/swatch';
 import { Box } from '#primitives/box';
 
 import styles from './page-action.module.css';
 import { PageActionButton } from './page-action-button';
-import { PageActionChatMenu } from './page-action-chat-menu';
 import { PageActionLink } from './page-action-link';
 
 const COPIED_RESET_MS = 1500;
 
-const CHAT_PROVIDERS: PageActionChatProvider[] = [
+type ChatProvider = {
+  buildUrl: (encodedPrompt: string) => string;
+  label: string;
+  value: string;
+};
+
+const CHAT_PROVIDERS: ChatProvider[] = [
   {
     buildUrl: (encoded) => `https://chatgpt.com/?hints=search&q=${encoded}`,
     label: 'ChatGPT',
@@ -68,7 +75,7 @@ export function PageAction(props: PageActionProps) {
 
   const markdownPath = `${href}.md`;
 
-  const handleChatSelect = (provider: PageActionChatProvider) => {
+  const handleChatSelect = (provider: ChatProvider) => {
     if (origin === undefined) {
       return;
     }
@@ -115,15 +122,24 @@ export function PageAction(props: PageActionProps) {
       />
       <MenuTrigger
         menu={(menuProps) => (
-          <PageActionChatMenu {...menuProps}>
+          <Menu
+            {...menuProps}
+            alignment="center"
+            aria-label={t('Open in chat')}
+            matchTargetMinWidth={true}
+            placement="bottom"
+          >
             {CHAT_PROVIDERS.map((provider) => (
-              <PageActionChatMenu.Item
+              <Menu.Item
                 key={provider.value}
-                onSelect={handleChatSelect}
-                provider={provider}
-              />
+                leadingIcon={<Swatch accent={provider.value as SwatchAccent} />}
+                onSelect={() => handleChatSelect(provider)}
+                trailingIcon={<ExternalLinkIcon />}
+              >
+                {provider.label}
+              </Menu.Item>
             ))}
-          </PageActionChatMenu>
+          </Menu>
         )}
       >
         {(triggerProps) => (

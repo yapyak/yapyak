@@ -294,7 +294,36 @@ If rendering `*Item` outside its `*List` happens — the abstraction is wrong.
 
 ### `.map` callbacks as their own component
 
-A `.map` callback that produces JSX gets extracted into its own component. No size threshold. Named after its root element-type per [[yapyak-element-type]] — `*Item` when the row is an `<li>` in a `*List`, otherwise the root's own type (a card row is `*Card`).
+Extract a `.map` callback that produces JSX into its own component. Name it after its root element-type per [[yapyak-element-type]] — `*Item` when the row is an `<li>` in a `*List`, otherwise the root's own type (a card row is `*Card`).
+
+**Exception — single-element pass-through.** Keep inline when the callback returns exactly one JSX element with prop forwarding only — no wrapping structure, no logic beyond binding the iteration variable to handlers.
+
+```tsx
+// ✓ Inline — single element, forwards iteration variable
+providers.map((provider) => (
+  <Menu.Item
+    key={provider.value}
+    leadingIcon={<Swatch accent={provider.value} />}
+    onSelect={() => handleSelect(provider)}
+  >
+    {provider.label}
+  </Menu.Item>
+))
+
+// ✗ Multiple children or wrapping structure → extract
+items.map((item) => (
+  <Row>
+    <Cell>{item.name}</Cell>
+    <Cell>{item.status}</Cell>
+  </Row>
+))
+
+// ✗ Logic beyond prop forwarding → extract
+items.map((item) => {
+  const computed = derive(item);
+  return <Row value={computed} />;
+})
+```
 
 ```tsx
 // ✓
@@ -486,7 +515,31 @@ const handleClick = () => {
 return <button onClick={handleClick} />;
 ```
 
-For a per-iteration handler inside `.map`, extract the row into its own component per [[.map callbacks as their own component]].
+**Exception — iteration binding in `.map`.** Keep inline arrow when the callback iterates and the arrow body is one call to a named handler forwarding the iteration variable (and event arguments only).
+
+```tsx
+// ✓ Iteration binding
+items.map((item) => (
+  <Row onClick={() => handleRowClick(item)} />
+))
+
+// ✓ Iteration binding + event forwarding
+items.map((item) => (
+  <Row onClick={(event) => handleRowClick(item, event)} />
+))
+
+// ✗ Multiple statements
+items.map((item) => (
+  <Row onClick={() => { setActive(item); trackEvent('click'); }} />
+))
+
+// ✗ Logic beyond forwarding
+items.map((item) => (
+  <Row onClick={() => handleClick(item.id + 1)} />
+))
+```
+
+For a per-iteration handler that does not fit the iteration-binding exception, extract the row into its own component per [[.map callbacks as their own component]].
 
 Handlers always use block-body arrow functions → never shorthand implicit-return.
 

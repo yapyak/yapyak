@@ -1,19 +1,18 @@
-import type { SwatchAccent } from '#components/swatch';
+import type { ReactNode } from 'react';
 import type { MenuBaseRadioItemProps } from '#primitives/menu';
 
 import { CheckIcon } from '#components/check-icon';
-import { Swatch } from '#components/swatch';
 import { Box } from '#primitives/box';
 import { MenuBaseRadioItem } from '#primitives/menu';
 
 import styles from './menu-radio-item.module.css';
 
 export type MenuRadioItemProps = MenuBaseRadioItemProps & {
-  accent?: SwatchAccent;
+  leadingIcon?: ReactNode;
 };
 
 export function MenuRadioItem(props: MenuRadioItemProps) {
-  const { accent, children, className, ...restProps } = props;
+  const { children, className, leadingIcon, ...restProps } = props;
 
   return (
     <MenuBaseRadioItem
@@ -23,11 +22,14 @@ export function MenuRadioItem(props: MenuRadioItemProps) {
         className,
       ]}
     >
-      {accent !== undefined && (
-        <Swatch
-          accent={accent}
-          className={styles.Swatch}
-        />
+      {leadingIcon && (
+        <Box
+          aria-hidden={true}
+          as="span"
+          className={styles.LeadingIcon}
+        >
+          {leadingIcon}
+        </Box>
       )}
       <Box
         as="span"

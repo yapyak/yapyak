@@ -64,8 +64,8 @@ export function OptionMenu(props: OptionMenuProps) {
           >
             {options.map((option) => (
               <Menu.RadioItem
-                accent={option.value as SwatchAccent}
                 key={option.value}
+                leadingIcon={<Swatch accent={option.value as SwatchAccent} />}
                 value={option.value}
               >
                 {option.label}
