@@ -20,6 +20,7 @@ export function MenuBase(props: MenuBaseProps) {
 
   const { props: stepFocusProps } = useStepFocus<HTMLDivElement>({
     orientation: 'vertical',
+    rovingTabIndex: true,
     searchable: true,
   });
 
