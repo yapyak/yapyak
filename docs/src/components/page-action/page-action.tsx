@@ -3,13 +3,17 @@ import type { BoxProps } from '#primitives/box';
 import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
-import { ChevronIcon } from '#components/chevron-icon';
+import { ChatIcon } from '#components/chat-icon';
+import { CheckIcon } from '#components/check-icon';
+import { CopyIcon } from '#components/copy-icon';
+import { MarkdownIcon } from '#components/markdown-icon';
 import { Popover, PopoverTrigger } from '#components/popover';
 import { Box } from '#primitives/box';
-import { ButtonBase } from '#primitives/button';
 
 import styles from './page-action.module.css';
 import { PageActionChatItem } from './page-action-chat-item';
+import { PageActionLinkTile } from './page-action-link-tile';
+import { PageActionTile } from './page-action-tile';
 
 const COPIED_RESET_MS = 1500;
 
@@ -43,13 +47,12 @@ const CHAT_PROVIDERS: ChatProvider[] = [
   },
 ];
 
-export type PageActionProps = BoxProps<'nav'> & {
+export type PageActionProps = BoxProps & {
   href: string;
-  rail?: boolean;
 };
 
 export function PageAction(props: PageActionProps) {
-  const { className, href, rail = false, ...restProps } = props;
+  const { className, href, ...restProps } = props;
   const [isCopied, setIsCopied] = useState(false);
   const [origin, setOrigin] = useState<string>();
   const timeoutRef = useRef<number>(undefined);
@@ -97,80 +100,49 @@ export function PageAction(props: PageActionProps) {
     <Box
       {...restProps}
       aria-label={t('Page actions')}
-      as="nav"
       className={[
         styles.PageAction,
         className,
       ]}
-      data-rail={rail}
+      role="group"
     >
-      <Box className={styles.Eyebrow}>{t('Actions')}</Box>
-      <Box className={styles.List}>
-        <ButtonBase
-          className={styles.Item}
-          onClick={handleCopy}
-        >
-          <Box
-            as="span"
-            className={styles.Text}
+      <PageActionTile
+        icon={isCopied ? <CheckIcon /> : <CopyIcon />}
+        label={isCopied ? t('Copied') : t('Copy')}
+        onClick={handleCopy}
+      />
+      <PageActionLinkTile
+        href={markdownPath}
+        icon={<MarkdownIcon />}
+        label={t('Markdown')}
+      />
+      <PopoverTrigger
+        popover={(popoverProps) => (
+          <Popover
+            {...popoverProps}
+            alignment="end"
+            placement="bottom"
           >
-            {isCopied ? t('Copied') : t('Copy page')}
-          </Box>
-        </ButtonBase>
-        <Box
-          as="a"
-          className={styles.Item}
-          href={markdownPath}
-          rel="noreferrer"
-          target="_blank"
-        >
-          <Box
-            as="span"
-            className={styles.Text}
-          >
-            {t('Open markdown')}
-          </Box>
-        </Box>
-        <PopoverTrigger
-          popover={(popoverProps) => (
-            <Popover
-              {...popoverProps}
-              alignment="end"
-              placement="bottom"
-            >
-              {CHAT_PROVIDERS.map((provider) => (
-                <PageActionChatItem
-                  href={buildChatHref(provider)}
-                  key={provider.value}
-                  label={provider.label}
-                  value={provider.value}
-                />
-              ))}
-            </Popover>
-          )}
-        >
-          {(triggerProps) => (
-            <ButtonBase
-              {...triggerProps}
-              className={[
-                styles.Item,
-                styles.ChatItem,
-              ]}
-            >
-              <Box
-                as="span"
-                className={styles.Text}
-              >
-                {t('Chat')}
-              </Box>
-              <ChevronIcon
-                className={styles.TrailingIcon}
-                direction="right"
+            {CHAT_PROVIDERS.map((provider) => (
+              <PageActionChatItem
+                href={buildChatHref(provider)}
+                key={provider.value}
+                label={provider.label}
+                value={provider.value}
               />
-            </ButtonBase>
-          )}
-        </PopoverTrigger>
-      </Box>
+            ))}
+          </Popover>
+        )}
+      >
+        {(triggerProps) => (
+          <PageActionTile
+            {...triggerProps}
+            className={styles.ChatTile}
+            icon={<ChatIcon />}
+            label={t('Chat')}
+          />
+        )}
+      </PopoverTrigger>
     </Box>
   );
 }

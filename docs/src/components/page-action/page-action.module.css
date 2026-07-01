@@ -2,75 +2,76 @@
   .PageAction {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-2);
+    gap: var(--spacing-1);
+    padding-top: var(--spacing-5);
+    margin-top: var(--spacing-3);
+    border-top: var(--px) solid var(--rule);
 
-    &[data-rail] {
-      padding-top: var(--spacing-6);
-      padding-left: var(--spacing-3);
-      border-top: var(--px) solid var(--rule);
-      border-left: var(--px) solid var(--rule);
-    }
-
-    .Eyebrow {
-      padding: 0 var(--spacing-3);
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-semibold);
-      color: var(--foreground-softer);
-      text-transform: uppercase;
-      letter-spacing: var(--letter-spacing-wider);
-    }
-
-    .List {
+    .Tile {
       display: flex;
-      flex-direction: column;
+      gap: var(--spacing-2);
+      align-items: center;
+      padding: var(--spacing-2) var(--spacing-3);
+      padding-left: var(--spacing-6);
+      font-family: inherit;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground-soft);
+      text-align: left;
+      text-decoration: none;
+      cursor: pointer;
+      outline: var(--spacing-2) solid transparent;
+      outline-offset: 0;
+      background-color: transparent;
+      border: 0;
+      border-radius: var(--border-radius-md);
+      transition:
+        color var(--transition),
+        background-color var(--transition),
+        box-shadow var(--transition),
+        outline 400ms;
 
-      .Item {
-        display: flex;
-        gap: var(--spacing-2);
+      .TileIcon {
+        display: inline-flex;
         align-items: center;
-        padding: var(--spacing-1) var(--spacing-3);
-        font-family: inherit;
-        font-size: var(--font-size-xs);
-        color: var(--foreground-soft);
-        text-align: left;
-        text-decoration: none;
-        cursor: pointer;
-        outline: var(--spacing-2) solid transparent;
-        outline-offset: 0;
-        background-color: transparent;
-        border: 0;
-        border-radius: var(--border-radius-sm);
-        transition:
-          color var(--transition),
-          outline 400ms;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        color: inherit;
+      }
 
-        .Text {
-          flex: 1 1 auto;
-        }
+      .TileLabel {
+        flex: 1 1 auto;
+        line-height: 1;
+      }
 
-        .TrailingIcon {
-          color: var(--foreground-softer);
-        }
-
-        @media (hover: hover) {
-          &:hover {
-            color: var(--foreground);
-          }
-        }
-
-        &:active {
+      @media (hover: hover) {
+        &:hover {
           color: var(--foreground);
-        }
-
-        &:focus-visible {
-          color: var(--foreground);
-          outline-width: var(--spacing-05);
-          outline-color: var(--accent-soft);
+          background-color: var(--surface);
+          box-shadow: var(--shadow-ring-inset);
         }
       }
 
-      .ChatItem {
-        anchor-name: var(--trigger-anchor);
+      &:active {
+        color: var(--foreground);
+        background-color: var(--surface-stronger);
+        box-shadow: var(--shadow-ring-inset);
+      }
+
+      &:focus-visible {
+        outline-width: var(--spacing-05);
+        outline-color: var(--accent-soft);
+      }
+    }
+
+    .ChatTile {
+      anchor-name: var(--trigger-anchor);
+
+      &[aria-expanded="true"] {
+        color: var(--foreground);
+        background-color: var(--surface);
+        box-shadow: var(--shadow-ring-inset);
       }
     }
   }

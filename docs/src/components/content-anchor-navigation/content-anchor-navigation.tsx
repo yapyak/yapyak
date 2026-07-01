@@ -15,11 +15,11 @@ const SCROLL_LOCK_FALLBACK_MS = 1200;
 
 export type ContentAnchorNavigationProps = BoxProps<'nav'> & {
   headings: HeadingEntry[];
-  rail?: boolean;
+  indicator?: boolean;
 };
 
 export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
-  const { className, headings, rail = false, ...restProps } = props;
+  const { className, headings, indicator = false, ...restProps } = props;
 
   const element = useRef<HTMLElement | null>(null);
   const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
@@ -227,7 +227,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         className,
       ]}
       data-animation-enabled={isAnimationEnabled}
-      data-rail={rail}
+      data-indicator={indicator}
       ref={element}
     >
       <Box className={styles.Rail}>

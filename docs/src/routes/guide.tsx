@@ -66,13 +66,10 @@ function Component() {
     <>
       <ContentAnchorNavigation
         headings={headings}
+        indicator={true}
         key={page.href}
-        rail={true}
       />
-      <PageAction
-        href={page.href}
-        rail={true}
-      />
+      <PageAction href={page.href} />
     </>
   );
 
