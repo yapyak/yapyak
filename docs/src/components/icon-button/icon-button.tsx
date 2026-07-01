@@ -1,13 +1,14 @@
 import type { ReactElement, ReactNode } from 'react';
-import type { BoxProps } from '#primitives/box';
+import type { ButtonBaseProps } from '#primitives/button';
 
 import { Box } from '#primitives/box';
+import { ButtonBase } from '#primitives/button';
 
 import styles from './icon-button.module.css';
 
 export type IconButtonIconPosition = 'leading' | 'trailing';
 
-export type IconButtonProps = BoxProps<'button'> & {
+export type IconButtonProps = ButtonBaseProps & {
   icon: ReactNode;
   iconPosition?: IconButtonIconPosition;
 };
@@ -22,15 +23,13 @@ export function IconButton(props: IconButtonProps): ReactElement {
   } = props;
 
   return (
-    <Box
+    <ButtonBase
       {...restProps}
-      as="button"
       className={[
         styles.IconButton,
         className,
       ]}
       data-icon-position={iconPosition}
-      type="button"
     >
       {iconPosition === 'leading' && (
         <Box
@@ -56,6 +55,6 @@ export function IconButton(props: IconButtonProps): ReactElement {
           {icon}
         </Box>
       )}
-    </Box>
+    </ButtonBase>
   );
 }

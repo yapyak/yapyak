@@ -1,8 +1,7 @@
 import type { ChangeEvent, ReactElement } from 'react';
-import type { BoxProps } from '#primitives/box';
+import type { BoxProps } from '../box';
 
-import { Box } from '#primitives/box';
-
+import { Box } from '../box';
 import styles from './radio-base.module.css';
 import { useRadioGroupContext } from './radio-group-context';
 
