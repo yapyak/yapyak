@@ -1,6 +1,7 @@
+import type { SwatchAccent } from '#components/swatch';
 import type { ButtonBaseProps } from '#primitives/button';
 
-import { OptionDot } from '#components/option-dot';
+import { Swatch } from '#components/swatch';
 import { ButtonBase } from '#primitives/button';
 
 import styles from './block-renderer-node-picker.module.css';
@@ -31,7 +32,7 @@ export function BlockRendererNodePickerOption(
       onClick={handleClick}
       role="radio"
     >
-      <OptionDot value={value} />
+      <Swatch accent={value as SwatchAccent} />
       {label}
     </ButtonBase>
   );

@@ -324,6 +324,21 @@ function Button(props) {
 
 If any input depends on props or state, the expression lives inside the component.
 
+### Companion types prefix the component name
+
+Every companion type exported from a component starts with the component name. `Props` is the primary; unions, options, and return shapes follow the same rule.
+
+```tsx
+// ✓
+export type ButtonAppearance = 'solid' | 'ghost' | 'outline';
+export type DrawerDirection = 'start' | 'end';
+export type SwatchAccent = 'react' | 'vue';
+
+// ✗ Bare noun — collides across components
+export type Appearance = 'solid' | 'ghost' | 'outline';
+export type Accent = 'react' | 'vue';
+```
+
 ### Shared union-literal prop types are exported
 
 When two or more components accept the same string-literal union, export the type from one canonical location and import it.
@@ -359,7 +374,18 @@ function ActionButton(props: { action: Action }) {
 - `data-*` attributes never use `is`/`has` prefix: `data-active`, `data-disabled` — never `data-is-active`.
 - CSS custom properties (`style={{ '--x': value }}`) are always set on the root element.
 - Cross-component CSS variables must be prefixed with the owning component's kebab-case name (`--selection-indicator-fill-color`).
+- Prop names never repeat a segment of the component name → name the variation, not the kind.
 - **Box-consumer rules** — rendering `Box` for every element, `BoxProps<T>` shape, `data-*` value passthrough (no `|| undefined`), `className` forwarding, styled-component variants over `className`, and JSX generics — live in [[yapyak-box]].
+
+```tsx
+// ✗ Stutter
+<AccentDot accent="react" />
+<ChevronIcon chevron="down" />
+
+// ✓ Names the variation
+<Swatch accent="react" />
+<ChevronIcon direction="down" />
+```
 
 ### Extending component props
 

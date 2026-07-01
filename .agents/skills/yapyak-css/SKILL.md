@@ -246,6 +246,35 @@ Within a selector block:
 }
 ```
 
+#### Blank line between adjacent rule blocks
+
+Every rule block at the same nesting level is separated by a blank line.
+
+```css
+/* ✗ Adjacent blocks touching */
+.Swatch {
+  &[data-accent='react'] {
+    background-color: var(--accent-react);
+  }
+  &[data-accent='vue'] {
+    background-color: var(--accent-vue);
+  }
+}
+```
+
+```css
+/* ✓ Blank line between */
+.Swatch {
+  &[data-accent='react'] {
+    background-color: var(--accent-react);
+  }
+
+  &[data-accent='vue'] {
+    background-color: var(--accent-vue);
+  }
+}
+```
+
 #### CSS variable defaults
 
 Always declare defaults at the top of the root class — never use the `var(--x, default)` fallback syntax.

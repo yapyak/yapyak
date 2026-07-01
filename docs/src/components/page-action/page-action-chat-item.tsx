@@ -1,8 +1,9 @@
+import type { SwatchAccent } from '#components/swatch';
 import type { BoxProps } from '#primitives/box';
 
 import { ExternalLinkIcon } from '#components/external-link-icon';
-import { OptionDot } from '#components/option-dot';
 import { Popover } from '#components/popover';
+import { Swatch } from '#components/swatch';
 
 export type PageActionChatItemProps = BoxProps<'a'> & {
   href: string | undefined;
@@ -21,7 +22,7 @@ export function PageActionChatItem(props: PageActionChatItemProps) {
       rel="noreferrer"
       target="_blank"
     >
-      <OptionDot value={value} />
+      <Swatch accent={value as SwatchAccent} />
       <Popover.OptionLabel>{label}</Popover.OptionLabel>
       <Popover.OptionTrailing>
         <ExternalLinkIcon />

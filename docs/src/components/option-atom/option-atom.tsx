@@ -1,6 +1,7 @@
+import type { SwatchAccent } from '#components/swatch';
 import type { BoxProps } from '#primitives/box';
 
-import { OptionDot } from '#components/option-dot';
+import { Swatch } from '#components/swatch';
 import { Box } from '#primitives/box';
 
 import styles from './option-atom.module.css';
@@ -21,7 +22,7 @@ export function OptionAtom(props: OptionAtomProps) {
         className,
       ]}
     >
-      <OptionDot value={value} />
+      <Swatch accent={value as SwatchAccent} />
       <Box
         as="span"
         className={styles.Text}
