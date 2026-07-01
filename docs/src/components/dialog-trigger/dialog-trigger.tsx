@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type {
   UseDialogTriggerOptions,
   UseDialogTriggerReturn,
@@ -15,7 +15,7 @@ export type DialogTriggerProps = UseDialogTriggerOptions & {
   dialog: (props: DialogProps) => ReactNode;
 };
 
-export function DialogTrigger(props: DialogTriggerProps): ReactElement {
+export function DialogTrigger(props: DialogTriggerProps) {
   const { children, dialog, initialOpen, onClose, onOpen } = props;
 
   const { dialogProps, triggerProps } = useDialogTrigger({

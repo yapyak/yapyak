@@ -11,7 +11,7 @@ export const RadioGroupContext = createContext<RadioGroupContextValue | null>(
   null,
 );
 
-export function useRadioGroupContext(): RadioGroupContextValue {
+export function useRadioGroupContext() {
   const context = use(RadioGroupContext);
   if (context === null) {
     throw new Error(

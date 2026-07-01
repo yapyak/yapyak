@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { ButtonBaseProps } from '#primitives/button';
 
 import { Box } from '#primitives/box';
@@ -13,7 +13,7 @@ export type IconButtonProps = ButtonBaseProps & {
   iconPosition?: IconButtonIconPosition;
 };
 
-export function IconButton(props: IconButtonProps): ReactElement {
+export function IconButton(props: IconButtonProps) {
   const {
     children,
     className,

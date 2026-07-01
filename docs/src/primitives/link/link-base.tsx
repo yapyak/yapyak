@@ -1,4 +1,4 @@
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 import type { ClassName } from '#types';
 
 import { Link } from '@tanstack/react-router';
@@ -10,7 +10,7 @@ export type LinkBaseProps = Omit<ComponentProps<typeof Link>, 'className'> & {
   className?: ClassName;
 };
 
-export function LinkBase(props: LinkBaseProps): ReactElement {
+export function LinkBase(props: LinkBaseProps) {
   const { className, ...restProps } = props;
 
   return (

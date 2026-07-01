@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { Backdrop } from '#components/backdrop';
@@ -16,7 +15,7 @@ export type DrawerProps = BoxProps & {
   onClose?: () => void;
 };
 
-export function Drawer(props: DrawerProps): ReactElement {
+export function Drawer(props: DrawerProps) {
   const { children, className, direction, onClose, open, ...restProps } = props;
 
   return (

@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import type { BoxProps } from '../box';
 
 import { useId } from 'react';
@@ -19,7 +18,7 @@ export type RadioGroupBaseProps = Omit<
   value?: string;
 };
 
-export function RadioGroupBase(props: RadioGroupBaseProps): ReactElement {
+export function RadioGroupBase(props: RadioGroupBaseProps) {
   const {
     children,
     defaultValue,

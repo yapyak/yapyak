@@ -1,4 +1,4 @@
-import type { ChangeEvent, ReactElement } from 'react';
+import type { ChangeEvent } from 'react';
 import type { BoxProps } from '../box';
 
 import { Box } from '../box';
@@ -12,7 +12,7 @@ export type RadioBaseProps = Omit<BoxProps<'label'>, 'onChange'> & {
   value: string;
 };
 
-export function RadioBase(props: RadioBaseProps): ReactElement {
+export function RadioBase(props: RadioBaseProps) {
   const {
     children,
     disabled = false,

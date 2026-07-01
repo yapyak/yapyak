@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import type { RadioGroupBaseProps } from '#primitives/radio';
 
 import { RadioGroupBase } from '#primitives/radio';
@@ -7,7 +6,7 @@ import styles from './radio-group.module.css';
 
 export type RadioGroupProps = RadioGroupBaseProps;
 
-export function RadioGroup(props: RadioGroupProps): ReactElement {
+export function RadioGroup(props: RadioGroupProps) {
   const { children, className, ...restProps } = props;
 
   return (
