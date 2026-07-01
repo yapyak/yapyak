@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { RefOrValue } from '#types';
 
 import { PortalContext } from './portal-context';
@@ -8,7 +8,7 @@ export type PortalProviderProps = {
   element: RefOrValue<HTMLDivElement | null>;
 };
 
-export function PortalProvider(props: PortalProviderProps): ReactElement {
+export function PortalProvider(props: PortalProviderProps) {
   const { children, element } = props;
 
   return (

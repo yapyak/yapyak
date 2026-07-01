@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import type { StackProps } from '#systems/stack';
 
 import { useState } from 'react';
@@ -16,7 +15,7 @@ export type OverlayProps = StackProps & {
   onClose?: () => void;
 };
 
-export function Overlay(props: OverlayProps): ReactElement {
+export function Overlay(props: OverlayProps) {
   const {
     className,
     closeOnEscape = false,

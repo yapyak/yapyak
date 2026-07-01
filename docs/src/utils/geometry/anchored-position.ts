@@ -79,7 +79,7 @@ export class AnchoredPosition {
   get placement(): Placement {
     return this.#placement;
   }
-  get rect(): Rect {
+  get rect() {
     return this.#rect;
   }
 

@@ -1,10 +1,10 @@
-import type { ReactElement, SVGProps } from 'react';
+import type { SVGProps } from 'react';
 
 export type ChatIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export function ChatIcon(props: ChatIconProps): ReactElement {
+export function ChatIcon(props: ChatIconProps) {
   const { size = 14, ...restProps } = props;
 
   return (

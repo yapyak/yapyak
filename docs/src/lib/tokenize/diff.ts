@@ -2,7 +2,7 @@ import type { Token } from './type';
 
 import { mergePlainTokens } from './plain-token';
 
-export function tokenizeDiff(code: string): Token[] {
+export function tokenizeDiff(code: string) {
   const tokens: Token[] = [];
   const lines = code.split('\n');
   for (let index = 0; index < lines.length; index++) {

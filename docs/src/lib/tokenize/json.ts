@@ -2,7 +2,7 @@ import type { Token } from './type';
 
 import { mergePlainTokens } from './plain-token';
 
-export function tokenizeJson(code: string): Token[] {
+export function tokenizeJson(code: string) {
   const tokens: Token[] = [];
   let index = 0;
   let lastWas: 'open' | 'colon' | 'comma' | 'value' | null = null;

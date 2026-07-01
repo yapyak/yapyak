@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { AnimateChildProps } from '#systems/animate';
 import type {
   UsePopoverTriggerOptions,
@@ -20,7 +20,7 @@ export type PopoverTriggerProps = UsePopoverTriggerOptions & {
   popover: (props: RenderedPopoverProps) => ReactNode;
 };
 
-export function PopoverTrigger(props: PopoverTriggerProps): ReactElement {
+export function PopoverTrigger(props: PopoverTriggerProps) {
   const { children, initialOpen, popover, onClose, onOpen } = props;
 
   const { isOpen, popoverProps, triggerProps } = usePopoverTrigger({

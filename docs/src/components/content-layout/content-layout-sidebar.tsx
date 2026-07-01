@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';
@@ -7,9 +6,7 @@ import styles from './content-layout-sidebar.module.css';
 
 export type ContentLayoutSidebarProps = BoxProps<'aside'>;
 
-export function ContentLayoutSidebar(
-  props: ContentLayoutSidebarProps,
-): ReactElement {
+export function ContentLayoutSidebar(props: ContentLayoutSidebarProps) {
   const { children, className, ...restProps } = props;
 
   return (

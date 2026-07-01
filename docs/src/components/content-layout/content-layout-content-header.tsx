@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';
@@ -12,7 +12,7 @@ export type ContentLayoutContentHeaderProps = BoxProps<'header'> & {
 
 export function ContentLayoutContentHeader(
   props: ContentLayoutContentHeaderProps,
-): ReactElement {
+) {
   const { className, end, start, ...restProps } = props;
 
   return (

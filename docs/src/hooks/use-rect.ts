@@ -6,7 +6,7 @@ import { Rect } from '#utils/geometry';
 
 import { useRectListener } from './use-rect-listener';
 
-export function useRect(element: RefOrValue<HTMLElement | null>): Rect {
+export function useRect(element: RefOrValue<HTMLElement | null>) {
   const [rect, setRect] = useState(() => Rect.zero());
 
   useRectListener(element, setRect);

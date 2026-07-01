@@ -1,6 +1,6 @@
 import type { Token } from './type';
 
-export function mergePlainTokens(tokens: Token[]): Token[] {
+export function mergePlainTokens(tokens: Token[]) {
   const result: Token[] = [];
   for (const token of tokens) {
     const previous = result[result.length - 1];

@@ -1,10 +1,8 @@
-import type { TokenKind } from './type';
-
 import { describe, expect, it } from 'vitest';
 
 import { tokenizeJson } from './json';
 
-function types(code: string): TokenKind[] {
+function types(code: string) {
   return tokenizeJson(code)
     .filter((token) => token.kind !== 'plain')
     .map((token) => token.kind);

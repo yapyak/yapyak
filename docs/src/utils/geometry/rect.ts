@@ -8,7 +8,7 @@ export type RectJSON = {
 };
 
 export class Rect {
-  static zero(): Rect {
+  static zero() {
     return new Rect();
   }
 

@@ -6,7 +6,7 @@ export function expandTemplateInterpolations(
   tokens: Token[],
   language: Language,
   tokenize: TokenizeFn,
-): Token[] {
+) {
   const result: Token[] = [];
 
   for (const token of tokens) {

@@ -37,7 +37,7 @@ export const ADAPTERS: Adapter[] = [
   },
 ];
 
-export function filterAdaptersByFramework(framework: string): Adapter[] {
+export function filterAdaptersByFramework(framework: string) {
   return ADAPTERS.filter((adapter) => adapter.frameworks.includes(framework));
 }
 

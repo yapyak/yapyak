@@ -1,10 +1,10 @@
-import type { ReactElement, SVGProps } from 'react';
+import type { SVGProps } from 'react';
 
 export type DotsIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export function DotsIcon(props: DotsIconProps): ReactElement {
+export function DotsIcon(props: DotsIconProps) {
   const { size = 16, ...restProps } = props;
 
   return (

@@ -5,7 +5,7 @@ type TokenizeFn = (code: string, language: Language) => Token[];
 export function expandVueAttributeBindings(
   tokens: Token[],
   tokenize: TokenizeFn,
-): Token[] {
+) {
   const result: Token[] = [];
   let index = 0;
 

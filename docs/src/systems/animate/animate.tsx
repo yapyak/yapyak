@@ -19,7 +19,7 @@ export type AnimateProps = {
 
 type State = 'enter' | 'exit' | 'idle' | 'unmounted';
 
-export function Animate(props: AnimateProps): ReactNode {
+export function Animate(props: AnimateProps) {
   const { children, in: inProp } = props;
 
   const parentState = useAnimateContext();

@@ -1,10 +1,10 @@
-import type { ReactElement, SVGProps } from 'react';
+import type { SVGProps } from 'react';
 
 export type CheckIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export function CheckIcon(props: CheckIconProps): ReactElement {
+export function CheckIcon(props: CheckIconProps) {
   const { size = 14, ...restProps } = props;
 
   return (

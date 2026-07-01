@@ -6,7 +6,7 @@ export type PortalProps = {
   children: ReactNode;
 };
 
-export function Portal(props: PortalProps): ReactNode {
+export function Portal(props: PortalProps) {
   const { children } = props;
 
   const portal = usePortal();

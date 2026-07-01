@@ -1,10 +1,10 @@
-import type { ReactElement, SVGProps } from 'react';
+import type { SVGProps } from 'react';
 
 export type CopyIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export function CopyIcon(props: CopyIconProps): ReactElement {
+export function CopyIcon(props: CopyIconProps) {
   const { size = 14, ...restProps } = props;
 
   return (

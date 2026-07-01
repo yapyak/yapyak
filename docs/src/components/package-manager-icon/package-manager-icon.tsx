@@ -1,13 +1,11 @@
-import type { ReactElement, SVGProps } from 'react';
+import type { SVGProps } from 'react';
 
 export type PackageManagerIconProps = SVGProps<SVGSVGElement> & {
   name: string;
   size?: number;
 };
 
-export function PackageManagerIcon(
-  props: PackageManagerIconProps,
-): ReactElement | null {
+export function PackageManagerIcon(props: PackageManagerIconProps) {
   const { name, size = 16, ...restProps } = props;
 
   switch (name) {

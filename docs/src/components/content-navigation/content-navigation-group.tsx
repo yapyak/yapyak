@@ -1,5 +1,4 @@
 import type { SidebarGroup, SidebarNode } from '@yapyak/doc-compiler';
-import type { ReactNode } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { ContentNavigationGroupCollapsible } from './content-navigation-group-collapsible';
@@ -18,7 +17,7 @@ export function ContentNavigationGroup(props: ContentNavigationGroupProps) {
   return <ContentNavigationGroupStatic {...props} />;
 }
 
-export function renderChild(child: SidebarNode, depth: number): ReactNode {
+export function renderChild(child: SidebarNode, depth: number) {
   if (child.kind === 'group') {
     return (
       <ContentNavigationGroup

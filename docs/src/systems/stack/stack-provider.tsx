@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import type { StackEntry } from './stack-context';
 
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -9,7 +9,7 @@ export type StackProviderProps = {
   children: ReactNode;
 };
 
-export function StackProvider(props: StackProviderProps): ReactElement {
+export function StackProvider(props: StackProviderProps) {
   const { children } = props;
 
   const [entries, setEntries] = useState<StackEntry[]>([]);

@@ -1,6 +1,6 @@
 import type { Token } from './type';
 
-export function expandTxSourceTags(tokens: Token[]): Token[] {
+export function expandTxSourceTags(tokens: Token[]) {
   const result: Token[] = [];
   for (const token of tokens) {
     if (token.kind !== 'tx-source' || !token.value.includes('<')) {

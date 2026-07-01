@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import type { UseAnchoredPositionOptions } from '#hooks/use-anchored-position';
 import type { BoxProps } from '#primitives/box';
 import type { RefOrValue } from '#types';
@@ -18,7 +17,7 @@ export type AttachmentProps = BoxProps &
     targetElement: RefOrValue<HTMLElement | null>;
   };
 
-export function Attachment(props: AttachmentProps): ReactElement {
+export function Attachment(props: AttachmentProps) {
   const {
     alignment,
     arrow,

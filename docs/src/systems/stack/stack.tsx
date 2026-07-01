@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';
@@ -9,7 +8,7 @@ export type StackProps = BoxProps & {
   onActiveChange?: (isActive: boolean) => void;
 };
 
-export function Stack(props: StackProps): ReactElement {
+export function Stack(props: StackProps) {
   const { inert, style, onActiveChange, ...restProps } = props;
 
   const { isActive } = useStack({

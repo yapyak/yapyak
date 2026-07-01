@@ -11,7 +11,7 @@ import {
 } from './option-storage';
 import { doc } from 'virtual:doc-compiler';
 
-function readDefaults(registry: OptionsRegistry): Record<string, string> {
+function readDefaults(registry: OptionsRegistry) {
   const initial: Record<string, string> = {};
   for (const [groupId, group] of Object.entries(registry)) {
     initial[groupId] = group.default;

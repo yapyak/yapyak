@@ -2,7 +2,7 @@ import type { Token } from './type';
 
 import { mergePlainTokens } from './plain-token';
 
-export function tokenizeHtml(code: string): Token[] {
+export function tokenizeHtml(code: string) {
   const tokens: Token[] = [];
   let index = 0;
   let mode: 'text' | 'tag' = 'text';

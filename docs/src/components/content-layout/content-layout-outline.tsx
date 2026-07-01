@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';
@@ -7,9 +6,7 @@ import styles from './content-layout-outline.module.css';
 
 export type ContentLayoutOutlineProps = BoxProps<'aside'>;
 
-export function ContentLayoutOutline(
-  props: ContentLayoutOutlineProps,
-): ReactElement {
+export function ContentLayoutOutline(props: ContentLayoutOutlineProps) {
   const { children, className, ...restProps } = props;
 
   return (

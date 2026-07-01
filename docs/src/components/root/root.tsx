@@ -1,4 +1,4 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { useRef } from 'react';
 
@@ -10,7 +10,7 @@ export type RootProps = {
   children?: ReactNode;
 };
 
-export function Root(props: RootProps): ReactElement {
+export function Root(props: RootProps) {
   const { children } = props;
 
   const element = useRef<HTMLDivElement>(null);

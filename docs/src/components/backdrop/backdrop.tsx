@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';
@@ -9,7 +8,7 @@ export type BackdropProps = BoxProps & {
   opaque?: boolean;
 };
 
-export function Backdrop(props: BackdropProps): ReactElement {
+export function Backdrop(props: BackdropProps) {
   const { className, opaque = false, ...restProps } = props;
 
   return (

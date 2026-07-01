@@ -12,7 +12,7 @@ const ICU_KEYWORDS: Set<string> = new Set([
   'duration',
 ]);
 
-export function expandTxSourcePlaceholders(tokens: Token[]): Token[] {
+export function expandTxSourcePlaceholders(tokens: Token[]) {
   const result: Token[] = [];
   for (const token of tokens) {
     if (token.kind !== 'tx-source') {
@@ -28,7 +28,7 @@ export function expandTxSourcePlaceholders(tokens: Token[]): Token[] {
   return result;
 }
 
-function expandSingleSource(value: string): Token[] {
+function expandSingleSource(value: string) {
   const result: Token[] = [];
   const firstCharacter = value.charAt(0);
   const lastCharacter = value.charAt(value.length - 1);

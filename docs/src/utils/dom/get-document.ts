@@ -1,3 +1,3 @@
-export function getDocument(node?: Node): Document {
+export function getDocument(node?: Node) {
   return node?.ownerDocument ?? document;
 }

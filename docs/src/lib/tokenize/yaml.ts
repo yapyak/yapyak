@@ -2,7 +2,7 @@ import type { Token } from './type';
 
 import { mergePlainTokens } from './plain-token';
 
-export function tokenizeYaml(code: string): Token[] {
+export function tokenizeYaml(code: string) {
   const tokens: Token[] = [];
   const lines = code.split('\n');
 

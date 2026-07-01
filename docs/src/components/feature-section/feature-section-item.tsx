@@ -53,7 +53,7 @@ export function FeatureSectionItem(props: FeatureSectionItemProps) {
   );
 }
 
-function renderDescription(text: string): ReactNode[] {
+function renderDescription(text: string) {
   const parts: ReactNode[] = [];
   let lastIndex = 0;
   let keyIndex = 0;

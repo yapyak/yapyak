@@ -1,10 +1,10 @@
-import type { ReactElement, SVGProps } from 'react';
+import type { SVGProps } from 'react';
 
 export type ExternalLinkIconProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };
 
-export function ExternalLinkIcon(props: ExternalLinkIconProps): ReactElement {
+export function ExternalLinkIcon(props: ExternalLinkIconProps) {
   const { size = 14, ...restProps } = props;
 
   return (

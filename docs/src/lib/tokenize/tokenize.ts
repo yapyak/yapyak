@@ -17,7 +17,7 @@ import { expandVueAttributeBindings } from './vue-attribute-binding';
 import { tokenizeYaml } from './yaml';
 import { applyYapyakHighlight } from './yapyak-highlight';
 
-export function tokenize(code: string, language: Language): Token[] {
+export function tokenize(code: string, language: Language) {
   if (language === 'diff') {
     return tokenizeDiff(code);
   }

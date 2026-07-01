@@ -1,10 +1,8 @@
-import type { StackContextValue } from './stack-context';
-
 import { use } from 'react';
 
 import { StackContext } from './stack-context';
 
-export function useStackContext(): StackContextValue {
+export function useStackContext() {
   const stackContext = use(StackContext);
 
   if (!stackContext) {

@@ -1,4 +1,4 @@
-import type { PointerEvent, ReactElement } from 'react';
+import type { PointerEvent } from 'react';
 import type { AttachmentProps } from '#components/attachment';
 import type { OverlayProps } from '#components/overlay';
 
@@ -19,7 +19,7 @@ export type PopoverProps = AttachmentProps &
     dismissable?: boolean;
   };
 
-export function Popover(props: PopoverProps): ReactElement {
+export function Popover(props: PopoverProps) {
   const {
     closeOnRouteChange = false,
     dismissable = false,

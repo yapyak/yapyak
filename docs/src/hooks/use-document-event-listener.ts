@@ -18,6 +18,6 @@ export function useDocumentEventListener<T extends DocumentListenerEvent>(
   useEventListener(getDocumentIfAvailable(), type, listener, options);
 }
 
-function getDocumentIfAvailable(): Document | null {
+function getDocumentIfAvailable() {
   return typeof document === 'undefined' ? null : getDocument();
 }

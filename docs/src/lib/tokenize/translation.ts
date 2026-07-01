@@ -4,7 +4,7 @@ import { mergePlainTokens } from './plain-token';
 
 const LOCALE_PREFIX_RX = /^([a-z]{2,3}(?:-[a-z]{2})?:[ \t]+)(.*)$/;
 
-export function tokenizeTranslation(code: string): Token[] {
+export function tokenizeTranslation(code: string) {
   const tokens: Token[] = [];
   const lines = code.split('\n');
 

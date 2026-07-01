@@ -5,7 +5,7 @@ import { Rect } from '#utils/geometry';
 
 import { useWindowEventListener } from './use-window-event-listener';
 
-export function useWindowRect(): Rect {
+export function useWindowRect() {
   const [rect, setRect] = useState(() => Rect.zero());
 
   const update = () => {

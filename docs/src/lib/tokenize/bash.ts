@@ -16,7 +16,7 @@ const SUBCOMMAND_TOOLS = new Set([
   'kubectl',
 ]);
 
-export function tokenizeBash(code: string): Token[] {
+export function tokenizeBash(code: string) {
   const tokens: Token[] = [];
   let index = 0;
   let isAtLineStart = true;

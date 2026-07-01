@@ -1,10 +1,8 @@
-import type { TokenKind } from './type';
-
 import { describe, expect, it } from 'vitest';
 
 import { tokenizeYaml } from './yaml';
 
-function types(code: string): TokenKind[] {
+function types(code: string) {
   return tokenizeYaml(code)
     .filter((token) => token.kind !== 'plain')
     .map((token) => token.kind);
