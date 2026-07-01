@@ -158,9 +158,9 @@ function ShellComponent(props: ShellComponentProps) {
         />
       </head>
       <body>
-        <OptionProvider>
-          <Root>{children}</Root>
-        </OptionProvider>
+        <Root>
+          <OptionProvider>{children}</OptionProvider>
+        </Root>
         <Scripts />
       </body>
     </html>
