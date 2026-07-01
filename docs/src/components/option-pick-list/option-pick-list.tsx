@@ -1,10 +1,11 @@
 import type { BoxProps } from '#primitives/box';
 
-import { Box } from '#primitives/box';
 import { ChevronIcon } from '#components/chevron-icon';
 import { OptionAtom } from '#components/option-atom';
 import { useOptionContext } from '#components/option-provider';
 import { Popover, PopoverTrigger } from '#components/popover';
+import { Box } from '#primitives/box';
+import { ButtonBase } from '#primitives/button';
 
 import styles from './option-pick-list.module.css';
 import { OptionPickListItem } from './option-pick-list-item';
@@ -88,11 +89,9 @@ export function OptionPickList(props: OptionPickListProps) {
         )}
       >
         {(triggerProps) => (
-          <Box
+          <ButtonBase
             {...triggerProps}
-            as="button"
             className={styles.Trigger}
-            type="button"
           >
             <Box className={styles.AtomRow}>
               {triggerEntries.map((entry) => (
@@ -104,7 +103,7 @@ export function OptionPickList(props: OptionPickListProps) {
               ))}
             </Box>
             <ChevronIcon direction="down" />
-          </Box>
+          </ButtonBase>
         )}
       </PopoverTrigger>
     </Box>

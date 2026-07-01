@@ -3,8 +3,8 @@ import type { Framework } from './hero-demo-editor';
 
 import { useEffect, useRef, useState } from 'react';
 
-import { Box } from '#primitives/box';
 import { useDemoState } from '#hooks/use-demo-state';
+import { Box } from '#primitives/box';
 
 import styles from './hero-demo.module.css';
 import { HeroDemoEditor } from './hero-demo-editor';

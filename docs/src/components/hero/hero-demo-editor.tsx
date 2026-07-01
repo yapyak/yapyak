@@ -1,12 +1,13 @@
 import type { TransitionEvent } from 'react';
-import type { BoxProps } from '#primitives/box';
 import type { Language } from '#lib/tokenize';
+import type { BoxProps } from '#primitives/box';
 
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
-import { Box } from '#primitives/box';
 import { CodeBlockToken } from '#components/code-block-token';
 import { tokenize } from '#lib/tokenize';
+import { Box } from '#primitives/box';
+import { ButtonBase } from '#primitives/button';
 
 import styles from './hero-demo-editor.module.css';
 
@@ -171,13 +172,11 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
             entry.filename.indexOf('.') + 1,
           );
           return (
-            <Box
-              as="button"
+            <ButtonBase
               className={styles.TabButton}
               data-active={isActive}
               key={entry.id}
               onClick={() => onFrameworkChange(entry.id)}
-              type="button"
             >
               <Box
                 aria-hidden="true"
@@ -205,7 +204,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
                 className={styles.TabDot}
                 data-dirty={isDirty}
               />
-            </Box>
+            </ButtonBase>
           );
         })}
       </Box>

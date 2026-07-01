@@ -1,14 +1,12 @@
 import type { HeadingEntry } from '@yapyak/doc-compiler';
 import type { MouseEvent } from 'react';
-import type { BoxProps } from '#primitives/box';
+import type { LinkBaseProps } from '#primitives/link';
 
-import { Link } from '@tanstack/react-router';
-
-import { Box } from '#primitives/box';
+import { LinkBase } from '#primitives/link';
 
 import styles from './content-anchor-navigation-item.module.css';
 
-export type ContentAnchorNavigationItemProps = BoxProps<'a'> & {
+export type ContentAnchorNavigationItemProps = LinkBaseProps & {
   active: boolean;
   heading: HeadingEntry;
   onActivate: (id: string) => void;
@@ -33,9 +31,8 @@ export function ContentAnchorNavigationItem(
   };
 
   return (
-    <Box
+    <LinkBase
       {...restProps}
-      as={Link}
       className={[
         styles.ContentAnchorNavigationItem,
         className,
@@ -48,6 +45,6 @@ export function ContentAnchorNavigationItem(
       to="."
     >
       {heading.text}
-    </Box>
+    </LinkBase>
   );
 }

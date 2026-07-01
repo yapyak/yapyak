@@ -1,9 +1,20 @@
 import type { ComponentProps, ReactElement } from 'react';
+import type { ClassName } from '#types';
 
 import { Link } from '@tanstack/react-router';
 
-export type LinkBaseProps = ComponentProps<typeof Link>;
+import { mergeClassNames } from '#utils/merge-class-names';
+
+export type LinkBaseProps = Omit<ComponentProps<typeof Link>, 'className'> & {
+  className?: ClassName;
+};
 
 export function LinkBase(props: LinkBaseProps): ReactElement {
-  return <Link {...props} />;
+  const { className, ...restProps } = props;
+  return (
+    <Link
+      {...restProps}
+      className={mergeClassNames(className)}
+    />
+  );
 }

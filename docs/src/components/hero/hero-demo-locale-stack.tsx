@@ -1,9 +1,9 @@
-import type { BoxProps } from '#primitives/box';
 import type { LocaleCode } from '#lib/hero-demo';
+import type { BoxProps } from '#primitives/box';
 
-import { Box } from '#primitives/box';
 import { CodeBlockToken } from '#components/code-block-token';
 import { LOCALES } from '#lib/hero-demo';
+import { Box } from '#primitives/box';
 
 import { HeroDemoLocaleFlag } from './hero-demo-locale-flag';
 import styles from './hero-demo-locale-stack.module.css';

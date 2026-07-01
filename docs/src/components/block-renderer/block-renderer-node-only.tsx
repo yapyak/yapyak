@@ -1,8 +1,8 @@
 import type { OnlyBlock } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { Box } from '#primitives/box';
 import { useOptionContext } from '#components/option-provider';
+import { Box } from '#primitives/box';
 
 import { BlockRenderer } from './block-renderer';
 

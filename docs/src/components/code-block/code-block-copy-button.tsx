@@ -1,15 +1,16 @@
-import type { BoxProps } from '#primitives/box';
+import type { ButtonBaseProps } from '#primitives/button';
 
 import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
-import { Box } from '#primitives/box';
 import { CheckIcon } from '#components/check-icon';
 import { CopyIcon } from '#components/copy-icon';
+import { Box } from '#primitives/box';
+import { ButtonBase } from '#primitives/button';
 
 import styles from './code-block-copy-button.module.css';
 
-export type CodeBlockCopyButtonProps = BoxProps<'button'> & {
+export type CodeBlockCopyButtonProps = ButtonBaseProps & {
   source: string;
 };
 
@@ -46,17 +47,15 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
   };
 
   return (
-    <Box
+    <ButtonBase
       {...restProps}
       aria-label={t('Copy code')}
-      as="button"
       className={[
         styles.CodeBlockCopyButton,
         className,
       ]}
       data-copied={isCopied ? '' : undefined}
       onClick={onClick}
-      type="button"
     >
       <Box
         aria-hidden="true"
@@ -76,6 +75,6 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
       >
         {isCopied ? t('Copied') : ''}
       </Box>
-    </Box>
+    </ButtonBase>
   );
 }

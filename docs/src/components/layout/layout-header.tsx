@@ -1,13 +1,14 @@
 import type { BoxProps } from '#primitives/box';
 
-import { Link, useLocation } from '@tanstack/react-router';
+import { useLocation } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { t } from 'yapyak';
 
-import { Box } from '#primitives/box';
 import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { OptionPickList } from '#components/option-pick-list';
+import { Box } from '#primitives/box';
+import { LinkBase } from '#primitives/link';
 
 import styles from './layout-header.module.css';
 import { LayoutHeaderCenter } from './layout-header-center';
@@ -97,24 +98,24 @@ export function LayoutHeader(props: LayoutHeaderProps) {
         className={styles.Drawer}
       >
         <Box className={styles.LinkStack}>
-          <Link
+          <LinkBase
             className={styles.Link}
             to="/home"
           >
             {t('Home')}
-          </Link>
-          <Link
+          </LinkBase>
+          <LinkBase
             className={styles.Link}
             to="/guide"
           >
             {t('Guide')}
-          </Link>
-          <Link
+          </LinkBase>
+          <LinkBase
             className={styles.Link}
             to="/reference"
           >
             {t('Reference')}
-          </Link>
+          </LinkBase>
         </Box>
         <Box
           as="footer"

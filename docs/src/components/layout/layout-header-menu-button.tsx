@@ -1,12 +1,13 @@
-import type { BoxProps } from '#primitives/box';
+import type { ButtonBaseProps } from '#primitives/button';
 
 import { t } from 'yapyak';
 
 import { Box } from '#primitives/box';
+import { ButtonBase } from '#primitives/button';
 
 import styles from './layout-header-menu-button.module.css';
 
-export type LayoutHeaderMenuButtonProps = BoxProps<'button'> & {
+export type LayoutHeaderMenuButtonProps = ButtonBaseProps & {
   onToggle: () => void;
   open: boolean;
 };
@@ -14,21 +15,19 @@ export type LayoutHeaderMenuButtonProps = BoxProps<'button'> & {
 export function LayoutHeaderMenuButton(props: LayoutHeaderMenuButtonProps) {
   const { className, open, onToggle, ...restProps } = props;
   return (
-    <Box
+    <ButtonBase
       {...restProps}
       aria-expanded={open}
       aria-label={open ? t('Close menu') : t('Open menu')}
-      as="button"
       className={[
         styles.LayoutHeaderMenuButton,
         className,
       ]}
       data-open={open}
       onClick={onToggle}
-      type="button"
     >
       <Box className={styles.Line} />
       <Box className={styles.Line} />
-    </Box>
+    </ButtonBase>
   );
 }

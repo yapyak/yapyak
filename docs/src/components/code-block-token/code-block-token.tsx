@@ -1,5 +1,5 @@
-import type { BoxProps } from '#primitives/box';
 import type { TokenKind } from '#lib/tokenize';
+import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';
 

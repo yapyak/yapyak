@@ -1,10 +1,9 @@
 import type { LinkBlock } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { Link } from '@tanstack/react-router';
-
-import { Box } from '#primitives/box';
 import { ExternalLink } from '#components/external-link';
+import { Box } from '#primitives/box';
+import { LinkBase } from '#primitives/link';
 
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-link.module.css';
@@ -24,8 +23,7 @@ export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
 
   if (block.linkKind === 'internal') {
     return (
-      <Box
-        as={Link}
+      <LinkBase
         className={[
           styles.BlockRendererNodeLink,
           className,
@@ -33,7 +31,7 @@ export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
         to={block.href}
       >
         {children}
-      </Box>
+      </LinkBase>
     );
   }
 

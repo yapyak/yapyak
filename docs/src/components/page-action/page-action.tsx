@@ -3,9 +3,10 @@ import type { BoxProps } from '#primitives/box';
 import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
-import { Box } from '#primitives/box';
 import { ChevronIcon } from '#components/chevron-icon';
 import { Popover, PopoverTrigger } from '#components/popover';
+import { Box } from '#primitives/box';
+import { ButtonBase } from '#primitives/button';
 
 import styles from './page-action.module.css';
 import { PageActionChatItem } from './page-action-chat-item';
@@ -103,11 +104,9 @@ export function PageAction(props: PageActionProps) {
     >
       <Box className={styles.Eyebrow}>{t('Actions')}</Box>
       <Box className={styles.List}>
-        <Box
-          as="button"
+        <ButtonBase
           className={styles.Item}
           onClick={handleCopy}
-          type="button"
         >
           <Box
             as="span"
@@ -115,7 +114,7 @@ export function PageAction(props: PageActionProps) {
           >
             {isCopied ? t('Copied') : t('Copy page')}
           </Box>
-        </Box>
+        </ButtonBase>
         <Box
           as="a"
           className={styles.Item}
@@ -149,14 +148,12 @@ export function PageAction(props: PageActionProps) {
           )}
         >
           {(triggerProps) => (
-            <Box
+            <ButtonBase
               {...triggerProps}
-              as="button"
               className={[
                 styles.Item,
                 styles.ChatItem,
               ]}
-              type="button"
             >
               <Box
                 as="span"
@@ -168,7 +165,7 @@ export function PageAction(props: PageActionProps) {
                 className={styles.TrailingIcon}
                 direction="right"
               />
-            </Box>
+            </ButtonBase>
           )}
         </PopoverTrigger>
       </Box>

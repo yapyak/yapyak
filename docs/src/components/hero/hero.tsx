@@ -1,9 +1,9 @@
 import type { BoxProps } from '#primitives/box';
 
-import { Link } from '@tanstack/react-router';
 import { t } from 'yapyak';
 
 import { Box } from '#primitives/box';
+import { LinkBase } from '#primitives/link';
 
 import styles from './hero.module.css';
 import { HeroDemo } from './hero-demo';
@@ -39,13 +39,12 @@ export function Hero(props: HeroProps) {
           {description}
         </Box>
         <Box className={styles.ActionRow}>
-          <Box
-            as={Link}
+          <LinkBase
             className={styles.PrimaryLink}
             to="/guide"
           >
             {t('Get Started')}
-          </Box>
+          </LinkBase>
           <Box
             as="a"
             className={styles.SecondaryLink}

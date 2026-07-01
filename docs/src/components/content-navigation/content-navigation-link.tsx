@@ -1,14 +1,14 @@
 import type { SidebarLink } from '@yapyak/doc-compiler';
-import type { BoxProps } from '#primitives/box';
+import type { LinkBaseProps } from '#primitives/link';
 
-import { Link, useLocation } from '@tanstack/react-router';
+import { useLocation } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
 
-import { Box } from '#primitives/box';
+import { LinkBase } from '#primitives/link';
 
 import styles from './content-navigation-link.module.css';
 
-export type ContentNavigationLinkProps = BoxProps<'a'> & {
+export type ContentNavigationLinkProps = LinkBaseProps & {
   node: SidebarLink;
 };
 
@@ -30,12 +30,11 @@ export function ContentNavigationLink(props: ContentNavigationLinkProps) {
   }, []);
 
   return (
-    <Box
+    <LinkBase
       {...restProps}
       activeOptions={{
         exact: true,
       }}
-      as={Link}
       className={[
         styles.ContentNavigationLink,
         className,
@@ -45,6 +44,6 @@ export function ContentNavigationLink(props: ContentNavigationLinkProps) {
       to={node.href}
     >
       {node.label}
-    </Box>
+    </LinkBase>
   );
 }

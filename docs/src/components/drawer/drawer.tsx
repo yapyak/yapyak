@@ -2,8 +2,8 @@ import type { ReactElement } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { Backdrop } from '#components/backdrop';
-import { Box } from '#primitives/box';
 import { Overlay } from '#components/overlay';
+import { Box } from '#primitives/box';
 import { Animate } from '#systems/animate';
 
 import styles from './drawer.module.css';

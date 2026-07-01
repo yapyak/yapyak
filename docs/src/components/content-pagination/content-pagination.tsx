@@ -1,9 +1,8 @@
 import type { Page } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { Link } from '@tanstack/react-router';
-
 import { Box } from '#primitives/box';
+import { LinkBase } from '#primitives/link';
 
 import styles from './content-pagination.module.css';
 
@@ -38,7 +37,7 @@ export function ContentPagination(props: ContentPaginationProps) {
       ]}
     >
       {previousPage ? (
-        <Link
+        <LinkBase
           className={styles.PreviousCard}
           to={previousPage.href}
         >
@@ -64,12 +63,12 @@ export function ContentPagination(props: ContentPaginationProps) {
               {previousPage.description}
             </Box>
           )}
-        </Link>
+        </LinkBase>
       ) : (
         <Box className={styles.Spacer} />
       )}
       {nextPage ? (
-        <Link
+        <LinkBase
           className={styles.NextCard}
           to={nextPage.href}
         >
@@ -95,7 +94,7 @@ export function ContentPagination(props: ContentPaginationProps) {
               {nextPage.description}
             </Box>
           )}
-        </Link>
+        </LinkBase>
       ) : (
         <Box className={styles.Spacer} />
       )}

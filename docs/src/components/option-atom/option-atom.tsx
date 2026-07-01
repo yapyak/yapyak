@@ -1,7 +1,7 @@
 import type { BoxProps } from '#primitives/box';
 
-import { Box } from '#primitives/box';
 import { OptionDot } from '#components/option-dot';
+import { Box } from '#primitives/box';
 
 import styles from './option-atom.module.css';
 

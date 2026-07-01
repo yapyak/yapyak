@@ -1,9 +1,9 @@
 import type { EyebrowBlock } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { Box } from '#primitives/box';
 import { ExternalLink } from '#components/external-link';
 import { KindBadge } from '#components/kind-badge';
+import { Box } from '#primitives/box';
 
 import styles from './block-renderer-node-eyebrow.module.css';
 

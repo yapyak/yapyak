@@ -1,7 +1,7 @@
 import type { BoxProps } from '#primitives/box';
 
-import { Box } from '#primitives/box';
 import { ExternalLinkIcon } from '#components/external-link-icon';
+import { Box } from '#primitives/box';
 
 import styles from './external-link.module.css';
 

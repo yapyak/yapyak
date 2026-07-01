@@ -1,9 +1,11 @@
 import type { ContentNavigationGroupProps } from './content-navigation-group';
 
-import { Link, useLocation } from '@tanstack/react-router';
+import { useLocation } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
 import { Box } from '#primitives/box';
+import { ButtonBase } from '#primitives/button';
+import { LinkBase } from '#primitives/link';
 
 import {
   childrenContainPath,
@@ -47,34 +49,29 @@ export function ContentNavigationGroupCollapsible(
         data-open={isOpen}
       >
         {node.href === undefined ? (
-          <Box
-            as="button"
+          <ButtonBase
             className={styles.GroupLabel}
             onClick={() => setIsOpen((current) => !current)}
-            type="button"
           >
             {node.label}
-          </Box>
+          </ButtonBase>
         ) : (
-          <Box
-            as={Link}
+          <LinkBase
             className={styles.GroupLabel}
             onClick={() => setIsOpen(true)}
             to={node.href}
           >
             {node.label}
-          </Box>
+          </LinkBase>
         )}
-        <Box
+        <ButtonBase
           aria-expanded={isOpen}
           aria-label={isOpen ? 'Collapse section' : 'Expand section'}
-          as="button"
           className={styles.ChevronButton}
           onClick={() => setIsOpen((current) => !current)}
-          type="button"
         >
           <ContentNavigationGroupChevronIcon />
-        </Box>
+        </ButtonBase>
       </Box>
       {isOpen && (
         <Box

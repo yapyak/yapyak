@@ -1,8 +1,9 @@
 import type { ContentNavigationGroupProps } from './content-navigation-group';
 
-import { Link, useLocation } from '@tanstack/react-router';
+import { useLocation } from '@tanstack/react-router';
 
 import { Box } from '#primitives/box';
+import { LinkBase } from '#primitives/link';
 
 import { getKey, renderChild } from './content-navigation-group';
 import styles from './content-navigation-group.module.css';
@@ -31,15 +32,14 @@ export function ContentNavigationGroupStatic(
           {node.label}
         </Box>
       ) : (
-        <Box
-          as={Link}
+        <LinkBase
           className={styles.TitleHeading}
           data-active={isActive}
           data-link={true}
           to={node.href}
         >
           {node.label}
-        </Box>
+        </LinkBase>
       )}
       <Box
         as="ul"
