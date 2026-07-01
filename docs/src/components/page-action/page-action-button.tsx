@@ -6,32 +6,32 @@ import { ButtonBase } from '#primitives/button';
 
 import styles from './page-action.module.css';
 
-export type PageActionTileProps = ButtonBaseProps & {
+export type PageActionButtonProps = ButtonBaseProps & {
   icon: ReactNode;
   label: string;
   trailingIcon?: ReactNode;
 };
 
-export function PageActionTile(props: PageActionTileProps) {
+export function PageActionButton(props: PageActionButtonProps) {
   const { className, icon, label, trailingIcon, ...restProps } = props;
 
   return (
     <ButtonBase
       {...restProps}
       className={[
-        styles.Tile,
+        styles.Button,
         className,
       ]}
     >
       <Box
         as="span"
-        className={styles.TileIcon}
+        className={styles.LeadingIcon}
       >
         {icon}
       </Box>
       <Box
         as="span"
-        className={styles.TileLabel}
+        className={styles.Label}
       >
         {label}
       </Box>
@@ -39,7 +39,7 @@ export function PageActionTile(props: PageActionTileProps) {
         <Box
           aria-hidden={true}
           as="span"
-          className={styles.TileTrailingIcon}
+          className={styles.TrailingIcon}
         >
           {trailingIcon}
         </Box>

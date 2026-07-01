@@ -1,4 +1,5 @@
 import type { BoxProps } from '#primitives/box';
+import type { PageActionChatProvider } from './page-action-chat-menu-item';
 
 import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
@@ -8,23 +9,17 @@ import { CheckIcon } from '#components/check-icon';
 import { ChevronIcon } from '#components/chevron-icon';
 import { CopyIcon } from '#components/copy-icon';
 import { MarkdownIcon } from '#components/markdown-icon';
-import { Menu, MenuTrigger } from '#components/menu';
+import { MenuTrigger } from '#components/menu';
 import { Box } from '#primitives/box';
 
 import styles from './page-action.module.css';
-import { PageActionChatItem } from './page-action-chat-item';
-import { PageActionLinkTile } from './page-action-link-tile';
-import { PageActionTile } from './page-action-tile';
+import { PageActionButton } from './page-action-button';
+import { PageActionChatMenu } from './page-action-chat-menu';
+import { PageActionLink } from './page-action-link';
 
 const COPIED_RESET_MS = 1500;
 
-type ChatProvider = {
-  buildUrl: (encodedPrompt: string) => string;
-  label: string;
-  value: string;
-};
-
-const CHAT_PROVIDERS: ChatProvider[] = [
+const CHAT_PROVIDERS: PageActionChatProvider[] = [
   {
     buildUrl: (encoded) => `https://chatgpt.com/?hints=search&q=${encoded}`,
     label: 'ChatGPT',
@@ -73,13 +68,14 @@ export function PageAction(props: PageActionProps) {
 
   const markdownPath = `${href}.md`;
 
-  const buildChatHref = (provider: ChatProvider): string | undefined => {
+  const handleChatSelect = (provider: PageActionChatProvider) => {
     if (origin === undefined) {
-      return undefined;
+      return;
     }
     const absoluteUrl = `${origin}${markdownPath}`;
     const prompt = `I want you to yap about this page: ${absoluteUrl}`;
-    return provider.buildUrl(encodeURIComponent(prompt));
+    const chatUrl = provider.buildUrl(encodeURIComponent(prompt));
+    window.open(chatUrl, '_blank', 'noreferrer');
   };
 
   const handleCopy = async () => {
@@ -107,40 +103,33 @@ export function PageAction(props: PageActionProps) {
       ]}
       role="group"
     >
-      <PageActionTile
+      <PageActionButton
         icon={isCopied ? <CheckIcon /> : <CopyIcon />}
         label={isCopied ? t('Copied') : t('Copy')}
         onClick={handleCopy}
       />
-      <PageActionLinkTile
+      <PageActionLink
         href={markdownPath}
         icon={<MarkdownIcon />}
         label={t('Markdown')}
       />
       <MenuTrigger
         menu={(menuProps) => (
-          <Menu
-            {...menuProps}
-            alignment="center"
-            aria-label={t('Open in chat')}
-            matchTargetMinWidth={true}
-            placement="bottom"
-          >
+          <PageActionChatMenu {...menuProps}>
             {CHAT_PROVIDERS.map((provider) => (
-              <PageActionChatItem
-                href={buildChatHref(provider)}
+              <PageActionChatMenu.Item
                 key={provider.value}
-                label={provider.label}
-                value={provider.value}
+                onSelect={handleChatSelect}
+                provider={provider}
               />
             ))}
-          </Menu>
+          </PageActionChatMenu>
         )}
       >
         {(triggerProps) => (
-          <PageActionTile
+          <PageActionButton
             {...triggerProps}
-            className={styles.ChatTile}
+            className={styles.ChatButton}
             icon={<ChatIcon />}
             label={t('Chat')}
             trailingIcon={<ChevronIcon direction="down" />}

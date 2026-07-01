@@ -10,13 +10,13 @@ import { useRect } from '#hooks/use-rect';
 import { useWindowEventListener } from '#hooks/use-window-event-listener';
 import {
   MenuBase,
-  MenuBaseItem,
   MenuBaseRadioGroup,
   MenuBaseSeparator,
 } from '#primitives/menu';
 import { isModifierWithKey } from '#utils/is-modifier-with-key';
 
 import styles from './menu.module.css';
+import { MenuItem } from './menu-item';
 import { MenuRadioItem } from './menu-radio-item';
 
 export type MenuProps = Omit<AttachmentProps, 'arrow' | 'restrain'> &
@@ -101,7 +101,7 @@ export function Menu(props: MenuProps) {
   );
 }
 
-Menu.Item = MenuBaseItem;
+Menu.Item = MenuItem;
 Menu.RadioGroup = MenuBaseRadioGroup;
 Menu.RadioItem = MenuRadioItem;
 Menu.Separator = MenuBaseSeparator;

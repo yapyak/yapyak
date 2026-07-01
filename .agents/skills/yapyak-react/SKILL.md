@@ -248,6 +248,30 @@ ActionList.Separator = ActionListSeparator;
 
   File order: `declare namespace` → `function` declaration → property assignments. Use `let`, not `const`.
 
+### Extending compound components
+
+Mirror the parent's compound structure.
+
+- Root wrapper: `[Prefix][Parent]` extends `[Parent]`.
+- Sub-parts: `[Prefix][Parent].[SubPart]` extends `[Parent].[SubPart]`.
+
+```tsx
+// ✓
+export function ChatMenu(props: ChatMenuProps) { ... }
+ChatMenu.Item = ChatMenuItem;
+
+<ChatMenu aria-label="...">
+  <ChatMenu.Item provider={...} />
+</ChatMenu>
+
+// ✗ Flat sub-part wrapper without matching container
+<Menu aria-label="...">
+  <ChatProviderMenuItem provider={...} />
+</Menu>
+```
+
+Wrapping `[Parent].Sub` without providing `[Prefix][Parent]` is forbidden → provide the full compound.
+
 ### Nested components — access through parent only
 
 A component placed inside another component's folder is internal to the parent. External code accesses via the parent's compound-component dot notation or by passing data to the parent.

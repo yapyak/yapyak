@@ -5,13 +5,13 @@ import { Box } from '#primitives/box';
 
 import styles from './page-action.module.css';
 
-export type PageActionLinkTileProps = BoxProps<'a'> & {
+export type PageActionLinkProps = BoxProps<'a'> & {
   href: string;
   icon: ReactNode;
   label: string;
 };
 
-export function PageActionLinkTile(props: PageActionLinkTileProps) {
+export function PageActionLink(props: PageActionLinkProps) {
   const { className, href, icon, label, ...restProps } = props;
 
   return (
@@ -19,7 +19,7 @@ export function PageActionLinkTile(props: PageActionLinkTileProps) {
       {...restProps}
       as="a"
       className={[
-        styles.Tile,
+        styles.Link,
         className,
       ]}
       href={href}
@@ -28,13 +28,13 @@ export function PageActionLinkTile(props: PageActionLinkTileProps) {
     >
       <Box
         as="span"
-        className={styles.TileIcon}
+        className={styles.LeadingIcon}
       >
         {icon}
       </Box>
       <Box
         as="span"
-        className={styles.TileLabel}
+        className={styles.Label}
       >
         {label}
       </Box>

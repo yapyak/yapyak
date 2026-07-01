@@ -12,7 +12,7 @@
     margin-top: var(--spacing-3);
     border-top: var(--px) solid var(--rule);
 
-    .Tile {
+    :is(.Button, .Link) {
       display: flex;
       gap: var(--spacing-2);
       align-items: center;
@@ -35,7 +35,7 @@
         box-shadow var(--transition),
         outline 400ms;
 
-      .TileIcon {
+      .LeadingIcon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -44,12 +44,12 @@
         color: inherit;
       }
 
-      .TileLabel {
+      .Label {
         flex: 1 1 auto;
         line-height: 1;
       }
 
-      .TileTrailingIcon {
+      .TrailingIcon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -77,7 +77,7 @@
       }
     }
 
-    .ChatTile {
+    .ChatButton {
       anchor-name: var(--trigger-anchor);
 
       &[aria-expanded="true"] {
