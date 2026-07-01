@@ -51,7 +51,7 @@ export function OptionMenu(props: OptionMenuProps) {
       menu={(menuProps) => (
         <Menu
           {...menuProps}
-          alignment="start"
+          alignment="center"
           aria-label={group.label}
           className={styles.OptionMenu}
           placement="bottom"

@@ -22,7 +22,7 @@
       z-index: 1;
       display: flex;
       flex-direction: column;
-      padding: var(--spacing-4);
+      padding: var(--spacing-3);
       pointer-events: auto;
       background-color: var(--background-color);
       border-radius: var(--border-radius-md);

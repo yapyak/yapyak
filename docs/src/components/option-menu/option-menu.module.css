@@ -1,6 +1,6 @@
 @layer components {
   .OptionMenu {
-    min-width: 200px;
+    min-width: 140px;
   }
 
   .Trigger {
