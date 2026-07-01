@@ -1,6 +1,9 @@
 export type { HeroProps } from './hero';
 export type { HeroDemoProps } from './hero-demo';
-export type { Framework, HeroDemoEditorProps } from './hero-demo-editor';
+export type {
+  HeroDemoEditorProps,
+  HeroDemoFramework,
+} from './hero-demo-editor';
 export type {
   HeroDemoLocaleFlagCode,
   HeroDemoLocaleFlagProps,

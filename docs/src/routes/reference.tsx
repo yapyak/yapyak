@@ -52,13 +52,27 @@ function Component() {
     ],
   );
 
-  const outlineContent = (
+  const outlineDrawerContent = (
     <>
       <ContentAnchorNavigation
         headings={headings}
         key={page.href}
       />
       <PageAction href={page.href} />
+    </>
+  );
+
+  const outlineInlineContent = (
+    <>
+      <ContentAnchorNavigation
+        headings={headings}
+        key={page.href}
+        rail={true}
+      />
+      <PageAction
+        href={page.href}
+        rail={true}
+      />
     </>
   );
 
@@ -92,7 +106,7 @@ function Component() {
           {...dialogProps}
           direction="end"
         >
-          {outlineContent}
+          {outlineDrawerContent}
         </Drawer>
       )}
     >
@@ -127,7 +141,7 @@ function Component() {
       </ContentLayout.Content>
 
       {isOutlineInline && (
-        <ContentLayout.Outline>{outlineContent}</ContentLayout.Outline>
+        <ContentLayout.Outline>{outlineInlineContent}</ContentLayout.Outline>
       )}
     </ContentLayout>
   );

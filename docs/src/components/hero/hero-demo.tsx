@@ -1,5 +1,5 @@
 import type { BoxProps } from '#primitives/box';
-import type { Framework } from './hero-demo-editor';
+import type { HeroDemoFramework } from './hero-demo-editor';
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -16,7 +16,7 @@ export function HeroDemo(props: HeroDemoProps) {
   const { className, ...restProps } = props;
   const element = useRef<HTMLDivElement>(null);
   const [isActive, setIsActive] = useState(false);
-  const [framework, setFramework] = useState<Framework>('react');
+  const [framework, setFramework] = useState<HeroDemoFramework>('react');
 
   useEffect(() => {
     const $element = element.current;

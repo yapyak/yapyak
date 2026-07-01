@@ -1,4 +1,4 @@
-import type { Framework } from './hero-demo-editor';
+import type { HeroDemoFramework } from './hero-demo-editor';
 
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
@@ -6,15 +6,20 @@ import { ButtonBase } from '#primitives/button';
 import styles from './hero-demo-editor.module.css';
 
 export type HeroDemoEditorTabProps = {
-  active: boolean;
-  dirty: boolean;
+  activeFramework: HeroDemoFramework;
   filename: string;
-  framework: Framework;
-  onSelect: (framework: Framework) => void;
+  framework: HeroDemoFramework;
+  onSelect: (framework: HeroDemoFramework) => void;
+  saving: boolean;
+  typing: boolean;
 };
 
 export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
-  const { active, dirty, filename, framework, onSelect } = props;
+  const { activeFramework, filename, framework, onSelect, saving, typing } =
+    props;
+
+  const isActive = framework === activeFramework;
+  const isDirty = isActive && (typing || saving);
 
   const extension = filename.slice(filename.indexOf('.') + 1);
 
@@ -25,7 +30,7 @@ export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
   return (
     <ButtonBase
       className={styles.TabButton}
-      data-active={active}
+      data-active={isActive}
       onClick={handleClick}
     >
       <Box
@@ -52,7 +57,7 @@ export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
         aria-hidden="true"
         as="span"
         className={styles.TabDot}
-        data-dirty={dirty}
+        data-dirty={isDirty}
       />
     </ButtonBase>
   );

@@ -42,9 +42,12 @@
           height var(--indicator-duration) var(--ease-smooth);
         will-change: transform, height;
       }
+    }
 
-      @media (min-width: 1324px) {
+    &[data-rail] {
+      .Rail {
         padding-left: var(--spacing-3);
+        border-left: var(--px) solid var(--rule);
 
         .Indicator {
           display: block;

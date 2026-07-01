@@ -1,78 +1,82 @@
 @layer components {
-  .Diagnostics {
+  .BlockRendererNodeDiagnostic {
     display: flex;
     flex-direction: column;
     overflow: hidden;
     background: var(--surface);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);
-  }
 
-  .Line {
-    display: grid;
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--spacing-3);
-    align-items: start;
-    padding: var(--spacing-3) var(--spacing-5);
-    overflow-x: auto;
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    line-height: var(--line-height-normal);
-    scrollbar-color: var(--ring-stronger) transparent;
-    scrollbar-width: thin;
+    .LineRow {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--spacing-3);
+      align-items: start;
+      padding: var(--spacing-3) var(--spacing-5);
+      overflow-x: auto;
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-normal);
+      scrollbar-color: var(--ring-stronger) transparent;
+      scrollbar-width: thin;
 
-    &:not(:last-child) {
-      border-bottom: var(--px) solid var(--rule);
-    }
+      &:not(:last-child) {
+        border-bottom: var(--px) solid var(--rule);
+      }
 
-    &[data-status="ok"] {
-      background-color: color-mix(in oklab, var(--brand) 3%, transparent);
-    }
+      &[data-status="ok"] {
+        background-color: color-mix(in oklab, var(--brand) 3%, transparent);
 
-    &[data-status="error"] {
-      background-color: color-mix(in oklab, var(--danger) 3%, transparent);
-    }
-  }
+        .StatusIcon {
+          color: var(--brand);
+        }
+      }
 
-  .Indicator {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 1rem;
-    height: 1rem;
-    pointer-events: none;
-    user-select: none;
+      &[data-status="error"] {
+        background-color: color-mix(in oklab, var(--danger) 3%, transparent);
 
-    .Line[data-status="ok"] & {
-      color: var(--brand);
-    }
+        .StatusIcon {
+          color: var(--danger);
+        }
 
-    .Line[data-status="error"] & {
-      color: var(--danger);
-    }
-  }
+        .MessageText {
+          color: color-mix(
+            in oklab,
+            var(--danger) 60%,
+            var(--foreground-softer)
+          );
+        }
+      }
 
-  .Body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-1);
-    min-width: 0;
-  }
+      .StatusIcon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+        pointer-events: none;
+        user-select: none;
+      }
 
-  .Code {
-    font-family: inherit;
-    color: var(--foreground-soft);
-    white-space: pre;
-  }
+      .BodyStack {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        min-width: 0;
 
-  .Message {
-    font-family: var(--font-family-mono);
-    font-size: var(--font-size-xs);
-    color: var(--foreground-softer);
-    user-select: none;
+        .Code {
+          font-family: inherit;
+          color: var(--foreground-soft);
+          white-space: pre;
+        }
 
-    .Line[data-status="error"] & {
-      color: color-mix(in oklab, var(--danger) 60%, var(--foreground-softer));
+        .MessageText {
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-xs);
+          color: var(--foreground-softer);
+          user-select: none;
+        }
+      }
     }
   }
 }

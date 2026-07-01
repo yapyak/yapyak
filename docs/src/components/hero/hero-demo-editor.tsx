@@ -4,18 +4,18 @@ import type { BoxProps } from '#primitives/box';
 
 import { useLayoutEffect, useRef, useState } from 'react';
 
-import { CodeBlockToken } from '#components/code-block-token';
 import { tokenize } from '#lib/tokenize';
 import { Box } from '#primitives/box';
 
 import styles from './hero-demo-editor.module.css';
+import { HeroDemoEditorCodeToken } from './hero-demo-editor-code-token';
 import { HeroDemoEditorTab } from './hero-demo-editor-tab';
 
-export type Framework = 'astro' | 'react' | 'svelte' | 'vue';
+export type HeroDemoFramework = 'astro' | 'react' | 'svelte' | 'vue';
 
 type FrameworkConfig = {
   filename: string;
-  id: Framework;
+  id: HeroDemoFramework;
   label: string;
   language: Language;
 };
@@ -53,8 +53,8 @@ export const FRAMEWORKS: [
 ];
 
 export type HeroDemoEditorProps = BoxProps & {
-  framework: Framework;
-  onFrameworkChange: (framework: Framework) => void;
+  framework: HeroDemoFramework;
+  onFrameworkChange: (framework: HeroDemoFramework) => void;
   saving: boolean;
   source: string;
   typing: boolean;
@@ -84,7 +84,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
   const tokens = tokenize(code, config.language);
 
   const tabsElement = useRef<HTMLDivElement>(null);
-  const previousFrameworkRef = useRef<Framework | null>(null);
+  const previousFrameworkRef = useRef<HeroDemoFramework | null>(null);
   const [indicator, setIndicator] = useState<IndicatorState | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -164,20 +164,17 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
             onTransitionEnd={handleIndicatorTransitionEnd}
           />
         )}
-        {FRAMEWORKS.map((entry) => {
-          const isActive = entry.id === framework;
-          const isDirty = isActive && (typing || saving);
-          return (
-            <HeroDemoEditorTab
-              active={isActive}
-              dirty={isDirty}
-              filename={entry.filename}
-              framework={entry.id}
-              key={entry.id}
-              onSelect={onFrameworkChange}
-            />
-          );
-        })}
+        {FRAMEWORKS.map((entry) => (
+          <HeroDemoEditorTab
+            activeFramework={framework}
+            filename={entry.filename}
+            framework={entry.id}
+            key={entry.id}
+            onSelect={onFrameworkChange}
+            saving={saving}
+            typing={typing}
+          />
+        ))}
       </Box>
       <Box
         as="pre"
@@ -187,49 +184,20 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
           as="code"
           className={styles.Code}
         >
-          {tokens.map((token, index) => {
-            if (
-              token.kind === 'tx-source' &&
-              token.value.includes(CARET_MARKER)
-            ) {
-              const inner = token.value.slice(1, -1);
-              const parts = inner.split(CARET_MARKER);
-              const before = parts[0] ?? '';
-              const after = parts[1] ?? '';
-              return (
-                <CodeBlockToken
-                  key={index}
-                  kind="tx-source"
-                >
-                  <Box as="span">'</Box>
-                  {before}
-                  <Box
-                    aria-hidden="true"
-                    as="span"
-                    className={styles.Caret}
-                    data-typing={typing}
-                  />
-                  {after}
-                  <Box as="span">'</Box>
-                </CodeBlockToken>
-              );
-            }
-            return (
-              <CodeBlockToken
-                key={index}
-                kind={token.kind}
-              >
-                {token.value}
-              </CodeBlockToken>
-            );
-          })}
+          {tokens.map((token, index) => (
+            <HeroDemoEditorCodeToken
+              key={index}
+              token={token}
+              typing={typing}
+            />
+          ))}
         </Box>
       </Box>
     </Box>
   );
 }
 
-function buildCode(framework: Framework, source: string) {
+function buildCode(framework: HeroDemoFramework, source: string) {
   const safe = source.replace(/'/g, "\\'");
   const value = `${safe}${CARET_MARKER}`;
   switch (framework) {

@@ -45,10 +45,11 @@ const CHAT_PROVIDERS: ChatProvider[] = [
 
 export type PageActionProps = BoxProps<'nav'> & {
   href: string;
+  rail?: boolean;
 };
 
 export function PageAction(props: PageActionProps) {
-  const { className, href, ...restProps } = props;
+  const { className, href, rail = false, ...restProps } = props;
   const [isCopied, setIsCopied] = useState(false);
   const [origin, setOrigin] = useState<string>();
   const timeoutRef = useRef<number>(undefined);
@@ -101,6 +102,7 @@ export function PageAction(props: PageActionProps) {
         styles.PageAction,
         className,
       ]}
+      data-rail={rail}
     >
       <Box className={styles.Eyebrow}>{t('Actions')}</Box>
       <Box className={styles.List}>

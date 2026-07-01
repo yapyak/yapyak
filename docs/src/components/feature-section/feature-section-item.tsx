@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
+import type { Feature } from '#lib/feature';
 import type { BoxProps } from '#primitives/box';
-import type { Feature } from './feature-section';
 
 import { Box } from '#primitives/box';
 

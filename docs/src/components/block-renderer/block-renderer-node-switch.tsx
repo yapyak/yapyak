@@ -4,7 +4,7 @@ import type { BoxProps } from '#primitives/box';
 import { useOptionContext } from '#components/option-provider';
 import { Box } from '#primitives/box';
 
-import { BlockRenderer } from './block-renderer';
+import { BlockRendererNodeSwitchBranch } from './block-renderer-node-switch-branch';
 import { doc } from 'virtual:doc-compiler';
 
 export type BlockRendererNodeSwitchProps = BoxProps & {
@@ -22,20 +22,14 @@ export function BlockRendererNodeSwitch(props: BlockRendererNodeSwitchProps) {
 
   return (
     <Box data-switch-group={block.group}>
-      {group.options.map((option) => {
-        const branchBlocks =
-          block.branches[option.value] ?? block.fallback ?? [];
-        const isVisible = option.value === activeValue;
-        return (
-          <Box
-            data-when-value={option.value}
-            hidden={!isVisible}
-            key={option.value}
-          >
-            <BlockRenderer blocks={branchBlocks} />
-          </Box>
-        );
-      })}
+      {group.options.map((option) => (
+        <BlockRendererNodeSwitchBranch
+          blocks={block.branches[option.value] ?? block.fallback ?? []}
+          isVisible={option.value === activeValue}
+          key={option.value}
+          value={option.value}
+        />
+      ))}
     </Box>
   );
 }

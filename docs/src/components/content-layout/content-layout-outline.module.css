@@ -6,11 +6,11 @@
     padding: var(--spacing-5) var(--spacing-4);
 
     @media (min-width: 1324px) {
-      position: fixed;
+      position: sticky;
       top: var(--header-height);
-      right: 0;
-      bottom: 0;
+      align-self: start;
       width: calc(var(--layout-outline-width) + var(--layout-side-bleed));
+      max-height: calc(100vh - var(--header-height));
       padding: var(--spacing-5) var(--layout-side-bleed) var(--spacing-5) 0;
       overflow-y: auto;
       scrollbar-color: var(--ring-stronger) transparent;
