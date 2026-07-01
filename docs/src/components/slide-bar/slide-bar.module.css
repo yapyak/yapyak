@@ -1,0 +1,42 @@
+@layer components {
+  .SlideBar {
+    --scroll-handle-height: 24px;
+    --mask-top: black;
+    --mask-bottom: black;
+
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+
+    .Inner {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      scroll-padding-block-start: var(--scroll-handle-height);
+      scroll-padding-block-end: var(--scroll-handle-height);
+      scrollbar-width: none;
+      mask-image: linear-gradient(
+        to bottom,
+        var(--mask-top) var(--scroll-handle-height),
+        black var(--scroll-handle-height),
+        black calc(100% - var(--scroll-handle-height)),
+        var(--mask-bottom) calc(100% - var(--scroll-handle-height))
+      );
+
+      &::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+      }
+    }
+
+    &[data-with-start-scroll-offset] {
+      --mask-top: transparent;
+    }
+
+    &[data-with-end-scroll-offset] {
+      --mask-bottom: transparent;
+    }
+  }
+}

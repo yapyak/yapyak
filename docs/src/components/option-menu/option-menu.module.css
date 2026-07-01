@@ -1,6 +1,6 @@
 @layer components {
-  .OptionPickList {
-    display: inline-flex;
+  .OptionMenu {
+    min-width: 200px;
   }
 
   .Trigger {
@@ -19,12 +19,20 @@
     border: 0;
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-ring-inset);
-    anchor-name: var(--trigger-anchor);
     transition:
       color var(--transition),
       background-color var(--transition),
       box-shadow var(--transition),
       outline 400ms;
+
+    .Label {
+      line-height: 1;
+    }
+
+    .Chevron {
+      display: inline-flex;
+      color: var(--foreground-softer);
+    }
 
     @media (hover: hover) {
       &:hover {
@@ -38,39 +46,14 @@
       background-color: var(--surface);
     }
 
-    &:focus-visible {
-      outline-width: 4px;
-      outline-color: var(--accent-soft);
-    }
-
-    &:has(+ :popover-open) {
+    &[aria-expanded="true"] {
       color: var(--foreground);
       background-color: var(--surface);
     }
 
-    .AtomRow {
-      display: flex;
-      gap: var(--spacing-5);
-      align-items: center;
+    &:focus-visible {
+      outline-width: 4px;
+      outline-color: var(--accent-soft);
     }
-  }
-
-  .Group {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-2);
-  }
-
-  .GroupLabel {
-    font-size: var(--font-size-xs);
-    font-weight: 600;
-    color: var(--foreground-softer);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-  }
-
-  .GroupOptions {
-    display: flex;
-    flex-direction: column;
   }
 }

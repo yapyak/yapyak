@@ -1,0 +1,19 @@
+@layer components {
+  .ScrollHandle {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: var(--scroll-handle-height);
+    color: var(--foreground-softer);
+
+    &[data-placement="start"] {
+      top: 0;
+    }
+
+    &[data-placement="end"] {
+      bottom: 0;
+    }
+  }
+}

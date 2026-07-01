@@ -6,7 +6,7 @@ import { t } from 'yapyak';
 
 import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
-import { OptionPickList } from '#components/option-pick-list';
+import { OptionMenu } from '#components/option-menu';
 import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 
@@ -121,7 +121,8 @@ export function LayoutHeader(props: LayoutHeaderProps) {
           as="footer"
           className={styles.Footer}
         >
-          <OptionPickList />
+          <OptionMenu group="framework" />
+          <OptionMenu group="packageManager" />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"

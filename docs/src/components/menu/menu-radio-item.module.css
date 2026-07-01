@@ -1,0 +1,57 @@
+@layer components {
+  .MenuRadioItem {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-family: inherit;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--foreground-soft);
+    text-align: left;
+    cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    border-radius: var(--border-radius-sm);
+    box-shadow: inset 0 0 0 var(--px) transparent;
+
+    .Label {
+      flex: 1 1 auto;
+      line-height: 1;
+    }
+
+    .Check {
+      display: none;
+      color: var(--foreground);
+    }
+
+    @media (hover: hover) {
+      &:hover:not([data-checked]) {
+        color: var(--foreground);
+        background-color: var(--surface);
+        box-shadow: var(--shadow-ring-inset);
+      }
+    }
+
+    &:focus {
+      color: var(--foreground);
+      outline: none;
+      background-color: var(--surface);
+      box-shadow: var(--shadow-ring-inset);
+    }
+
+    &[data-checked] {
+      color: var(--foreground);
+      background-color: var(--surface-stronger);
+      box-shadow: inset 0 0 0 var(--px) var(--ring-stronger);
+
+      .Swatch {
+        display: none;
+      }
+
+      .Check {
+        display: inline-flex;
+      }
+    }
+  }
+}

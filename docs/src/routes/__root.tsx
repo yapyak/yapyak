@@ -19,7 +19,7 @@ import { Layout } from '#components/layout';
 import { LogoLink } from '#components/logo-link';
 import { Navigation } from '#components/navigation';
 import { NotFoundView } from '#components/not-found-view';
-import { OptionPickList } from '#components/option-pick-list';
+import { OptionMenu } from '#components/option-menu';
 import {
   OptionProvider,
   buildPrepaintScript,
@@ -116,7 +116,8 @@ function Component() {
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
-          <OptionPickList />
+          <OptionMenu group="framework" />
+          <OptionMenu group="packageManager" />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
