@@ -28,11 +28,10 @@ export function BlockRendererNodePickerOption(
       aria-checked={active}
       className={styles.Option}
       data-active={active}
-      data-option-value={value}
       onClick={handleClick}
       role="radio"
     >
-      <OptionDot />
+      <OptionDot value={value} />
       {label}
     </ButtonBase>
   );

@@ -20,9 +20,8 @@ export function OptionAtom(props: OptionAtomProps) {
         styles.OptionAtom,
         className,
       ]}
-      data-option-value={value}
     >
-      <OptionDot />
+      <OptionDot value={value} />
       <Box
         as="span"
         className={styles.Text}

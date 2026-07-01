@@ -2,7 +2,6 @@ import type { LinkBlock } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { ExternalLink } from '#components/external-link';
-import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 
 import { BlockRendererNode } from './block-renderer-node';

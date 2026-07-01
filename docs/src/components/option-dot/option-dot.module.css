@@ -3,7 +3,65 @@
     flex-shrink: 0;
     width: 8px;
     height: 8px;
-    background-color: var(--option-accent, var(--foreground-softer));
+    background-color: var(--foreground-softer);
     border-radius: var(--border-radius-full);
+
+    &[data-value="react"] {
+      background-color: var(--option-accent-react);
+    }
+    &[data-value="vue"] {
+      background-color: var(--option-accent-vue);
+    }
+    &[data-value="svelte"] {
+      background-color: var(--option-accent-svelte);
+    }
+    &[data-value="astro"] {
+      background-color: var(--option-accent-astro);
+    }
+    &[data-value="pnpm"] {
+      background-color: var(--option-accent-pnpm);
+    }
+    &[data-value="npm"] {
+      background-color: var(--option-accent-npm);
+    }
+    &[data-value="bun"] {
+      background-color: var(--option-accent-bun);
+    }
+    &[data-value="none"] {
+      background-color: var(--option-accent-none);
+    }
+    &[data-value="react-router"] {
+      background-color: var(--option-accent-react-router);
+    }
+    &[data-value="tanstack-start"] {
+      background-color: var(--option-accent-tanstack-start);
+    }
+    &[data-value="sveltekit"] {
+      background-color: var(--option-accent-sveltekit);
+    }
+    &[data-value="anthropic"] {
+      background-color: var(--option-accent-anthropic);
+    }
+    &[data-value="openai"] {
+      background-color: var(--option-accent-openai);
+    }
+    &[data-value="gemini"] {
+      background-color: var(--option-accent-gemini);
+    }
+    &[data-value="ollama"] {
+      background-color: var(--option-accent-ollama);
+    }
+    &[data-value="chatgpt"] {
+      background-color: var(--option-accent-chatgpt);
+    }
+    &[data-value="claude"] {
+      background-color: var(--option-accent-claude);
+    }
+    &[data-value="cursor"] {
+      background-color: var(--option-accent-cursor);
+    }
+    &[data-value="t3-chat"] {
+      background-color: var(--option-accent-t3-chat);
+    }
   }
 }

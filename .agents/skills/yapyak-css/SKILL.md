@@ -334,6 +334,29 @@ When a parent's CSS module needs to position, lay out, or control visibility of 
 }
 ```
 
+#### `data-*` selectors stay inside the owning component
+
+Every `data-*` selector lives in the module CSS of the component whose element carries the attribute. Global CSS (`src/styles/*.css`) declares tokens, resets, and utilities only — never a `data-*` selector.
+
+```css
+/* ✗ Global stylesheet targets a component-rendered attribute */
+/* src/styles/*.css */
+[data-value='primary'] {
+  color: var(--brand);
+}
+```
+
+```css
+/* ✓ The component owns the selector alongside its class */
+.Component {
+  &[data-value='primary'] {
+    color: var(--brand);
+  }
+}
+```
+
+A global `data-*` selector matches every element with that attribute anywhere on the page — an implicit cross-component contract with no owner.
+
 #### State and variant styling
 
 Use data attributes on the **root element** for state and variants. Child elements are styled via parent nesting — they never carry data attributes themselves.

@@ -17,12 +17,11 @@ export function PageActionChatItem(props: PageActionChatItemProps) {
     <Popover.Option
       {...restProps}
       as="a"
-      data-option-value={value}
       href={href}
       rel="noreferrer"
       target="_blank"
     >
-      <OptionDot />
+      <OptionDot value={value} />
       <Popover.OptionLabel>{label}</Popover.OptionLabel>
       <Popover.OptionTrailing>
         <ExternalLinkIcon />
