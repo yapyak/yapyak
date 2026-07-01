@@ -10,13 +10,9 @@
       top: var(--header-height);
       align-self: start;
       width: calc(var(--layout-outline-width) + var(--layout-side-bleed));
-      max-height: calc(100vh - var(--header-height));
       padding: var(--spacing-5)
         calc(var(--spacing-3) + var(--layout-side-bleed)) var(--spacing-5)
         var(--spacing-4);
-      overflow-y: auto;
-      scrollbar-color: var(--ring-stronger) transparent;
-      scrollbar-width: thin;
       background-color: transparent;
       border-left: var(--px) solid var(--rule);
     }

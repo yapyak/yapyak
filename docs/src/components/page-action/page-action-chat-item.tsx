@@ -20,6 +20,8 @@ export function PageActionChatItem(props: PageActionChatItemProps) {
       as="a"
       href={href}
       rel="noreferrer"
+      role="menuitem"
+      tabIndex={-1}
       target="_blank"
     >
       <Swatch accent={value as SwatchAccent} />

@@ -5,9 +5,10 @@ import { t } from 'yapyak';
 
 import { ChatIcon } from '#components/chat-icon';
 import { CheckIcon } from '#components/check-icon';
+import { ChevronIcon } from '#components/chevron-icon';
 import { CopyIcon } from '#components/copy-icon';
 import { MarkdownIcon } from '#components/markdown-icon';
-import { Popover, PopoverTrigger } from '#components/popover';
+import { Menu, MenuTrigger } from '#components/menu';
 import { Box } from '#primitives/box';
 
 import styles from './page-action.module.css';
@@ -116,11 +117,13 @@ export function PageAction(props: PageActionProps) {
         icon={<MarkdownIcon />}
         label={t('Markdown')}
       />
-      <PopoverTrigger
-        popover={(popoverProps) => (
-          <Popover
-            {...popoverProps}
-            alignment="end"
+      <MenuTrigger
+        menu={(menuProps) => (
+          <Menu
+            {...menuProps}
+            alignment="center"
+            aria-label={t('Open in chat')}
+            matchTargetMinWidth={true}
             placement="bottom"
           >
             {CHAT_PROVIDERS.map((provider) => (
@@ -131,7 +134,7 @@ export function PageAction(props: PageActionProps) {
                 value={provider.value}
               />
             ))}
-          </Popover>
+          </Menu>
         )}
       >
         {(triggerProps) => (
@@ -140,9 +143,10 @@ export function PageAction(props: PageActionProps) {
             className={styles.ChatTile}
             icon={<ChatIcon />}
             label={t('Chat')}
+            trailingIcon={<ChevronIcon direction="down" />}
           />
         )}
-      </PopoverTrigger>
+      </MenuTrigger>
     </Box>
   );
 }

@@ -11,7 +11,6 @@
       display: flex;
       flex-direction: column;
       gap: var(--spacing-3);
-      padding-left: var(--spacing-3);
 
       .Eyebrow {
         padding: 0 var(--spacing-3);
@@ -48,6 +47,7 @@
     &[data-indicator] {
       .Rail {
         .Indicator {
+          left: calc((var(--spacing-4) + var(--px)) * -1);
           display: block;
         }
       }
