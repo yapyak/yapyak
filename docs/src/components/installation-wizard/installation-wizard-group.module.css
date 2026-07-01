@@ -14,10 +14,48 @@
     }
 
     .RadioGroup {
+      --installation-wizard-indicator-height: 0;
+      --installation-wizard-indicator-width: 0;
+      --installation-wizard-indicator-x: 0;
+      --installation-wizard-indicator-y: 0;
+      --installation-wizard-slide-duration: 400ms;
+
+      position: relative;
       display: flex;
       flex-wrap: wrap;
       gap: var(--spacing-2);
       align-items: center;
+
+      .IndicatorBar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: var(--installation-wizard-indicator-width);
+        height: var(--installation-wizard-indicator-height);
+        pointer-events: none;
+        background-color: var(--surface-strong);
+        border-radius: var(--border-radius-sm);
+        box-shadow: inset 0 0 0 var(--px) var(--ring-strong);
+        opacity: 0;
+        transform: translate(
+          var(--installation-wizard-indicator-x),
+          var(--installation-wizard-indicator-y)
+        );
+
+        &[data-ready] {
+          transition:
+            transform var(--installation-wizard-slide-duration)
+            var(--ease-snappy),
+            width var(--installation-wizard-slide-duration) var(--ease-snappy),
+            height var(--installation-wizard-slide-duration) var(--ease-snappy);
+        }
+      }
+
+      &[data-animating] {
+        .IndicatorBar {
+          opacity: 1;
+        }
+      }
     }
   }
 }
