@@ -15,12 +15,16 @@ export type OptionPickListItemProps = BoxProps<'button'> & {
 export function OptionPickListItem(props: OptionPickListItemProps) {
   const { active, groupId, onActivate, option, ...restProps } = props;
 
+  const handleClick = () => {
+    onActivate(groupId, option.value);
+  };
+
   return (
     <Popover.Option
       {...restProps}
       aria-pressed={active}
       data-active={active}
-      onClick={() => onActivate(groupId, option.value)}
+      onClick={handleClick}
     >
       <OptionAtom
         label={option.label}

@@ -146,17 +146,22 @@ App packages use the `#alias/*` pattern via `package.json` `imports`:
 }
 ```
 
-Decision:
-
 - Same module (current folder, sub-folders, or parent barrel of an implementation-folder pair) → relative.
-- Different module → `#alias/*`.
+- Sibling module under the same alias root (the folder that an `#alias/*` entry targets) → relative.
+- Different alias root → `#alias/*`.
 
 ```ts
-// ✓ Relative — same module
+// ✓ Same module
 import { useContentLayout } from '../content-layout';
 
-// ✓ Alias — reaching a different module
-import { Box } from '#components/box';
+// ✓ Sibling under the same alias root — from src/primitives/radio/*
+import { Box } from '../box';
+
+// ✗ Alias inside the same alias root — from src/primitives/radio/*
+import { Box } from '#primitives/box';
+
+// ✓ Different alias root — from src/components/radio/*
+import { ButtonBase } from '#primitives/button';
 ```
 
 #### `lib/` vs `utils/` in apps

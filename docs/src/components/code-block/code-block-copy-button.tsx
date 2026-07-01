@@ -31,7 +31,7 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
     [],
   );
 
-  const onClick = async () => {
+  const handleClick = async () => {
     try {
       await navigator.clipboard.writeText(source);
     } catch {
@@ -55,7 +55,7 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
         className,
       ]}
       data-copied={isCopied ? '' : undefined}
-      onClick={onClick}
+      onClick={handleClick}
     >
       <Box
         aria-hidden="true"

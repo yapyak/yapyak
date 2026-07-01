@@ -26,6 +26,13 @@ export function RadioBase(props: RadioBaseProps): ReactElement {
   const isDisabled = disabled || group.disabled;
   const isChecked = group.value === value;
 
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      group.setValue(value);
+    }
+    onChange?.(event);
+  };
+
   return (
     <Box
       {...restProps}
@@ -44,12 +51,7 @@ export function RadioBase(props: RadioBaseProps): ReactElement {
         ]}
         disabled={isDisabled}
         name={group.name}
-        onChange={(event: ChangeEvent<HTMLInputElement>) => {
-          if (event.target.checked) {
-            group.setValue(value);
-          }
-          onChange?.(event);
-        }}
+        onChange={handleInputChange}
         type="radio"
         value={value}
       />

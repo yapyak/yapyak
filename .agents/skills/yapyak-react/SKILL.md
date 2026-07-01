@@ -157,6 +157,15 @@ GuideLayout              (list of guides, master-detail shell)
 
 REST verbs in component names are forbidden (`*ShowLayout`, `*IndexLayout`).
 
+#### The peer-vs-aspect test
+
+For a component bound to one `$id` whose children navigate between sub-sections:
+
+- Children could stand alone as top-level resources → `*Layout`.
+- Children only exist as views of the parent → domain name (`*Detail`, `*Card`, `*Summary`).
+
+Domain judgment resolves ambiguity — the test is not fully deterministic.
+
 ### Component naming algorithm
 
 #### Step 1: Component or inline?
@@ -390,6 +399,97 @@ For child-element attributes, expose a `[childElement][AttributeName]` prop — 
     const update = () => { ... };
   }, [...]);
   ```
+
+### Event handlers
+
+Name local event handlers `handle*`, never `on*`. `on*` is reserved for event props.
+
+Format: `handle[ChildName][EventName]`. Omit `ChildName` when the handler binds to the component's own root.
+
+```tsx
+// ✓ Root event
+const handleClick = () => { /* ... */ };
+return <button onClick={handleClick} />;
+
+// ✓ Child event
+const handleItemSelect = (id: string) => { /* ... */ };
+return <MenuItem onSelect={handleItemSelect} />;
+
+// ✗ Event-prop prefix on a local function
+const onClick = () => { /* ... */ };
+
+// ✗ Missing ChildName for a child-targeted handler
+const handleClick = (id: string) => { /* ... */ };
+return <MenuItem onSelect={handleClick} />;
+```
+
+Never inline an event handler in JSX → define a named handler in the component body.
+
+```tsx
+// ✗ Inline arrow
+<button onClick={() => onFrameworkChange(id)} />
+
+// ✓ Named handler
+const handleClick = () => {
+  onFrameworkChange(id);
+};
+return <button onClick={handleClick} />;
+```
+
+For a per-iteration handler inside `.map`, extract the row into its own component per [[.map callbacks as their own component]].
+
+Handlers always use block-body arrow functions → never shorthand implicit-return.
+
+```tsx
+// ✗ Shorthand implicit-return
+const handleClick = () => onActivate(id);
+
+// ✓ Block body
+const handleClick = () => {
+  onActivate(id);
+};
+```
+
+Handlers always use `const handle* = () => { ... }` → never `function handle*() { ... }`.
+
+```tsx
+// ✗ function declaration
+function handlePointerDown(event: PointerEvent) { /* ... */ }
+
+// ✓ const arrow
+const handlePointerDown = (event: PointerEvent) => { /* ... */ };
+```
+
+### Callbacks captured by long-lived subscriptions
+
+When an effect subscribes long-lived and its callback must call the latest version of a prop callback → capture the prop in a ref, sync it in a separate effect, read `.current` inside the subscription. Keep the prop out of the subscribing effect's dep array.
+
+```ts
+// ✓
+const onChangeRef = useRef(onChange);
+useEffect(() => {
+  onChangeRef.current = onChange;
+});
+
+useEffect(() => {
+  const handleEvent = (event: Event) => {
+    onChangeRef.current(event);
+  };
+  window.addEventListener('event', handleEvent);
+  return () => window.removeEventListener('event', handleEvent);
+}, []);
+
+// ✗ Resubscribes every render
+useEffect(() => {
+  const handleEvent = (event: Event) => {
+    onChange(event);
+  };
+  window.addEventListener('event', handleEvent);
+  return () => window.removeEventListener('event', handleEvent);
+}, [onChange]);
+```
+
+The ref is synced in a separate effect (runs after commit) — never written during render. Replaces `useCallback`-based "stable identity" patterns.
 
 ### Refs
 

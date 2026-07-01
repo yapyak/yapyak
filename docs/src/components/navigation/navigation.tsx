@@ -2,7 +2,7 @@ import type { TransitionEvent } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { useLocation } from '@tanstack/react-router';
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 
 import { Box } from '#primitives/box';
 
@@ -78,15 +78,14 @@ export function Navigation(props: NavigationProps) {
     location.pathname,
   ]);
 
-  const handleIndicatorTransitionEnd = useCallback(
-    (event: TransitionEvent<HTMLSpanElement>) => {
-      if (event.propertyName !== 'transform') {
-        return;
-      }
-      setIsAnimating(false);
-    },
-    [],
-  );
+  const handleIndicatorTransitionEnd = (
+    event: TransitionEvent<HTMLSpanElement>,
+  ) => {
+    if (event.propertyName !== 'transform') {
+      return;
+    }
+    setIsAnimating(false);
+  };
 
   return (
     <Box

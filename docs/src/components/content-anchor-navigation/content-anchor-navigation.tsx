@@ -111,17 +111,17 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       }
     }
 
-    const onScroll = () => {
+    const handleScroll = () => {
       tryEdges();
     };
-    window.addEventListener('scroll', onScroll, {
+    window.addEventListener('scroll', handleScroll, {
       passive: true,
     });
     tryEdges();
 
     return () => {
       observer.disconnect();
-      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('scroll', handleScroll);
     };
   }, [
     headings,

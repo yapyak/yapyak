@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useState } from 'react';
 
 export type UseControllableStateOptions<T> = {
   defaultValue?: T;
@@ -23,26 +23,17 @@ export function useControllableState<T>(
   const isControlled = controlledValue !== undefined;
   const value = isControlled ? controlledValue : uncontrolledValue;
 
-  const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
+  const setValue = (next: T | ((previous: T | undefined) => T)) => {
+    const resolved =
+      typeof next === 'function'
+        ? (next as (previous: T | undefined) => T)(value)
+        : next;
 
-  const setValue = useCallback(
-    (next: T | ((previous: T | undefined) => T)) => {
-      const resolved =
-        typeof next === 'function'
-          ? (next as (previous: T | undefined) => T)(value)
-          : next;
-
-      if (!isControlled) {
-        setUncontrolledValue(resolved);
-      }
-      onChangeRef.current?.(resolved);
-    },
-    [
-      isControlled,
-      value,
-    ],
-  );
+    if (!isControlled) {
+      setUncontrolledValue(resolved);
+    }
+    onChange?.(resolved);
+  };
 
   return [
     value,

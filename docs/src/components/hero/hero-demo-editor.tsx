@@ -2,14 +2,14 @@ import type { TransitionEvent } from 'react';
 import type { Language } from '#lib/tokenize';
 import type { BoxProps } from '#primitives/box';
 
-import { useCallback, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 
 import { CodeBlockToken } from '#components/code-block-token';
 import { tokenize } from '#lib/tokenize';
 import { Box } from '#primitives/box';
-import { ButtonBase } from '#primitives/button';
 
 import styles from './hero-demo-editor.module.css';
+import { HeroDemoEditorTab } from './hero-demo-editor-tab';
 
 export type Framework = 'astro' | 'react' | 'svelte' | 'vue';
 
@@ -125,15 +125,14 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
     framework,
   ]);
 
-  const handleIndicatorTransitionEnd = useCallback(
-    (event: TransitionEvent<HTMLSpanElement>) => {
-      if (event.propertyName !== 'transform') {
-        return;
-      }
-      setAnimating(false);
-    },
-    [],
-  );
+  const handleIndicatorTransitionEnd = (
+    event: TransitionEvent<HTMLSpanElement>,
+  ) => {
+    if (event.propertyName !== 'transform') {
+      return;
+    }
+    setAnimating(false);
+  };
 
   return (
     <Box
@@ -168,43 +167,15 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
         {FRAMEWORKS.map((entry) => {
           const isActive = entry.id === framework;
           const isDirty = isActive && (typing || saving);
-          const extension = entry.filename.slice(
-            entry.filename.indexOf('.') + 1,
-          );
           return (
-            <ButtonBase
-              className={styles.TabButton}
-              data-active={isActive}
+            <HeroDemoEditorTab
+              active={isActive}
+              dirty={isDirty}
+              filename={entry.filename}
+              framework={entry.id}
               key={entry.id}
-              onClick={() => onFrameworkChange(entry.id)}
-            >
-              <Box
-                aria-hidden="true"
-                className={styles.TabFill}
-              />
-              <Box
-                aria-hidden="true"
-                className={styles.TabActiveIndicator}
-              />
-              <Box
-                as="span"
-                className={styles.TabFilenameTextShort}
-              >
-                {extension}
-              </Box>
-              <Box
-                as="span"
-                className={styles.TabFilenameTextFull}
-              >
-                {entry.filename}
-              </Box>
-              <Box
-                aria-hidden="true"
-                as="span"
-                className={styles.TabDot}
-                data-dirty={isDirty}
-              />
-            </ButtonBase>
+              onSelect={onFrameworkChange}
+            />
           );
         })}
       </Box>

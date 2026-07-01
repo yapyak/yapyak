@@ -1,13 +1,12 @@
 import type { PickerBlock } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { OptionDot } from '#components/option-dot';
 import { useOptionContext } from '#components/option-provider';
 import { Box } from '#primitives/box';
-import { ButtonBase } from '#primitives/button';
 
 import { visibleOptionsForGroup } from '../../adapter';
 import styles from './block-renderer-node-picker.module.css';
+import { BlockRendererNodePickerOption } from './block-renderer-node-picker-option';
 import { doc } from 'virtual:doc-compiler';
 
 export type BlockRendererNodePickerProps = BoxProps<'section'> & {
@@ -49,18 +48,14 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
         role="radiogroup"
       >
         {options.map((option) => (
-          <ButtonBase
-            aria-checked={option.value === active}
-            className={styles.Option}
-            data-active={option.value === active}
-            data-option-value={option.value}
+          <BlockRendererNodePickerOption
+            active={option.value === active}
+            groupId={block.group}
             key={option.value}
-            onClick={() => set(block.group, option.value)}
-            role="radio"
-          >
-            <OptionDot />
-            {option.label}
-          </ButtonBase>
+            label={option.label}
+            onActivate={set}
+            value={option.value}
+          />
         ))}
       </Box>
     </Box>

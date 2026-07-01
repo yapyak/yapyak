@@ -32,6 +32,13 @@ export function ContentNavigationGroupCollapsible(
     isOnPath,
   ]);
 
+  const handleToggleClick = () => {
+    setIsOpen((current) => !current);
+  };
+  const handleLinkClick = () => {
+    setIsOpen(true);
+  };
+
   return (
     <Box
       {...restProps}
@@ -51,14 +58,14 @@ export function ContentNavigationGroupCollapsible(
         {node.href === undefined ? (
           <ButtonBase
             className={styles.GroupLabel}
-            onClick={() => setIsOpen((current) => !current)}
+            onClick={handleToggleClick}
           >
             {node.label}
           </ButtonBase>
         ) : (
           <LinkBase
             className={styles.GroupLabel}
-            onClick={() => setIsOpen(true)}
+            onClick={handleLinkClick}
             to={node.href}
           >
             {node.label}
@@ -68,7 +75,7 @@ export function ContentNavigationGroupCollapsible(
           aria-expanded={isOpen}
           aria-label={isOpen ? 'Collapse section' : 'Expand section'}
           className={styles.ChevronButton}
-          onClick={() => setIsOpen((current) => !current)}
+          onClick={handleToggleClick}
         >
           <ContentNavigationGroupChevronIcon />
         </ButtonBase>

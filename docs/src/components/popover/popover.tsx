@@ -40,9 +40,9 @@ export function Popover(props: PopoverProps): ReactElement {
     onClose,
   ]);
 
-  function handlePointerDown(event: PointerEvent) {
+  const handlePointerDown = (event: PointerEvent) => {
     event.stopPropagation();
-  }
+  };
 
   return (
     <Overlay
