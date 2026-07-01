@@ -6,6 +6,7 @@ import type { MenuBaseProps } from '#primitives/menu';
 import { Attachment } from '#components/attachment';
 import { Overlay } from '#components/overlay';
 import { SlideBar } from '#components/slide-bar';
+import { useRect } from '#hooks/use-rect';
 import { useWindowEventListener } from '#hooks/use-window-event-listener';
 import {
   MenuBase,
@@ -20,16 +21,22 @@ import { MenuRadioItem } from './menu-radio-item';
 
 export type MenuProps = Omit<AttachmentProps, 'arrow' | 'restrain'> &
   Pick<OverlayProps, 'onClose'> &
-  Pick<MenuBaseProps, 'aria-label'>;
+  Pick<MenuBaseProps, 'aria-label'> & {
+    matchTargetMinWidth?: boolean;
+  };
 
 export function Menu(props: MenuProps) {
   const {
     'aria-label': ariaLabel,
     children,
     className,
+    matchTargetMinWidth = false,
     onClose,
+    targetElement,
     ...restProps
   } = props;
+
+  const targetRect = useRect(targetElement);
 
   const handleClose = () => {
     onClose?.();
@@ -71,11 +78,13 @@ export function Menu(props: MenuProps) {
         aria-modal={true}
         arrow={true}
         margin={4}
+        minWidth={matchTargetMinWidth ? targetRect.width : 0}
         offset={1}
         onContextMenu={handleAttachmentContextMenu}
         onKeyDown={handleAttachmentKeyDown}
         onPointerDown={handlePointerDown}
         restrain={true}
+        targetElement={targetElement}
       >
         <MenuBase
           aria-label={ariaLabel}

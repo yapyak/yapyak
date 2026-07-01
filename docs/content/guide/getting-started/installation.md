@@ -71,14 +71,6 @@ yapyak installs as a Vite plugin plus a framework binding and (optionally) an SS
 
 ## Install
 
-{% only group="translator" value="ollama" %}
-Install and run [Ollama](https://ollama.com/download), then pull a model:
-
-```bash
-ollama pull llama3.1
-```
-{% /only %}
-
 {% switch group="framework" %}
 
 {% when value="react" %}
@@ -351,6 +343,25 @@ export default defineConfig({
 ```
 {% /when %}
 
+{% /switch %}
+
+{% switch group="translator" %}
+{% when value="anthropic" %}
+Get an [Anthropic API key](https://console.anthropic.com) and set `ANTHROPIC_API_KEY` in your environment.
+{% /when %}
+{% when value="openai" %}
+Get an [OpenAI API key](https://platform.openai.com) and set `OPENAI_API_KEY` in your environment.
+{% /when %}
+{% when value="gemini" %}
+Get a [Gemini API key](https://aistudio.google.com/apikey) and set `GEMINI_API_KEY` in your environment.
+{% /when %}
+{% when value="ollama" %}
+Install [Ollama](https://ollama.com) and pull a model:
+
+```bash
+ollama pull llama3.1
+```
+{% /when %}
 {% /switch %}
 
 Add yapyak's own config:

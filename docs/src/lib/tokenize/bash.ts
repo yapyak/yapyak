@@ -14,6 +14,7 @@ const SUBCOMMAND_TOOLS = new Set([
   'yapyak',
   'docker',
   'kubectl',
+  'ollama',
 ]);
 
 export function tokenizeBash(code: string) {
@@ -112,7 +113,7 @@ export function tokenizeBash(code: string) {
 
     if (character >= '0' && character <= '9') {
       const previous = index > 0 ? (code[index - 1] ?? '') : '';
-      const isWordContinuation = /[A-Za-z_]/.test(previous);
+      const isWordContinuation = /[A-Za-z_.]/.test(previous);
       if (!isWordContinuation) {
         const match = /^\d+(?:\.\d+)?/.exec(code.slice(index));
         if (match) {

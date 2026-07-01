@@ -54,6 +54,7 @@ export function OptionMenu(props: OptionMenuProps) {
           alignment="center"
           aria-label={group.label}
           className={styles.OptionMenu}
+          matchTargetMinWidth={true}
           placement="bottom"
         >
           <Menu.RadioGroup
