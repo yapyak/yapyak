@@ -23,7 +23,6 @@ export function Navigation(props: NavigationProps) {
   const element = useRef<HTMLElement>(null);
   const previousPathnameRef = useRef<string | null>(null);
   const [indicator, setIndicator] = useState<IndicatorState | null>(null);
-  const [isReady, setIsReady] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const location = useLocation();
 
@@ -34,6 +33,9 @@ export function Navigation(props: NavigationProps) {
     }
 
     const measure = () => {
+      if ($element.offsetWidth === 0) {
+        return;
+      }
       const activeElement = $element.querySelector('[data-status="active"]');
       if (!(activeElement instanceof HTMLElement)) {
         return;
@@ -58,13 +60,10 @@ export function Navigation(props: NavigationProps) {
       })();
     }
 
-    const frame = window.requestAnimationFrame(() => {
-      setIsReady(true);
-    });
-
     if (
       previousPathnameRef.current !== null &&
-      previousPathnameRef.current !== location.pathname
+      previousPathnameRef.current !== location.pathname &&
+      $element.offsetWidth !== 0
     ) {
       setIsAnimating(true);
     }
@@ -72,7 +71,6 @@ export function Navigation(props: NavigationProps) {
 
     return () => {
       observer.disconnect();
-      window.cancelAnimationFrame(frame);
     };
   }, [
     location.pathname,
@@ -113,7 +111,6 @@ export function Navigation(props: NavigationProps) {
           aria-hidden="true"
           as="span"
           className={styles.IndicatorBar}
-          data-ready={isReady}
           onTransitionEnd={handleIndicatorTransitionEnd}
         />
       )}

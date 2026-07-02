@@ -29,22 +29,17 @@
         var(--navigation-indicator-x),
         var(--navigation-indicator-y)
       );
+    }
 
-      &[data-ready] {
+    &[data-animating] {
+      --navigation-active-background-color: transparent;
+
+      .IndicatorBar {
+        opacity: 1;
         transition:
           transform var(--navigation-slide-duration) var(--ease-snappy),
           width var(--navigation-slide-duration) var(--ease-snappy),
           height var(--navigation-slide-duration) var(--ease-snappy);
-      }
-    }
-
-    &[data-animating] {
-      .IndicatorBar {
-        opacity: 1;
-      }
-
-      a[data-status="active"] {
-        background-color: transparent;
       }
     }
   }
