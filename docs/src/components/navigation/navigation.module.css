@@ -16,7 +16,7 @@
     border-radius: var(--border-radius-full);
     box-shadow: var(--shadow-ring-inset);
 
-    .IndicatorBar {
+    .Indicator {
       position: absolute;
       top: var(--navigation-indicator-y);
       left: var(--navigation-indicator-x);
@@ -28,7 +28,7 @@
       border-radius: var(--border-radius-full);
       opacity: 0;
 
-      .Row {
+      .IndicatorRow {
         --navigation-active-color: var(--brand-contrast);
         --navigation-active-background-color: transparent;
 
@@ -48,7 +48,7 @@
       --navigation-active-background-color: transparent;
       --navigation-active-color: var(--foreground-soft);
 
-      .IndicatorBar {
+      .Indicator {
         opacity: 1;
         transition:
           left var(--navigation-slide-duration) var(--ease-snappy),
@@ -56,7 +56,7 @@
           width var(--navigation-slide-duration) var(--ease-snappy),
           height var(--navigation-slide-duration) var(--ease-snappy);
 
-        .Row {
+        .IndicatorRow {
           transition:
             left var(--navigation-slide-duration) var(--ease-snappy),
             top var(--navigation-slide-duration) var(--ease-snappy);

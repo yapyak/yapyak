@@ -85,6 +85,7 @@ One HTML element or layout role each.
 | `Badge` | pill, chip, tag |
 | `Divider` | `<hr>` or visual separator |
 | `Chevron` / `Arrow` / `Dot` / `Caret` | the matching icon / indicator |
+| `Indicator` | moving selection indicator / active highlight |
 | `Swatch` | small color sample identifying a variant (dot, square, chip) |
 | `Spacer` | spacer element |
 | `Overlay` | full-cover decorative layer |

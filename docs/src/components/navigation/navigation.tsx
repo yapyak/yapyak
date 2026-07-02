@@ -110,11 +110,11 @@ export function Navigation(props: NavigationProps) {
         <Box
           aria-hidden="true"
           as="span"
-          className={styles.IndicatorBar}
+          className={styles.Indicator}
           inert={true}
           onTransitionEnd={handleIndicatorTransitionEnd}
         >
-          <Box className={styles.Row}>{children}</Box>
+          <Box className={styles.IndicatorRow}>{children}</Box>
         </Box>
       )}
     </Box>
