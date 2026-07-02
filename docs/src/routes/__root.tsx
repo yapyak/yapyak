@@ -17,6 +17,8 @@ import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { LogoLink } from '#components/logo-link';
+import { MobileMenu } from '#components/mobile-menu';
+import { MobileMenuButton } from '#components/mobile-menu-button';
 import { Navigation } from '#components/navigation';
 import { NotFoundView } from '#components/not-found-view';
 import { OptionMenu } from '#components/option-menu';
@@ -25,6 +27,7 @@ import {
   buildPrepaintScript,
 } from '#components/option-provider';
 import { Root } from '#components/root';
+import { useMobileMenu } from '#hooks/use-mobile-menu';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
 import { assetUrl } from '#utils/asset';
 
@@ -95,6 +98,8 @@ export const Route = createRootRoute({
 function Component() {
   useScrollRestoration();
 
+  const menu = useMobileMenu();
+
   const shouldFadeBorder = useMatches({
     select: (matches) =>
       matches.some((match) => match.staticData.fadeBorder === true),
@@ -128,12 +133,17 @@ function Component() {
             <GithubIcon />
           </IconLink>
         </Layout.Header.End>
+        <MobileMenuButton
+          onToggle={menu.toggle}
+          open={menu.isOpen}
+        />
+        <MobileMenu open={menu.isOpen} />
       </Layout.Header>
-      <Layout.Main>
+      <Layout.Main inert={menu.isOpen}>
         <Outlet />
       </Layout.Main>
       {hasFooter && (
-        <Layout.Footer>
+        <Layout.Footer inert={menu.isOpen}>
           <Colophon />
         </Layout.Footer>
       )}

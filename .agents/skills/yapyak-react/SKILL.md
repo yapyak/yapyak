@@ -131,6 +131,39 @@ function Component() {
 }
 ```
 
+#### Trigger and overlay are separate components
+
+Never author a toggle and the overlay it opens (dialog, drawer, sheet, menu, popover) in one component → give the trigger and the overlay each its own component.
+
+Keep the `open` state in the parent that composes both: pass `open` + `onToggle` to the trigger, `open` to the overlay. A glue that takes both as slots (`DialogTrigger`) is such a parent.
+
+Keep the effects the open state drives across siblings (`inert`, scroll-lock, Escape, route-change close) in a hook the parent calls.
+
+```tsx
+// ✓ Two components; parent owns the glue
+function Component() {
+  const menu = useMobileMenu();
+  return (
+    <Layout>
+      <MobileMenuButton open={menu.isOpen} onToggle={menu.toggle} />
+      <MobileMenu open={menu.isOpen} />
+      <Layout.Main inert={menu.isOpen} />
+    </Layout>
+  );
+}
+
+// ✗ One component fuses trigger, overlay, and state
+function MobileMenu() {
+  const [open, setOpen] = useState(false);
+  return (
+    <Box>
+      <MobileMenuButton open={open} onToggle={() => setOpen((value) => !value)} />
+      <Animate in={open}>{/* panel */}</Animate>
+    </Box>
+  );
+}
+```
+
 ### Domain naming
 
 - Singular resource in component names: `GuideCard`, never `GuidesCard`.

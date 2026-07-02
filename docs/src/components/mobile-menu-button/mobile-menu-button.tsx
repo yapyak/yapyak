@@ -5,22 +5,23 @@ import { t } from 'yapyak';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
-import styles from './layout-header-menu-button.module.css';
+import styles from './mobile-menu-button.module.css';
 
-export type LayoutHeaderMenuButtonProps = ButtonBaseProps & {
+export type MobileMenuButtonProps = ButtonBaseProps & {
   onToggle: () => void;
   open: boolean;
 };
 
-export function LayoutHeaderMenuButton(props: LayoutHeaderMenuButtonProps) {
+export function MobileMenuButton(props: MobileMenuButtonProps) {
   const { className, open, onToggle, ...restProps } = props;
+
   return (
     <ButtonBase
       {...restProps}
       aria-expanded={open}
       aria-label={open ? t('Close menu') : t('Open menu')}
       className={[
-        styles.LayoutHeaderMenuButton,
+        styles.MobileMenuButton,
         className,
       ]}
       data-open={open}

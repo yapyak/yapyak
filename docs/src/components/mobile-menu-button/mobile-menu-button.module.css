@@ -1,10 +1,11 @@
 @layer components {
-  .LayoutHeaderMenuButton {
+  .MobileMenuButton {
     display: flex;
     flex-direction: column;
     gap: 6px;
     align-items: center;
     justify-content: center;
+    justify-self: end;
     width: 20px;
     height: 20px;
     padding: 0;
@@ -30,6 +31,10 @@
         opacity var(--duration-medium) var(--ease-snappy);
     }
 
+    @media (min-width: 1024px) {
+      display: none;
+    }
+
     @media (hover: hover) {
       &:hover {
         color: var(--foreground);
@@ -50,14 +55,10 @@
         transform: translateY(-4px) rotate(-45deg);
       }
     }
-
-    @media (min-width: 1024px) {
-      display: none;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .LayoutHeaderMenuButton {
+    .MobileMenuButton {
       .Line {
         transition: none;
       }
