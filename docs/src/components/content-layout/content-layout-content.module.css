@@ -2,10 +2,12 @@
   .ContentLayoutContent {
     display: flex;
     flex-direction: column;
+    padding-top: var(--content-header-height);
     padding-bottom: var(--spacing-32);
 
     @media (min-width: 1024px) {
       grid-column: 2;
+      padding-top: 0;
     }
   }
 }

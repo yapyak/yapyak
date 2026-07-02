@@ -1,10 +1,11 @@
 @layer components {
   .LayoutHeaderCenter {
     display: none;
+    align-items: center;
     justify-self: center;
 
     @media (min-width: 1024px) {
-      display: block;
+      display: flex;
     }
   }
 }

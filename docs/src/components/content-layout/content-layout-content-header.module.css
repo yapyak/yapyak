@@ -1,12 +1,13 @@
 @layer components {
   .ContentLayoutContentHeader {
-    position: sticky;
+    position: fixed;
     top: var(--header-height);
+    right: 0;
+    left: 0;
     z-index: var(--z-index-1);
     display: grid;
     grid-template-columns: 1fr 1fr;
     align-items: center;
-    width: 100%;
     height: var(--content-header-height);
     padding: 0 var(--spacing-4);
     background-color: var(--canvas);
@@ -24,6 +25,13 @@
 
     .End {
       justify-self: end;
+    }
+
+    @media (min-width: 1024px) {
+      position: sticky;
+      right: auto;
+      left: auto;
+      width: 100%;
     }
 
     @media (min-width: 1324px) {

@@ -142,7 +142,7 @@
   --shadow-brand-glow: 0 0 12px var(--brand-soft);
   --shadow-ring-inset: inset 0 0 0 var(--px) var(--ring);
 
-  --header-height: 76px;
+  --header-height: 56px;
   --content-header-height: 44px;
 
   --syntax-keyword: var(--color-lilac);
@@ -162,4 +162,10 @@
   --kind-class: var(--color-sand);
 
   --scrim: var(--color-black);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --header-height: 76px;
+  }
 }
