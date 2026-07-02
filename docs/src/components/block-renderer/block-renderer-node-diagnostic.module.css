@@ -27,21 +27,21 @@
       &[data-status] {
         background-color: color-mix(
           in oklab,
-          var(--diagnostic-color) 3%,
+          var(--block-renderer-node-diagnostic-color) 3%,
           transparent
         );
 
         .StatusIcon {
-          color: var(--diagnostic-color);
+          color: var(--block-renderer-node-diagnostic-color);
         }
       }
 
       &[data-status="ok"] {
-        --diagnostic-color: var(--brand);
+        --block-renderer-node-diagnostic-color: var(--brand);
       }
 
       &[data-status="error"] {
-        --diagnostic-color: var(--danger);
+        --block-renderer-node-diagnostic-color: var(--danger);
 
         .MessageText {
           color: color-mix(

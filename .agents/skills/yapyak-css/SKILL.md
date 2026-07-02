@@ -439,11 +439,15 @@ Set the varied property directly in the variant block. Reach for a variant-scope
 
 /* ✓ shared structure — variant swaps the var, root owns the formula */
 .KindBadge {
-  color: var(--kind-color);
-  background-color: color-mix(in oklab, var(--kind-color) 14%, transparent);
+  color: var(--kind-badge-color);
+  background-color: color-mix(
+    in oklab,
+    var(--kind-badge-color) 14%,
+    transparent
+  );
 
   &[data-variant="hook"] {
-    --kind-color: var(--kind-hook);
+    --kind-badge-color: var(--kind-hook);
   }
 }
 
@@ -451,6 +455,35 @@ Set the varied property directly in the variant block. Reach for a variant-scope
 .Swatch {
   &[data-accent="vue"] {
     --swatch-color: var(--accent-vue);
+  }
+}
+```
+
+#### Naming a variant / configured custom property
+
+Applies to the custom properties a variant block or a parent sets — the ones carrying a style choice. Internal implementation vars (JS-driven positions, animation state, layout constants) keep their own local names; this leaves them alone.
+
+Name them `--[root-class]-[role]`:
+
+- **`[root-class]`** — the component's root class, kebab-case, in full. `.KindBadge` → `--kind-badge-…`; `.BlockRendererNodeDiagnostic` → `--block-renderer-node-diagnostic-…`. Names are global across modules, so the full root class is the only collision-proof, judgement-free prefix. For a parent-configured var, the root class of the component that reads it.
+- **`[role]`** — the longhand CSS property the value lands in. Bare assignment (`property: var(--x)`) wins when it feeds several. A value that is one argument inside `color-mix` / `box-shadow` / `calc` takes `[property]-[argument]` (`-color`, `-alpha`). Never a synonym (`color`, not `accent`), never an abbreviation (`background`, not `bg`).
+
+```css
+/* ✓ role is the property, prefix is the full root class */
+.Callout {
+  .TitleText {
+    color: var(--callout-color);
+  }
+
+  &[data-variant="tip"] {
+    --callout-color: var(--tip);
+  }
+}
+
+/* ✗ invented synonym for a bare `color` */
+.Callout {
+  .TitleText {
+    color: var(--callout-accent);
   }
 }
 ```

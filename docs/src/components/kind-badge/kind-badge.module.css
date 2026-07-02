@@ -1,21 +1,25 @@
 @layer components {
   .KindBadge {
-    --kind-color: var(--foreground-soft);
-    --kind-bg-alpha: 14%;
-    --kind-ring-alpha: 4%;
+    --kind-badge-color: var(--foreground-soft);
+    --kind-badge-background-color-alpha: 14%;
+    --kind-badge-box-shadow-color-alpha: 4%;
 
     font-weight: var(--font-weight-semibold);
-    color: var(--kind-color);
+    color: var(--kind-badge-color);
     text-transform: uppercase;
     letter-spacing: var(--letter-spacing-wide);
     background-color: color-mix(
       in oklab,
-      var(--kind-color) var(--kind-bg-alpha),
+      var(--kind-badge-color) var(--kind-badge-background-color-alpha),
       transparent
     );
     border-radius: var(--border-radius-sm);
     box-shadow: inset 0 0 0 var(--px)
-      color-mix(in oklab, var(--kind-color) var(--kind-ring-alpha), transparent);
+      color-mix(
+        in oklab,
+        var(--kind-badge-color) var(--kind-badge-box-shadow-color-alpha),
+        transparent
+      );
 
     &[data-size="sm"] {
       font-size: var(--font-size-2xs);
@@ -49,34 +53,34 @@
     }
 
     &[data-variant="function"] {
-      --kind-color: var(--kind-function);
+      --kind-badge-color: var(--kind-function);
     }
 
     &[data-variant="hook"] {
-      --kind-color: var(--kind-hook);
+      --kind-badge-color: var(--kind-hook);
     }
 
     &[data-variant="component"] {
-      --kind-color: var(--kind-component);
+      --kind-badge-color: var(--kind-component);
     }
 
     &[data-variant="class"] {
-      --kind-color: var(--kind-class);
+      --kind-badge-color: var(--kind-class);
     }
 
     &[data-variant="interface"] {
-      --kind-color: var(--kind-interface);
-      --kind-bg-alpha: 12%;
+      --kind-badge-color: var(--kind-interface);
+      --kind-badge-background-color-alpha: 12%;
     }
 
     &[data-variant="type"] {
-      --kind-color: var(--kind-type);
-      --kind-bg-alpha: 12%;
+      --kind-badge-color: var(--kind-type);
+      --kind-badge-background-color-alpha: 12%;
     }
 
     &[data-variant="variable"] {
-      --kind-color: var(--kind-variable);
-      --kind-bg-alpha: 12%;
+      --kind-badge-color: var(--kind-variable);
+      --kind-badge-background-color-alpha: 12%;
     }
   }
 }

@@ -1,6 +1,6 @@
 @layer components {
   .ExternalLink {
-    --inline-code-color: currentColor;
+    --block-renderer-node-inline-code-color: currentColor;
     display: inline-flex;
     gap: var(--spacing-2);
     align-items: center;

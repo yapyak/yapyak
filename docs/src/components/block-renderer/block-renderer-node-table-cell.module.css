@@ -21,12 +21,12 @@
     }
 
     &[data-column="literal"] {
-      --inline-code-overflow-wrap: anywhere;
+      --block-renderer-node-inline-code-overflow-wrap: anywhere;
     }
 
     &[data-column="identifier"] {
-      --inline-code-word-break: keep-all;
-      --inline-code-overflow-wrap: normal;
+      --block-renderer-node-inline-code-word-break: keep-all;
+      --block-renderer-node-inline-code-overflow-wrap: normal;
 
       white-space: nowrap;
     }

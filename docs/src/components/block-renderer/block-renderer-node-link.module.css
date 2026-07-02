@@ -1,6 +1,6 @@
 @layer components {
   .BlockRendererNodeLink {
-    --inline-code-color: currentColor;
+    --block-renderer-node-inline-code-color: currentColor;
     color: var(--brand);
     text-decoration: underline;
     text-decoration-color: transparent;
