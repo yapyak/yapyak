@@ -54,6 +54,10 @@
         &:hover {
           color: var(--foreground-soft);
           box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+
+          .TabFill {
+            background-color: var(--surface);
+          }
         }
 
         &:not([data-active]):has(+ .TabButton:hover) {
@@ -64,6 +68,10 @@
       &[data-active] {
         color: var(--foreground);
         box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+
+        .TabFill {
+          background-color: var(--surface);
+        }
       }
 
       &:not([data-active]):has(+ .TabButton[data-active]) {
@@ -92,16 +100,6 @@
       pointer-events: none;
       background-color: transparent;
       transition: background-color var(--transition);
-    }
-
-    @media (hover: hover) {
-      .TabButton:hover .TabFill {
-        background-color: var(--surface);
-      }
-    }
-
-    .TabButton[data-active] .TabFill {
-      background-color: var(--surface);
     }
 
     .TabFilenameTextShort,
@@ -173,11 +171,11 @@
 
     &[data-saving] {
       animation: editor-pulse 600ms var(--ease-snappy) var(--duration-slow);
-    }
 
-    &[data-saving] .TabDot[data-dirty] {
-      animation: dot-pulse 950ms var(--ease-snappy) var(--duration-slow)
-        forwards;
+      .TabDot[data-dirty] {
+        animation: dot-pulse 950ms var(--ease-snappy) var(--duration-slow)
+          forwards;
+      }
     }
   }
 

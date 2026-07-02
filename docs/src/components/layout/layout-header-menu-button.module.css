@@ -57,8 +57,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .LayoutHeaderMenuButton .Line {
-      transition: none;
+    .LayoutHeaderMenuButton {
+      .Line {
+        transition: none;
+      }
     }
   }
 }

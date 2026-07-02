@@ -100,10 +100,10 @@
       animation:
         locales-pulse 950ms var(--ease-snappy),
         locales-ring 950ms var(--ease-snappy);
-    }
 
-    &[data-receiving] .FlashOverlay {
-      animation: locales-flash 950ms linear forwards;
+      .FlashOverlay {
+        animation: locales-flash 950ms linear forwards;
+      }
     }
 
     &[data-primed] {

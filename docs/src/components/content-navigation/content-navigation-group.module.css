@@ -81,16 +81,22 @@
         }
       }
 
-      &[data-on-path] .GroupLabel {
-        color: var(--foreground);
+      &[data-on-path] {
+        .GroupLabel {
+          color: var(--foreground);
+        }
       }
 
-      &[data-active] .GroupLabel {
-        color: var(--brand);
+      &[data-active] {
+        .GroupLabel {
+          color: var(--brand);
+        }
       }
 
-      &[data-open] .ChevronIcon {
-        transform: rotate(90deg);
+      &[data-open] {
+        .ChevronIcon {
+          transform: rotate(90deg);
+        }
       }
     }
 

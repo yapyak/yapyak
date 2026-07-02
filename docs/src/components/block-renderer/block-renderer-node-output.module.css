@@ -37,8 +37,10 @@
       grid-template-columns: auto 1fr;
     }
 
-    &:not([data-with-locales]) .Line {
-      display: block;
+    &:not([data-with-locales]) {
+      .Line {
+        display: block;
+      }
     }
   }
 }
