@@ -12,12 +12,6 @@
       width: 100%;
       font-size: var(--font-size-sm);
       border-collapse: collapse;
-
-      .TableBody {
-        > :last-child {
-          --block-table-cell-border-bottom: 0;
-        }
-      }
     }
   }
 }

@@ -4,6 +4,7 @@ import type { BoxProps } from '#primitives/box';
 import { Box } from '#primitives/box';
 
 import { BlockRendererNode } from './block-renderer-node';
+import styles from './block-renderer-node-table-row.module.css';
 
 export type BlockRendererNodeTableRowProps = BoxProps<'tr'> & {
   block: TableRowBlock;
@@ -17,6 +18,10 @@ export function BlockRendererNodeTableRow(
     <Box
       {...restProps}
       as="tr"
+      className={[
+        styles.BlockRendererNodeTableRow,
+        className,
+      ]}
     >
       {block.children.map((child, index) => (
         <BlockRendererNode

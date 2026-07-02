@@ -5,10 +5,6 @@
     color: var(--foreground-soft);
     overflow-wrap: break-word;
     border-right: var(--px) solid var(--rule);
-    border-bottom: var(
-      --block-table-cell-border-bottom,
-      var(--px) solid var(--rule)
-    );
 
     &:last-child {
       border-right: 0;
@@ -21,7 +17,7 @@
       text-transform: uppercase;
       letter-spacing: var(--letter-spacing-wider);
       white-space: nowrap;
-      border-bottom-color: var(--rule);
+      border-bottom: var(--px) solid var(--rule);
     }
 
     &[data-column="literal"] {

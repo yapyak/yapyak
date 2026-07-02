@@ -1,0 +1,7 @@
+@layer components {
+  .BlockRendererNodeTableRow {
+    &:not(:last-child) {
+      border-bottom: var(--px) solid var(--rule);
+    }
+  }
+}
