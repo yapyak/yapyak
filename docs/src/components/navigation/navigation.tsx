@@ -114,7 +114,7 @@ export function Navigation(props: NavigationProps) {
           inert={true}
           onTransitionEnd={handleIndicatorTransitionEnd}
         >
-          <Box className={styles.IndicatorLabels}>{children}</Box>
+          <Box className={styles.Row}>{children}</Box>
         </Box>
       )}
     </Box>

@@ -4,7 +4,7 @@
     --navigation-indicator-width: 0;
     --navigation-indicator-x: 0;
     --navigation-indicator-y: 0;
-    --navigation-slide-duration: 600ms;
+    --navigation-slide-duration: 700ms;
     --navigation-active-color: var(--brand-contrast);
 
     position: relative;
@@ -28,7 +28,7 @@
       border-radius: var(--border-radius-full);
       opacity: 0;
 
-      .IndicatorLabels {
+      .Row {
         --navigation-active-color: var(--brand-contrast);
         --navigation-active-background-color: transparent;
 
@@ -56,7 +56,7 @@
           width var(--navigation-slide-duration) var(--ease-snappy),
           height var(--navigation-slide-duration) var(--ease-snappy);
 
-        .IndicatorLabels {
+        .Row {
           transition:
             left var(--navigation-slide-duration) var(--ease-snappy),
             top var(--navigation-slide-duration) var(--ease-snappy);
