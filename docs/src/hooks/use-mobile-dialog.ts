@@ -7,12 +7,12 @@ import { useDocumentEventListener } from './use-document-event-listener';
 import { useLockBodyScroll } from './use-lock-body-scroll';
 import { useMediaQuery } from './use-media-query';
 
-export type UseMobileMenuReturn = {
+export type UseMobileDialogReturn = {
   isOpen: boolean;
   toggle: () => void;
 };
 
-export function useMobileMenu(): UseMobileMenuReturn {
+export function useMobileDialog(): UseMobileDialogReturn {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const isDesktop = useMediaQuery('(min-width: 1024px)');

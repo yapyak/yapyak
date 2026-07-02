@@ -119,6 +119,7 @@ A component-level pattern, not one element. Each grounds in a root element, so i
 | `ActionsBar` | `<div>` | actions strip |
 | `SearchInput` | `<input>` | wrapped search input |
 | `EmptyMessage` | `<div>` | empty state |
+| `Dialog` | `role="dialog"` | modal or non-modal overlay panel |
 
 ### Multi-match priority
 

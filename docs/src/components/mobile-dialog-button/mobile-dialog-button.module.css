@@ -1,5 +1,5 @@
 @layer components {
-  .MobileMenuButton {
+  .MobileDialogButton {
     display: flex;
     flex-direction: column;
     gap: 6px;
@@ -58,7 +58,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .MobileMenuButton {
+    .MobileDialogButton {
       .Line {
         transition: none;
       }

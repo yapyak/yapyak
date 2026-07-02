@@ -142,22 +142,22 @@ Keep the effects the open state drives across siblings (`inert`, scroll-lock, Es
 ```tsx
 // ✓ Two components; parent owns the glue
 function Component() {
-  const menu = useMobileMenu();
+  const dialog = useMobileDialog();
   return (
     <Layout>
-      <MobileMenuButton open={menu.isOpen} onToggle={menu.toggle} />
-      <MobileMenu open={menu.isOpen} />
-      <Layout.Main inert={menu.isOpen} />
+      <MobileDialogButton open={dialog.isOpen} onToggle={dialog.toggle} />
+      <MobileDialog open={dialog.isOpen} />
+      <Layout.Main inert={dialog.isOpen} />
     </Layout>
   );
 }
 
 // ✗ One component fuses trigger, overlay, and state
-function MobileMenu() {
+function MobileDialog() {
   const [open, setOpen] = useState(false);
   return (
     <Box>
-      <MobileMenuButton open={open} onToggle={() => setOpen((value) => !value)} />
+      <MobileDialogButton open={open} onToggle={() => setOpen((value) => !value)} />
       <Animate in={open}>{/* panel */}</Animate>
     </Box>
   );

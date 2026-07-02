@@ -9,13 +9,13 @@ import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 import { Animate } from '#systems/animate';
 
-import styles from './mobile-menu.module.css';
+import styles from './mobile-dialog.module.css';
 
-export type MobileMenuProps = BoxProps & {
+export type MobileDialogProps = BoxProps & {
   open: boolean;
 };
 
-export function MobileMenu(props: MobileMenuProps) {
+export function MobileDialog(props: MobileDialogProps) {
   const { className, open, ...restProps } = props;
 
   return (
@@ -24,12 +24,18 @@ export function MobileMenu(props: MobileMenuProps) {
         <Box
           {...restProps}
           {...animateProps}
+          aria-label={t('Menu')}
           className={[
-            styles.MobileMenu,
+            styles.MobileDialog,
             className,
           ]}
+          role="dialog"
         >
-          <Box className={styles.LinkStack}>
+          <Box
+            aria-label={t('Menu')}
+            as="nav"
+            className={styles.LinkStack}
+          >
             <LinkBase
               className={styles.Link}
               to="/home"

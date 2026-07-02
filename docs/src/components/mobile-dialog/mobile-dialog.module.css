@@ -1,5 +1,5 @@
 @layer components {
-  .MobileMenu {
+  .MobileDialog {
     position: fixed;
     inset: var(--header-height) 0 0 0;
     display: flex;
@@ -63,7 +63,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .MobileMenu {
+    .MobileDialog {
       transition: none;
     }
   }

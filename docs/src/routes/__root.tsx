@@ -17,8 +17,8 @@ import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { LogoLink } from '#components/logo-link';
-import { MobileMenu } from '#components/mobile-menu';
-import { MobileMenuButton } from '#components/mobile-menu-button';
+import { MobileDialog } from '#components/mobile-dialog';
+import { MobileDialogButton } from '#components/mobile-dialog-button';
 import { Navigation } from '#components/navigation';
 import { NotFoundView } from '#components/not-found-view';
 import { OptionMenu } from '#components/option-menu';
@@ -27,7 +27,7 @@ import {
   buildPrepaintScript,
 } from '#components/option-provider';
 import { Root } from '#components/root';
-import { useMobileMenu } from '#hooks/use-mobile-menu';
+import { useMobileDialog } from '#hooks/use-mobile-dialog';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
 import { assetUrl } from '#utils/asset';
 
@@ -98,7 +98,7 @@ export const Route = createRootRoute({
 function Component() {
   useScrollRestoration();
 
-  const menu = useMobileMenu();
+  const dialog = useMobileDialog();
 
   const shouldFadeBorder = useMatches({
     select: (matches) =>
@@ -133,17 +133,17 @@ function Component() {
             <GithubIcon />
           </IconLink>
         </Layout.Header.End>
-        <MobileMenuButton
-          onToggle={menu.toggle}
-          open={menu.isOpen}
+        <MobileDialogButton
+          onToggle={dialog.toggle}
+          open={dialog.isOpen}
         />
-        <MobileMenu open={menu.isOpen} />
+        <MobileDialog open={dialog.isOpen} />
       </Layout.Header>
-      <Layout.Main inert={menu.isOpen}>
+      <Layout.Main inert={dialog.isOpen}>
         <Outlet />
       </Layout.Main>
       {hasFooter && (
-        <Layout.Footer inert={menu.isOpen}>
+        <Layout.Footer inert={dialog.isOpen}>
           <Colophon />
         </Layout.Footer>
       )}
