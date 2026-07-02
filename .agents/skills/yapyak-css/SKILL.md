@@ -418,6 +418,43 @@ Use data attributes on the **root element** for state and variants. Child elemen
 
 Route files rarely need data attributes — if a route element needs variants, extract it into a component.
 
+#### Variant value — direct property, or a variant-scoped var
+
+Set the varied property directly in the variant block. Reach for a variant-scoped custom property only when a direct set would duplicate structure across variants.
+
+| The varied value | Form |
+|---|---|
+| One property, applied where it is set | direct — `&[data-x="a"] { color: … }` |
+| Read in more than one declaration | var — variant sets `--name`, root reads `var(--name)` |
+| Sits inside a shared `color-mix` / `box-shadow` / `calc` | var |
+| Applied through a nested child selector | var |
+
+```css
+/* ✓ trivial — set direct */
+.Swatch {
+  &[data-accent="vue"] {
+    background-color: var(--accent-vue);
+  }
+}
+
+/* ✓ shared structure — variant swaps the var, root owns the formula */
+.KindBadge {
+  color: var(--kind-color);
+  background-color: color-mix(in oklab, var(--kind-color) 14%, transparent);
+
+  &[data-variant="hook"] {
+    --kind-color: var(--kind-hook);
+  }
+}
+
+/* ✗ var for a single trivial property — needless indirection */
+.Swatch {
+  &[data-accent="vue"] {
+    --swatch-color: var(--accent-vue);
+  }
+}
+```
+
 ### Rules
 
 #### Cascade layer

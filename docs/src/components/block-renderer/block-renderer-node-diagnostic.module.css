@@ -24,20 +24,24 @@
         border-bottom: var(--px) solid var(--rule);
       }
 
-      &[data-status="ok"] {
-        background-color: color-mix(in oklab, var(--brand) 3%, transparent);
+      &[data-status] {
+        background-color: color-mix(
+          in oklab,
+          var(--diagnostic-color) 3%,
+          transparent
+        );
 
         .StatusIcon {
-          color: var(--brand);
+          color: var(--diagnostic-color);
         }
       }
 
-      &[data-status="error"] {
-        background-color: color-mix(in oklab, var(--danger) 3%, transparent);
+      &[data-status="ok"] {
+        --diagnostic-color: var(--brand);
+      }
 
-        .StatusIcon {
-          color: var(--danger);
-        }
+      &[data-status="error"] {
+        --diagnostic-color: var(--danger);
 
         .MessageText {
           color: color-mix(
