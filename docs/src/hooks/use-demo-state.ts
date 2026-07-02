@@ -29,13 +29,10 @@ const INITIAL_STATE: DemoState = {
   typing: false,
 };
 
-export function useDemoState(active: boolean) {
+export function useDemoState() {
   const [state, setState] = useState<DemoState>(INITIAL_STATE);
 
   useEffect(() => {
-    if (!active) {
-      return;
-    }
     if (typeof window === 'undefined') {
       return;
     }
@@ -157,9 +154,7 @@ export function useDemoState(active: boolean) {
       }
       timeouts.clear();
     };
-  }, [
-    active,
-  ]);
+  }, []);
 
   return state;
 }

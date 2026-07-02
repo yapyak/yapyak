@@ -7,21 +7,6 @@
       display: flex;
       flex-direction: column;
       gap: var(--spacing-8);
-      opacity: 0;
-      filter: blur(8px);
-      transform: translateY(12px);
-      transition:
-        transform 900ms var(--ease-smooth) 100ms,
-        opacity 900ms var(--ease-smooth) 100ms,
-        filter 900ms var(--ease-smooth) 100ms;
-    }
-
-    &[data-active] {
-      .Stack {
-        opacity: 1;
-        filter: blur(0);
-        transform: none;
-      }
     }
   }
 }

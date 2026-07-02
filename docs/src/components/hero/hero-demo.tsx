@@ -1,7 +1,7 @@
 import type { BoxProps } from '#primitives/box';
 import type { HeroDemoFramework } from './hero-demo-editor';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { useDemoState } from '#hooks/use-demo-state';
 import { Box } from '#primitives/box';
@@ -14,34 +14,8 @@ export type HeroDemoProps = BoxProps;
 
 export function HeroDemo(props: HeroDemoProps) {
   const { className, ...restProps } = props;
-  const element = useRef<HTMLDivElement>(null);
-  const [isActive, setIsActive] = useState(false);
   const [framework, setFramework] = useState<HeroDemoFramework>('react');
-
-  useEffect(() => {
-    const $element = element.current;
-    if ($element === null) {
-      return;
-    }
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setIsActive(true);
-            observer.disconnect();
-            return;
-          }
-        }
-      },
-      {
-        threshold: 0.3,
-      },
-    );
-    observer.observe($element);
-    return () => observer.disconnect();
-  }, []);
-
-  const state = useDemoState(isActive);
+  const state = useDemoState();
 
   return (
     <Box
@@ -50,8 +24,6 @@ export function HeroDemo(props: HeroDemoProps) {
         styles.HeroDemo,
         className,
       ]}
-      data-active={isActive}
-      ref={element}
     >
       <Box className={styles.Stack}>
         <HeroDemoEditor

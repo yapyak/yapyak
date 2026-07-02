@@ -1,7 +1,10 @@
 import type { ParsedLocation } from '@tanstack/react-router';
 
 import { useRouter } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+
+import { useDocumentEventListener } from './use-document-event-listener';
+import { useWindowEventListener } from './use-window-event-listener';
 
 type ScrollEntry = {
   x: number;
@@ -63,6 +66,13 @@ function saveEntry(key: string, entry: ScrollEntry) {
   }
 }
 
+function saveCurrentPosition(key: string) {
+  saveEntry(key, {
+    x: window.scrollX,
+    y: window.scrollY,
+  });
+}
+
 function scrollToHash(hash: string): boolean {
   if (hash === '') {
     return false;
@@ -80,64 +90,16 @@ function scrollToHash(hash: string): boolean {
 
 export function useScrollRestoration() {
   const router = useRouter();
+  const currentKeyRef = useRef(getKey(router.state.location));
+  const throttleTimeoutRef = useRef<number>(undefined);
+  const isPopNavigationRef = useRef(false);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
       return;
     }
-
     window.history.scrollRestoration = 'manual';
     hydrate();
-
-    let throttleTimer: number | undefined;
-    let isPopNavigation = false;
-    let currentKey = getKey(router.state.location);
-
-    const saveCurrent = () => {
-      saveEntry(currentKey, {
-        x: window.scrollX,
-        y: window.scrollY,
-      });
-    };
-
-    const handleScroll = () => {
-      if (throttleTimer !== undefined) {
-        return;
-      }
-      throttleTimer = window.setTimeout(() => {
-        throttleTimer = undefined;
-        saveCurrent();
-      }, THROTTLE_MS);
-    };
-
-    const handlePageHide = () => {
-      saveCurrent();
-      persist();
-    };
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden') {
-        handlePageHide();
-      }
-    };
-
-    const restore = (location: ParsedLocation) => {
-      if (isPopNavigation) {
-        const cached = cache.get(getKey(location));
-        if (cached !== undefined) {
-          window.scrollTo(cached.x, cached.y);
-          return;
-        }
-      }
-      if (scrollToHash(location.hash)) {
-        return;
-      }
-      window.scrollTo(0, 0);
-    };
-
-    const handlePopState = () => {
-      isPopNavigation = true;
-    };
 
     const unsubscribeBeforeNavigate = router.subscribe(
       'onBeforeNavigate',
@@ -145,13 +107,10 @@ export function useScrollRestoration() {
         if (event.fromLocation === undefined) {
           return;
         }
-        saveEntry(getKey(event.fromLocation), {
-          x: window.scrollX,
-          y: window.scrollY,
-        });
-        if (throttleTimer !== undefined) {
-          window.clearTimeout(throttleTimer);
-          throttleTimer = undefined;
+        saveCurrentPosition(getKey(event.fromLocation));
+        if (throttleTimeoutRef.current !== undefined) {
+          window.clearTimeout(throttleTimeoutRef.current);
+          throttleTimeoutRef.current = undefined;
         }
       },
     );
@@ -159,46 +118,77 @@ export function useScrollRestoration() {
     const unsubscribeBeforeRouteMount = router.subscribe(
       'onBeforeRouteMount',
       (event) => {
-        currentKey = getKey(event.toLocation);
-        restore(event.toLocation);
+        currentKeyRef.current = getKey(event.toLocation);
+        if (isPopNavigationRef.current) {
+          const cached = cache.get(currentKeyRef.current);
+          if (cached !== undefined) {
+            window.scrollTo(cached.x, cached.y);
+            return;
+          }
+        }
+        if (scrollToHash(event.toLocation.hash)) {
+          return;
+        }
+        window.scrollTo(0, 0);
       },
     );
 
     const unsubscribeOnResolved = router.subscribe('onResolved', (event) => {
-      currentKey = getKey(event.toLocation);
-      if (isPopNavigation) {
-        const cached = cache.get(currentKey);
+      currentKeyRef.current = getKey(event.toLocation);
+      if (isPopNavigationRef.current) {
+        const cached = cache.get(currentKeyRef.current);
         if (cached !== undefined) {
           window.requestAnimationFrame(() => {
             window.scrollTo(cached.x, cached.y);
           });
         }
       }
-      isPopNavigation = false;
+      isPopNavigationRef.current = false;
     });
-
-    window.addEventListener('scroll', handleScroll, {
-      passive: true,
-    });
-    window.addEventListener('popstate', handlePopState);
-    window.addEventListener('pagehide', handlePageHide);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
       unsubscribeBeforeNavigate();
       unsubscribeBeforeRouteMount();
       unsubscribeOnResolved();
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('popstate', handlePopState);
-      window.removeEventListener('pagehide', handlePageHide);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      if (throttleTimer !== undefined) {
-        window.clearTimeout(throttleTimer);
+      if (throttleTimeoutRef.current !== undefined) {
+        window.clearTimeout(throttleTimeoutRef.current);
       }
-      saveCurrent();
+      saveCurrentPosition(currentKeyRef.current);
       persist();
     };
   }, [
     router,
   ]);
+
+  const handleScroll = () => {
+    if (throttleTimeoutRef.current !== undefined) {
+      return;
+    }
+    throttleTimeoutRef.current = window.setTimeout(() => {
+      throttleTimeoutRef.current = undefined;
+      saveCurrentPosition(currentKeyRef.current);
+    }, THROTTLE_MS);
+  };
+
+  const handlePopState = () => {
+    isPopNavigationRef.current = true;
+  };
+
+  const handlePageHide = () => {
+    saveCurrentPosition(currentKeyRef.current);
+    persist();
+  };
+
+  const handleVisibilityChange = () => {
+    if (document.visibilityState === 'hidden') {
+      handlePageHide();
+    }
+  };
+
+  useWindowEventListener('scroll', handleScroll, {
+    passive: true,
+  });
+  useWindowEventListener('popstate', handlePopState);
+  useWindowEventListener('pagehide', handlePageHide);
+  useDocumentEventListener('visibilitychange', handleVisibilityChange);
 }
