@@ -25,6 +25,7 @@ import {
   buildPrepaintScript,
 } from '#components/option-provider';
 import { Root } from '#components/root';
+import { useScrollRestoration } from '#hooks/use-scroll-restoration';
 import { assetUrl } from '#utils/asset';
 
 import { doc } from 'virtual:doc-compiler';
@@ -92,6 +93,8 @@ export const Route = createRootRoute({
 });
 
 function Component() {
+  useScrollRestoration();
+
   const shouldFadeBorder = useMatches({
     select: (matches) =>
       matches.some((match) => match.staticData.fadeBorder === true),

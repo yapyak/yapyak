@@ -2,8 +2,6 @@ import { createRouter } from '@tanstack/react-router';
 
 import { routeTree } from './routeTree.gen';
 
-let lastSection: string | undefined;
-
 export function getRouter() {
   return createRouter({
     basepath: import.meta.env.BASE_URL,
@@ -13,17 +11,7 @@ export function getRouter() {
     },
     defaultPreload: 'intent',
     routeTree,
-    scrollRestoration: true,
-    scrollToTopSelectors: [
-      () => {
-        const section = window.location.pathname.split('/')[1] ?? '';
-        if (section === lastSection) {
-          return null;
-        }
-        lastSection = section;
-        return document.getElementById('sidebar');
-      },
-    ],
+    scrollRestoration: false,
   });
 }
 
