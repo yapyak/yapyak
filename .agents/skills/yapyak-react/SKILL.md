@@ -183,6 +183,8 @@ A JSX block becomes a component if at least one trigger fires. Size is NOT a tri
 
 No triggers fire → inline.
 
+T2 means the block is rendered from 2+ separate components. Reusing one component's markup across slots of its own render is a markup const, not a T2 hit — a const shared between an inline slot and a drawer stays a const.
+
 #### Step 2: Classify
 
 First match wins.
@@ -643,6 +645,10 @@ const targetElement = document.getElementById(id);
 ### Variable extraction discipline
 
 Never extract a variable used exactly once. Inline the expression. Extract a single-use value only when (a) a later rule requires a null-check before use, or (b) the expression contains a function call whose result isn't named by an adjacent literal. Otherwise inline.
+
+A JSX binding is a variable — this rule governs it. Single-use → inline it; size is never a reason to keep it. Used 2+ times within one component → keep it as a **markup const**. A markup const is not a component: whether to extract a component is the separate Step 1 decision, and reusing a local const across slots of one render is not a trigger.
+
+Name a markup const after **where** it renders — its destination slot or region — suffixed with `Content`: `sidebarContent`, `outlineDrawerContent`. Never after what it is. Rendered in more than one place → name it after the first destination in source order. Markup consts sit directly before the `return`, after every hook and computation.
 
 Values derived from the root element are named after what they return:
 

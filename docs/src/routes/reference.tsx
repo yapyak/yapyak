@@ -34,13 +34,6 @@ function Component() {
   const isSidebarInline = useMediaQuery('(min-width: 1024px)');
   const isOutlineInline = useMediaQuery('(min-width: 1324px)');
 
-  const sidebarContent = (
-    <ContentNavigation
-      aria-label={t('Reference navigation')}
-      tree={sidebar}
-    />
-  );
-
   const headings = useMemo(
     () =>
       getHeadings(page, {
@@ -52,72 +45,11 @@ function Component() {
     ],
   );
 
-  const outlineDrawerContent = (
-    <>
-      <ContentAnchorNavigation
-        headings={headings}
-        key={page.href}
-      />
-      <PageAction href={page.href} />
-    </>
-  );
-
-  const outlineInlineContent = (
-    <>
-      <ContentAnchorNavigation
-        headings={headings}
-        indicator={true}
-        key={page.href}
-      />
-      <PageAction href={page.href} />
-    </>
-  );
-
-  const sidebarTrigger = !isSidebarInline && (
-    <DialogTrigger
-      dialog={(dialogProps) => (
-        <Drawer
-          {...dialogProps}
-          direction="start"
-        >
-          {sidebarContent}
-        </Drawer>
-      )}
-    >
-      {(triggerProps) => (
-        <IconButton
-          {...triggerProps}
-          aria-label={t('Open menu')}
-          icon={<SidebarIcon />}
-        >
-          {t('Menu')}
-        </IconButton>
-      )}
-    </DialogTrigger>
-  );
-
-  const outlineTrigger = !isOutlineInline && headings.length > 0 && (
-    <DialogTrigger
-      dialog={(dialogProps) => (
-        <Drawer
-          {...dialogProps}
-          direction="end"
-        >
-          {outlineDrawerContent}
-        </Drawer>
-      )}
-    >
-      {(triggerProps) => (
-        <IconButton
-          {...triggerProps}
-          aria-label={t('Open page outline')}
-          icon={<OutlineIcon />}
-          iconPosition="trailing"
-        >
-          {t('Page')}
-        </IconButton>
-      )}
-    </DialogTrigger>
+  const sidebarContent = (
+    <ContentNavigation
+      aria-label={t('Reference navigation')}
+      tree={sidebar}
+    />
   );
 
   return (
@@ -128,8 +60,60 @@ function Component() {
 
       <ContentLayout.Content>
         <ContentLayout.ContentHeader
-          end={outlineTrigger}
-          start={sidebarTrigger}
+          end={
+            !isOutlineInline &&
+            headings.length > 0 && (
+              <DialogTrigger
+                dialog={(dialogProps) => (
+                  <Drawer
+                    {...dialogProps}
+                    direction="end"
+                  >
+                    <ContentAnchorNavigation
+                      headings={headings}
+                      key={page.href}
+                    />
+                    <PageAction href={page.href} />
+                  </Drawer>
+                )}
+              >
+                {(triggerProps) => (
+                  <IconButton
+                    {...triggerProps}
+                    aria-label={t('Open page outline')}
+                    icon={<OutlineIcon />}
+                    iconPosition="trailing"
+                  >
+                    {t('Page')}
+                  </IconButton>
+                )}
+              </DialogTrigger>
+            )
+          }
+          start={
+            !isSidebarInline && (
+              <DialogTrigger
+                dialog={(dialogProps) => (
+                  <Drawer
+                    {...dialogProps}
+                    direction="start"
+                  >
+                    {sidebarContent}
+                  </Drawer>
+                )}
+              >
+                {(triggerProps) => (
+                  <IconButton
+                    {...triggerProps}
+                    aria-label={t('Open menu')}
+                    icon={<SidebarIcon />}
+                  >
+                    {t('Menu')}
+                  </IconButton>
+                )}
+              </DialogTrigger>
+            )
+          }
         />
 
         <ContentLayout.ContentContent>
@@ -138,7 +122,14 @@ function Component() {
       </ContentLayout.Content>
 
       {isOutlineInline && (
-        <ContentLayout.Outline>{outlineInlineContent}</ContentLayout.Outline>
+        <ContentLayout.Outline>
+          <ContentAnchorNavigation
+            headings={headings}
+            indicator={true}
+            key={page.href}
+          />
+          <PageAction href={page.href} />
+        </ContentLayout.Outline>
       )}
     </ContentLayout>
   );
