@@ -17,7 +17,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        "What Tailwind did for class names, yapyak does for translation keys. No more inventing names for words that already say what they mean. Write t('Save changes') — the message is the source of truth.",
+        "No more inventing names for words that already say what they mean. Write t('Save changes') — the message is the source of truth. What Tailwind did for class names, yapyak does for translation keys.",
       ),
       number: '02',
       title: t('Source string is the key'),
