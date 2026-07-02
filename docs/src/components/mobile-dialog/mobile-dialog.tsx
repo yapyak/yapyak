@@ -31,29 +31,31 @@ export function MobileDialog(props: MobileDialogProps) {
           ]}
           role="dialog"
         >
-          <Box
-            aria-label={t('Menu')}
-            as="nav"
-            className={styles.LinkStack}
-          >
-            <LinkBase
-              className={styles.Link}
-              to="/home"
+          <Box className={styles.Scroll}>
+            <Box
+              aria-label={t('Menu')}
+              as="nav"
+              className={styles.LinkStack}
             >
-              {t('Home')}
-            </LinkBase>
-            <LinkBase
-              className={styles.Link}
-              to="/guide"
-            >
-              {t('Guide')}
-            </LinkBase>
-            <LinkBase
-              className={styles.Link}
-              to="/reference"
-            >
-              {t('Reference')}
-            </LinkBase>
+              <LinkBase
+                className={styles.Link}
+                to="/home"
+              >
+                {t('Home')}
+              </LinkBase>
+              <LinkBase
+                className={styles.Link}
+                to="/guide"
+              >
+                {t('Guide')}
+              </LinkBase>
+              <LinkBase
+                className={styles.Link}
+                to="/reference"
+              >
+                {t('Reference')}
+              </LinkBase>
+            </Box>
           </Box>
           <Box
             as="footer"
