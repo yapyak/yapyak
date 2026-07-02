@@ -100,10 +100,11 @@ function Component() {
 
   const dialog = useMobileDialog();
 
-  const shouldFadeBorder = useMatches({
-    select: (matches) =>
-      matches.some((match) => match.staticData.fadeBorder === true),
-  });
+  const shouldFadeBorder =
+    useMatches({
+      select: (matches) =>
+        matches.some((match) => match.staticData.fadeBorder === true),
+    }) && !dialog.isOpen;
 
   const hasFooter = useMatches({
     select: (matches) =>
