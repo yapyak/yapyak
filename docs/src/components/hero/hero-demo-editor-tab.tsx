@@ -38,10 +38,6 @@ export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
         className={styles.TabFill}
       />
       <Box
-        aria-hidden="true"
-        className={styles.TabActiveIndicator}
-      />
-      <Box
         as="span"
         className={styles.TabFilenameTextShort}
       >

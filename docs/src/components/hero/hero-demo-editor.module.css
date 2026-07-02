@@ -1,7 +1,6 @@
 @layer components {
   .HeroDemoEditor {
-    --demo-editor-tab-indicator-width: 0;
-    --demo-editor-tab-indicator-x: 0;
+    --demo-editor-tab-index: 0;
 
     position: relative;
     display: flex;
@@ -27,24 +26,12 @@
       position: absolute;
       bottom: 0;
       left: 0;
-      width: var(--demo-editor-tab-indicator-width);
+      width: calc(100% / 4);
       height: var(--px);
       pointer-events: none;
       background-color: var(--brand);
-      opacity: 0;
-      transform: translateX(var(--demo-editor-tab-indicator-x));
-      transform-origin: center;
-      transition:
-        transform 320ms var(--ease-snappy),
-        width 320ms var(--ease-snappy);
-    }
-
-    &[data-animating] .TabIndicatorBar {
-      opacity: 1;
-    }
-
-    &[data-animating] .TabButton[data-active] .TabActiveIndicator {
-      opacity: 0;
+      transform: translateX(calc(var(--demo-editor-tab-index) * 100%));
+      transition: transform 320ms var(--ease-snappy);
     }
 
     &[data-saving] .TabDot[data-dirty] {
@@ -67,11 +54,8 @@
       transition: color var(--transition);
 
       @media (min-width: 640px) {
-        flex: 0 0 auto;
         gap: var(--spacing-2);
-        justify-content: flex-start;
-        padding: var(--spacing-3) var(--spacing-4) var(--spacing-3)
-          calc(var(--spacing-4) + var(--spacing-2) + 6px);
+        padding-block: var(--spacing-3);
       }
 
       @media (hover: hover) {
@@ -88,10 +72,6 @@
       &[data-active] {
         color: var(--foreground);
         box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
-
-        .TabActiveIndicator {
-          opacity: 1;
-        }
       }
 
       &:not([data-active]):has(+ .TabButton[data-active]) {
@@ -120,21 +100,6 @@
       pointer-events: none;
       background-color: transparent;
       transition: background-color var(--transition);
-    }
-
-    .TabActiveIndicator {
-      position: absolute;
-      right: 0;
-      bottom: 0;
-      left: calc(var(--px) * -1);
-      height: var(--px);
-      pointer-events: none;
-      background-color: var(--brand);
-      opacity: 0;
-    }
-
-    .TabButton:first-of-type .TabActiveIndicator {
-      left: 0;
     }
 
     @media (hover: hover) {
