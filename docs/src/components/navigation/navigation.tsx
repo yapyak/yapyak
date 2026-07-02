@@ -79,10 +79,9 @@ export function Navigation(props: NavigationProps) {
   const handleIndicatorTransitionEnd = (
     event: TransitionEvent<HTMLSpanElement>,
   ) => {
-    if (event.propertyName !== 'transform') {
-      return;
+    if (event.propertyName === 'left') {
+      setIsAnimating(false);
     }
-    setIsAnimating(false);
   };
 
   return (
@@ -106,15 +105,18 @@ export function Navigation(props: NavigationProps) {
           : undefined
       }
     >
+      {children}
       {indicator && (
         <Box
           aria-hidden="true"
           as="span"
           className={styles.IndicatorBar}
+          inert={true}
           onTransitionEnd={handleIndicatorTransitionEnd}
-        />
+        >
+          <Box className={styles.IndicatorLabels}>{children}</Box>
+        </Box>
       )}
-      {children}
     </Box>
   );
 }

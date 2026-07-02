@@ -5,6 +5,7 @@
     --navigation-indicator-x: 0;
     --navigation-indicator-y: 0;
     --navigation-slide-duration: 600ms;
+    --navigation-active-color: var(--brand-contrast);
 
     position: relative;
     display: inline-flex;
@@ -17,29 +18,49 @@
 
     .IndicatorBar {
       position: absolute;
-      top: 0;
-      left: 0;
+      top: var(--navigation-indicator-y);
+      left: var(--navigation-indicator-x);
       width: var(--navigation-indicator-width);
       height: var(--navigation-indicator-height);
+      overflow: hidden;
       pointer-events: none;
       background-color: var(--brand);
       border-radius: var(--border-radius-full);
       opacity: 0;
-      transform: translate(
-        var(--navigation-indicator-x),
-        var(--navigation-indicator-y)
-      );
+
+      .IndicatorLabels {
+        --navigation-active-color: var(--brand-contrast);
+        --navigation-active-background-color: transparent;
+
+        position: absolute;
+        top: calc(-1 * var(--navigation-indicator-y));
+        left: calc(-1 * var(--navigation-indicator-x));
+        display: flex;
+        gap: var(--spacing-2);
+        align-items: center;
+        width: max-content;
+        padding: var(--spacing-2);
+        color: var(--brand-contrast);
+      }
     }
 
     &[data-animating] {
       --navigation-active-background-color: transparent;
+      --navigation-active-color: var(--foreground-soft);
 
       .IndicatorBar {
         opacity: 1;
         transition:
-          transform var(--navigation-slide-duration) var(--ease-snappy),
+          left var(--navigation-slide-duration) var(--ease-snappy),
+          top var(--navigation-slide-duration) var(--ease-snappy),
           width var(--navigation-slide-duration) var(--ease-snappy),
           height var(--navigation-slide-duration) var(--ease-snappy);
+
+        .IndicatorLabels {
+          transition:
+            left var(--navigation-slide-duration) var(--ease-snappy),
+            top var(--navigation-slide-duration) var(--ease-snappy);
+        }
       }
     }
   }

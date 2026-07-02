@@ -11,8 +11,6 @@
     outline-offset: 0;
     border-radius: var(--border-radius-full);
     transition:
-      color var(--navigation-slide-duration, var(--transition))
-      var(--ease-snappy),
       box-shadow var(--transition),
       outline var(--duration-slow);
 
@@ -22,7 +20,7 @@
     }
 
     &[data-status="active"] {
-      color: var(--brand-contrast);
+      color: var(--navigation-active-color, var(--brand-contrast));
       background-color: var(--navigation-active-background-color, var(--brand));
     }
 
