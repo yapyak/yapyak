@@ -76,7 +76,10 @@ export function CodeBlock(props: CodeBlockProps) {
         as="pre"
         className={styles.PreformattedText}
       >
-        <Box as="code">
+        <Box
+          as="code"
+          className={styles.Code}
+        >
           {highlighted === null
             ? source
             : highlighted.map((token, index) => (

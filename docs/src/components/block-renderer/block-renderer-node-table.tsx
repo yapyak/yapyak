@@ -29,7 +29,10 @@ export function BlockRendererNodeTable(props: BlockRendererNodeTableProps) {
             <BlockRendererNode block={block.head} />
           </Box>
         )}
-        <Box as="tbody">
+        <Box
+          as="tbody"
+          className={styles.TableBody}
+        >
           {block.body.map((row, index) => (
             <BlockRendererNode
               block={row}

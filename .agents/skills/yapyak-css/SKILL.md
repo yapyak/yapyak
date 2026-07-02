@@ -213,6 +213,24 @@ Always open a new nested block for each state/variant — never chain state and 
 }
 ```
 
+#### Select by class, never by element type
+
+Every element carries a class (see Class naming) — target it. Never write a bare type selector (`div`, `span`, `a`, `li`, `code`) in component CSS → target the element's class.
+
+```css
+/* ✓ target the class */
+.Button {
+  .ButtonIcon { ... }
+}
+
+/* ✗ bare type selector */
+.Button {
+  svg { ... }
+}
+```
+
+Browser-rendered pseudo-elements (`::marker`, `::selection`, `::placeholder`) attach to the element's class, never to a bare tag. A child rendered by another component gets configured via inherited custom properties (see Cross-component styling), never by reaching for its tag.
+
 #### State selectors
 
 - Root states go on the component root class only — never on a child. This covers `data-*`, `aria-*`, `:has()`, `:not()`. Child styling under a root state is done by nesting child selectors inside the state block on root.
@@ -277,22 +295,19 @@ Every rule block at the same nesting level is separated by a blank line.
 
 #### CSS variable defaults
 
-Always declare defaults at the top of the root class — never use the `var(--x, default)` fallback syntax.
+Declare a knob's default at the top of the root class; read it as `var(--name)`. The fallback form `var(--name, default)` is forbidden — except in the one row below where a top declaration is mechanically impossible.
 
 ```css
-/* ✓ Right — defaults declared at top */
+/* ✓ default at top, read bare */
 .Button {
   --button-size: 16px;
-  --button-color: var(--text);
 
   width: var(--button-size);
-  color: var(--button-color);
 }
 
-/* ✗ Wrong — fallbacks scattered through the file */
+/* ✗ fallback where a top declaration works */
 .Button {
   width: var(--button-size, 16px);
-  color: var(--button-color, var(--text));
 }
 ```
 
@@ -302,66 +317,47 @@ Consumers override via inline `style`:
 <Button style={{ '--button-size': '32px' }} />
 ```
 
-#### Cross-component identity — pass `className` from parent, never data attributes
+The override source decides the form — a top declaration works iff it does not shadow the override:
 
-When a parent's CSS module needs to position, lay out, or control visibility of a child component, pass a class from the parent's module to the child as `className`. The child merges it with its own root class. Never tag the child with a `data-*` attribute to act as a CSS hook.
+| Override set by | Top declaration | Form |
+|---|---|---|
+| Inline `style` on the same element | wins (inline beats rule) | `--name` at top, read `var(--name)` |
+| The element's own variant/state block | wins (later declaration) | `--name` at top, read `var(--name)` |
+| An ancestor (inherited config) | shadows the inherited value | no top declaration, read `var(--name, default)` |
+
+The last row is the only place the fallback is allowed, and there it is required — see Cross-component styling.
+
+#### Cross-component styling
+
+A parent never selects a child it renders — CSS Modules scope class names per file, so the child's class is unreachable anyway. The parent drives a child by setting custom properties on itself; the child reads them. Names are global across modules and inherit down.
+
+```css
+/* child module — reads inherited values with its own fallback */
+.CopyButton {
+  opacity: var(--copy-button-opacity, 0);
+}
+```
+
+```css
+/* parent module — sets on itself, never selects the child */
+.CodeBlock:hover {
+  --copy-button-opacity: 1;
+}
+```
+
+When the trigger is the child's own state, name the child in `:has()` — the one unavoidable child reference, since inheritance flows down only. Pass the parent's scoped class to the child so its class is reachable:
 
 ```tsx
-// ✓ Right — parent passes its own scoped class; child merges it
 <CopyButton className={styles.CopyButton} />
 ```
 
-```tsx
-// inside CopyButton
-<Box
-  className={[styles.CopyButton, className]}
-  data-copied={isCopied ? '' : undefined}
-  ...
-/>
-```
-
-```css
-/* ✓ Right — parent targets its own scoped marker class */
-.CodeBlock {
-  .CopyButton {
-    opacity: 0;
-    transition: opacity var(--transition);
-  }
-
-  &:hover .CopyButton {
-    opacity: 1;
-  }
-}
-```
-
-```tsx
-// ✗ Wrong — using a data attribute as an identity marker
-<CopyButton data-copy-button="" />
-```
-
-```css
-/* ✗ Wrong — parent CSS hooks into a child's data attribute */
-.CodeBlock {
-  &:hover [data-copy-button] {
-    opacity: 1;
-  }
-}
-```
-
-**Why:**
-
-- `data-*` attributes are reserved for **state** (`data-open`, `data-copied`, `data-active`, `data-selected`). Reading a data attribute should answer the question "what state is this in?" — never "which component is this?".
-- Identity belongs to **classes**, which CSS Modules scope per file. Passing the class from parent to child is the canonical mechanism for cross-component positioning.
-
-**Combined with state attributes** — when the parent needs to react to the child's state (e.g. "stay visible while copied"), the marker class scopes identity, the child's own `data-*` carries state, and `:has()` combines them:
-
 ```css
 .CodeBlock:has(.CopyButton[data-copied]) {
-  .CopyButton {
-    opacity: 1;
-  }
+  --copy-button-opacity: 1;
 }
 ```
+
+Never tag a child with a `data-*` attribute as a CSS hook — `data-*` carries state ("what state is this in?"), never identity ("which component is this?").
 
 #### `data-*` selectors stay inside the owning component
 

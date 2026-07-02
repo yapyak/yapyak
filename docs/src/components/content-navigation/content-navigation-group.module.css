@@ -126,14 +126,7 @@
 
       > .ItemList {
         padding-left: var(--spacing-2);
-
-        > li > a {
-          font-size: var(--font-size-xs);
-        }
-
-        .GroupLabel {
-          font-size: var(--font-size-xs);
-        }
+        font-size: var(--font-size-xs);
       }
     }
 

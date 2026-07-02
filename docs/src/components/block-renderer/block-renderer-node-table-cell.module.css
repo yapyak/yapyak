@@ -5,7 +5,10 @@
     color: var(--foreground-soft);
     overflow-wrap: break-word;
     border-right: var(--px) solid var(--rule);
-    border-bottom: var(--px) solid var(--rule);
+    border-bottom: var(
+      --block-table-cell-border-bottom,
+      var(--px) solid var(--rule)
+    );
 
     &:last-child {
       border-right: 0;
@@ -21,22 +24,15 @@
       border-bottom-color: var(--rule);
     }
 
-    tbody tr:last-child & {
-      border-bottom: 0;
-    }
-
-    &[data-column="literal"] code {
-      overflow-wrap: anywhere;
-      white-space: normal;
+    &[data-column="literal"] {
+      --inline-code-overflow-wrap: anywhere;
     }
 
     &[data-column="identifier"] {
-      white-space: nowrap;
+      --inline-code-word-break: keep-all;
+      --inline-code-overflow-wrap: normal;
 
-      code {
-        word-break: keep-all;
-        overflow-wrap: normal;
-      }
+      white-space: nowrap;
     }
   }
 }

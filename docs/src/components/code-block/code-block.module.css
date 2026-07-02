@@ -67,7 +67,7 @@
         100% var(--spacing-3);
       mask-composite: add;
 
-      code {
+      .Code {
         font-family: inherit;
       }
     }

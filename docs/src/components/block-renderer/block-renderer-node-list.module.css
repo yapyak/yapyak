@@ -11,18 +11,6 @@
       list-style-type: decimal;
     }
 
-    & > li {
-      display: list-item;
-    }
-
-    & > li + li {
-      margin-top: var(--spacing-3);
-    }
-
-    & li::marker {
-      color: var(--foreground-softer);
-    }
-
     &[data-size="sm"] {
       font-size: var(--font-size-sm);
     }

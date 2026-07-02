@@ -4,6 +4,7 @@ import type { BoxProps } from '#primitives/box';
 import { Box } from '#primitives/box';
 
 import { BlockRendererNode } from './block-renderer-node';
+import styles from './block-renderer-node-list-item.module.css';
 
 export type BlockRendererNodeListItemProps = BoxProps<'li'> & {
   block: ListItemBlock;
@@ -17,6 +18,10 @@ export function BlockRendererNodeListItem(
     <Box
       {...restProps}
       as="li"
+      className={[
+        styles.BlockRendererNodeListItem,
+        className,
+      ]}
     >
       {block.children.map((child, index) => (
         <BlockRendererNode
