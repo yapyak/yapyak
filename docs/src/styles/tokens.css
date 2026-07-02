@@ -69,11 +69,11 @@
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-bounce: cubic-bezier(0.34, 1.7, 0.5, 1);
 
-  --z-index-1: 90;
-  --z-index-2: 100;
-  --z-index-3: 110;
-  --z-index-4: 200;
-  --z-index-5: 220;
+  --z-index-1: 10;
+  --z-index-2: 20;
+  --z-index-3: 30;
+  --z-index-4: 40;
+  --z-index-5: 50;
 
   --font-family-mono:
     "Menlo", "Monaco", "Cascadia Code", "Roboto Mono", Consolas,
