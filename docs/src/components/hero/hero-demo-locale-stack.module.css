@@ -79,13 +79,21 @@
     .KeyText {
       display: inline-block;
       margin-inline-start: 1ch;
-      animation: materialize 750ms var(--ease-smooth) both;
     }
 
     .ValueText {
       display: inline-block;
       margin-inline: 1ch;
-      animation: materialize 900ms var(--ease-smooth) both;
+    }
+
+    &[data-primed] {
+      .KeyText {
+        animation: materialize 750ms var(--ease-smooth) both;
+      }
+
+      .ValueText {
+        animation: materialize 900ms var(--ease-smooth) both;
+      }
     }
 
     .Skeleton {

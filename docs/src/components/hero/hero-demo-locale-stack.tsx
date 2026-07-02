@@ -1,6 +1,8 @@
 import type { LocaleCode } from '#lib/hero-demo';
 import type { BoxProps } from '#primitives/box';
 
+import { useEffect, useState } from 'react';
+
 import { LOCALES } from '#lib/hero-demo';
 import { Box } from '#primitives/box';
 
@@ -23,6 +25,15 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
     translations,
     ...restProps
   } = props;
+  const [isPrimed, setIsPrimed] = useState(false);
+
+  useEffect(() => {
+    if (receiving) {
+      setIsPrimed(true);
+    }
+  }, [
+    receiving,
+  ]);
 
   return (
     <Box
@@ -31,6 +42,7 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
         styles.HeroDemoLocaleStack,
         className,
       ]}
+      data-primed={isPrimed}
       data-receiving={receiving}
     >
       <Box
