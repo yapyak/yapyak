@@ -25,21 +25,19 @@ export function HeroDemo(props: HeroDemoProps) {
         className,
       ]}
     >
-      <Box className={styles.Stack}>
-        <HeroDemoEditor
-          framework={framework}
-          onFrameworkChange={setFramework}
-          saving={state.saving}
-          source={state.source}
-          typing={state.typing}
-        />
-        <HeroDemoLocaleStack
-          receiving={state.receiving}
-          savedSource={state.savedSource}
-          shimmering={state.shimmering}
-          translations={state.translations}
-        />
-      </Box>
+      <HeroDemoEditor
+        framework={framework}
+        onFrameworkChange={setFramework}
+        saving={state.saving}
+        source={state.source}
+        typing={state.typing}
+      />
+      <HeroDemoLocaleStack
+        receiving={state.receiving}
+        savedSource={state.savedSource}
+        shimmering={state.shimmering}
+        translations={state.translations}
+      />
     </Box>
   );
 }

@@ -10,19 +10,17 @@ export function NotFoundView() {
       as="section"
       className={styles.NotFoundView}
     >
-      <Box className={styles.Stack}>
-        <Box
-          as="h1"
-          className={styles.Heading}
-        >
-          404
-        </Box>
-        <Box
-          as="p"
-          className={styles.Subheading}
-        >
-          {t('Page not found')}
-        </Box>
+      <Box
+        as="h1"
+        className={styles.Heading}
+      >
+        404
+      </Box>
+      <Box
+        as="p"
+        className={styles.Subheading}
+      >
+        {t('Page not found')}
       </Box>
     </Box>
   );

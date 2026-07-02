@@ -571,6 +571,28 @@ flex: auto;       /* grow, shrink, basis auto (= 1 1 auto) */
 
 Every property must pay for itself. Prune only a property whose value exactly equals its reset-table value. Never prune `display`/`width` by guessing what a parent imposes — that needs runtime layout.
 
+#### Every element earns its place
+
+An element whose entire property set could move to its parent or its only child is redundant — delete it and move any real property up or down. A component root wraps its content directly; never nest a lone layout container (`.Stack`, `.Content`) inside a root that could carry the layout itself. When a feature is removed, collapse any element that existed only for it — leave the structure as if the feature had never been there.
+
+```css
+/* ✗ root wraps a lone layout container */
+.HeroDemo {
+  isolation: isolate;
+
+  .Stack {
+    display: flex;
+    gap: var(--spacing-8);
+  }
+}
+
+/* ✓ root is the layout container */
+.HeroDemo {
+  display: flex;
+  gap: var(--spacing-8);
+}
+```
+
 #### Use `background-color`, not `background` shorthand
 
 Single value → specific longhand: solid color → `background-color`, gradient/image → `background-image`. Use the `background` shorthand only when setting two or more of {image, position, size, repeat, color} in one declaration.
