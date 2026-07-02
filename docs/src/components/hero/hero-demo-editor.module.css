@@ -16,43 +16,97 @@
       display: flex;
       align-items: stretch;
       box-shadow: inset 0 calc(var(--px) * -1) 0 var(--rule);
-    }
 
-    .TabIndicatorBar {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: calc(100% / 4);
-      height: var(--px);
-      pointer-events: none;
-      background-color: var(--brand);
-      transform: translateX(calc(var(--demo-editor-tab-index) * 100%));
-      transition: transform var(--duration-medium) var(--ease-snappy);
-    }
-
-    .TabButton {
-      position: relative;
-      display: inline-flex;
-      flex: 1 1 0;
-      gap: var(--spacing-1);
-      align-items: center;
-      justify-content: center;
-      min-width: 0;
-      padding: var(--spacing-2) var(--spacing-1);
-      font-family: var(--font-family-mono);
-      font-size: var(--font-size-xs);
-      color: var(--foreground-softer);
-      box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
-      transition: color var(--transition);
-
-      @media (min-width: 640px) {
-        gap: var(--spacing-2);
-        padding-block: var(--spacing-3);
+      .TabIndicatorBar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: calc(100% / 4);
+        height: var(--px);
+        pointer-events: none;
+        background-color: var(--brand);
+        transform: translateX(calc(var(--demo-editor-tab-index) * 100%));
+        transition: transform var(--duration-medium) var(--ease-snappy);
       }
 
-      @media (hover: hover) {
-        &:hover {
-          color: var(--foreground-soft);
+      .TabButton {
+        position: relative;
+        display: inline-flex;
+        flex: 1 1 0;
+        gap: var(--spacing-1);
+        align-items: center;
+        justify-content: center;
+        min-width: 0;
+        padding: var(--spacing-2) var(--spacing-1);
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        color: var(--foreground-softer);
+        box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
+        transition: color var(--transition);
+
+        .TabFill {
+          position: absolute;
+          inset: 0;
+          right: var(--px);
+          z-index: -1;
+          pointer-events: none;
+          background-color: transparent;
+          transition: background-color var(--transition);
+        }
+
+        .TabFilenameTextShort,
+        .TabFilenameTextFull {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          letter-spacing: var(--letter-spacing-tight);
+          white-space: nowrap;
+        }
+
+        .TabFilenameTextFull {
+          display: none;
+        }
+
+        .TabDot {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+
+          &[data-dirty] {
+            background-color: var(--brand);
+            animation: dot-show 260ms var(--ease-bounce);
+          }
+        }
+
+        @media (min-width: 640px) {
+          gap: var(--spacing-2);
+          padding-block: var(--spacing-3);
+
+          .TabFilenameTextShort {
+            display: none;
+          }
+
+          .TabFilenameTextFull {
+            display: inline;
+          }
+        }
+
+        @media (hover: hover) {
+          &:hover {
+            color: var(--foreground-soft);
+            box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+
+            .TabFill {
+              background-color: var(--surface);
+            }
+          }
+
+          &:not([data-active]):has(+ .TabButton:hover) {
+            box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+          }
+        }
+
+        &[data-active] {
+          color: var(--foreground);
           box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
 
           .TabFill {
@@ -60,78 +114,22 @@
           }
         }
 
-        &:not([data-active]):has(+ .TabButton:hover) {
+        &:not([data-active]):has(+ .TabButton[data-active]) {
           box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
         }
-      }
 
-      &[data-active] {
-        color: var(--foreground);
-        box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
-
-        .TabFill {
-          background-color: var(--surface);
+        &:first-child {
+          border-top-left-radius: var(--border-radius-md);
         }
-      }
 
-      &:not([data-active]):has(+ .TabButton[data-active]) {
-        box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
-      }
+        &:focus-visible {
+          outline: none;
 
-      &:first-child {
-        border-top-left-radius: var(--border-radius-md);
-      }
-
-      &:focus-visible {
-        outline: none;
-
-        .TabFill {
-          border-radius: 2px;
-          box-shadow: inset 0 0 0 1px var(--accent);
+          .TabFill {
+            border-radius: 2px;
+            box-shadow: inset 0 0 0 1px var(--accent);
+          }
         }
-      }
-    }
-
-    .TabFill {
-      position: absolute;
-      inset: 0;
-      right: var(--px);
-      z-index: -1;
-      pointer-events: none;
-      background-color: transparent;
-      transition: background-color var(--transition);
-    }
-
-    .TabFilenameTextShort,
-    .TabFilenameTextFull {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      letter-spacing: var(--letter-spacing-tight);
-      white-space: nowrap;
-    }
-
-    .TabFilenameTextFull {
-      display: none;
-    }
-
-    @media (min-width: 640px) {
-      .TabFilenameTextShort {
-        display: none;
-      }
-
-      .TabFilenameTextFull {
-        display: inline;
-      }
-    }
-
-    .TabDot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-
-      &[data-dirty] {
-        background-color: var(--brand);
-        animation: dot-show 260ms var(--ease-bounce);
       }
     }
 
@@ -144,28 +142,28 @@
         black calc(100% - var(--spacing-4)),
         transparent 100%
       );
-    }
 
-    .Code {
-      display: block;
-      font-family: var(--font-family-mono);
-      font-size: var(--font-size-xs);
-      line-height: var(--line-height-loose);
-      white-space: pre;
-    }
+      .Code {
+        display: block;
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        line-height: var(--line-height-loose);
+        white-space: pre;
 
-    .Caret {
-      display: inline-block;
-      width: var(--spacing-05);
-      height: 1.05em;
-      vertical-align: text-bottom;
-      background-color: var(--foreground);
-      border-radius: var(--px);
-      animation: caret-blink 1.06s steps(2, end) infinite;
+        .Caret {
+          display: inline-block;
+          width: var(--spacing-05);
+          height: 1.05em;
+          vertical-align: text-bottom;
+          background-color: var(--foreground);
+          border-radius: var(--px);
+          animation: caret-blink 1.06s steps(2, end) infinite;
 
-      &[data-typing] {
-        opacity: 1;
-        animation: none;
+          &[data-typing] {
+            opacity: 1;
+            animation: none;
+          }
+        }
       }
     }
 

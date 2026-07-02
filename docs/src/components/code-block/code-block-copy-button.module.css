@@ -28,25 +28,25 @@
       place-items: center;
       width: 14px;
       height: 14px;
-    }
 
-    .IconIdle,
-    .IconCopied {
-      position: absolute;
-      top: 0;
-      left: 0;
-      display: grid;
-      place-items: center;
-      width: 100%;
-      height: 100%;
-      transition:
-        opacity var(--transition),
-        transform var(--transition);
-    }
+      .IconIdle,
+      .IconCopied {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: grid;
+        place-items: center;
+        width: 100%;
+        height: 100%;
+        transition:
+          opacity var(--transition),
+          transform var(--transition);
+      }
 
-    .IconCopied {
-      opacity: 0;
-      transform: scale(0.6);
+      .IconCopied {
+        opacity: 0;
+        transform: scale(0.6);
+      }
     }
 
     .LiveRegion {

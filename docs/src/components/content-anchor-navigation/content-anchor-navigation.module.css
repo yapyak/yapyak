@@ -45,11 +45,9 @@
     }
 
     &[data-indicator] {
-      .Rail {
-        .Indicator {
-          left: calc((var(--spacing-4) + var(--px)) * -1);
-          display: block;
-        }
+      .Indicator {
+        left: calc((var(--spacing-4) + var(--px)) * -1);
+        display: block;
       }
     }
 

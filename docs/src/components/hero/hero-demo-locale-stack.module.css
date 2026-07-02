@@ -27,73 +27,80 @@
       font-size: var(--font-size-xs);
       border-bottom: var(--px) solid var(--rule);
 
+      .FlagIcon {
+        display: inline-flex;
+        align-items: center;
+        line-height: var(--line-height-none);
+      }
+
+      .FilenameText {
+        color: var(--foreground-softer);
+        letter-spacing: var(--letter-spacing-tight);
+      }
+
+      .JsonText {
+        display: inline-flex;
+        align-items: center;
+        overflow: hidden;
+        color: var(--foreground);
+        white-space: nowrap;
+        mask-image: linear-gradient(
+          to right,
+          black 0,
+          black calc(100% - var(--spacing-4)),
+          transparent 100%
+        );
+
+        .JsonOpening {
+          display: none;
+
+          .KeyText {
+            display: inline-block;
+            margin-inline-start: 1ch;
+          }
+
+          @media (min-width: 640px) {
+            display: contents;
+          }
+        }
+
+        .Skeleton {
+          display: inline-block;
+          width: 128px;
+          height: 0.85em;
+          padding: 0 var(--px);
+          margin-inline: 1ch;
+          background: linear-gradient(
+            90deg,
+            var(--ring) 0%,
+            color-mix(in oklab, var(--color-silver) 10%, transparent) 40%,
+            color-mix(in oklab, var(--brand) 18%, transparent) 50%,
+            color-mix(in oklab, var(--color-silver) 10%, transparent) 60%,
+            var(--ring) 100%
+          );
+          background-clip: padding-box;
+          background-size: 250% 100%;
+          border-radius: 4px;
+          animation: skeleton-sweep 2s ease-in-out infinite;
+        }
+
+        .ValueText {
+          display: inline-block;
+          margin-inline: 1ch;
+        }
+
+        .JsonClosing {
+          display: none;
+
+          @media (min-width: 640px) {
+            display: contents;
+          }
+        }
+      }
+
       &:last-child {
         border-bottom: none;
       }
-    }
-
-    .FlagIcon {
-      display: inline-flex;
-      align-items: center;
-      line-height: var(--line-height-none);
-    }
-
-    .FilenameText {
-      color: var(--foreground-softer);
-      letter-spacing: var(--letter-spacing-tight);
-    }
-
-    .JsonText {
-      display: inline-flex;
-      align-items: center;
-      overflow: hidden;
-      color: var(--foreground);
-      white-space: nowrap;
-      mask-image: linear-gradient(
-        to right,
-        black 0,
-        black calc(100% - var(--spacing-4)),
-        transparent 100%
-      );
-    }
-
-    .JsonOpening,
-    .JsonClosing {
-      display: none;
-
-      @media (min-width: 640px) {
-        display: contents;
-      }
-    }
-
-    .KeyText {
-      display: inline-block;
-      margin-inline-start: 1ch;
-    }
-
-    .ValueText {
-      display: inline-block;
-      margin-inline: 1ch;
-    }
-
-    .Skeleton {
-      display: inline-block;
-      width: 128px;
-      height: 0.85em;
-      padding: 0 var(--px);
-      margin-inline: 1ch;
-      background: linear-gradient(
-        90deg,
-        var(--ring) 0%,
-        color-mix(in oklab, var(--color-silver) 10%, transparent) 40%,
-        color-mix(in oklab, var(--brand) 18%, transparent) 50%,
-        color-mix(in oklab, var(--color-silver) 10%, transparent) 60%,
-        var(--ring) 100%
-      );
-      background-clip: padding-box;
-      background-size: 250% 100%;
-      border-radius: 4px;
-      animation: skeleton-sweep 2s ease-in-out infinite;
     }
 
     &[data-receiving] {

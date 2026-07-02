@@ -13,24 +13,24 @@
 
     .Line {
       display: contents;
-    }
 
-    .Locale {
-      align-self: start;
-      padding: 0 var(--spacing-2);
-      font-family: var(--font-family-mono);
-      font-size: var(--font-size-xs);
-      color: var(--foreground-softer);
-      text-transform: lowercase;
-      white-space: nowrap;
-      user-select: none;
-    }
+      .Locale {
+        align-self: start;
+        padding: 0 var(--spacing-2);
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        color: var(--foreground-softer);
+        text-transform: lowercase;
+        white-space: nowrap;
+        user-select: none;
+      }
 
-    .Value {
-      align-self: start;
-      color: var(--foreground-soft);
-      word-break: break-word;
-      white-space: pre-wrap;
+      .Value {
+        align-self: start;
+        color: var(--foreground-soft);
+        word-break: break-word;
+        white-space: pre-wrap;
+      }
     }
 
     &[data-with-locales] {

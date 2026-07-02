@@ -12,15 +12,15 @@
       align-items: center;
       padding: var(--spacing-3) var(--spacing-4);
       border-bottom: var(--px) solid var(--rule);
-    }
 
-    .PathText {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      font-family: var(--font-family-mono);
-      font-size: var(--font-size-xs);
-      color: var(--foreground-soft);
-      white-space: nowrap;
+      .PathText {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        color: var(--foreground-soft);
+        white-space: nowrap;
+      }
     }
 
     .LabelText {
