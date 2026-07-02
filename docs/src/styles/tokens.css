@@ -131,13 +131,6 @@
   --shadow-brand-glow: 0 0 12px var(--brand-soft);
   --shadow-ring-inset: inset 0 0 0 var(--px) var(--ring);
 
-  --gradient-silver: linear-gradient(
-    to bottom,
-    color-mix(in oklab, var(--color-silver), white 60%) 0%,
-    var(--color-silver) 55%,
-    color-mix(in oklab, var(--color-silver), var(--color-ink) 40%) 100%
-  );
-
   --header-height: 76px;
   --content-header-height: 44px;
 

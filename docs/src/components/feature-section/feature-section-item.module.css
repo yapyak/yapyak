@@ -16,11 +16,8 @@
       font-size: 3.5rem;
       font-weight: var(--font-weight-medium);
       line-height: var(--line-height-none);
-      color: transparent;
+      color: var(--foreground-softer);
       letter-spacing: var(--letter-spacing-tightest);
-      background: var(--gradient-silver);
-      background-clip: text;
-      transition: text-shadow 400ms ease;
 
       @media (min-width: 640px) {
         font-size: 4.5rem;
@@ -54,7 +51,6 @@
     .DescriptionParagraph {
       font-size: var(--font-size-md);
       color: var(--foreground-soft);
-      transition: color 400ms ease;
     }
 
     .InlineCode {
@@ -67,18 +63,6 @@
       border-radius: var(--border-radius-sm);
       box-shadow: var(--shadow-ring-inset);
       box-decoration-break: clone;
-    }
-
-    @media (hover: hover) {
-      &:hover {
-        .NumeralText {
-          text-shadow: 0 0 28px var(--brand-soft);
-        }
-
-        .DescriptionParagraph {
-          color: var(--foreground);
-        }
-      }
     }
 
     @media (min-width: 1024px) {
@@ -98,29 +82,12 @@
 
   @supports (animation-timeline: view()) {
     .FeatureSectionItem {
-      animation: feature-reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 0% entry 60%;
-
       .UnderlineDivider {
         transform: scaleX(0);
         animation: underline-draw linear both;
         animation-timeline: view();
         animation-range: entry 35% entry 85%;
       }
-    }
-  }
-
-  @keyframes feature-reveal {
-    from {
-      opacity: 0;
-      filter: blur(8px);
-      transform: translateY(16px);
-    }
-    to {
-      opacity: 1;
-      filter: blur(0);
-      transform: translateY(0);
     }
   }
 
