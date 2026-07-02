@@ -7,6 +7,7 @@ import { t } from 'yapyak';
 import { GithubIcon } from '#components/github-icon';
 import { IconLink } from '#components/icon-link';
 import { OptionMenu } from '#components/option-menu';
+import { Sheet } from '#components/sheet';
 import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 
@@ -22,7 +23,6 @@ export type LayoutHeaderProps = BoxProps<'header'> & {
 
 export function LayoutHeader(props: LayoutHeaderProps) {
   const { children, className, fadeBorder, ...restProps } = props;
-  const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -34,39 +34,18 @@ export function LayoutHeader(props: LayoutHeaderProps) {
   ]);
 
   useEffect(() => {
-    const update = () => {
-      setIsScrolled(window.scrollY > 0);
-    };
-    update();
-    window.addEventListener('scroll', update, {
-      passive: true,
-    });
-    return () => window.removeEventListener('scroll', update);
-  }, []);
-
-  useEffect(() => {
     if (!isMenuOpen) {
       return;
     }
-    const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setIsMenuOpen(false);
-      }
-    };
     const mediaQuery = window.matchMedia('(min-width: 1024px)');
     const handleMediaChange = () => {
       if (mediaQuery.matches) {
         setIsMenuOpen(false);
       }
     };
-    document.addEventListener('keydown', handleKeydown);
     mediaQuery.addEventListener('change', handleMediaChange);
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'clip';
     return () => {
-      document.removeEventListener('keydown', handleKeydown);
       mediaQuery.removeEventListener('change', handleMediaChange);
-      document.body.style.overflow = previousOverflow;
     };
   }, [
     isMenuOpen,
@@ -74,6 +53,10 @@ export function LayoutHeader(props: LayoutHeaderProps) {
 
   const handleMenuToggle = () => {
     setIsMenuOpen((isOpen) => !isOpen);
+  };
+
+  const handleMenuClose = () => {
+    setIsMenuOpen(false);
   };
 
   return (
@@ -85,8 +68,6 @@ export function LayoutHeader(props: LayoutHeaderProps) {
         className,
       ]}
       data-fade-border={fadeBorder}
-      data-menu-open={isMenuOpen}
-      data-scrolled={isScrolled}
     >
       <Box className={styles.Bar}>
         {children}
@@ -97,46 +78,48 @@ export function LayoutHeader(props: LayoutHeaderProps) {
           />
         </Box>
       </Box>
-      <Box
-        as="nav"
-        className={styles.Drawer}
+      <Sheet
+        onClose={handleMenuClose}
+        open={isMenuOpen}
       >
-        <Box className={styles.LinkStack}>
-          <LinkBase
-            className={styles.Link}
-            to="/home"
+        <Box className={styles.Menu}>
+          <Box className={styles.LinkStack}>
+            <LinkBase
+              className={styles.Link}
+              to="/home"
+            >
+              {t('Home')}
+            </LinkBase>
+            <LinkBase
+              className={styles.Link}
+              to="/guide"
+            >
+              {t('Guide')}
+            </LinkBase>
+            <LinkBase
+              className={styles.Link}
+              to="/reference"
+            >
+              {t('Reference')}
+            </LinkBase>
+          </Box>
+          <Box
+            as="footer"
+            className={styles.Footer}
           >
-            {t('Home')}
-          </LinkBase>
-          <LinkBase
-            className={styles.Link}
-            to="/guide"
-          >
-            {t('Guide')}
-          </LinkBase>
-          <LinkBase
-            className={styles.Link}
-            to="/reference"
-          >
-            {t('Reference')}
-          </LinkBase>
+            <OptionMenu group="framework" />
+            <OptionMenu group="packageManager" />
+            <IconLink
+              aria-label={t('View on GitHub')}
+              href="https://github.com/yapyak/yapyak"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              <GithubIcon />
+            </IconLink>
+          </Box>
         </Box>
-        <Box
-          as="footer"
-          className={styles.Footer}
-        >
-          <OptionMenu group="framework" />
-          <OptionMenu group="packageManager" />
-          <IconLink
-            aria-label={t('View on GitHub')}
-            href="https://github.com/yapyak/yapyak"
-            rel="noopener noreferrer"
-            target="_blank"
-          >
-            <GithubIcon />
-          </IconLink>
-        </Box>
-      </Box>
+      </Sheet>
     </Box>
   );
 }
