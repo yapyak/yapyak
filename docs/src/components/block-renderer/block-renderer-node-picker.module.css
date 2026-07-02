@@ -42,7 +42,7 @@
         color var(--transition),
         background-color var(--transition),
         box-shadow var(--transition),
-        outline 400ms;
+        outline var(--duration-slow);
 
       @media (hover: hover) {
         &:hover:not([data-active]) {

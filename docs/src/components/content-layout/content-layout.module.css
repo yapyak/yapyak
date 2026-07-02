@@ -15,7 +15,7 @@
       .Backdrop {
         position: fixed;
         inset: 0;
-        z-index: 110;
+        z-index: var(--z-index-3);
         display: block;
         background-color: color-mix(in oklab, var(--scrim) 50%, transparent);
       }

@@ -632,9 +632,15 @@ Anchor (`<a>`) elements can't be `:disabled` — they're either rendered as link
 
 #### Mobile-first responsive
 
-One layout-shift breakpoint: `min-width: 1024px` — threshold where layouts shift from mobile (stacked, 1-col) to desktop (multi-col).
+Three breakpoints, and no others:
 
-Mobile-first. Default CSS targets mobile. `@media (min-width: 1024px)` enhances for desktop. Never use `max-width` queries — they invert the model and lead to harder-to-maintain stylesheets.
+| Breakpoint | Purpose |
+|---|---|
+| `min-width: 640px` | Component-internal refinement — padding, font-size, compact→full labels. Never a page-level shift. |
+| `min-width: 1024px` | Layout shift — mobile (stacked, 1-col) to desktop (multi-col). |
+| `min-width: 1324px` | Content reaches `--layout-max-width` and the shell widens. Container ceiling, not a content reflow. |
+
+Mobile-first. Default CSS targets mobile. `@media (min-width: …)` enhances upward. Never use `max-width` queries → use mobile-first `min-width`.
 
 ```css
 /* ✓ mobile-first */
@@ -646,7 +652,7 @@ Mobile-first. Default CSS targets mobile. `@media (min-width: 1024px)` enhances 
   }
 }
 
-/* ✗ desktop-first — don't */
+/* ✗ desktop-first */
 .Component {
   grid-template-columns: 1fr 1fr;
 
@@ -656,7 +662,7 @@ Mobile-first. Default CSS targets mobile. `@media (min-width: 1024px)` enhances 
 }
 ```
 
-Every layout-shift breakpoint is exactly `min-width: 1024px`. No other value is permitted. If a component seems to need a different threshold, the structure is wrong — fix the structure.
+No value outside these three is permitted. A component that seems to need another threshold has the wrong structure → fix the structure.
 
 #### Length units — `px` for layout, `rem` only for font-size
 

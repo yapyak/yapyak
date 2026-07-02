@@ -3,7 +3,7 @@
     position: fixed;
     inset: 0;
     opacity: 1;
-    transition: opacity 320ms cubic-bezier(0.32, 0.72, 0, 1);
+    transition: opacity var(--duration-medium) var(--ease-snappy);
 
     &[data-opaque] {
       background-color: color-mix(in srgb, var(--color-black) 70%, transparent);

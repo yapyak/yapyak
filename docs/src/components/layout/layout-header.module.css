@@ -10,7 +10,7 @@
     top: 0;
     right: 0;
     left: 0;
-    z-index: 100;
+    z-index: var(--z-index-2);
     display: flex;
     flex-direction: column;
     background-color: var(--canvas);
@@ -91,7 +91,7 @@
     &[data-menu-open] {
       position: fixed;
       inset: 0;
-      z-index: 220;
+      z-index: var(--z-index-5);
       overflow-y: auto;
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;

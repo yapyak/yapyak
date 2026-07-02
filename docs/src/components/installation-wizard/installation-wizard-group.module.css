@@ -18,7 +18,7 @@
       --installation-wizard-indicator-width: 0;
       --installation-wizard-indicator-x: 0;
       --installation-wizard-indicator-y: 0;
-      --installation-wizard-slide-duration: 400ms;
+      --installation-wizard-slide-duration: var(--duration-slow);
 
       position: relative;
       display: flex;

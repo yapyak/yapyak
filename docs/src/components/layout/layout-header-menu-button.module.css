@@ -17,7 +17,7 @@
     border-radius: var(--border-radius-sm);
     transition:
       color var(--transition),
-      outline 400ms;
+      outline var(--duration-slow);
 
     .Line {
       display: block;
@@ -26,8 +26,8 @@
       background-color: currentColor;
       border-radius: var(--border-radius-full);
       transition:
-        transform 320ms var(--ease-snappy),
-        opacity 320ms var(--ease-snappy);
+        transform var(--duration-medium) var(--ease-snappy),
+        opacity var(--duration-medium) var(--ease-snappy);
     }
 
     @media (hover: hover) {

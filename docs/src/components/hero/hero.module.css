@@ -81,8 +81,8 @@
       border-radius: var(--border-radius-full);
       transition:
         filter var(--transition),
-        outline 400ms,
-        box-shadow 400ms;
+        outline var(--duration-slow),
+        box-shadow var(--duration-slow);
 
       @media (hover: hover) {
         &:hover {
@@ -116,8 +116,8 @@
         inset 0 var(--px) var(--ring-strong);
       transition:
         background-color var(--transition),
-        outline 400ms,
-        box-shadow 400ms;
+        outline var(--duration-slow),
+        box-shadow var(--duration-slow);
 
       @media (hover: hover) {
         &:hover {

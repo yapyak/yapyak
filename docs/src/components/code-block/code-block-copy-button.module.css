@@ -20,7 +20,7 @@
       color var(--transition),
       background-color var(--transition),
       box-shadow var(--transition),
-      outline 400ms;
+      outline var(--duration-slow);
 
     &[data-copied] {
       color: var(--brand);

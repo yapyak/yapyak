@@ -59,10 +59,21 @@
   --letter-spacing-wide: 0.05em;
   --letter-spacing-wider: 0.06em;
 
-  --transition: 150ms ease;
+  --duration-fast: 150ms;
+  --duration-medium: 320ms;
+  --duration-slow: 400ms;
+
+  --transition: var(--duration-fast) ease;
 
   --ease-snappy: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.7, 0.5, 1);
+
+  --z-index-1: 90;
+  --z-index-2: 100;
+  --z-index-3: 110;
+  --z-index-4: 200;
+  --z-index-5: 220;
 
   --font-family-mono:
     "Menlo", "Monaco", "Cascadia Code", "Roboto Mono", Consolas,

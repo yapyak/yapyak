@@ -8,8 +8,8 @@
     border-radius: var(--border-radius-xs);
 
     transition:
-      background-color 400ms,
-      outline 400ms;
+      background-color var(--duration-slow),
+      outline var(--duration-slow);
 
     &:focus-visible {
       outline-width: var(--spacing-1);
