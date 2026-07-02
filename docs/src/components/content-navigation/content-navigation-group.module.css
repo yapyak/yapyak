@@ -55,14 +55,6 @@
         }
       }
 
-      &[data-on-path] .GroupLabel {
-        color: var(--foreground);
-      }
-
-      &[data-active] .GroupLabel {
-        color: var(--brand);
-      }
-
       .ChevronButton {
         position: absolute;
         top: 0;
@@ -77,16 +69,24 @@
         background: transparent;
         transition: color var(--transition);
 
+        .ChevronIcon {
+          transform-origin: center;
+          transition: transform var(--transition);
+        }
+
         @media (hover: hover) {
           &:hover {
             color: var(--foreground);
           }
         }
+      }
 
-        .ChevronIcon {
-          transform-origin: center;
-          transition: transform var(--transition);
-        }
+      &[data-on-path] .GroupLabel {
+        color: var(--foreground);
+      }
+
+      &[data-active] .GroupLabel {
+        color: var(--brand);
       }
 
       &[data-open] .ChevronIcon {

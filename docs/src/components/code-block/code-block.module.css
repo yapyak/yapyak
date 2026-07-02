@@ -6,12 +6,6 @@
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);
 
-    &[data-bare] {
-      background: transparent;
-      border-radius: 0;
-      box-shadow: none;
-    }
-
     .Header {
       display: flex;
       gap: var(--spacing-3);
@@ -70,6 +64,12 @@
       .Code {
         font-family: inherit;
       }
+    }
+
+    &[data-bare] {
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
     }
   }
 }

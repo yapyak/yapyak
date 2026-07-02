@@ -9,22 +9,12 @@
     box-shadow: var(--shadow-ring-inset);
     transform-origin: center;
 
-    &[data-receiving] {
-      animation:
-        locales-pulse 950ms var(--ease-snappy),
-        locales-ring 950ms var(--ease-snappy);
-    }
-
     .FlashOverlay {
       position: absolute;
       inset: 0;
       pointer-events: none;
       background-color: var(--brand);
       opacity: 0;
-    }
-
-    &[data-receiving] .FlashOverlay {
-      animation: locales-flash 950ms linear forwards;
     }
 
     .LocaleRow {
@@ -86,16 +76,6 @@
       margin-inline: 1ch;
     }
 
-    &[data-primed] {
-      .KeyText {
-        animation: materialize 750ms var(--ease-smooth) both;
-      }
-
-      .ValueText {
-        animation: materialize 900ms var(--ease-smooth) both;
-      }
-    }
-
     .Skeleton {
       display: inline-block;
       width: 128px;
@@ -114,6 +94,26 @@
       background-size: 250% 100%;
       border-radius: 4px;
       animation: skeleton-sweep 2s ease-in-out infinite;
+    }
+
+    &[data-receiving] {
+      animation:
+        locales-pulse 950ms var(--ease-snappy),
+        locales-ring 950ms var(--ease-snappy);
+    }
+
+    &[data-receiving] .FlashOverlay {
+      animation: locales-flash 950ms linear forwards;
+    }
+
+    &[data-primed] {
+      .KeyText {
+        animation: materialize 750ms var(--ease-smooth) both;
+      }
+
+      .ValueText {
+        animation: materialize 900ms var(--ease-smooth) both;
+      }
     }
   }
 

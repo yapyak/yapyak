@@ -20,6 +20,36 @@
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;
 
+      .StatusIcon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1rem;
+        height: 1rem;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .BodyStack {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        min-width: 0;
+
+        .Code {
+          font-family: inherit;
+          color: var(--foreground-soft);
+          white-space: pre;
+        }
+
+        .MessageText {
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-xs);
+          color: var(--foreground-softer);
+          user-select: none;
+        }
+      }
+
       &:not(:last-child) {
         border-bottom: var(--px) solid var(--rule);
       }
@@ -49,36 +79,6 @@
             var(--danger) 60%,
             var(--foreground-softer)
           );
-        }
-      }
-
-      .StatusIcon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1rem;
-        height: 1rem;
-        pointer-events: none;
-        user-select: none;
-      }
-
-      .BodyStack {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-1);
-        min-width: 0;
-
-        .Code {
-          font-family: inherit;
-          color: var(--foreground-soft);
-          white-space: pre;
-        }
-
-        .MessageText {
-          font-family: var(--font-family-mono);
-          font-size: var(--font-size-xs);
-          color: var(--foreground-softer);
-          user-select: none;
         }
       }
     }

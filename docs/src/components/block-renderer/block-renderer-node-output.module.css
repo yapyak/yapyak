@@ -11,10 +11,6 @@
     border-left: var(--px) solid var(--rule);
     border-radius: 0;
 
-    &[data-with-locales] {
-      grid-template-columns: auto 1fr;
-    }
-
     .Line {
       display: contents;
     }
@@ -35,6 +31,10 @@
       color: var(--foreground-soft);
       word-break: break-word;
       white-space: pre-wrap;
+    }
+
+    &[data-with-locales] {
+      grid-template-columns: auto 1fr;
     }
 
     &:not([data-with-locales]) .Line {

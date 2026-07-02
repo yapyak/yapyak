@@ -8,10 +8,6 @@
     padding: var(--spacing-10) var(--spacing-6);
     border-bottom: var(--px) solid var(--rule);
 
-    &:last-child {
-      border-bottom: none;
-    }
-
     .NumeralText {
       font-size: 3.5rem;
       font-weight: var(--font-weight-medium);
@@ -77,6 +73,10 @@
       .NumeralText {
         font-size: 6rem;
       }
+    }
+
+    &:last-child {
+      border-bottom: none;
     }
   }
 

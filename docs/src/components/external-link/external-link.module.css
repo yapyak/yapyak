@@ -11,6 +11,12 @@
     text-underline-offset: 4px;
     transition: text-decoration-color var(--transition);
 
+    .Icon {
+      display: inline-flex;
+      align-items: center;
+      color: var(--foreground-softer);
+    }
+
     @media (hover: hover) {
       &:hover {
         text-decoration-color: currentColor;
@@ -29,12 +35,6 @@
     &[data-size="lg"] {
       font-size: var(--font-size-lg);
       font-weight: var(--font-weight-medium);
-    }
-
-    .Icon {
-      display: inline-flex;
-      align-items: center;
-      color: var(--foreground-softer);
     }
   }
 }

@@ -11,10 +11,6 @@
     box-shadow: var(--shadow-ring-inset);
     transform-origin: center;
 
-    &[data-saving] {
-      animation: editor-pulse 600ms var(--ease-snappy) var(--duration-slow);
-    }
-
     .TabRow {
       position: relative;
       display: flex;
@@ -32,11 +28,6 @@
       background-color: var(--brand);
       transform: translateX(calc(var(--demo-editor-tab-index) * 100%));
       transition: transform var(--duration-medium) var(--ease-snappy);
-    }
-
-    &[data-saving] .TabDot[data-dirty] {
-      animation: dot-pulse 950ms var(--ease-snappy) var(--duration-slow)
-        forwards;
     }
 
     .TabButton {
@@ -178,6 +169,15 @@
         opacity: 1;
         animation: none;
       }
+    }
+
+    &[data-saving] {
+      animation: editor-pulse 600ms var(--ease-snappy) var(--duration-slow);
+    }
+
+    &[data-saving] .TabDot[data-dirty] {
+      animation: dot-pulse 950ms var(--ease-snappy) var(--duration-slow)
+        forwards;
     }
   }
 
