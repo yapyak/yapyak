@@ -213,6 +213,32 @@ Always open a new nested block for each state/variant — never chain state and 
 }
 ```
 
+#### Group shared selectors with `:is()`
+
+Wrap 2+ selectors that share a declaration block in one `:is(…)`; a bare comma-separated list of class or compound selectors is forbidden.
+
+```css
+/* ✓ one selector — composes with combinators, states, and nesting */
+:is(.TitleHeading, .TitleLink) {
+  color: var(--foreground-soft);
+}
+
+> :is(.TitleHeading, .TitleLink) {
+  font-size: var(--font-size-xs);
+}
+
+/* ✗ N rules — repeats the combinator, breaks the moment a compound is added */
+.TitleHeading, .TitleLink {
+  color: var(--foreground-soft);
+}
+
+> .TitleHeading, > .TitleLink {
+  font-size: var(--font-size-xs);
+}
+```
+
+Keep a bare comma list only where `:is()` cannot apply — pseudo-elements are forbidden inside `:is()` (the reset's `*, *::before, *::after`).
+
 #### Select by class, never by element type
 
 Every element carries a class (see Class naming) — target it. Never write a bare type selector (`div`, `span`, `a`, `li`, `code`) in component CSS → target the element's class.
