@@ -18,7 +18,7 @@ export function ContentLayoutOutline(props: ContentLayoutOutlineProps) {
         className,
       ]}
     >
-      {children}
+      <Box className={styles.Stack}>{children}</Box>
     </Box>
   );
 }
