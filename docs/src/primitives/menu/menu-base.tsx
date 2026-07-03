@@ -41,16 +41,29 @@ export function MenuBase(props: MenuBaseProps) {
       if (target === null) {
         return;
       }
-      const isItem = target.closest(ITEM_SELECTOR) !== null;
-      if (!isItem && $element.contains(target)) {
+      const item = target.closest<HTMLElement>(ITEM_SELECTOR);
+      if (item !== null) {
+        item.focus({
+          preventScroll: true,
+        });
+        return;
+      }
+      if ($element.contains(target)) {
         $element.focus({
           preventScroll: true,
         });
       }
     };
+    const handlePointerLeave = () => {
+      $element.focus({
+        preventScroll: true,
+      });
+    };
     $element.addEventListener('pointerover', handlePointerOver);
+    $element.addEventListener('pointerleave', handlePointerLeave);
     return () => {
       $element.removeEventListener('pointerover', handlePointerOver);
+      $element.removeEventListener('pointerleave', handlePointerLeave);
     };
   }, [
     stepFocusProps.ref,

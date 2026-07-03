@@ -79,7 +79,7 @@ export function Menu(props: MenuProps) {
         arrow={true}
         margin={4}
         minWidth={matchTargetMinWidth ? targetRect.width : 0}
-        offset={1}
+        offset={4}
         onContextMenu={handleAttachmentContextMenu}
         onKeyDown={handleAttachmentKeyDown}
         onPointerDown={handlePointerDown}

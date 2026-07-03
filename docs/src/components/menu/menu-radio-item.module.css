@@ -26,14 +26,6 @@
       color: var(--foreground);
     }
 
-    @media (hover: hover) {
-      &:hover:not([data-checked]) {
-        color: var(--foreground);
-        background-color: var(--surface);
-        box-shadow: var(--shadow-ring-inset);
-      }
-    }
-
     &:focus {
       color: var(--foreground);
       outline: none;
