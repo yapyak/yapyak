@@ -2,6 +2,7 @@ import type { Language } from '#lib/tokenize';
 import type { BoxProps } from '#primitives/box';
 
 import { CodeBlockToken } from '#components/code-block-token';
+import { PreformattedText } from '#components/preformatted-text';
 import { tokenize } from '#lib/tokenize';
 import { Box } from '#primitives/box';
 
@@ -72,10 +73,7 @@ export function CodeBlock(props: CodeBlockProps) {
           {label}
         </Box>
       )}
-      <Box
-        as="pre"
-        className={styles.PreformattedText}
-      >
+      <PreformattedText className={styles.PreformattedText}>
         <Box
           as="code"
           className={styles.Code}
@@ -91,7 +89,7 @@ export function CodeBlock(props: CodeBlockProps) {
                 </CodeBlockToken>
               ))}
         </Box>
-      </Box>
+      </PreformattedText>
       <CodeBlockCopyButton
         className={styles.CopyButton}
         source={source}

@@ -345,15 +345,24 @@ A parent never selects a child it renders — CSS Modules scope class names per 
 }
 ```
 
-When the trigger is the child's own state, name the child in `:has()` — the one unavoidable child reference, since inheritance flows down only. Pass the parent's scoped class to the child so its class is reachable:
+When the trigger is the child's own state, name the child in `:has()` — the one unavoidable child reference, since inheritance flows down only. Pass the child a class named its component root; the child merges it, so the parent's scoped copy lands on the child and `:has()` reaches it.
 
 ```tsx
 <CopyButton className={styles.CopyButton} />
+<PreformattedText className={styles.PreformattedText} />
 ```
 
+The trigger is any child state — a `data-*` attribute or a native pseudo-class. The parent reacts on its own root: drive a child var, or style itself.
+
 ```css
+/* child's data state → drive a child var */
 .CodeBlock:has(.CopyButton[data-copied]) {
   --copy-button-opacity: 1;
+}
+
+/* child's focus → style the parent's own frame */
+.CodeBlock:has(.PreformattedText:focus-visible) {
+  outline-color: var(--accent-soft);
 }
 ```
 
