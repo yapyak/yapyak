@@ -66,10 +66,7 @@ export function CommandPaletteItem(props: CommandPaletteItemProps) {
   );
 }
 
-function getTitleParts(
-  title: string,
-  ranges: SearchResult['ranges'],
-): ReactNode {
+function getTitleParts(title: string, ranges: SearchResult['ranges']) {
   if (ranges.length === 0) {
     return title;
   }

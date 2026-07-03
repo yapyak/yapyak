@@ -1,6 +1,6 @@
 import type { SearchIndex, SearchIndexEntry } from '@yapyak/doc-compiler';
 
-export type SearchRange = [
+type SearchRange = [
   number,
   number,
 ];
@@ -17,7 +17,7 @@ export function getSearchResults(
   index: SearchIndex,
   query: string,
   limit = DEFAULT_LIMIT,
-): SearchResult[] {
+) {
   const normalizedQuery = query.trim().toLowerCase();
   if (normalizedQuery.length === 0) {
     return [];
@@ -40,11 +40,7 @@ export function getSearchResults(
   return results.slice(0, limit);
 }
 
-function getScore(
-  entry: SearchIndexEntry,
-  query: string,
-  tokens: string[],
-): number {
+function getScore(entry: SearchIndexEntry, query: string, tokens: string[]) {
   const title = entry.title.toLowerCase();
   let score = 0;
 
@@ -92,7 +88,7 @@ function getScore(
   return score;
 }
 
-function isSubsequence(query: string, text: string): boolean {
+function isSubsequence(query: string, text: string) {
   if (query.length === 0) {
     return false;
   }
@@ -108,11 +104,7 @@ function isSubsequence(query: string, text: string): boolean {
   return false;
 }
 
-function getRanges(
-  title: string,
-  query: string,
-  tokens: string[],
-): SearchRange[] {
+function getRanges(title: string, query: string, tokens: string[]) {
   const lowerTitle = title.toLowerCase();
   const phrase = getRange(lowerTitle, query);
   if (phrase !== undefined) {
@@ -142,7 +134,7 @@ function getRange(text: string, query: string): SearchRange | undefined {
   ];
 }
 
-function mergeRanges(ranges: SearchRange[]): SearchRange[] {
+function mergeRanges(ranges: SearchRange[]) {
   const sorted = [
     ...ranges,
   ].sort((a, b) => a[0] - b[0]);
