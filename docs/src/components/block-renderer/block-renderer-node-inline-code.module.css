@@ -9,9 +9,17 @@
       break-word
     );
     word-break: var(--block-renderer-node-inline-code-word-break, normal);
-    background-color: var(--surface-strong);
+    background-color: var(
+      --block-renderer-node-inline-code-background-color,
+      var(--surface-strong)
+    );
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-ring-inset);
     box-decoration-break: clone;
+    outline: var(--spacing-1) solid
+      var(--block-renderer-node-inline-code-outline-color, transparent);
+    transition:
+      background-color var(--transition),
+      outline-color var(--duration-slow);
   }
 }

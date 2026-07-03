@@ -2,7 +2,10 @@
   .BlockRendererNodeLink {
     --block-renderer-node-inline-code-color: currentColor;
     color: var(--brand);
-    text-decoration: underline;
+    text-decoration-line: var(
+      --block-renderer-node-link-text-decoration-line,
+      underline
+    );
     text-decoration-color: transparent;
     text-underline-offset: 4px;
     outline: var(--spacing-2) solid transparent;
@@ -21,6 +24,24 @@
     &:focus-visible {
       outline-width: var(--spacing-1);
       outline-color: var(--accent-soft);
+    }
+
+    &[data-inline-code] {
+      --block-renderer-node-link-text-decoration-line: none;
+
+      outline: none;
+
+      @media (hover: hover) {
+        &:hover {
+          --block-renderer-node-inline-code-background-color: var(
+            --surface-stronger
+          );
+        }
+      }
+
+      &:focus-visible {
+        --block-renderer-node-inline-code-outline-color: var(--accent-soft);
+      }
     }
   }
 }

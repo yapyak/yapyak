@@ -20,6 +20,9 @@ export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
     />
   ));
 
+  const isInlineCode =
+    block.children.length === 1 && block.children[0]?.kind === 'inline-code';
+
   if (block.linkKind === 'internal') {
     return (
       <LinkBase
@@ -27,6 +30,7 @@ export function BlockRendererNodeLink(props: BlockRendererNodeLinkProps) {
           styles.BlockRendererNodeLink,
           className,
         ]}
+        data-inline-code={isInlineCode}
         to={block.href}
       >
         {children}

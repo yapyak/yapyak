@@ -1,5 +1,7 @@
 @layer components {
   .BlockRendererNodeCodeExpression {
+    --block-renderer-node-link-text-decoration-line: none;
+
     padding: 4px 6px;
     font-family: var(--font-family-mono);
     font-size: 0.78em;
@@ -8,5 +10,12 @@
     background-color: var(--surface-strong);
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-ring-inset);
+    transition: background-color var(--transition);
+
+    @media (hover: hover) {
+      &:has([href]:hover) {
+        background-color: var(--surface-stronger);
+      }
+    }
   }
 }
