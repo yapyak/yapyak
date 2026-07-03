@@ -24,7 +24,7 @@ export function ContentNavigationLink(props: ContentNavigationLinkProps) {
   useEffect(() => {
     if (isActiveOnMountRef.current) {
       element.current?.scrollIntoView({
-        block: 'nearest',
+        block: 'center',
       });
     }
   }, []);
