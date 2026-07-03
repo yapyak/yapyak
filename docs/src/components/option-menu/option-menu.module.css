@@ -7,7 +7,7 @@
     display: inline-flex;
     gap: var(--spacing-2);
     align-items: center;
-    padding: var(--spacing-2) var(--spacing-3);
+    padding: var(--spacing-2-5) var(--spacing-3);
     font-family: inherit;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
