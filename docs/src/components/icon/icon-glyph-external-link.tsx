@@ -1,26 +1,16 @@
-import type { SVGProps } from 'react';
-
-export type ExternalLinkIconProps = SVGProps<SVGSVGElement> & {
-  size?: number;
-};
-
-export function ExternalLinkIcon(props: ExternalLinkIconProps) {
-  const { size = 14, ...restProps } = props;
-
+export function IconGlyphExternalLink() {
   return (
     <svg
-      {...restProps}
       aria-hidden="true"
       fill="none"
-      height={size}
+      height="1em"
       shapeRendering="geometricPrecision"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="2.25"
       viewBox="0 0 24 24"
-      width={size}
-      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
     >
       <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
       <polyline points="15 3 21 3 21 9" />

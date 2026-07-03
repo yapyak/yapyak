@@ -1,11 +1,6 @@
-import type { SVGProps } from 'react';
-
-export type OutlineIconProps = SVGProps<SVGSVGElement>;
-
-export function OutlineIcon(props: OutlineIconProps) {
+export function IconGlyphOutline() {
   return (
     <svg
-      {...props}
       aria-hidden="true"
       fill="none"
       height="1em"
@@ -16,7 +11,6 @@ export function OutlineIcon(props: OutlineIconProps) {
       strokeWidth="1.5"
       viewBox="0 0 24 24"
       width="1em"
-      xmlns="http://www.w3.org/2000/svg"
     >
       <rect
         height="14"

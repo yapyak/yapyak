@@ -13,7 +13,7 @@ import { useLocale } from '@yapyak/react';
 import { t } from 'yapyak';
 
 import { Colophon } from '#components/colophon';
-import { GithubIcon } from '#components/github-icon';
+import { Icon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { LogoLink } from '#components/logo-link';
@@ -131,7 +131,7 @@ function Component() {
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
           >
-            <GithubIcon />
+            <Icon name="github" />
           </IconLink>
         </Layout.Header.End>
         <MobileDialogButton

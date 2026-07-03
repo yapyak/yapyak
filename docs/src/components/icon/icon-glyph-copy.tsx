@@ -1,26 +1,16 @@
-import type { SVGProps } from 'react';
-
-export type CopyIconProps = SVGProps<SVGSVGElement> & {
-  size?: number;
-};
-
-export function CopyIcon(props: CopyIconProps) {
-  const { size = 14, ...restProps } = props;
-
+export function IconGlyphCopy() {
   return (
     <svg
-      {...restProps}
       aria-hidden="true"
       fill="none"
-      height={size}
+      height="1em"
       shapeRendering="geometricPrecision"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="2.25"
       viewBox="0 0 24 24"
-      width={size}
-      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
     >
       <rect
         height="13"

@@ -2,7 +2,7 @@ import type { SwatchAccent } from '#components/swatch';
 
 import { t } from 'yapyak';
 
-import { ChevronIcon } from '#components/chevron-icon';
+import { Icon } from '#components/icon';
 import { Menu, MenuTrigger } from '#components/menu';
 import { useOptionContext } from '#components/option-provider';
 import { Swatch } from '#components/swatch';
@@ -95,7 +95,7 @@ export function OptionMenu(props: OptionMenuProps) {
             as="span"
             className={styles.Chevron}
           >
-            <ChevronIcon direction="down" />
+            <Icon name="chevron" />
           </Box>
         </ButtonBase>
       )}

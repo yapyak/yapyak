@@ -1,0 +1,28 @@
+@layer components {
+  .Icon {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+
+    &[data-size="12"] {
+      font-size: 12px;
+    }
+
+    &[data-size="14"] {
+      font-size: 14px;
+    }
+
+    &[data-size="16"] {
+      font-size: 16px;
+    }
+
+    &[data-size="20"] {
+      font-size: 20px;
+    }
+
+    &[data-size="24"] {
+      font-size: 24px;
+    }
+  }
+}

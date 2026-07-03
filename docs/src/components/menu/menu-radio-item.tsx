@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { MenuBaseRadioItemProps } from '#primitives/menu';
 
-import { CheckIcon } from '#components/check-icon';
+import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 import { MenuBaseRadioItem } from '#primitives/menu';
 
@@ -42,7 +42,10 @@ export function MenuRadioItem(props: MenuRadioItemProps) {
         as="span"
         className={styles.Check}
       >
-        <CheckIcon />
+        <Icon
+          name="check"
+          size="14"
+        />
       </Box>
     </MenuBaseRadioItem>
   );

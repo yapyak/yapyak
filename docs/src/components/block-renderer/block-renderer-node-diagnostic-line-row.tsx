@@ -1,9 +1,8 @@
 import type { DiagnosticBlock } from '@yapyak/doc-compiler';
 import type { Language } from '#lib/tokenize';
 
-import { CheckIcon } from '#components/check-icon';
 import { CodeBlockToken } from '#components/code-block-token';
-import { XIcon } from '#components/x-icon';
+import { Icon } from '#components/icon';
 import { tokenize } from '#lib/tokenize';
 import { Box } from '#primitives/box';
 
@@ -29,7 +28,17 @@ export function BlockRendererNodeDiagnosticLineRow(
         aria-label={line.status === 'ok' ? 'valid' : 'error'}
         className={styles.StatusIcon}
       >
-        {line.status === 'ok' ? <CheckIcon /> : <XIcon />}
+        {line.status === 'ok' ? (
+          <Icon
+            name="check"
+            size="14"
+          />
+        ) : (
+          <Icon
+            name="x"
+            size="14"
+          />
+        )}
       </Box>
       <Box className={styles.BodyStack}>
         <Box

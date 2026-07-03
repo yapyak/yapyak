@@ -1,5 +1,6 @@
 import type { BoxProps } from '#primitives/box';
 
+import { RichText } from '@yapyak/react';
 import { t } from 'yapyak';
 
 import { Box } from '#primitives/box';
@@ -40,7 +41,31 @@ export function Colophon(props: ColophonProps) {
         as="p"
         className={styles.LicenseParagraph}
       >
-        {t('MIT-licensed')}
+        <RichText
+          builtByLink={(children) => (
+            <Box
+              as="a"
+              href="https://github.com/qwuide"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {children}
+            </Box>
+          )}
+          licenceLink={(children) => (
+            <Box
+              as="a"
+              href="https://github.com/yapyak/yapyak/blob/main/LICENSE"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {children}
+            </Box>
+          )}
+          value={t(
+            '<licenceLink>MIT-licensed</licenceLink>. Built by <builtByLink>Joakim Uhrwing</builtByLink>.',
+          )}
+        />
       </Box>
     </Box>
   );

@@ -1,26 +1,16 @@
-import type { SVGProps } from 'react';
-
-export type MarkdownIconProps = SVGProps<SVGSVGElement> & {
-  size?: number;
-};
-
-export function MarkdownIcon(props: MarkdownIconProps) {
-  const { size = 16, ...restProps } = props;
-
+export function IconGlyphMarkdown() {
   return (
     <svg
-      {...restProps}
       aria-hidden="true"
       fill="none"
-      height={size}
+      height="1em"
       shapeRendering="geometricPrecision"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="1.75"
       viewBox="0 0 24 24"
-      width={size}
-      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
     >
       <rect
         height="14"

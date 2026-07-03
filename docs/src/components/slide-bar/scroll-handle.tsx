@@ -2,7 +2,7 @@ import type { BoxProps } from '#primitives/box';
 
 import { useRef } from 'react';
 
-import { ChevronIcon } from '#components/chevron-icon';
+import { Icon } from '#components/icon';
 import { useEventListener } from '#hooks/use-event-listener';
 import { useHoverInterval } from '#hooks/use-hover-interval';
 import { Box } from '#primitives/box';
@@ -49,7 +49,10 @@ export function ScrollHandle(props: ScrollHandleProps) {
       data-placement={placement}
       ref={element}
     >
-      <ChevronIcon direction={placement === 'start' ? 'up' : 'down'} />
+      <Icon
+        className={styles.Chevron}
+        name="chevron"
+      />
     </Box>
   );
 }

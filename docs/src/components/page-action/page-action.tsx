@@ -4,12 +4,7 @@ import type { BoxProps } from '#primitives/box';
 import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
-import { ChatIcon } from '#components/chat-icon';
-import { CheckIcon } from '#components/check-icon';
-import { ChevronIcon } from '#components/chevron-icon';
-import { CopyIcon } from '#components/copy-icon';
-import { ExternalLinkIcon } from '#components/external-link-icon';
-import { MarkdownIcon } from '#components/markdown-icon';
+import { Icon } from '#components/icon';
 import { Menu, MenuTrigger } from '#components/menu';
 import { Swatch } from '#components/swatch';
 import { Box } from '#primitives/box';
@@ -111,13 +106,30 @@ export function PageAction(props: PageActionProps) {
       role="group"
     >
       <PageActionButton
-        icon={isCopied ? <CheckIcon /> : <CopyIcon />}
+        icon={
+          isCopied ? (
+            <Icon
+              name="check"
+              size="14"
+            />
+          ) : (
+            <Icon
+              name="copy"
+              size="14"
+            />
+          )
+        }
         label={isCopied ? t('Copied') : t('Copy')}
         onClick={handleCopy}
       />
       <PageActionLink
         href={markdownPath}
-        icon={<MarkdownIcon />}
+        icon={
+          <Icon
+            name="markdown"
+            size="16"
+          />
+        }
         label={t('Markdown')}
       />
       <MenuTrigger
@@ -134,7 +146,12 @@ export function PageAction(props: PageActionProps) {
                 key={provider.value}
                 leadingIcon={<Swatch accent={provider.value as SwatchAccent} />}
                 onSelect={() => handleChatSelect(provider)}
-                trailingIcon={<ExternalLinkIcon />}
+                trailingIcon={
+                  <Icon
+                    name="external-link"
+                    size="14"
+                  />
+                }
               >
                 {provider.label}
               </Menu.Item>
@@ -146,9 +163,14 @@ export function PageAction(props: PageActionProps) {
           <PageActionButton
             {...triggerProps}
             className={styles.ChatButton}
-            icon={<ChatIcon />}
+            icon={
+              <Icon
+                name="chat"
+                size="14"
+              />
+            }
             label={t('Chat')}
-            trailingIcon={<ChevronIcon direction="down" />}
+            trailingIcon={<Icon name="chevron" />}
           />
         )}
       </MenuTrigger>

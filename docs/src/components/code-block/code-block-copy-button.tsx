@@ -3,8 +3,7 @@ import type { ButtonBaseProps } from '#primitives/button';
 import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
-import { CheckIcon } from '#components/check-icon';
-import { CopyIcon } from '#components/copy-icon';
+import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
@@ -62,10 +61,16 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
         className={styles.IconStack}
       >
         <Box className={styles.IconIdle}>
-          <CopyIcon />
+          <Icon
+            name="copy"
+            size="14"
+          />
         </Box>
         <Box className={styles.IconCopied}>
-          <CheckIcon />
+          <Icon
+            name="check"
+            size="14"
+          />
         </Box>
       </Box>
       <Box

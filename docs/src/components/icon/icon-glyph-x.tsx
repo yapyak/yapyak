@@ -1,26 +1,16 @@
-import type { SVGProps } from 'react';
-
-export type XIconProps = SVGProps<SVGSVGElement> & {
-  size?: number;
-};
-
-export function XIcon(props: XIconProps) {
-  const { size = 14, ...restProps } = props;
-
+export function IconGlyphX() {
   return (
     <svg
-      {...restProps}
       aria-hidden="true"
       fill="none"
-      height={size}
+      height="1em"
       shapeRendering="geometricPrecision"
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="2.25"
       viewBox="0 0 24 24"
-      width={size}
-      xmlns="http://www.w3.org/2000/svg"
+      width="1em"
     >
       <line
         x1="6"

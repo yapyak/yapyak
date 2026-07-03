@@ -2,7 +2,7 @@ import type { BoxProps } from '#primitives/box';
 
 import { t } from 'yapyak';
 
-import { GithubIcon } from '#components/github-icon';
+import { Icon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
 import { OptionMenu } from '#components/option-menu';
 import { Box } from '#primitives/box';
@@ -70,7 +70,7 @@ export function MobileDialog(props: MobileDialogProps) {
                 rel="noopener noreferrer"
                 target="_blank"
               >
-                <GithubIcon />
+                <Icon name="github" />
               </IconLink>
             </Box>
           </Box>

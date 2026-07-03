@@ -8,10 +8,9 @@ import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 import { DialogTrigger } from '#components/dialog-trigger';
 import { Drawer } from '#components/drawer';
+import { Icon } from '#components/icon';
 import { IconButton } from '#components/icon-button';
-import { OutlineIcon } from '#components/outline-icon';
 import { PageAction } from '#components/page-action';
-import { SidebarIcon } from '#components/sidebar-icon';
 import { useMediaQuery } from '#hooks/use-media-query';
 
 import { doc } from 'virtual:doc-compiler';
@@ -81,7 +80,7 @@ function Component() {
                   <IconButton
                     {...triggerProps}
                     aria-label={t('Open page outline')}
-                    icon={<OutlineIcon />}
+                    icon={<Icon name="outline" />}
                     iconPosition="trailing"
                   >
                     {t('Page')}
@@ -106,7 +105,7 @@ function Component() {
                   <IconButton
                     {...triggerProps}
                     aria-label={t('Open menu')}
-                    icon={<SidebarIcon />}
+                    icon={<Icon name="sidebar" />}
                   >
                     {t('Menu')}
                   </IconButton>

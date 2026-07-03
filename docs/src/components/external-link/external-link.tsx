@@ -1,6 +1,7 @@
+import type { IconSize } from '#components/icon';
 import type { BoxProps } from '#primitives/box';
 
-import { ExternalLinkIcon } from '#components/external-link-icon';
+import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 
 import styles from './external-link.module.css';
@@ -11,10 +12,10 @@ export type ExternalLinkProps = BoxProps<'a'> & {
   size?: ExternalLinkSize;
 };
 
-const ICON_SIZE: Record<ExternalLinkSize, number> = {
-  lg: 16,
-  md: 14,
-  sm: 11,
+const ICON_SIZE: Record<ExternalLinkSize, IconSize> = {
+  lg: '16',
+  md: '14',
+  sm: '12',
 };
 
 export function ExternalLink(props: ExternalLinkProps) {
@@ -38,7 +39,10 @@ export function ExternalLink(props: ExternalLinkProps) {
         as="span"
         className={styles.Icon}
       >
-        <ExternalLinkIcon size={ICON_SIZE[size]} />
+        <Icon
+          name="external-link"
+          size={ICON_SIZE[size]}
+        />
       </Box>
     </Box>
   );

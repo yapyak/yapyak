@@ -10,6 +10,10 @@
 
     &[data-placement="start"] {
       top: 0;
+
+      .Chevron {
+        transform: rotate(180deg);
+      }
     }
 
     &[data-placement="end"] {

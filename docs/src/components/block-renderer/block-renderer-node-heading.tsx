@@ -1,7 +1,7 @@
 import type { HeadingBlock } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { HashIcon } from '#components/hash-icon';
+import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 
 import { BlockRendererNode } from './block-renderer-node';
@@ -45,7 +45,10 @@ export function BlockRendererNodeHeading(props: BlockRendererNodeHeadingProps) {
             as="span"
             className={styles.HashIcon}
           >
-            <HashIcon />
+            <Icon
+              name="hash"
+              size="16"
+            />
           </Box>
           {content}
         </Box>
