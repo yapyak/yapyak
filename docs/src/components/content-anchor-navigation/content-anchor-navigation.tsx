@@ -179,11 +179,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     lockedIdRef.current = id;
     setActiveId(id);
 
-    targetElement.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start',
-    });
-
     if (lockReleaseRef.current !== undefined) {
       window.removeEventListener('scrollend', lockReleaseRef.current);
     }

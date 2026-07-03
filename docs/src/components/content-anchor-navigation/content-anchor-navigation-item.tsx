@@ -40,7 +40,6 @@ export function ContentAnchorNavigationItem(
       data-active={active}
       data-level={heading.level}
       hash={heading.id}
-      hashScrollIntoView={false}
       onClick={handleClick}
       to="."
     >
