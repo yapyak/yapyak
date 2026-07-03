@@ -7,6 +7,9 @@
     scroll-margin-top: calc(var(--header-height) + var(--spacing-6));
 
     .HeadingLink {
+      display: inline-flex;
+      align-items: center;
+
       .HashIcon {
         --hash-icon-size: 16px;
 
@@ -26,6 +29,7 @@
       }
 
       &:focus-visible {
+        outline: 4px solid var(--accent);
         outline-offset: var(--spacing-1);
       }
 

@@ -16,7 +16,6 @@
     font-weight: var(--font-weight-medium);
     color: var(--foreground-soft);
     text-align: left;
-    text-decoration: none;
     cursor: pointer;
     background-color: transparent;
     border: 0;
@@ -45,12 +44,6 @@
     &:focus {
       color: var(--foreground);
       outline: none;
-      background-color: var(--surface);
-      box-shadow: var(--shadow-ring-inset);
-    }
-
-    &:active {
-      color: var(--foreground);
       background-color: var(--surface);
       box-shadow: var(--shadow-ring-inset);
     }
