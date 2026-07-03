@@ -64,6 +64,14 @@
         .StatusIcon {
           color: var(--block-renderer-node-diagnostic-color);
         }
+
+        .MessageText {
+          color: color-mix(
+            in oklab,
+            var(--block-renderer-node-diagnostic-color) 60%,
+            var(--foreground-softer)
+          );
+        }
       }
 
       &[data-status="ok"] {
@@ -72,14 +80,6 @@
 
       &[data-status="error"] {
         --block-renderer-node-diagnostic-color: var(--danger);
-
-        .MessageText {
-          color: color-mix(
-            in oklab,
-            var(--danger) 60%,
-            var(--foreground-softer)
-          );
-        }
       }
     }
   }
