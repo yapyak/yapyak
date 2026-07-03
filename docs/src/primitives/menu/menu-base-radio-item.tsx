@@ -3,6 +3,7 @@ import type { ButtonBaseProps } from '../button';
 import { ButtonBase } from '../button';
 import { useMenuContext } from './menu-context';
 import { useMenuRadioGroupContext } from './menu-radio-group-context';
+import { useMenuItemBlink } from './use-menu-item-blink';
 
 export type MenuBaseRadioItemProps = ButtonBaseProps & {
   value: string;
@@ -14,16 +15,18 @@ export function MenuBaseRadioItem(props: MenuBaseRadioItemProps) {
   const menu = useMenuContext();
   const radioGroup = useMenuRadioGroupContext();
   const isChecked = radioGroup.value === value;
+  const { blink, isBlinking } = useMenuItemBlink(menu.onClose);
 
   const handleClick = () => {
     radioGroup.onChange(value);
-    menu.onClose();
+    blink();
   };
 
   return (
     <ButtonBase
       {...restProps}
       aria-checked={isChecked}
+      data-blinking={isBlinking}
       data-checked={isChecked}
       onClick={handleClick}
       role="menuitemradio"

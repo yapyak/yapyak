@@ -1,4 +1,10 @@
 @layer components {
+  @keyframes blink {
+    50% {
+      background-color: initial;
+    }
+  }
+
   .MenuRadioItem {
     display: flex;
     gap: var(--spacing-2);
@@ -39,6 +45,13 @@
       .Check {
         display: inline-flex;
       }
+    }
+
+    &[data-blinking] {
+      color: var(--foreground);
+      background-color: var(--surface-stronger);
+      box-shadow: var(--shadow-ring-inset);
+      animation: blink 160ms steps(2, jump-start) 1;
     }
   }
 }
