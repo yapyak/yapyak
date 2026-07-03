@@ -10,7 +10,6 @@
     text-decoration-color: transparent;
     text-underline-offset: 4px;
     outline: var(--spacing-2) solid transparent;
-    outline-offset: var(--spacing-1);
     border-radius: var(--border-radius-xs);
     transition:
       text-decoration-color var(--transition),

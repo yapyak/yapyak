@@ -5,11 +5,17 @@
     align-items: center;
     justify-content: space-between;
 
-    .ModuleText {
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-medium);
-      color: var(--foreground-softer);
-      letter-spacing: var(--letter-spacing-tight);
+    .Start {
+      display: flex;
+      gap: var(--spacing-2);
+      align-items: center;
+
+      .ModuleText {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-medium);
+        color: var(--foreground-softer);
+        letter-spacing: var(--letter-spacing-tight);
+      }
     }
   }
 }

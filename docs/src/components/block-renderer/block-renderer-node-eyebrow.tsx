@@ -23,15 +23,20 @@ export function BlockRendererNodeEyebrow(props: BlockRendererNodeEyebrowProps) {
         className,
       ]}
     >
-      {block.exportKind && <KindBadge variant={block.exportKind} />}
-      {block.module && (
-        <Box
-          as="span"
-          className={styles.ModuleText}
-        >
-          {block.module}
-        </Box>
-      )}
+      <Box
+        as="span"
+        className={styles.Start}
+      >
+        {block.exportKind && <KindBadge variant={block.exportKind} />}
+        {block.module && (
+          <Box
+            as="span"
+            className={styles.ModuleText}
+          >
+            {block.module}
+          </Box>
+        )}
+      </Box>
       {block.sourceHref && (
         <ExternalLink
           href={block.sourceHref}
