@@ -41,7 +41,11 @@
         color: var(--foreground-soft);
         text-align: left;
         white-space: nowrap;
-        transition: color var(--transition);
+        outline: var(--spacing-2) solid transparent;
+        border-radius: var(--border-radius-sm);
+        transition:
+          color var(--transition),
+          outline var(--duration-slow);
 
         @media (hover: hover) {
           &:hover {
@@ -51,6 +55,11 @@
 
         &:active {
           color: var(--foreground);
+        }
+
+        &:focus-visible {
+          outline-width: var(--spacing-1);
+          outline-color: var(--accent-soft);
         }
       }
 
@@ -65,13 +74,15 @@
         height: 28px;
         padding: 0;
         color: var(--foreground-softer);
+        outline: var(--spacing-2) solid transparent;
         background-color: transparent;
         border-radius: var(--border-radius-sm);
         transform: translateY(-50%);
         transition:
           color var(--transition),
           background-color var(--transition),
-          box-shadow var(--transition);
+          box-shadow var(--transition),
+          outline var(--duration-slow);
 
         .ChevronIcon {
           transform-origin: center;
@@ -90,6 +101,11 @@
           color: var(--foreground);
           background-color: var(--surface-strong);
           box-shadow: var(--shadow-ring-inset);
+        }
+
+        &:focus-visible {
+          outline-width: var(--spacing-1);
+          outline-color: var(--accent-soft);
         }
       }
 
