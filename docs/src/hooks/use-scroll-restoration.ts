@@ -126,6 +126,9 @@ export function useScrollRestoration() {
             return;
           }
         }
+        if (event.fromLocation?.pathname === event.toLocation.pathname) {
+          return;
+        }
         if (scrollToHash(event.toLocation.hash)) {
           return;
         }
