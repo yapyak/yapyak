@@ -28,7 +28,7 @@
       outline-offset: 0;
       background-color: transparent;
       border: 0;
-      border-radius: var(--border-radius-md);
+      border-radius: var(--border-radius-sm);
       transition:
         color var(--transition),
         background-color var(--transition),
@@ -59,15 +59,13 @@
 
       @media (hover: hover) {
         &:hover {
-          color: var(--foreground);
-          background-color: var(--surface);
           box-shadow: var(--shadow-ring-inset);
         }
       }
 
       &:active {
         color: var(--foreground);
-        background-color: var(--surface-stronger);
+        background-color: var(--surface);
         box-shadow: var(--shadow-ring-inset);
       }
 
