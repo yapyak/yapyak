@@ -9,6 +9,10 @@
     .HeadingLink {
       display: inline-flex;
       align-items: center;
+      outline: var(--spacing-2) solid transparent;
+      outline-offset: var(--spacing-1);
+      border-radius: var(--border-radius-xs);
+      transition: outline var(--duration-slow);
 
       .HashIcon {
         --hash-icon-size: 16px;
@@ -29,8 +33,8 @@
       }
 
       &:focus-visible {
-        outline: 4px solid var(--accent);
-        outline-offset: var(--spacing-1);
+        outline-width: var(--spacing-1);
+        outline-color: var(--accent-soft);
       }
 
       @media (hover: hover) {

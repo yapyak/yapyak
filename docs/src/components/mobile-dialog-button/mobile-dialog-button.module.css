@@ -12,10 +12,10 @@
     color: var(--foreground-soft);
     cursor: pointer;
     outline: var(--spacing-2) solid transparent;
-    outline-offset: 0;
+    outline-offset: var(--spacing-1);
     background-color: transparent;
     border: 0;
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--border-radius-full);
     transition:
       color var(--transition),
       outline var(--duration-slow);
