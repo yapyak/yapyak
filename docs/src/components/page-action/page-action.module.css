@@ -59,19 +59,25 @@
 
       @media (hover: hover) {
         &:hover {
+          color: var(--foreground);
+          background-color: var(--surface);
           box-shadow: var(--shadow-ring-inset);
         }
       }
 
       &:active {
         color: var(--foreground);
-        background-color: var(--surface);
+        background-color: var(--surface-strong);
         box-shadow: var(--shadow-ring-inset);
       }
 
       &:focus-visible {
         outline-width: var(--spacing-05);
         outline-color: var(--accent-soft);
+      }
+
+      &[data-copied] {
+        color: var(--brand);
       }
     }
 
@@ -80,7 +86,7 @@
 
       &[aria-expanded="true"] {
         color: var(--foreground);
-        background-color: var(--surface);
+        background-color: var(--surface-strong);
         box-shadow: var(--shadow-ring-inset);
       }
     }

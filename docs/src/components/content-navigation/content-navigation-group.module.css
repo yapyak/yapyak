@@ -56,17 +56,22 @@
 
       .ChevronButton {
         position: absolute;
-        top: 0;
+        top: 50%;
         right: 0;
-        bottom: 0;
         display: flex;
         align-items: center;
         justify-content: center;
         width: 28px;
+        height: 28px;
         padding: 0;
         color: var(--foreground-softer);
-        background: transparent;
-        transition: color var(--transition);
+        background-color: transparent;
+        border-radius: var(--border-radius-sm);
+        transform: translateY(-50%);
+        transition:
+          color var(--transition),
+          background-color var(--transition),
+          box-shadow var(--transition);
 
         .ChevronIcon {
           transform-origin: center;
@@ -76,6 +81,22 @@
         @media (hover: hover) {
           &:hover {
             color: var(--foreground);
+            background-color: var(--surface);
+            box-shadow: var(--shadow-ring-inset);
+          }
+        }
+
+        &:active {
+          color: var(--foreground);
+          background-color: var(--surface-strong);
+          box-shadow: var(--shadow-ring-inset);
+        }
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          .ChevronButton {
+            box-shadow: var(--shadow-ring-inset);
           }
         }
       }

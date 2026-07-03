@@ -106,6 +106,7 @@ export function PageAction(props: PageActionProps) {
       role="group"
     >
       <PageActionButton
+        data-copied={isCopied}
         icon={
           isCopied ? (
             <Icon
