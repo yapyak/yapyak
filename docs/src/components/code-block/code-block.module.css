@@ -1,5 +1,12 @@
 @layer components {
   .CodeBlock {
+    --code-block-row-height: calc(
+      2 *
+      var(--spacing-4) +
+      var(--font-size-xs) *
+      var(--line-height-normal)
+    );
+
     position: relative;
     outline: var(--spacing-2) solid transparent;
     outline-offset: 0;
@@ -12,6 +19,7 @@
       display: flex;
       gap: var(--spacing-3);
       align-items: center;
+      min-height: var(--code-block-row-height);
       padding: var(--spacing-3) var(--spacing-4);
       border-bottom: var(--px) solid var(--rule);
 

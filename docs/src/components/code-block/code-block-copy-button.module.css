@@ -1,8 +1,13 @@
 @layer components {
   .CodeBlockCopyButton {
+    --code-block-copy-button-inset: calc(
+      (var(--code-block-row-height) - 32px) /
+      2
+    );
+
     position: absolute;
-    top: var(--spacing-2);
-    right: var(--spacing-2);
+    top: var(--code-block-copy-button-inset);
+    right: var(--code-block-copy-button-inset);
     z-index: 1;
 
     display: inline-flex;
