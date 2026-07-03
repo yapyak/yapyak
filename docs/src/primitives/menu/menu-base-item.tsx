@@ -12,10 +12,12 @@ export function MenuBaseItem(props: MenuBaseItemProps) {
   const { onSelect, ...restProps } = props;
 
   const menu = useMenuContext();
-  const { blink, isBlinking } = useMenuItemBlink(menu.onClose);
+  const { blink, isBlinking } = useMenuItemBlink(() => {
+    onSelect?.();
+    menu.onClose();
+  });
 
   const handleClick = () => {
-    onSelect?.();
     blink();
   };
 
