@@ -3,6 +3,7 @@ export type Config = {
   collections: Record<string, CollectionConfig>;
   options?: OptionsRegistry;
   out: string;
+  searchIndex?: SearchIndexOptions;
   sourceUrl?: SourceUrlConfig;
   validate?: boolean;
 };
@@ -13,6 +14,10 @@ type AgentArtifactOptions = {
   outDir: string;
   siteName: string;
   siteUrl: string;
+};
+
+type SearchIndexOptions = {
+  fileName: string;
 };
 
 export type SourceUrlConfig = {

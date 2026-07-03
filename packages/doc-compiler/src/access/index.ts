@@ -56,4 +56,4 @@ export { getOptions, getOptionsGroup } from './option';
 export { findAdjacentPages, getFirstPage, getPage } from './page';
 export { getSidebar } from './sidebar';
 export { resolveSymbol } from './symbol';
-export { getText } from './text';
+export { blockToText, getText } from './text';

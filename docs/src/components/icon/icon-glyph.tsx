@@ -9,6 +9,7 @@ import { IconGlyphGithub } from './icon-glyph-github';
 import { IconGlyphHash } from './icon-glyph-hash';
 import { IconGlyphMarkdown } from './icon-glyph-markdown';
 import { IconGlyphOutline } from './icon-glyph-outline';
+import { IconGlyphSearch } from './icon-glyph-search';
 import { IconGlyphSidebar } from './icon-glyph-sidebar';
 import { IconGlyphX } from './icon-glyph-x';
 
@@ -22,6 +23,7 @@ export type IconName =
   | 'hash'
   | 'markdown'
   | 'outline'
+  | 'search'
   | 'sidebar'
   | 'x';
 
@@ -51,6 +53,8 @@ export function IconGlyph(props: IconGlyphProps): ReactElement | null {
       return <IconGlyphMarkdown />;
     case 'outline':
       return <IconGlyphOutline />;
+    case 'search':
+      return <IconGlyphSearch />;
     case 'sidebar':
       return <IconGlyphSidebar />;
     case 'x':

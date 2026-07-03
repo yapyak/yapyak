@@ -63,6 +63,8 @@ export type {
   Manifest,
   MetaValue,
   Page,
+  SearchIndex,
+  SearchIndexEntry,
   SidebarBadge,
   SidebarGroup,
   SidebarLink,

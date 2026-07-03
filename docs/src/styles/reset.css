@@ -32,6 +32,10 @@ input,
 textarea,
 select {
   font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  background: none;
+  border: 0;
 }
 
 img,

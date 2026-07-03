@@ -1,0 +1,65 @@
+@layer components {
+  .CommandPaletteItem {
+    .Link {
+      display: flex;
+      gap: var(--spacing-3);
+      align-items: center;
+      padding: var(--spacing-2) var(--spacing-3);
+      border-radius: var(--border-radius-sm);
+      transition: background-color var(--transition);
+
+      .LeadingIcon {
+        flex: none;
+        color: var(--foreground-softer);
+      }
+
+      .Stack {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        gap: var(--spacing-05);
+        min-width: 0;
+
+        .BreadcrumbText {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: var(--font-size-xs);
+          color: var(--foreground-softer);
+          white-space: nowrap;
+        }
+
+        .TitleText {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: var(--font-size-sm);
+          color: var(--foreground);
+          white-space: nowrap;
+
+          .MatchText {
+            color: var(--brand);
+          }
+        }
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          background-color: var(--surface);
+        }
+      }
+
+      &:active {
+        background-color: var(--surface-strong);
+      }
+    }
+
+    &[data-active] {
+      .Link {
+        background-color: var(--surface);
+
+        .LeadingIcon {
+          color: var(--foreground);
+        }
+      }
+    }
+  }
+}

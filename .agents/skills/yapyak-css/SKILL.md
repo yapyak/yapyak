@@ -555,7 +555,7 @@ The global reset (under `@layer reset`) strips browser defaults. Typical resets 
 | `ul`, `ol` | `list-style: none` |
 | `a` | `color: inherit`, `text-decoration: none` |
 | `button` | `font: inherit`, `color: inherit`, `cursor: pointer`, `background: none`, `border: 0` |
-| `input`, `textarea`, `select` | `font: inherit` |
+| `input`, `textarea`, `select` | `font: inherit`, `color: inherit`, `letter-spacing: inherit`, `background: none`, `border: 0` |
 | `img`, `video`, `svg` | `display: block`, `max-width: 100%` |
 | `h1`–`h6` | `font-size: inherit`, `font-weight: inherit` |
 | `th` | `text-align: left` |

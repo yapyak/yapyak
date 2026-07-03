@@ -1,0 +1,52 @@
+@layer components {
+  .CommandPalette {
+    .SearchBar {
+      display: flex;
+      flex: none;
+      gap: var(--spacing-3);
+      align-items: center;
+      padding: var(--spacing-4) var(--spacing-5);
+
+      .SearchIcon {
+        flex: none;
+        font-size: var(--font-size-lg);
+        color: var(--foreground-softer);
+      }
+
+      .SearchInput {
+        flex: 1;
+        min-width: 0;
+        font-size: var(--font-size-md);
+        color: var(--foreground);
+
+        &::placeholder {
+          color: var(--foreground-softer);
+        }
+      }
+    }
+
+    .List {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: var(--spacing-05);
+      padding: var(--spacing-2);
+      overflow-y: auto;
+      scrollbar-color: var(--ring-stronger) transparent;
+      scrollbar-width: thin;
+    }
+
+    .EmptyMessage {
+      padding: var(--spacing-8) var(--spacing-5);
+      font-size: var(--font-size-sm);
+      color: var(--foreground-softer);
+      text-align: center;
+    }
+
+    &:has(:is(.List, .EmptyMessage)) {
+      .SearchBar {
+        border-bottom: var(--px) solid var(--rule);
+      }
+    }
+  }
+}

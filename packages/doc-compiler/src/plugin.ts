@@ -2,7 +2,7 @@ import type { Plugin, ViteDevServer } from 'vite';
 import type { Manifest } from './build';
 import type { Config } from './config';
 
-import { buildAgentArtifact, buildManifest } from './build';
+import { buildAgentArtifact, buildManifest, buildSearchIndex } from './build';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve, sep } from 'node:path';
 
@@ -39,15 +39,24 @@ export function docCompiler(config: Config): Plugin {
     async buildStart() {
       outAbsolute = resolve(config.out);
       await writeManifestFile();
-      if (config.agentArtifact === undefined || !isBuild) {
+      if (!isBuild) {
         return;
       }
       const manifest = await getManifest();
-      const artifact = buildAgentArtifact(manifest, config.agentArtifact);
-      for (const [relativePath, content] of artifact.files) {
+      if (config.agentArtifact !== undefined) {
+        const artifact = buildAgentArtifact(manifest, config.agentArtifact);
+        for (const [relativePath, content] of artifact.files) {
+          this.emitFile({
+            fileName: relativePath,
+            source: content,
+            type: 'asset',
+          });
+        }
+      }
+      if (config.searchIndex !== undefined) {
         this.emitFile({
-          fileName: relativePath,
-          source: content,
+          fileName: config.searchIndex.fileName,
+          source: JSON.stringify(buildSearchIndex(manifest)),
           type: 'asset',
         });
       }
@@ -87,6 +96,30 @@ export function docCompiler(config: Config): Plugin {
             } catch (error) {
               server.config.logger.error(
                 `[doc-compiler] agent artifact request failed: ${String(error)}`,
+              );
+              next();
+            }
+          })();
+        });
+      }
+
+      if (config.searchIndex !== undefined) {
+        const searchPath = `/${config.searchIndex.fileName}`;
+        server.middlewares.use((req, res, next) => {
+          const url = req.url ?? '';
+          const path = url.split('?')[0] ?? '';
+          if (path !== searchPath) {
+            next();
+            return;
+          }
+          void (async () => {
+            try {
+              const manifest = await getManifest();
+              res.setHeader('Content-Type', 'application/json; charset=utf-8');
+              res.end(JSON.stringify(buildSearchIndex(manifest)));
+            } catch (error) {
+              server.config.logger.error(
+                `[doc-compiler] search index request failed: ${String(error)}`,
               );
               next();
             }

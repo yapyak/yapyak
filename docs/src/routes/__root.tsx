@@ -13,6 +13,10 @@ import { useLocale } from '@yapyak/react';
 import { t } from 'yapyak';
 
 import { Colophon } from '#components/colophon';
+import {
+  CommandPalette,
+  CommandPaletteButton,
+} from '#components/command-palette';
 import { Icon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
@@ -27,6 +31,7 @@ import {
   buildPrepaintScript,
 } from '#components/option-provider';
 import { Root } from '#components/root';
+import { useCommandPalette } from '#hooks/use-command-palette';
 import { useMobileDialog } from '#hooks/use-mobile-dialog';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
 import { assetUrl } from '#utils/asset';
@@ -99,6 +104,7 @@ function Component() {
   useScrollRestoration();
 
   const dialog = useMobileDialog();
+  const commandPalette = useCommandPalette();
 
   const shouldFadeBorder =
     useMatches({
@@ -125,8 +131,8 @@ function Component() {
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
+          <CommandPaletteButton {...commandPalette.triggerProps} />
           <OptionMenu group="framework" />
-          <OptionMenu group="packageManager" />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
@@ -139,6 +145,10 @@ function Component() {
           open={dialog.isOpen}
         />
         <MobileDialog open={dialog.isOpen} />
+        <CommandPalette
+          {...commandPalette.dialogProps}
+          index={commandPalette.index}
+        />
       </Layout.Header>
       <Layout.Main inert={dialog.isOpen}>
         <Outlet />

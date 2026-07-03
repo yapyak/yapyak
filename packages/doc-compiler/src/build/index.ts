@@ -9,6 +9,8 @@ export type {
   SidebarNode,
   SymbolEntry,
 } from './manifest';
+export type { SearchIndex, SearchIndexEntry } from './search-index';
 
 export { buildAgentArtifact } from './agent-artifact';
 export { buildManifest } from './manifest';
+export { buildSearchIndex } from './search-index';
