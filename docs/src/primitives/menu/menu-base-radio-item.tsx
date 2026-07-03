@@ -1,5 +1,7 @@
 import type { ButtonBaseProps } from '../button';
 
+import { useState } from 'react';
+
 import { ButtonBase } from '../button';
 import { useMenuContext } from './menu-context';
 import { useMenuRadioGroupContext } from './menu-radio-group-context';
@@ -15,10 +17,14 @@ export function MenuBaseRadioItem(props: MenuBaseRadioItemProps) {
   const menu = useMenuContext();
   const radioGroup = useMenuRadioGroupContext();
   const isChecked = radioGroup.value === value;
-  const { blink, isBlinking } = useMenuItemBlink(menu.onClose);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const { blink, isBlinking } = useMenuItemBlink(() => {
+    radioGroup.onChange(value);
+    menu.onClose();
+  });
 
   const handleClick = () => {
-    radioGroup.onChange(value);
+    setIsSelecting(!isChecked);
     blink();
   };
 
@@ -28,6 +34,7 @@ export function MenuBaseRadioItem(props: MenuBaseRadioItemProps) {
       aria-checked={isChecked}
       data-blinking={isBlinking}
       data-checked={isChecked}
+      data-selecting={isSelecting}
       onClick={handleClick}
       role="menuitemradio"
       tabIndex={-1}

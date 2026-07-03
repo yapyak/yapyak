@@ -53,5 +53,11 @@
       box-shadow: var(--shadow-ring-inset);
       animation: blink 160ms steps(2, jump-start) 1;
     }
+
+    &[data-selecting] {
+      .Check {
+        display: none;
+      }
+    }
   }
 }
