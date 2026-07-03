@@ -3,7 +3,7 @@ import type { Manifest, Page, SidebarNode } from './manifest';
 
 import { describe, expect, it } from 'vitest';
 
-import { buildSearch } from './search';
+import { buildSearchData } from './search-data';
 
 function paragraph(text: string): Block {
   return {
@@ -73,9 +73,9 @@ const sidebar: SidebarNode[] = [
   },
 ];
 
-describe('buildSearch', () => {
+describe('buildSearchData', () => {
   it('builds a page entry from a page', () => {
-    const searchData = buildSearch(
+    const searchData = buildSearchData(
       manifest(
         page([
           paragraph('Hello'),
@@ -97,7 +97,7 @@ describe('buildSearch', () => {
   });
 
   it('builds a heading entry for each section', () => {
-    const searchData = buildSearch(
+    const searchData = buildSearchData(
       manifest(
         page([
           heading(2, 'World'),
@@ -117,7 +117,7 @@ describe('buildSearch', () => {
   });
 
   it('holds the page title in the heading breadcrumb', () => {
-    const searchData = buildSearch(
+    const searchData = buildSearchData(
       manifest(
         page([
           heading(2, 'World'),
@@ -136,7 +136,7 @@ describe('buildSearch', () => {
   });
 
   it('splits the section body at headings', () => {
-    const searchData = buildSearch(
+    const searchData = buildSearchData(
       manifest(
         page([
           paragraph('Hello'),
@@ -156,7 +156,7 @@ describe('buildSearch', () => {
   });
 
   it('builds no heading entry when the page has no heading', () => {
-    const searchData = buildSearch(
+    const searchData = buildSearchData(
       manifest(
         page([
           paragraph('Hello'),

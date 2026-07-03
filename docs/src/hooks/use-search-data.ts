@@ -2,9 +2,9 @@ import type { SearchData } from '@yapyak/doc-compiler';
 
 import { useEffect, useState } from 'react';
 
-const SEARCH_URL = '/search.json';
+const SEARCH_DATA_URL = '/search-data.json';
 
-export function useSearch(enabled: boolean) {
+export function useSearchData(enabled: boolean) {
   const [searchData, setSearchData] = useState<SearchData>();
 
   useEffect(() => {
@@ -13,7 +13,7 @@ export function useSearch(enabled: boolean) {
     }
     let isCancelled = false;
     void (async () => {
-      const response = await fetch(SEARCH_URL);
+      const response = await fetch(SEARCH_DATA_URL);
       const data: SearchData = await response.json();
       if (!isCancelled) {
         setSearchData(data);

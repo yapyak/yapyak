@@ -16,7 +16,7 @@ export type SearchData = {
   version: 1;
 };
 
-export function buildSearch(manifest: Manifest): SearchData {
+export function buildSearchData(manifest: Manifest): SearchData {
   const entries: SearchEntry[] = [];
   for (const [collectionName, collection] of Object.entries(
     manifest.collections,
