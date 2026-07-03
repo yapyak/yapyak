@@ -34,7 +34,6 @@ export function BlockRendererNodeEyebrow(props: BlockRendererNodeEyebrowProps) {
       )}
       {block.sourceHref && (
         <ExternalLink
-          className={styles.SourceLink}
           href={block.sourceHref}
           size="sm"
         >

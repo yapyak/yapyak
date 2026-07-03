@@ -3,16 +3,13 @@
     display: flex;
     gap: var(--spacing-3);
     align-items: center;
+    justify-content: space-between;
 
     .ModuleText {
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-medium);
       color: var(--foreground-softer);
       letter-spacing: var(--letter-spacing-tight);
-    }
-
-    .SourceLink {
-      margin-left: auto;
     }
   }
 }
