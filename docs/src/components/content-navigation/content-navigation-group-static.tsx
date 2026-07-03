@@ -33,9 +33,8 @@ export function ContentNavigationGroupStatic(
         </Box>
       ) : (
         <LinkBase
-          className={styles.TitleHeading}
+          className={styles.TitleLink}
           data-active={isActive}
-          data-link={true}
           to={node.href}
         >
           {node.label}
@@ -43,7 +42,7 @@ export function ContentNavigationGroupStatic(
       )}
       <Box
         as="ul"
-        className={styles.ItemList}
+        className={styles.List}
       >
         {node.children.map((child) => (
           <Box

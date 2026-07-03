@@ -4,7 +4,7 @@ export function ContentNavigationGroupChevronIcon() {
   return (
     <svg
       aria-hidden="true"
-      className={styles.ChevronIcon}
+      className={styles.Chevron}
       height="12"
       viewBox="0 0 10 10"
       width="12"

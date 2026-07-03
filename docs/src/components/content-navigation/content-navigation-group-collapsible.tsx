@@ -1,7 +1,7 @@
 import type { ContentNavigationGroupProps } from './content-navigation-group';
 
 import { useLocation } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
@@ -23,6 +23,7 @@ export function ContentNavigationGroupCollapsible(
   const isOnPath = childrenContainPath(node.children, location.pathname);
   const isActive = node.href !== undefined && location.pathname === node.href;
   const [isOpen, setIsOpen] = useState(node.defaultOpen || isOnPath);
+  const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
     if (isOnPath) {
@@ -30,6 +31,25 @@ export function ContentNavigationGroupCollapsible(
     }
   }, [
     isOnPath,
+  ]);
+
+  useEffect(() => {
+    const element = listRef.current;
+    if (element === null) {
+      return;
+    }
+    if (!isOpen) {
+      element.setAttribute('hidden', 'until-found');
+    }
+    const handleBeforeMatch = () => {
+      setIsOpen(true);
+    };
+    element.addEventListener('beforematch', handleBeforeMatch);
+    return () => {
+      element.removeEventListener('beforematch', handleBeforeMatch);
+    };
+  }, [
+    isOpen,
   ]);
 
   const handleToggleClick = () => {
@@ -50,21 +70,21 @@ export function ContentNavigationGroupCollapsible(
       data-depth={depth}
     >
       <Box
-        className={styles.GroupHeader}
+        className={styles.GroupBar}
         data-active={isActive}
         data-on-path={isOnPath && !isActive}
         data-open={isOpen}
       >
         {node.href === undefined ? (
           <ButtonBase
-            className={styles.GroupLabel}
+            className={styles.GroupToggle}
             onClick={handleToggleClick}
           >
             {node.label}
           </ButtonBase>
         ) : (
           <LinkBase
-            className={styles.GroupLabel}
+            className={styles.GroupLink}
             onClick={handleLinkClick}
             to={node.href}
           >
@@ -74,27 +94,27 @@ export function ContentNavigationGroupCollapsible(
         <ButtonBase
           aria-expanded={isOpen}
           aria-label={isOpen ? 'Collapse section' : 'Expand section'}
-          className={styles.ChevronButton}
+          className={styles.ToggleButton}
           onClick={handleToggleClick}
         >
           <ContentNavigationGroupChevronIcon />
         </ButtonBase>
       </Box>
-      {isOpen && (
-        <Box
-          as="ul"
-          className={styles.ItemList}
-        >
-          {node.children.map((child) => (
-            <Box
-              as="li"
-              key={getKey(child)}
-            >
-              {renderChild(child, depth + 1)}
-            </Box>
-          ))}
-        </Box>
-      )}
+      <Box
+        as="ul"
+        className={styles.List}
+        hidden={!isOpen}
+        ref={listRef}
+      >
+        {node.children.map((child) => (
+          <Box
+            as="li"
+            key={getKey(child)}
+          >
+            {renderChild(child, depth + 1)}
+          </Box>
+        ))}
+      </Box>
     </Box>
   );
 }

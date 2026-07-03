@@ -22,6 +22,7 @@ One HTML element or layout role each.
 | `Stack` | `flex-direction: column` |
 | `Grid` | `display: grid` |
 | `Bar` | horizontal strip of inline controls (`<div>`) |
+| `Group` | `<div>` / `role="group"` grouping related items (no landmark) |
 | `Wrapper` | single-child positioning wrapper (`<div>`) |
 | `List` | `<ul>` / `<ol>` |
 | `DescriptionList` | `<dl>` |
