@@ -2,7 +2,7 @@ import type { Manifest, Page, SidebarNode } from './manifest';
 
 import { blockToText } from '../access';
 
-export type SearchIndexEntry = {
+export type SearchEntry = {
   body: string;
   breadcrumb: string[];
   collection: string;
@@ -11,13 +11,13 @@ export type SearchIndexEntry = {
   title: string;
 };
 
-export type SearchIndex = {
-  entries: SearchIndexEntry[];
+export type SearchData = {
+  entries: SearchEntry[];
   version: 1;
 };
 
-export function buildSearchIndex(manifest: Manifest): SearchIndex {
-  const entries: SearchIndexEntry[] = [];
+export function buildSearch(manifest: Manifest): SearchData {
+  const entries: SearchEntry[] = [];
   for (const [collectionName, collection] of Object.entries(
     manifest.collections,
   )) {

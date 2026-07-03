@@ -1,4 +1,4 @@
-import type { SearchIndex } from '@yapyak/doc-compiler';
+import type { SearchData } from '@yapyak/doc-compiler';
 import type { ChangeEvent, KeyboardEvent } from 'react';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -17,13 +17,13 @@ const LIST_ID = 'command-palette-list';
 
 export type CommandPaletteProps = {
   id: string;
-  index: SearchIndex | undefined;
   onClose: () => void;
   open: boolean;
+  searchData: SearchData | undefined;
 };
 
 export function CommandPalette(props: CommandPaletteProps) {
-  const { id, index, onClose, open } = props;
+  const { id, onClose, open, searchData } = props;
 
   const inputElement = useRef<HTMLInputElement>(null);
   const listElement = useRef<HTMLUListElement>(null);
@@ -31,12 +31,12 @@ export function CommandPalette(props: CommandPaletteProps) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const results = useMemo(() => {
-    if (index === undefined) {
+    if (searchData === undefined) {
       return [];
     }
-    return getSearchResults(index, query);
+    return getSearchResults(searchData, query);
   }, [
-    index,
+    searchData,
     query,
   ]);
 

@@ -1,4 +1,4 @@
-import type { SearchIndex, SearchIndexEntry } from '@yapyak/doc-compiler';
+import type { SearchData, SearchEntry } from '@yapyak/doc-compiler';
 
 type SearchRange = [
   number,
@@ -6,7 +6,7 @@ type SearchRange = [
 ];
 
 export type SearchResult = {
-  entry: SearchIndexEntry;
+  entry: SearchEntry;
   ranges: SearchRange[];
   score: number;
 };
@@ -14,7 +14,7 @@ export type SearchResult = {
 const DEFAULT_LIMIT = 20;
 
 export function getSearchResults(
-  index: SearchIndex,
+  searchData: SearchData,
   query: string,
   limit = DEFAULT_LIMIT,
 ) {
@@ -25,7 +25,7 @@ export function getSearchResults(
 
   const tokens = normalizedQuery.split(/\s+/);
   const results: SearchResult[] = [];
-  for (const entry of index.entries) {
+  for (const entry of searchData.entries) {
     const score = getScore(entry, normalizedQuery, tokens);
     if (score <= 0) {
       continue;
@@ -40,7 +40,7 @@ export function getSearchResults(
   return results.slice(0, limit);
 }
 
-function getScore(entry: SearchIndexEntry, query: string, tokens: string[]) {
+function getScore(entry: SearchEntry, query: string, tokens: string[]) {
   const title = entry.title.toLowerCase();
   let score = 0;
 

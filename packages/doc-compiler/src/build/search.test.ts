@@ -3,7 +3,7 @@ import type { Manifest, Page, SidebarNode } from './manifest';
 
 import { describe, expect, it } from 'vitest';
 
-import { buildSearchIndex } from './search-index';
+import { buildSearch } from './search';
 
 function paragraph(text: string): Block {
   return {
@@ -73,9 +73,9 @@ const sidebar: SidebarNode[] = [
   },
 ];
 
-describe('buildSearchIndex', () => {
+describe('buildSearch', () => {
   it('builds a page entry from a page', () => {
-    const index = buildSearchIndex(
+    const searchData = buildSearch(
       manifest(
         page([
           paragraph('Hello'),
@@ -84,7 +84,7 @@ describe('buildSearchIndex', () => {
       ),
     );
 
-    expect(index.entries).toContainEqual({
+    expect(searchData.entries).toContainEqual({
       body: 'Hello',
       breadcrumb: [
         'Settings',
@@ -97,7 +97,7 @@ describe('buildSearchIndex', () => {
   });
 
   it('builds a heading entry for each section', () => {
-    const index = buildSearchIndex(
+    const searchData = buildSearch(
       manifest(
         page([
           heading(2, 'World'),
@@ -107,7 +107,9 @@ describe('buildSearchIndex', () => {
       ),
     );
 
-    const headings = index.entries.filter((entry) => entry.kind === 'heading');
+    const headings = searchData.entries.filter(
+      (entry) => entry.kind === 'heading',
+    );
     expect(headings.map((entry) => entry.href)).toEqual([
       '/guide/save#world',
       '/guide/save#cancel',
@@ -115,7 +117,7 @@ describe('buildSearchIndex', () => {
   });
 
   it('holds the page title in the heading breadcrumb', () => {
-    const index = buildSearchIndex(
+    const searchData = buildSearch(
       manifest(
         page([
           heading(2, 'World'),
@@ -124,7 +126,7 @@ describe('buildSearchIndex', () => {
       ),
     );
 
-    const [headingEntry] = index.entries.filter(
+    const [headingEntry] = searchData.entries.filter(
       (entry) => entry.kind === 'heading',
     );
     expect(headingEntry?.breadcrumb).toEqual([
@@ -134,7 +136,7 @@ describe('buildSearchIndex', () => {
   });
 
   it('splits the section body at headings', () => {
-    const index = buildSearchIndex(
+    const searchData = buildSearch(
       manifest(
         page([
           paragraph('Hello'),
@@ -145,8 +147,8 @@ describe('buildSearchIndex', () => {
       ),
     );
 
-    const pageEntry = index.entries.find((entry) => entry.kind === 'page');
-    const headingEntry = index.entries.find(
+    const pageEntry = searchData.entries.find((entry) => entry.kind === 'page');
+    const headingEntry = searchData.entries.find(
       (entry) => entry.kind === 'heading',
     );
     expect(pageEntry?.body).toBe('Hello');
@@ -154,7 +156,7 @@ describe('buildSearchIndex', () => {
   });
 
   it('builds no heading entry when the page has no heading', () => {
-    const index = buildSearchIndex(
+    const searchData = buildSearch(
       manifest(
         page([
           paragraph('Hello'),
@@ -163,8 +165,8 @@ describe('buildSearchIndex', () => {
       ),
     );
 
-    expect(index.entries.filter((entry) => entry.kind === 'heading')).toEqual(
-      [],
-    );
+    expect(
+      searchData.entries.filter((entry) => entry.kind === 'heading'),
+    ).toEqual([]);
   });
 });

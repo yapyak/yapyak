@@ -2,7 +2,7 @@ import type { Plugin, ViteDevServer } from 'vite';
 import type { Manifest } from './build';
 import type { Config } from './config';
 
-import { buildAgentArtifact, buildManifest, buildSearchIndex } from './build';
+import { buildAgentArtifact, buildManifest, buildSearch } from './build';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { dirname, resolve, sep } from 'node:path';
 
@@ -53,10 +53,10 @@ export function docCompiler(config: Config): Plugin {
           });
         }
       }
-      if (config.searchIndex !== undefined) {
+      if (config.search !== undefined) {
         this.emitFile({
-          fileName: config.searchIndex.fileName,
-          source: JSON.stringify(buildSearchIndex(manifest)),
+          fileName: config.search.fileName,
+          source: JSON.stringify(buildSearch(manifest)),
           type: 'asset',
         });
       }
@@ -103,8 +103,8 @@ export function docCompiler(config: Config): Plugin {
         });
       }
 
-      if (config.searchIndex !== undefined) {
-        const searchPath = `/${config.searchIndex.fileName}`;
+      if (config.search !== undefined) {
+        const searchPath = `/${config.search.fileName}`;
         server.middlewares.use((req, res, next) => {
           const url = req.url ?? '';
           const path = url.split('?')[0] ?? '';
@@ -116,10 +116,10 @@ export function docCompiler(config: Config): Plugin {
             try {
               const manifest = await getManifest();
               res.setHeader('Content-Type', 'application/json; charset=utf-8');
-              res.end(JSON.stringify(buildSearchIndex(manifest)));
+              res.end(JSON.stringify(buildSearch(manifest)));
             } catch (error) {
               server.config.logger.error(
-                `[doc-compiler] search index request failed: ${String(error)}`,
+                `[doc-compiler] search request failed: ${String(error)}`,
               );
               next();
             }

@@ -280,8 +280,8 @@ export default defineConfig({
         },
       },
       out: resolve(import.meta.dirname, 'manifest.json'),
-      searchIndex: {
-        fileName: 'search-index.json',
+      search: {
+        fileName: 'search.json',
       },
       sourceUrl: {
         template: 'https://github.com/yapyak/yapyak/blob/main/{path}#L{line}',

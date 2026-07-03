@@ -1,10 +1,10 @@
-import type { SearchIndex, SearchIndexEntry } from '@yapyak/doc-compiler';
+import type { SearchData, SearchEntry } from '@yapyak/doc-compiler';
 
 import { describe, expect, it } from 'vitest';
 
 import { getSearchResults } from './search-result';
 
-function entry(overrides: Partial<SearchIndexEntry> = {}): SearchIndexEntry {
+function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
   return {
     body: '',
     breadcrumb: [],
@@ -16,7 +16,7 @@ function entry(overrides: Partial<SearchIndexEntry> = {}): SearchIndexEntry {
   };
 }
 
-function index(entries: SearchIndexEntry[]): SearchIndex {
+function searchData(entries: SearchEntry[]): SearchData {
   return {
     entries,
     version: 1,
@@ -27,7 +27,7 @@ describe('getSearchResults', () => {
   it('returns no result for an empty query', () => {
     expect(
       getSearchResults(
-        index([
+        searchData([
           entry(),
         ]),
         '',
@@ -37,7 +37,7 @@ describe('getSearchResults', () => {
 
   it('prefers an exact title match over a substring match', () => {
     const results = getSearchResults(
-      index([
+      searchData([
         entry({
           href: '/guide/save-changes',
           title: 'Save changes',
@@ -55,7 +55,7 @@ describe('getSearchResults', () => {
 
   it('builds the highlight range for the matched query', () => {
     const results = getSearchResults(
-      index([
+      searchData([
         entry({
           title: 'Settings',
         }),
@@ -73,7 +73,7 @@ describe('getSearchResults', () => {
 
   it('finds a result by its body token', () => {
     const results = getSearchResults(
-      index([
+      searchData([
         entry({
           body: 'Cancel',
           title: 'Save',
@@ -97,6 +97,6 @@ describe('getSearchResults', () => {
         }),
     );
 
-    expect(getSearchResults(index(entries), 'save', 3)).toHaveLength(3);
+    expect(getSearchResults(searchData(entries), 'save', 3)).toHaveLength(3);
   });
 });

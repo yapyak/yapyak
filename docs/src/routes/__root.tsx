@@ -147,7 +147,7 @@ function Component() {
         <MobileDialog open={dialog.isOpen} />
         <CommandPalette
           {...commandPalette.dialogProps}
-          index={commandPalette.index}
+          searchData={commandPalette.searchData}
         />
       </Layout.Header>
       <Layout.Main inert={dialog.isOpen}>

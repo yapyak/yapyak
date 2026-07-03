@@ -1,11 +1,11 @@
 import { useDialogTrigger } from '#components/dialog-trigger';
 
 import { useDocumentEventListener } from './use-document-event-listener';
-import { useSearchIndex } from './use-search-index';
+import { useSearch } from './use-search';
 
 export function useCommandPalette() {
   const { dialogProps, isOpen, triggerProps } = useDialogTrigger();
-  const index = useSearchIndex(isOpen);
+  const searchData = useSearch(isOpen);
 
   useDocumentEventListener('keydown', (event) => {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
@@ -16,7 +16,7 @@ export function useCommandPalette() {
 
   return {
     dialogProps,
-    index,
+    searchData,
     triggerProps,
   };
 }
