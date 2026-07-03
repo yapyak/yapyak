@@ -1,7 +1,6 @@
 @layer components {
   .CodeBlock {
     position: relative;
-    overflow: hidden;
     background: var(--surface);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);
@@ -41,6 +40,9 @@
       font-size: var(--font-size-xs);
       line-height: var(--line-height-normal);
       color: var(--foreground-soft);
+
+      outline: var(--spacing-2) solid transparent;
+      outline-offset: 0;
       scrollbar-color: var(--ring-stronger) transparent;
       scrollbar-width: thin;
       mask-image:
@@ -63,6 +65,11 @@
 
       .Code {
         font-family: inherit;
+      }
+
+      &:focus {
+        outline: 0;
+        background-color: var(--surface-strong);
       }
     }
 
