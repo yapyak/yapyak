@@ -475,7 +475,7 @@ Applies to the custom properties a variant block or a parent sets — the ones c
 Name them `--[root-class]-[role]`:
 
 - **`[root-class]`** — the component's root class, kebab-case, in full. `.KindBadge` → `--kind-badge-…`; `.BlockRendererNodeDiagnostic` → `--block-renderer-node-diagnostic-…`. Names are global across modules, so the full root class is the only collision-proof, judgement-free prefix. For a parent-configured var, the root class of the component that reads it.
-- **`[role]`** — the longhand CSS property the value lands in. Bare assignment (`property: var(--x)`) wins when it feeds several. A value that is one argument inside `color-mix` / `box-shadow` / `calc` takes `[property]-[argument]` (`-color`, `-alpha`). Never a synonym (`color`, not `accent`), never an abbreviation (`background`, not `bg`).
+- **`[role]`** — the CSS property the value lands in, spelled as its exact MDN longhand name. Bare assignment (`property: var(--x)`) wins when it feeds several. A value that is one argument inside `color-mix` / `box-shadow` / `calc` takes `[property]-[argument]` (`-color`, `-alpha`). Never a synonym (`color`, not `accent`), never an abbreviation (`background`, not `bg`), never a shorthand (`mask-image`, not `mask`).
 
 ```css
 /* ✓ role is the property, prefix is the full root class */

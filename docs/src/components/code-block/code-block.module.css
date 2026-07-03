@@ -41,8 +41,12 @@
     }
 
     &:has(.PreformattedText:focus-visible) {
-      outline-width: 4px;
+      outline-width: var(--spacing-1);
       outline-color: var(--accent-soft);
+    }
+
+    &:has(.CopyButton):not(:has(.Header)) {
+      --preformatted-text-mask-image-end: var(--spacing-12);
     }
 
     &[data-bare] {
