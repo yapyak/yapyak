@@ -38,7 +38,6 @@
           var(--spacing-3);
         overflow: hidden;
         text-overflow: ellipsis;
-        font-size: var(--font-size-sm);
         color: var(--foreground-soft);
         text-align: left;
         white-space: nowrap;

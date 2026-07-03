@@ -4,7 +4,6 @@
     padding: var(--spacing-1) var(--spacing-3);
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: var(--font-size-sm);
     color: var(--foreground-soft);
     white-space: nowrap;
     outline: var(--spacing-2) solid transparent;
