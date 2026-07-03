@@ -1,7 +1,5 @@
 import type { Block } from '@yapyak/doc-compiler';
 
-import { KindBadge } from '#components/kind-badge';
-
 import { BlockRendererNodeCallout } from './block-renderer-node-callout';
 import { BlockRendererNodeCodeBlock } from './block-renderer-node-code-block';
 import { BlockRendererNodeCodeExpression } from './block-renderer-node-code-expression';
@@ -14,6 +12,7 @@ import { BlockRendererNodeHeading } from './block-renderer-node-heading';
 import { BlockRendererNodeImage } from './block-renderer-node-image';
 import { BlockRendererNodeInlineCode } from './block-renderer-node-inline-code';
 import { BlockRendererNodeInstallationWizard } from './block-renderer-node-installation-wizard';
+import { BlockRendererNodeKindBadge } from './block-renderer-node-kind-badge';
 import { BlockRendererNodeLineBreak } from './block-renderer-node-line-break';
 import { BlockRendererNodeLink } from './block-renderer-node-link';
 import { BlockRendererNodeList } from './block-renderer-node-list';
@@ -99,13 +98,7 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
     case 'code-location':
       return <BlockRendererNodeCodeLocation block={block} />;
     case 'kind-badge':
-      return (
-        <KindBadge
-          appearance="plain"
-          size="sm"
-          variant={block.exportKind}
-        />
-      );
+      return <BlockRendererNodeKindBadge block={block} />;
     default:
       return null;
   }

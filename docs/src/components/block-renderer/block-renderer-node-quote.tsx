@@ -11,6 +11,7 @@ export type BlockRendererNodeQuoteProps = BoxProps<'blockquote'> & {
 
 export function BlockRendererNodeQuote(props: BlockRendererNodeQuoteProps) {
   const { block, className, ...restProps } = props;
+
   return (
     <Box
       {...restProps}

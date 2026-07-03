@@ -10,6 +10,7 @@ export function BlockRendererNodeCodeBlock(
   props: BlockRendererNodeCodeBlockProps,
 ) {
   const { block } = props;
+
   return (
     <CodeBlock
       label={block.label ?? undefined}

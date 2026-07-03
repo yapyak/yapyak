@@ -14,6 +14,7 @@ export function BlockRendererNodeListItem(
   props: BlockRendererNodeListItemProps,
 ) {
   const { block, className, ...restProps } = props;
+
   return (
     <Box
       {...restProps}

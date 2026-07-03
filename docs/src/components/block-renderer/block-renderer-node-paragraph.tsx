@@ -13,6 +13,7 @@ export function BlockRendererNodeParagraph(
   props: BlockRendererNodeParagraphProps,
 ) {
   const { block, className, ...restProps } = props;
+
   return (
     <Box
       {...restProps}

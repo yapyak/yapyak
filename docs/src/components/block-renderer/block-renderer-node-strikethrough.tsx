@@ -13,6 +13,7 @@ export function BlockRendererNodeStrikethrough(
   props: BlockRendererNodeStrikethroughProps,
 ) {
   const { block, className, ...restProps } = props;
+
   return (
     <Box
       {...restProps}

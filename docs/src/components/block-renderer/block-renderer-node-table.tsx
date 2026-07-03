@@ -12,6 +12,7 @@ export type BlockRendererNodeTableProps = BoxProps<'table'> & {
 
 export function BlockRendererNodeTable(props: BlockRendererNodeTableProps) {
   const { block, className, ...restProps } = props;
+
   return (
     <Box
       className={[

@@ -13,6 +13,7 @@ export function BlockRendererNodeInlineCode(
   props: BlockRendererNodeInlineCodeProps,
 ) {
   const { block, className, ...restProps } = props;
+
   return (
     <Box
       {...restProps}

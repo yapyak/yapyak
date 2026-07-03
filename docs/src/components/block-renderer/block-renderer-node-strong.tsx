@@ -12,6 +12,7 @@ export type BlockRendererNodeStrongProps = BoxProps<'strong'> & {
 
 export function BlockRendererNodeStrong(props: BlockRendererNodeStrongProps) {
   const { block, className, ...restProps } = props;
+
   return (
     <Box
       {...restProps}

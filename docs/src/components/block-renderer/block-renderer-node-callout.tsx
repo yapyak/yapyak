@@ -10,6 +10,7 @@ export type BlockRendererNodeCalloutProps = {
 
 export function BlockRendererNodeCallout(props: BlockRendererNodeCalloutProps) {
   const { block } = props;
+
   return (
     <Callout
       title={block.title ?? undefined}

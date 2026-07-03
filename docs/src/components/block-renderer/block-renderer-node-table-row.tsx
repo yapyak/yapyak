@@ -14,6 +14,7 @@ export function BlockRendererNodeTableRow(
   props: BlockRendererNodeTableRowProps,
 ) {
   const { block, className, ...restProps } = props;
+
   return (
     <Box
       {...restProps}

@@ -6,5 +6,6 @@ export type BlockRendererNodeTextProps = {
 
 export function BlockRendererNodeText(props: BlockRendererNodeTextProps) {
   const { block } = props;
+
   return block.value;
 }

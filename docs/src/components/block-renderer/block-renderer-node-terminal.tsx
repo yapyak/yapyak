@@ -10,5 +10,6 @@ export function BlockRendererNodeTerminal(
   props: BlockRendererNodeTerminalProps,
 ) {
   const { block } = props;
+
   return <Terminal lines={block.lines} />;
 }
