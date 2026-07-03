@@ -4,7 +4,7 @@
     --navigation-indicator-width: 0;
     --navigation-indicator-x: 0;
     --navigation-indicator-y: 0;
-    --navigation-slide-duration: 700ms;
+    --navigation-slide-duration: 600ms;
     --navigation-active-color: var(--brand-contrast);
 
     position: relative;
