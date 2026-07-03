@@ -1,9 +1,9 @@
 import type { RefObject } from 'react';
 
-import { useLocation } from '@tanstack/react-router';
-import { useEffect, useId, useRef } from 'react';
+import { useId, useRef } from 'react';
 
 import { useDrawer } from '#hooks/use-drawer';
+import { useOnRouteChange } from '#hooks/use-on-route-change';
 
 export type UseDialogTriggerOptions = {
   initialOpen?: boolean;
@@ -39,24 +39,7 @@ export function useDialogTrigger(
     onOpen,
   });
 
-  const location = useLocation();
-  const initialPathnameRef = useRef(location.pathname);
-  const initialHashRef = useRef(location.hash);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
-  useEffect(() => {
-    if (
-      location.pathname !== initialPathnameRef.current ||
-      location.hash !== initialHashRef.current
-    ) {
-      drawer.close();
-      initialPathnameRef.current = location.pathname;
-      initialHashRef.current = location.hash;
-    }
-  }, [
-    location.pathname,
-    location.hash,
-  ]);
+  useOnRouteChange(drawer.close);
 
   const handleTriggerClick = () => {
     drawer.open();
