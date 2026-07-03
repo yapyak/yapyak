@@ -60,8 +60,7 @@ function Component() {
       <ContentLayout.Content>
         <ContentLayout.ContentHeader
           end={
-            !isOutlineInline &&
-            headings.length > 0 && (
+            !isOutlineInline && (
               <DialogTrigger
                 dialog={(dialogProps) => (
                   <Drawer
@@ -79,7 +78,6 @@ function Component() {
                 {(triggerProps) => (
                   <IconButton
                     {...triggerProps}
-                    aria-label={t('Open page outline')}
                     icon={<Icon name="outline" />}
                     iconPosition="trailing"
                   >
@@ -104,7 +102,6 @@ function Component() {
                 {(triggerProps) => (
                   <IconButton
                     {...triggerProps}
-                    aria-label={t('Open menu')}
                     icon={<Icon name="sidebar" />}
                   >
                     {t('Menu')}

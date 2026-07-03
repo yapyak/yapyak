@@ -82,13 +82,17 @@
     }
 
     .ChatButton {
-      anchor-name: var(--trigger-anchor);
-
       &[aria-expanded="true"] {
         color: var(--foreground);
         background-color: var(--surface-strong);
         box-shadow: var(--shadow-ring-inset);
       }
+    }
+
+    &:first-child {
+      padding-top: 0;
+      margin-top: 0;
+      border-top: 0;
     }
   }
 }

@@ -79,7 +79,6 @@ function Component() {
                 {(triggerProps) => (
                   <IconButton
                     {...triggerProps}
-                    aria-label={t('Open page outline')}
                     icon={<Icon name="outline" />}
                     iconPosition="trailing"
                   >
@@ -104,7 +103,6 @@ function Component() {
                 {(triggerProps) => (
                   <IconButton
                     {...triggerProps}
-                    aria-label={t('Open menu')}
                     icon={<Icon name="sidebar" />}
                   >
                     {t('Menu')}
