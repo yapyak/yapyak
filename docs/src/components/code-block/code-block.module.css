@@ -54,7 +54,7 @@
     }
 
     &:has(.CopyButton):not(:has(.Header)) {
-      --preformatted-text-mask-image-end: var(--spacing-12);
+      --preformatted-text-mask-image-end: calc(100% - var(--spacing-12));
     }
 
     &[data-bare] {

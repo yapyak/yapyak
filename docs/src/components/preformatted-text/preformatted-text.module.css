@@ -15,13 +15,8 @@
         transparent 0,
         black var(--spacing-4),
         black
-          calc(
-            100% -
-            var(--preformatted-text-mask-image-end, var(--spacing-4)) -
-            var(--spacing-8)
-          ),
-        transparent
-          calc(100% - var(--preformatted-text-mask-image-end, var(--spacing-4)))
+          calc(var(--preformatted-text-mask-image-end, 100%) - var(--spacing-4)),
+        transparent var(--preformatted-text-mask-image-end, 100%)
       ),
       linear-gradient(black, black);
     mask-repeat: no-repeat;
