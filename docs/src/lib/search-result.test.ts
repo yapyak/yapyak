@@ -53,6 +53,24 @@ describe('getSearchResults', () => {
     expect(results[0]?.entry.title).toBe('Save');
   });
 
+  it('prefers a shorter title on a shared prefix', () => {
+    const results = getSearchResults(
+      searchData([
+        entry({
+          href: '/guide/settings',
+          title: 'Settings',
+        }),
+        entry({
+          href: '/guide/save',
+          title: 'Save',
+        }),
+      ]),
+      's',
+    );
+
+    expect(results[0]?.entry.title).toBe('Save');
+  });
+
   it('builds the highlight range for the matched query', () => {
     const results = getSearchResults(
       searchData([

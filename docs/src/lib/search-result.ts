@@ -42,16 +42,23 @@ export function getSearchResults(
 
 function getScore(entry: SearchEntry, query: string, tokens: string[]) {
   const title = entry.title.toLowerCase();
+  const position = title.indexOf(query);
   let score = 0;
 
   if (title === query) {
     score += 1000;
-  } else if (title.startsWith(query)) {
+  } else if (position === 0) {
     score += 500;
-  } else {
-    const position = title.indexOf(query);
-    if (position >= 0) {
-      score += Math.max(0, 300 - position);
+  } else if (position > 0) {
+    score += Math.max(0, 300 - position);
+  }
+
+  if (position >= 0) {
+    score += Math.round((query.length / title.length) * 100);
+    const before = position > 0 ? title[position - 1] : undefined;
+    const after = title[position + query.length];
+    if (isBoundary(before) && isBoundary(after)) {
+      score += 200;
     }
   }
 
@@ -86,6 +93,12 @@ function getScore(entry: SearchEntry, query: string, tokens: string[]) {
   }
 
   return score;
+}
+
+const ALPHANUMERIC_RX = /[a-z0-9]/;
+
+function isBoundary(character: string | undefined) {
+  return character === undefined || !ALPHANUMERIC_RX.test(character);
 }
 
 function isSubsequence(query: string, text: string) {
