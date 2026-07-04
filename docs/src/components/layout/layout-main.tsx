@@ -17,6 +17,7 @@ export function LayoutMain(props: LayoutMainProps) {
         styles.LayoutMain,
         className,
       ]}
+      tabIndex={-1}
     />
   );
 }

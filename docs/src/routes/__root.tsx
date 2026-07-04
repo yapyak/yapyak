@@ -31,6 +31,7 @@ import {
   buildPrepaintScript,
 } from '#components/option-provider';
 import { Root } from '#components/root';
+import { RouteAnnouncer } from '#components/route-announcer';
 import { useCommandPalette } from '#hooks/use-command-palette';
 import { useMobileDialog } from '#hooks/use-mobile-dialog';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
@@ -150,6 +151,7 @@ function Component() {
           searchData={commandPalette.searchData}
         />
       </Layout.Header>
+      <RouteAnnouncer />
       <Layout.Main inert={dialog.isOpen}>
         <Outlet />
       </Layout.Main>

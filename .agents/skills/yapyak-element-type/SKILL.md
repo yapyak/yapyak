@@ -91,6 +91,7 @@ One HTML element or layout role each.
 | `Spacer` | spacer element |
 | `Overlay` | full-cover decorative layer |
 | `Skeleton` | loading placeholder |
+| `Announcer` | visually-hidden `aria-live` region announcing changes to assistive tech |
 
 **List item:**
 
