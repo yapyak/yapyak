@@ -39,7 +39,19 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.a1.outputs.page_url || steps.a2.outputs.page_url || steps.a3.outputs.page_url }}
     steps:
-      - id: deployment
+      - id: a1
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+      - if: steps.a1.outcome == 'failure'
+        run: sleep 30
+      - id: a2
+        if: steps.a1.outcome == 'failure'
+        uses: actions/deploy-pages@v5
+        continue-on-error: true
+      - if: steps.a1.outcome == 'failure' && steps.a2.outcome == 'failure'
+        run: sleep 60
+      - id: a3
+        if: steps.a1.outcome == 'failure' && steps.a2.outcome == 'failure'
         uses: actions/deploy-pages@v5
