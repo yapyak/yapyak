@@ -229,11 +229,36 @@ function SearchDialogTrigger() {
 
 The overlay stays route-agnostic: `SearchDialog` emits `onSelect(href)` rather than calling `useNavigate` itself — navigation stops here.
 
+#### Presence, not an `open` prop
+
+An overlay's content component must **not** take an `open` prop that gates its own rendering — that decision belongs *outside*, in a presence wrapper. Exit animations force the element to outlive its logical removal, so a presence coordinator (`<Animate>`) is mandatory regardless; the trigger owns it. `DialogTrigger`/`MenuTrigger` wrap the render in `<Animate in={isOpen}>` and merge the animate props into the callback:
+
+```tsx
+<Animate in={isOpen}>
+  {(animateProps) => dialog(mergeProps(dialogProps, animateProps))}
+</Animate>
+```
+
+The content is then **conditionally mounted — present ⇒ open**, which deletes the guards: effects that were `if (open) …` become plain effects; cleanup-on-close (reset a query, clear a field) happens for free on unmount instead of via an `if (!open)` effect; `onClose` lets the content dismiss itself.
+
+```tsx
+// content: no `open`, effects unguarded, dismisses via onClose
+function MobileDialog(props: MobileDialogProps) {
+  const { onClose, ...restProps } = props;
+  useLockBodyScroll({ enabled: true }); // mounted ⇒ open
+  useOnRouteChange(onClose);
+  useDocumentEventListener('keydown', (event) => {
+    if (event.key === KEY_MAP.escape) onClose();
+  });
+  return <Box {...restProps} role="dialog">{/* … */}</Box>;
+}
+```
+
+The element still carries its own animation state (`data-animate` enter/exit) — that coupling is correct and unavoidable; only the open-*gating* belongs outside. A content that owns a Backdrop + panel fans the animate props to both. Keep an `open` prop with an always-mounted element (self-present via context, Radix-style) **only** when internal state must survive close — a wizard mid-step, a form with unsaved input. For reset-on-close overlays (dialogs, menus, search), presence-mount wins.
+
 #### Controlled variant
 
-It normally owns its open state outright (uncontrolled). But when that state has consumers *outside* the feature — route siblings that read it, e.g. `inert` on the main/footer, a header's fade — the state can't live inside it: those siblings are not its descendants, and React state only flows down. Lift the **raw flag** to the route and pass it in as `open` + `onOpenChange`; the component stays **controlled**.
-
-Controlled does not mean thin. It still owns all the *behaviour* — the effects and toggles — it just doesn't own the boolean. The route holds only the flag it actually consumes; it knows nothing about scroll-lock, escape-to-close, breakpoint-close, or route-change-close.
+The trigger normally owns its open state outright (uncontrolled). But when that state has consumers *outside* the feature — route siblings that read it, e.g. `inert` on the main/footer, a header's fade — the state can't live inside it: those siblings are not its descendants, and React state only flows down. Lift the **raw flag** to the route and pass it in as `open` + `onOpenChange`; the trigger stays **controlled** (it still owns presence, the content still owns behaviour).
 
 ```tsx
 // route — owns only the raw flag, because siblings read it
@@ -242,22 +267,17 @@ const [isMobileDialogOpen, setIsMobileDialogOpen] = useState(false);
 <MobileDialogTrigger onOpenChange={setIsMobileDialogOpen} open={isMobileDialogOpen} />
 <Layout.Main inert={isMobileDialogOpen}>…</Layout.Main>
 
-// components/mobile-dialog-trigger/mobile-dialog-trigger.tsx — owns all behaviour
+// mobile-dialog-trigger.tsx — owns presence; the flag comes from the route
 function MobileDialogTrigger(props: MobileDialogTriggerProps) {
   const { onOpenChange, open } = props;
-  const isDesktop = useMediaQuery('(min-width: 1024px)');
-
-  useLockBodyScroll({ enabled: open });
-  useOnRouteChange(() => onOpenChange(false));
-  useEffect(() => { if (isDesktop) onOpenChange(false); }, [isDesktop, onOpenChange]);
-  useDocumentEventListener('keydown', (event) => {
-    if (open && event.key === KEY_MAP.escape) onOpenChange(false);
-  });
-
   return (
     <>
       <MobileDialogButton onToggle={() => onOpenChange(!open)} open={open} />
-      <MobileDialog open={open} />
+      <Animate in={open}>
+        {(animateProps) => (
+          <MobileDialog {...animateProps} onClose={() => onOpenChange(false)} />
+        )}
+      </Animate>
     </>
   );
 }

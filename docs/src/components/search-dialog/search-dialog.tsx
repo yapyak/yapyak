@@ -22,8 +22,7 @@ export type SearchDialogProps = Omit<DialogProps, 'onSelect'> & {
 };
 
 export function SearchDialog(props: SearchDialogProps) {
-  const { className, onSelect, open, searchData, onClose, ...restProps } =
-    props;
+  const { className, onSelect, searchData, onClose, ...restProps } = props;
 
   const inputElement = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
@@ -40,19 +39,13 @@ export function SearchDialog(props: SearchDialogProps) {
   ]);
 
   useEffect(() => {
-    if (!open) {
-      setQuery('');
-      return;
-    }
     const frame = window.requestAnimationFrame(() => {
       inputElement.current?.focus();
     });
     return () => {
       window.cancelAnimationFrame(frame);
     };
-  }, [
-    open,
-  ]);
+  }, []);
 
   useEffect(() => {
     setHighlightedHref(results[0]?.entry.href ?? null);
@@ -148,7 +141,6 @@ export function SearchDialog(props: SearchDialogProps) {
       data-populated={isPopulated}
       onClose={onClose}
       onPointerDown={handleDialogPointerDown}
-      open={open}
     >
       <Box className={styles.SearchBar}>
         <Icon

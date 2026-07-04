@@ -20,7 +20,6 @@ export type UseDialogTriggerReturn = {
   dialogProps: {
     id: string;
     onClose: () => void;
-    open: boolean;
   };
   isOpen: boolean;
   triggerProps: {
@@ -78,7 +77,6 @@ export function useDialogTrigger(
   const dialogProps = {
     id,
     onClose: handleDialogClose,
-    open: drawer.isOpen,
   };
 
   return {

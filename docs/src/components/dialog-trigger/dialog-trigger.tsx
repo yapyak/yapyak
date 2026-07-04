@@ -1,24 +1,29 @@
 import type { ReactNode } from 'react';
+import type { AnimateChildProps } from '#systems/animate';
 import type {
   UseDialogTriggerOptions,
   UseDialogTriggerReturn,
 } from './use-dialog-trigger';
 
+import { Animate } from '#systems/animate';
+import { mergeProps } from '#utils/merge-props';
+
 import { useDialogTrigger } from './use-dialog-trigger';
 
 type TriggerProps = UseDialogTriggerReturn['triggerProps'];
 
-type DialogProps = UseDialogTriggerReturn['dialogProps'];
+type RenderedDialogProps = UseDialogTriggerReturn['dialogProps'] &
+  AnimateChildProps;
 
 export type DialogTriggerProps = UseDialogTriggerOptions & {
   children: (props: TriggerProps) => ReactNode;
-  dialog: (props: DialogProps) => ReactNode;
+  dialog: (props: RenderedDialogProps) => ReactNode;
 };
 
 export function DialogTrigger(props: DialogTriggerProps) {
   const { children, dialog, initialOpen, onClose, onOpen, shortcut } = props;
 
-  const { dialogProps, triggerProps } = useDialogTrigger({
+  const { dialogProps, isOpen, triggerProps } = useDialogTrigger({
     initialOpen,
     onClose,
     onOpen,
@@ -28,7 +33,9 @@ export function DialogTrigger(props: DialogTriggerProps) {
   return (
     <>
       {children(triggerProps)}
-      {dialog(dialogProps)}
+      <Animate in={isOpen}>
+        {(animateProps) => dialog(mergeProps(dialogProps, animateProps))}
+      </Animate>
     </>
   );
 }
