@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReferenceRouteImport } from './routes/reference'
 import { Route as GuideRouteImport } from './routes/guide'
+import { Route as R404RouteImport } from './routes/404'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ReferenceIndexRouteImport } from './routes/reference.index'
 import { Route as GuideIndexRouteImport } from './routes/guide.index'
@@ -25,6 +26,11 @@ const ReferenceRoute = ReferenceRouteImport.update({
 const GuideRoute = GuideRouteImport.update({
   id: '/guide',
   path: '/guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const R404Route = R404RouteImport.update({
+  id: '/404',
+  path: '/404',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -55,6 +61,7 @@ const GuideSplatRoute = GuideSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/404': typeof R404Route
   '/guide': typeof GuideRouteWithChildren
   '/reference': typeof ReferenceRouteWithChildren
   '/guide/$': typeof GuideSplatRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/404': typeof R404Route
   '/guide/$': typeof GuideSplatRoute
   '/reference/$': typeof ReferenceSplatRoute
   '/guide': typeof GuideIndexRoute
@@ -72,6 +80,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/404': typeof R404Route
   '/guide': typeof GuideRouteWithChildren
   '/reference': typeof ReferenceRouteWithChildren
   '/guide/$': typeof GuideSplatRoute
@@ -83,6 +92,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/404'
     | '/guide'
     | '/reference'
     | '/guide/$'
@@ -90,10 +100,11 @@ export interface FileRouteTypes {
     | '/guide/'
     | '/reference/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/guide/$' | '/reference/$' | '/guide' | '/reference'
+  to: '/' | '/404' | '/guide/$' | '/reference/$' | '/guide' | '/reference'
   id:
     | '__root__'
     | '/'
+    | '/404'
     | '/guide'
     | '/reference'
     | '/guide/$'
@@ -104,6 +115,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  R404Route: typeof R404Route
   GuideRoute: typeof GuideRouteWithChildren
   ReferenceRoute: typeof ReferenceRouteWithChildren
 }
@@ -122,6 +134,13 @@ declare module '@tanstack/react-router' {
       path: '/guide'
       fullPath: '/guide'
       preLoaderRoute: typeof GuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/404': {
+      id: '/404'
+      path: '/404'
+      fullPath: '/404'
+      preLoaderRoute: typeof R404RouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -190,6 +209,7 @@ const ReferenceRouteWithChildren = ReferenceRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R404Route: R404Route,
   GuideRoute: GuideRouteWithChildren,
   ReferenceRoute: ReferenceRouteWithChildren,
 }
