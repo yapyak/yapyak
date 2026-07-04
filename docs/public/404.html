@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>404 · yapyak</title>
+    <link rel="icon" href="/yapyak/favicon.svg" type="image/svg+xml" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --ink: #141414;
+        --silver: #e6e6e6;
+        --mint: #44dba0;
+        --mint: oklab(0.87 -0.24 0.06);
+        --muted: color-mix(in oklab, #e6e6e6 56%, #141414);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        display: grid;
+        place-items: center;
+        padding: 1.5rem;
+        font-family:
+          system-ui, -apple-system, "Segoe UI", roboto, helvetica, arial,
+          sans-serif;
+        color: var(--silver);
+        background-color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      main {
+        display: grid;
+        gap: 0.75rem;
+        place-items: center;
+        text-align: center;
+      }
+
+      .logo {
+        width: 56px;
+        height: 56px;
+        margin-bottom: 0.5rem;
+        fill: var(--mint);
+      }
+
+      h1 {
+        font-size: 3.5rem;
+        font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.03em;
+      }
+
+      p {
+        font-size: 1.0625rem;
+        color: var(--muted);
+      }
+
+      .home {
+        margin-top: 1rem;
+        font-size: 0.9375rem;
+        font-weight: 500;
+        color: var(--mint);
+        text-decoration: underline;
+        text-decoration-color: transparent;
+        text-underline-offset: 4px;
+        border-radius: 6px;
+        outline: 0.5rem solid transparent;
+        transition:
+          text-decoration-color 150ms ease,
+          outline 400ms ease;
+      }
+
+      @media (hover: hover) {
+        .home:hover {
+          text-decoration-color: currentColor;
+        }
+      }
+
+      .home:focus-visible {
+        outline-width: 0.25rem;
+        outline-color: color-mix(in oklab, var(--mint) 40%, transparent);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <svg class="logo" viewBox="0 0 64 64" aria-hidden="true">
+        <path
+          fill-rule="evenodd"
+          d="M32 0c17.673 0 32 14.327 32 32s-14.327 32-32 32H8c-4.418 0-8-3.582-8-8V32C0 14.327 14.327 0 32 0ZM16 27a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm16 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10Zm16 0a5 5 0 1 0 0 10 5 5 0 0 0 0-10Z"
+        />
+      </svg>
+      <h1>404</h1>
+      <p>Page not found</p>
+      <a class="home" href="/yapyak/">Back to home</a>
+    </main>
+  </body>
+</html>

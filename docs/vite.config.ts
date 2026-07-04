@@ -138,12 +138,6 @@ export default defineConfig({
           );
         },
       },
-      spa: {
-        enabled: true,
-        prerender: {
-          outputPath: '/404.html',
-        },
-      },
     }),
     react(),
     docCompiler({
