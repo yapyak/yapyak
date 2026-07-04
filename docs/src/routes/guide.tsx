@@ -71,7 +71,7 @@ function Component() {
                 {(triggerProps) => (
                   <IconButton
                     {...triggerProps}
-                    icon={<Icon name="outline" />}
+                    icon={<Icon name="page" />}
                     iconPosition="trailing"
                   >
                     {t('Page')}
@@ -94,7 +94,7 @@ function Component() {
               {(triggerProps) => (
                 <IconButton
                   {...triggerProps}
-                  icon={<Icon name="sidebar" />}
+                  icon={<Icon name="menu" />}
                 >
                   {t('Menu')}
                 </IconButton>

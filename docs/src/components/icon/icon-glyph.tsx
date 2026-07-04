@@ -8,9 +8,9 @@ import { IconGlyphExternalLink } from './icon-glyph-external-link';
 import { IconGlyphGithub } from './icon-glyph-github';
 import { IconGlyphHash } from './icon-glyph-hash';
 import { IconGlyphMarkdown } from './icon-glyph-markdown';
-import { IconGlyphOutline } from './icon-glyph-outline';
+import { IconGlyphMenu } from './icon-glyph-menu';
+import { IconGlyphPage } from './icon-glyph-page';
 import { IconGlyphSearch } from './icon-glyph-search';
-import { IconGlyphSidebar } from './icon-glyph-sidebar';
 import { IconGlyphX } from './icon-glyph-x';
 
 export type IconName =
@@ -22,9 +22,9 @@ export type IconName =
   | 'github'
   | 'hash'
   | 'markdown'
-  | 'outline'
+  | 'menu'
+  | 'page'
   | 'search'
-  | 'sidebar'
   | 'x';
 
 export type IconGlyphProps = {
@@ -51,12 +51,12 @@ export function IconGlyph(props: IconGlyphProps): ReactElement | null {
       return <IconGlyphHash />;
     case 'markdown':
       return <IconGlyphMarkdown />;
-    case 'outline':
-      return <IconGlyphOutline />;
+    case 'menu':
+      return <IconGlyphMenu />;
+    case 'page':
+      return <IconGlyphPage />;
     case 'search':
       return <IconGlyphSearch />;
-    case 'sidebar':
-      return <IconGlyphSidebar />;
     case 'x':
       return <IconGlyphX />;
     default:

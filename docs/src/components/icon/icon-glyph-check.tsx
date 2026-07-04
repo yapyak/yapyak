@@ -1,7 +1,6 @@
 export function IconGlyphCheck() {
   return (
     <svg
-      aria-hidden="true"
       fill="none"
       height="1em"
       shapeRendering="geometricPrecision"

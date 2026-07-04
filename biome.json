@@ -215,6 +215,18 @@
           }
         }
       }
+    },
+    {
+      "includes": [
+        "**/icon/icon-glyph-*.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "noSvgWithoutTitle": "off"
+          }
+        }
+      }
     }
   ],
   "vcs": {
