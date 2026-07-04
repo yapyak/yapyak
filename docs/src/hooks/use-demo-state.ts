@@ -33,9 +33,6 @@ export function useDemoState() {
   const [state, setState] = useState<DemoState>(INITIAL_STATE);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return;
-    }
     const reducedMotionQuery = window.matchMedia(
       '(prefers-reduced-motion: reduce)',
     );

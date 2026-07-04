@@ -1,10 +1,11 @@
 import type { SVGProps } from 'react';
+import type { LocaleCode } from '#lib/hero-demo';
 
 import { useId } from 'react';
 
 import styles from './hero-demo-locale-flag.module.css';
 
-export type HeroDemoLocaleFlagCode = 'es' | 'fr' | 'ja' | 'sv';
+export type HeroDemoLocaleFlagCode = LocaleCode;
 
 export type HeroDemoLocaleFlagProps = SVGProps<SVGSVGElement> & {
   code: HeroDemoLocaleFlagCode;

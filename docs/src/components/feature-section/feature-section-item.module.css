@@ -9,7 +9,7 @@
     border-bottom: var(--px) solid var(--rule);
 
     .NumeralText {
-      font-size: 3.5rem;
+      font-size: var(--font-size-4xl);
       font-weight: var(--font-weight-medium);
       line-height: var(--line-height-none);
       color: var(--foreground-softer);

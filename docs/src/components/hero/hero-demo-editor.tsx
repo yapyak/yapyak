@@ -5,7 +5,10 @@ import { tokenize } from '#lib/tokenize';
 import { Box } from '#primitives/box';
 
 import styles from './hero-demo-editor.module.css';
-import { HeroDemoEditorCodeToken } from './hero-demo-editor-code-token';
+import {
+  CARET_MARKER,
+  HeroDemoEditorCodeToken,
+} from './hero-demo-editor-code-token';
 import { HeroDemoEditorTab } from './hero-demo-editor-tab';
 
 export type HeroDemoFramework = 'astro' | 'react' | 'svelte' | 'vue';
@@ -56,9 +59,6 @@ export type HeroDemoEditorProps = BoxProps & {
   source: string;
   typing: boolean;
 };
-
-const CARET_MARKER = 'CARET';
-const T_NAME = 't';
 
 export function HeroDemoEditor(props: HeroDemoEditorProps) {
   const {
@@ -135,32 +135,32 @@ function buildCode(framework: HeroDemoFramework, source: string) {
   switch (framework) {
     case 'astro':
       return `---
-import { ${T_NAME} } from 'yapyak';
+import { t } from 'yapyak';
 ---
 
-<h1>{${T_NAME}('${value}')}</h1>
+<h1>{t('${value}')}</h1>
 `;
     case 'react':
-      return `import { ${T_NAME} } from 'yapyak';
+      return `import { t } from 'yapyak';
 
 export function App() {
-  return <h1>{${T_NAME}('${value}')}</h1>;
+  return <h1>{t('${value}')}</h1>;
 }
 `;
     case 'svelte':
       return `<script>
-  import { ${T_NAME} } from 'yapyak';
+  import { t } from 'yapyak';
 </script>
 
-<h1>{${T_NAME}('${value}')}</h1>
+<h1>{t('${value}')}</h1>
 `;
     case 'vue':
       return `<script setup>
-import { ${T_NAME} } from 'yapyak'
+import { t } from 'yapyak'
 </script>
 
 <template>
-  <h1>{{ ${T_NAME}('${value}') }}</h1>
+  <h1>{{ t('${value}') }}</h1>
 </template>
 `;
     default:

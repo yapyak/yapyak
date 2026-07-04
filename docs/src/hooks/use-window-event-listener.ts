@@ -13,8 +13,10 @@ export function useWindowEventListener<T extends WindowListenerEvent>(
   listener: WindowListener<T>,
   options?: UseEventListenerOptions,
 ): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-  useEventListener(window, type, listener, options);
+  useEventListener(
+    typeof window === 'undefined' ? null : window,
+    type,
+    listener,
+    options,
+  );
 }

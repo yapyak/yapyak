@@ -20,8 +20,6 @@
     }
 
     @media (min-width: 1024px) {
-      padding: 0 var(--spacing-6) var(--spacing-24);
-
       .Divider {
         display: block;
       }

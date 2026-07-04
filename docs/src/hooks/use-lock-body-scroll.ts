@@ -24,19 +24,6 @@ export function useLockBodyScroll({
       isLockedRef.current = true;
     }
 
-    if (!enabled && isLockedRef.current) {
-      scrollLockCount--;
-      isLockedRef.current = false;
-
-      if (scrollLockCount <= 0) {
-        doc.body.style.overflow = '';
-
-        if (doc.body.getAttribute('style') === '') {
-          doc.body.removeAttribute('style');
-        }
-      }
-    }
-
     return () => {
       if (isLockedRef.current) {
         scrollLockCount--;

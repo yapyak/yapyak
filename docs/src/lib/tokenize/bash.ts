@@ -169,9 +169,7 @@ export function tokenizeBash(code: string) {
       }
     }
 
-    if (character !== '\n') {
-      isAtLineStart = false;
-    }
+    isAtLineStart = false;
     tokens.push({
       kind: 'plain',
       value: character,

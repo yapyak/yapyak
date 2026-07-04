@@ -118,14 +118,10 @@
           box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
         }
 
-        &:first-child {
-          border-top-left-radius: var(--border-radius-md);
-        }
-
         &:focus-visible {
           .TabFill {
             border-radius: 2px;
-            box-shadow: inset 0 0 0 1px var(--accent);
+            box-shadow: inset 0 0 0 var(--px) var(--accent);
           }
         }
       }
@@ -158,7 +154,6 @@
           animation: caret-blink 1.06s steps(2, end) infinite;
 
           &[data-typing] {
-            opacity: 1;
             animation: none;
           }
         }

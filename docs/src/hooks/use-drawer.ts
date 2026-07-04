@@ -32,15 +32,11 @@ export function useDrawer(
   ]);
 
   const open = (): void => {
-    if (!isOpen) {
-      setIsOpen(true);
-    }
+    setIsOpen(true);
   };
 
   const close = (): void => {
-    if (isOpen) {
-      setIsOpen(false);
-    }
+    setIsOpen(false);
   };
 
   const toggle = (): void => {

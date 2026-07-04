@@ -5,7 +5,7 @@ import { Box } from '#primitives/box';
 
 import styles from './hero-demo-editor.module.css';
 
-const CARET_MARKER = 'CARET';
+export const CARET_MARKER = 'CARET';
 
 export type HeroDemoEditorCodeTokenProps = {
   token: Token;
