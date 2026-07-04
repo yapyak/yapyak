@@ -2,7 +2,6 @@ import type { SearchData } from '@yapyak/doc-compiler';
 import type { ChangeEvent, KeyboardEvent, PointerEvent } from 'react';
 import type { DialogProps } from '#components/dialog';
 
-import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
@@ -17,14 +16,15 @@ import { SearchDialogListbox } from './search-dialog-listbox';
 
 const LISTBOX_ID = 'search-dialog-listbox';
 
-export type SearchDialogProps = DialogProps & {
+export type SearchDialogProps = Omit<DialogProps, 'onSelect'> & {
+  onSelect: (href: string) => void;
   searchData: SearchData | undefined;
 };
 
 export function SearchDialog(props: SearchDialogProps) {
-  const { className, open, searchData, onClose, ...restProps } = props;
+  const { className, onSelect, open, searchData, onClose, ...restProps } =
+    props;
 
-  const navigate = useNavigate();
   const inputElement = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState('');
   const [highlightedHref, setHighlightedHref] = useState<null | string>(null);
@@ -61,13 +61,7 @@ export function SearchDialog(props: SearchDialogProps) {
   ]);
 
   const handleSelect = (href: string) => {
-    const hashIndex = href.indexOf('#');
-    const pathname = hashIndex < 0 ? href : href.slice(0, hashIndex);
-    const hash = hashIndex < 0 ? undefined : href.slice(hashIndex + 1);
-    void navigate({
-      hash,
-      to: pathname,
-    });
+    onSelect(href);
     onClose?.();
   };
 

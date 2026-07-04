@@ -1,104 +1,56 @@
+import type { MenuProps } from '#components/menu';
 import type { SwatchAccent } from '#components/swatch';
 
-import { t } from 'yapyak';
-
-import { Icon } from '#components/icon';
-import { Menu, MenuTrigger } from '#components/menu';
-import { useOptionContext } from '#components/option-provider';
+import { Menu } from '#components/menu';
 import { Swatch } from '#components/swatch';
-import { visibleOptionsForGroup } from '#lib/adapter';
-import { Box } from '#primitives/box';
-import { ButtonBase } from '#primitives/button';
 
 import styles from './option-menu.module.css';
-import { doc } from 'virtual:doc-compiler';
 
-export type OptionMenuProps = {
-  group: string;
+type OptionMenuItem = {
+  label: string;
+  value: string;
+};
+
+export type OptionMenuProps = Omit<
+  MenuProps,
+  'aria-label' | 'children' | 'onChange'
+> & {
+  label: string;
+  onChange: (value: string) => void;
+  options: OptionMenuItem[];
+  value: string;
 };
 
 export function OptionMenu(props: OptionMenuProps) {
-  const { group: groupId } = props;
-  const { get, set } = useOptionContext();
-  const group = doc.getOptionsGroup(groupId);
-  const activeValue = get(groupId);
-  const activeFramework = get('framework');
-
-  if (group === undefined) {
-    return null;
-  }
-
-  const options = visibleOptionsForGroup(
-    groupId,
-    group.options,
-    activeFramework,
-  );
-  if (options.length < 2) {
-    return null;
-  }
-
-  const activeOption = options.find((option) => option.value === activeValue);
-  if (activeOption === undefined) {
-    return null;
-  }
-
-  const handleChange = (value: string) => {
-    set(groupId, value);
-  };
+  const { className, label, onChange, options, value, ...restProps } = props;
 
   return (
-    <MenuTrigger
-      menu={(menuProps) => (
-        <Menu
-          {...menuProps}
-          alignment="center"
-          aria-label={group.label}
-          className={styles.OptionMenu}
-          matchTargetMinWidth={true}
-          placement="bottom"
-        >
-          <Menu.RadioGroup
-            aria-label={group.label}
-            onChange={handleChange}
-            value={activeValue}
-          >
-            {options.map((option) => (
-              <Menu.RadioItem
-                key={option.value}
-                leadingIcon={<Swatch accent={option.value as SwatchAccent} />}
-                value={option.value}
-              >
-                {option.label}
-              </Menu.RadioItem>
-            ))}
-          </Menu.RadioGroup>
-        </Menu>
-      )}
+    <Menu
+      {...restProps}
+      alignment="center"
+      aria-label={label}
+      className={[
+        styles.OptionMenu,
+        className,
+      ]}
+      matchTargetMinWidth={true}
+      placement="bottom"
     >
-      {(triggerProps) => (
-        <ButtonBase
-          {...triggerProps}
-          aria-label={t('Change {label}', {
-            label: group.label,
-          })}
-          className={styles.Trigger}
-        >
-          <Swatch accent={activeValue as SwatchAccent} />
-          <Box
-            as="span"
-            className={styles.Label}
+      <Menu.RadioGroup
+        aria-label={label}
+        onChange={onChange}
+        value={value}
+      >
+        {options.map((option) => (
+          <Menu.RadioItem
+            key={option.value}
+            leadingIcon={<Swatch accent={option.value as SwatchAccent} />}
+            value={option.value}
           >
-            {activeOption.label}
-          </Box>
-          <Box
-            aria-hidden={true}
-            as="span"
-            className={styles.Chevron}
-          >
-            <Icon name="chevron" />
-          </Box>
-        </ButtonBase>
-      )}
-    </MenuTrigger>
+            {option.label}
+          </Menu.RadioItem>
+        ))}
+      </Menu.RadioGroup>
+    </Menu>
   );
 }

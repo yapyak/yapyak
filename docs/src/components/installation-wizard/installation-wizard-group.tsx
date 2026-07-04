@@ -3,7 +3,7 @@ import type { SwatchAccent } from '#components/swatch';
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { OptionMenu } from '#components/option-menu';
+import { OptionMenuController } from '#components/option-menu-controller';
 import { useOptionContext } from '#components/option-provider';
 import { useMediaQuery } from '#hooks/use-media-query';
 import { visibleOptionsForGroup } from '#lib/adapter';
@@ -134,7 +134,7 @@ export function InstallationWizardGroup(props: InstallationWizardGroupProps) {
     <Box className={styles.InstallationWizardGroup}>
       <Box className={styles.Label}>{group.label}</Box>
       {isCompact ? (
-        <OptionMenu group={groupId} />
+        <OptionMenuController group={groupId} />
       ) : (
         <RadioGroupBase
           aria-label={group.label}

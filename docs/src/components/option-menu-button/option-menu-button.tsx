@@ -1,0 +1,48 @@
+import type { SwatchAccent } from '#components/swatch';
+import type { ButtonBaseProps } from '#primitives/button';
+
+import { t } from 'yapyak';
+
+import { Icon } from '#components/icon';
+import { Swatch } from '#components/swatch';
+import { Box } from '#primitives/box';
+import { ButtonBase } from '#primitives/button';
+
+import styles from './option-menu-button.module.css';
+
+export type OptionMenuButtonProps = ButtonBaseProps & {
+  accent: SwatchAccent;
+  label: string;
+};
+
+export function OptionMenuButton(props: OptionMenuButtonProps) {
+  const { accent, children, className, label, ...restProps } = props;
+
+  return (
+    <ButtonBase
+      {...restProps}
+      aria-label={t('Change {label}', {
+        label,
+      })}
+      className={[
+        styles.OptionMenuButton,
+        className,
+      ]}
+    >
+      <Swatch accent={accent} />
+      <Box
+        as="span"
+        className={styles.Label}
+      >
+        {children}
+      </Box>
+      <Box
+        aria-hidden={true}
+        as="span"
+        className={styles.Chevron}
+      >
+        <Icon name="chevron" />
+      </Box>
+    </ButtonBase>
+  );
+}

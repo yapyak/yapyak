@@ -4,7 +4,7 @@ import { t } from 'yapyak';
 
 import { Icon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
-import { OptionMenu } from '#components/option-menu';
+import { OptionMenuController } from '#components/option-menu-controller';
 import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 import { Animate } from '#systems/animate';
@@ -62,8 +62,8 @@ export function MobileDialog(props: MobileDialogProps) {
               as="footer"
               className={styles.Footer}
             >
-              <OptionMenu group="framework" />
-              <OptionMenu group="packageManager" />
+              <OptionMenuController group="framework" />
+              <OptionMenuController group="packageManager" />
               <IconLink
                 aria-label={t('View on GitHub')}
                 href="https://github.com/yapyak/yapyak"

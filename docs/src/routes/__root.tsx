@@ -21,18 +21,16 @@ import { MobileDialog } from '#components/mobile-dialog';
 import { MobileDialogButton } from '#components/mobile-dialog-button';
 import { Navigation } from '#components/navigation';
 import { NotFoundView } from '#components/not-found-view';
-import { OptionMenu } from '#components/option-menu';
+import { OptionMenuController } from '#components/option-menu-controller';
 import {
   OptionProvider,
   buildPrepaintScript,
 } from '#components/option-provider';
 import { Root } from '#components/root';
 import { RouteAnnouncer } from '#components/route-announcer';
-import { SearchDialog } from '#components/search-dialog';
-import { SearchDialogButton } from '#components/search-dialog-button';
+import { SearchDialogController } from '#components/search-dialog-controller';
 import { useMobileDialog } from '#hooks/use-mobile-dialog';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
-import { useSearchDialog } from '#hooks/use-search-dialog';
 import { assetUrl } from '#utils/asset';
 
 import { doc } from 'virtual:doc-compiler';
@@ -103,7 +101,6 @@ function Component() {
   useScrollRestoration();
 
   const dialog = useMobileDialog();
-  const searchDialog = useSearchDialog();
 
   const shouldFadeBorder =
     useMatches({
@@ -130,8 +127,8 @@ function Component() {
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
-          <SearchDialogButton {...searchDialog.triggerProps} />
-          <OptionMenu group="framework" />
+          <SearchDialogController />
+          <OptionMenuController group="framework" />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
@@ -144,10 +141,6 @@ function Component() {
           open={dialog.isOpen}
         />
         <MobileDialog open={dialog.isOpen} />
-        <SearchDialog
-          {...searchDialog.dialogProps}
-          searchData={searchDialog.searchData}
-        />
       </Layout.Header>
       <RouteAnnouncer />
       <Layout.Main inert={dialog.isOpen}>

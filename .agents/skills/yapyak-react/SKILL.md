@@ -189,6 +189,44 @@ function MobileDialog() {
 }
 ```
 
+### Controllers
+
+A **controller** is a component whose whole job is orchestration: it owns interaction state and composes *other standalone components* — nothing more. A trigger + overlay pair (see § Trigger and overlay are separate components) is only the canonical case; it can just as well glue a form to its preview, a filter bar to a list, or any other stateful composition. Extract one when you would otherwise wire that state + orchestration straight into a route — to reuse it across routes, or to keep the route thin.
+
+It lives in `components/` like every other component, named `*Controller`; any hook it needs is co-located as `use*Controller`. No catch-all god-hook that buries unrelated concerns behind one name — compose specific hooks/components instead.
+
+A controller has **no sub-components of its own**. Everything it renders is a peer component that stands on its own in its own folder (see § Sub-components vs separate roots); its folder holds only the controller (+ its `use*Controller` hook). The moment you write markup or a rendered-inside child *for* the controller, that child is a real component — give it its own folder and compose it.
+
+A controller may reach for route context where a plain component may not:
+
+- A controller **may** call route hooks (`useNavigate`, `useParams`, `useMatches`); the plain components it composes may not.
+- A controller **does not own the route's domain data** — that arrives via props/loaders. It may fetch its own widget-scoped resource (a search index, etc.).
+
+Prefer expressing the open-state coupling declaratively through the glue component (`DialogTrigger`) over re-deriving it in a hook. Its render-prop callbacks can't call hooks, so a concern that needs the open handler (a `mod+k` shortcut) belongs on the glue as a prop, not in the controller body.
+
+```tsx
+// components/search-dialog-controller/search-dialog-controller.tsx
+function SearchDialogController() {
+  const navigate = useNavigate(); // ✓ route hook — allowed in a controller
+  const [hasOpened, setHasOpened] = useState(false);
+  const searchData = useSearchData(hasOpened); // widget-scoped, persists above the dialog
+
+  return (
+    <DialogTrigger
+      dialog={(dialogProps) => (
+        <SearchDialog {...dialogProps} onSelect={navigateToHref} searchData={searchData} />
+      )}
+      onOpen={() => setHasOpened(true)}
+      shortcut="mod+k"
+    >
+      {(triggerProps) => <SearchDialogButton {...triggerProps} />}
+    </DialogTrigger>
+  );
+}
+```
+
+The overlay stays route-agnostic: `SearchDialog` emits `onSelect(href)` rather than calling `useNavigate` itself — navigation stops at the controller.
+
 ### Domain naming
 
 - Singular resource in component names: `GuideCard`, never `GuidesCard`.
