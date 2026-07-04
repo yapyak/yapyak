@@ -55,7 +55,7 @@ This is cheaper than running `add` once per locale. yapyak batches the translati
 
 ## Locale codes
 
-The argument is a [BCP 47 tag](/guide/switching/tags). The CLI validates against the ISO 639-1 language list, with a helpful suggestion when it doesn't recognize the code:
+The argument is a [BCP 47 tag](/guide/switching/tags). The CLI validates its primary language subtag against the ISO 639-1 list — region and script subtags like `sv-SE` or `zh-Hant` pass through, and three-letter (ISO 639-2/3) or `x-` private-use subtags are accepted too. It suggests a correction when the language subtag isn't recognized:
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}

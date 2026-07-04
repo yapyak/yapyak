@@ -32,7 +32,7 @@ export default defineConfig({
 });
 ```
 
-yapyak handles batching, deduplication, retries, and result validation around your function. You write the call to your backend.
+yapyak handles batching, deduplication, and result validation around your function. You write the call to your backend.
 
 Deduplication runs before your callback. Two `t()` calls with the same `fileId`, source string, and disambiguation translate once; the result is reused for both, so your `translate` never sees the duplicate.
 
@@ -140,7 +140,7 @@ async translate({ items, signal }) {
 
 ## Errors to throw
 
-When something goes wrong, throw one of yapyak's [translator error types](/guide/translating/errors) so the surrounding machinery handles it correctly:
+When a request fails, throw one of yapyak's [translator error types](/guide/translating/errors) — the same taxonomy the shipped providers raise:
 
 ```ts
 import {
@@ -164,9 +164,7 @@ async translate({ items, signal }) {
 }
 ```
 
-Throwing the right type lets yapyak apply the right policy: backoff for rate limits, fail-fast for auth. See [Errors](/guide/translating/errors) for the full taxonomy.
-
-Any other error that escapes the callback — a plain `Error`, an exception from your fetch client — fails the whole chunk and surfaces as [`YAP0033`](/reference/diagnostics/YAP0033). The rest of the batch's chunks complete normally.
+yapyak runs your callback once — it won't retry it or act on `retryAfter`. A typed error, or any other error that escapes the callback, fails that chunk and surfaces as [`YAP0033`](/reference/diagnostics/YAP0033); the batch's other chunks complete normally. For backoff, retry inside the callback and honor `Retry-After` yourself — the shipped translators do this at their [fetch layer](/guide/translating/errors#retry-behavior). See [Errors](/guide/translating/errors) for the full taxonomy.
 
 ## A rules-based translator
 
@@ -228,7 +226,7 @@ function pickProvider(targetLocale: string) {
 const routedTranslator = createTranslator({
   id: 'routed',
   async translate({ items, signal, sourceLocale, targetLocales }) {
-    const results = await Promise.all(
+    const byLocale = await Promise.all(
       targetLocales.map((targetLocale) =>
         pickProvider(targetLocale).translate({
           items,
@@ -238,9 +236,12 @@ const routedTranslator = createTranslator({
         })
       )
     );
-    return results.flat();
+
+    return items.map((_, index) =>
+      Object.assign({}, ...byLocale.map((localeResults) => localeResults[index]))
+    );
   }
 });
 ```
 
-Each target locale routes to its provider. `Promise.all` fans the calls out concurrently. yapyak handles the outer batching and result validation. Heavier than the shipped translators; reach for it when you have a specific reason.
+Each target locale routes to its provider; `Promise.all` fans the calls out concurrently. The per-locale results merge by item index into one object per source string. yapyak handles the outer batching and result validation. Heavier than the shipped translators; reach for it when you have a specific reason.

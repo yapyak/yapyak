@@ -74,6 +74,6 @@ Both diagnostics surface through the same stream as parse and ICU errors. See [D
 
 ## Throwing from a custom translator
 
-A [custom translator](/guide/advanced/custom-translator) should throw the matching error type so yapyak applies the right behavior. See [Custom](/guide/advanced/custom-translator#errors-to-throw) for the patterns.
+A [custom translator](/guide/advanced/custom-translator) should throw the matching error type so the failure surfaces with a clear, consistent message. See [Custom](/guide/advanced/custom-translator#errors-to-throw) for the patterns.
 
 Any other error that escapes the callback — a plain `Error`, an exception from your fetch client — fails the whole chunk and surfaces as [`YAP0033`](/reference/diagnostics/YAP0033). yapyak doesn't retry custom-translator callbacks.
