@@ -6,7 +6,7 @@ import { SearchDialog } from '#components/search-dialog';
 import { SearchDialogButton } from '#components/search-dialog-button';
 import { useSearchData } from '#hooks/use-search-data';
 
-export function SearchDialogController() {
+export function SearchDialogTrigger() {
   const navigate = useNavigate();
   const [hasOpened, setHasOpened] = useState(false);
   const searchData = useSearchData(hasOpened);

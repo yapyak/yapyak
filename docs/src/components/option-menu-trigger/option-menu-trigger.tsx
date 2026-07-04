@@ -8,11 +8,11 @@ import { visibleOptionsForGroup } from '#lib/adapter';
 
 import { doc } from 'virtual:doc-compiler';
 
-export type OptionMenuControllerProps = {
+export type OptionMenuTriggerProps = {
   group: string;
 };
 
-export function OptionMenuController(props: OptionMenuControllerProps) {
+export function OptionMenuTrigger(props: OptionMenuTriggerProps) {
   const { group: groupId } = props;
   const { get, set } = useOptionContext();
   const group = doc.getOptionsGroup(groupId);

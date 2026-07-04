@@ -189,25 +189,27 @@ function MobileDialog() {
 }
 ```
 
-### Controllers
+### `*Trigger` — the composing parent
 
-A **controller** is a component whose whole job is orchestration: it owns interaction state and composes *other standalone components* — nothing more. A trigger + overlay pair (see § Trigger and overlay are separate components) is only the canonical case; it can just as well glue a form to its preview, a filter bar to a list, or any other stateful composition. Extract one when you would otherwise wire that state + orchestration straight into a route — to reuse it across routes, or to keep the route thin.
+When a feature needs open-state + orchestration wired across a trigger and the overlay it opens, extract a component that owns that state and composes the two — instead of gluing it into a route. It follows the normal naming rule (name after the root that anchors in place): the overlay portals away, so what sits at the call site is the **trigger**, and the component is named `*Trigger` — `SearchDialogTrigger`, `OptionMenuTrigger`, `MobileDialogTrigger`. This matches the generic glue already in the codebase (`DialogTrigger`, `MenuTrigger`), which own open-state the same way. Reading `<SearchDialogTrigger />` in the markup, you know a trigger renders there — `*Controller` hid that.
 
-It lives in `components/` like every other component, named `*Controller`; any hook it needs is co-located as `use*Controller`. No catch-all god-hook that buries unrelated concerns behind one name — compose specific hooks/components instead.
+(A glue that composes something *other* than a trigger + overlay — a form and its preview, a filter bar and a list — is named after **its** root the same way; every rule below still applies.)
 
-A controller has **no sub-components of its own**. Everything it renders is a peer component that stands on its own in its own folder (see § Sub-components vs separate roots); its folder holds only the controller (+ its `use*Controller` hook). The moment you write markup or a rendered-inside child *for* the controller, that child is a real component — give it its own folder and compose it.
+It lives in `components/` like every other component; any hook it needs is co-located as `use*Trigger`. No catch-all god-hook that buries unrelated concerns behind one name — compose specific hooks/components instead.
 
-A controller may reach for route context where a plain component may not:
+It has **no sub-components of its own**. Everything it renders is a peer component that stands on its own in its own folder (see § Sub-components vs separate roots); its folder holds only the component (+ its co-located hook). The moment you write markup or a rendered-inside child *for* it, that child is a real component — give it its own folder and compose it.
 
-- A controller **may** call route hooks (`useNavigate`, `useParams`, `useMatches`); the plain components it composes may not.
-- A controller **does not own the route's domain data** — that arrives via props/loaders. It may fetch its own widget-scoped resource (a search index, etc.).
+It may reach for route context where a plain component may not:
 
-Prefer expressing the open-state coupling declaratively through the glue component (`DialogTrigger`) over re-deriving it in a hook. Its render-prop callbacks can't call hooks, so a concern that needs the open handler (a `mod+k` shortcut) belongs on the glue as a prop, not in the controller body.
+- It **may** call route hooks (`useNavigate`, `useParams`, `useMatches`); the plain components it composes may not.
+- It **does not own the route's domain data** — that arrives via props/loaders. It may fetch its own widget-scoped resource (a search index, etc.).
+
+Prefer expressing the open-state coupling declaratively through the glue component (`DialogTrigger`) over re-deriving it in a hook. Its render-prop callbacks can't call hooks, so a concern that needs the open handler (a `mod+k` shortcut) belongs on the glue as a prop, not in the body.
 
 ```tsx
-// components/search-dialog-controller/search-dialog-controller.tsx
-function SearchDialogController() {
-  const navigate = useNavigate(); // ✓ route hook — allowed in a controller
+// components/search-dialog-trigger/search-dialog-trigger.tsx
+function SearchDialogTrigger() {
+  const navigate = useNavigate(); // ✓ route hook — allowed here
   const [hasOpened, setHasOpened] = useState(false);
   const searchData = useSearchData(hasOpened); // widget-scoped, persists above the dialog
 
@@ -225,7 +227,43 @@ function SearchDialogController() {
 }
 ```
 
-The overlay stays route-agnostic: `SearchDialog` emits `onSelect(href)` rather than calling `useNavigate` itself — navigation stops at the controller.
+The overlay stays route-agnostic: `SearchDialog` emits `onSelect(href)` rather than calling `useNavigate` itself — navigation stops here.
+
+#### Controlled variant
+
+It normally owns its open state outright (uncontrolled). But when that state has consumers *outside* the feature — route siblings that read it, e.g. `inert` on the main/footer, a header's fade — the state can't live inside it: those siblings are not its descendants, and React state only flows down. Lift the **raw flag** to the route and pass it in as `open` + `onOpenChange`; the component stays **controlled**.
+
+Controlled does not mean thin. It still owns all the *behaviour* — the effects and toggles — it just doesn't own the boolean. The route holds only the flag it actually consumes; it knows nothing about scroll-lock, escape-to-close, breakpoint-close, or route-change-close.
+
+```tsx
+// route — owns only the raw flag, because siblings read it
+const [isMobileDialogOpen, setIsMobileDialogOpen] = useState(false);
+// …
+<MobileDialogTrigger onOpenChange={setIsMobileDialogOpen} open={isMobileDialogOpen} />
+<Layout.Main inert={isMobileDialogOpen}>…</Layout.Main>
+
+// components/mobile-dialog-trigger/mobile-dialog-trigger.tsx — owns all behaviour
+function MobileDialogTrigger(props: MobileDialogTriggerProps) {
+  const { onOpenChange, open } = props;
+  const isDesktop = useMediaQuery('(min-width: 1024px)');
+
+  useLockBodyScroll({ enabled: open });
+  useOnRouteChange(() => onOpenChange(false));
+  useEffect(() => { if (isDesktop) onOpenChange(false); }, [isDesktop, onOpenChange]);
+  useDocumentEventListener('keydown', (event) => {
+    if (open && event.key === KEY_MAP.escape) onOpenChange(false);
+  });
+
+  return (
+    <>
+      <MobileDialogButton onToggle={() => onOpenChange(!open)} open={open} />
+      <MobileDialog open={open} />
+    </>
+  );
+}
+```
+
+Don't reach for context to feed one boolean to a few siblings — lifting the raw flag to the route is simpler and keeps the behaviour encapsulated.
 
 ### Domain naming
 

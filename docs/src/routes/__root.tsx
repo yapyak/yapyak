@@ -10,6 +10,7 @@ import {
   useMatches,
 } from '@tanstack/react-router';
 import { useLocale } from '@yapyak/react';
+import { useState } from 'react';
 import { t } from 'yapyak';
 
 import { Colophon } from '#components/colophon';
@@ -17,19 +18,17 @@ import { Icon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { LogoLink } from '#components/logo-link';
-import { MobileDialog } from '#components/mobile-dialog';
-import { MobileDialogButton } from '#components/mobile-dialog-button';
+import { MobileDialogTrigger } from '#components/mobile-dialog-trigger';
 import { Navigation } from '#components/navigation';
 import { NotFoundView } from '#components/not-found-view';
-import { OptionMenuController } from '#components/option-menu-controller';
+import { OptionMenuTrigger } from '#components/option-menu-trigger';
 import {
   OptionProvider,
   buildPrepaintScript,
 } from '#components/option-provider';
 import { Root } from '#components/root';
 import { RouteAnnouncer } from '#components/route-announcer';
-import { SearchDialogController } from '#components/search-dialog-controller';
-import { useMobileDialog } from '#hooks/use-mobile-dialog';
+import { SearchDialogTrigger } from '#components/search-dialog-trigger';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
 import { assetUrl } from '#utils/asset';
 
@@ -100,13 +99,13 @@ export const Route = createRootRoute({
 function Component() {
   useScrollRestoration();
 
-  const dialog = useMobileDialog();
+  const [isMobileDialogOpen, setIsMobileDialogOpen] = useState(false);
 
   const shouldFadeBorder =
     useMatches({
       select: (matches) =>
         matches.some((match) => match.staticData.fadeBorder === true),
-    }) && !dialog.isOpen;
+    }) && !isMobileDialogOpen;
 
   const hasFooter = useMatches({
     select: (matches) =>
@@ -127,8 +126,8 @@ function Component() {
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
-          <SearchDialogController />
-          <OptionMenuController group="framework" />
+          <SearchDialogTrigger />
+          <OptionMenuTrigger group="framework" />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
@@ -136,18 +135,17 @@ function Component() {
             <Icon name="github" />
           </IconLink>
         </Layout.Header.End>
-        <MobileDialogButton
-          onToggle={dialog.toggle}
-          open={dialog.isOpen}
+        <MobileDialogTrigger
+          onOpenChange={setIsMobileDialogOpen}
+          open={isMobileDialogOpen}
         />
-        <MobileDialog open={dialog.isOpen} />
       </Layout.Header>
       <RouteAnnouncer />
-      <Layout.Main inert={dialog.isOpen}>
+      <Layout.Main inert={isMobileDialogOpen}>
         <Outlet />
       </Layout.Main>
       {hasFooter && (
-        <Layout.Footer inert={dialog.isOpen}>
+        <Layout.Footer inert={isMobileDialogOpen}>
           <Colophon />
         </Layout.Footer>
       )}
