@@ -47,6 +47,11 @@
       background-color: var(--surface-strong);
     }
 
+    &[aria-expanded="true"] {
+      color: var(--foreground);
+      background-color: var(--surface-strong);
+    }
+
     &:focus-visible {
       outline-width: 4px;
       outline-color: var(--accent-soft);

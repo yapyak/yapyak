@@ -67,6 +67,31 @@ button/                            → Button
 
 No sub-folders inside a component folder. Everything flat.
 
+#### Sub-components vs separate roots — rendered-inside, never concept
+
+This governs `components/` — the app's domain components. A folder there holds only the components its primary **renders inside itself** (sub-components). A component mounted by a *different* parent — a sibling root composed elsewhere — gets its **own** folder, even when it belongs to the same feature. A `components/` folder is named for a component, never a feature: there are no "concept" folders here.
+
+**Mechanical test:** does the primary component's JSX render this component? Yes → sub-component, same folder. No → its own folder.
+
+A trigger and the overlay it opens are the canonical case — they are peer roots composed by a shared parent (see § Trigger and overlay are separate components), so each gets its own folder.
+
+```
+// ✓ peer roots — separate folders
+components/
+  search-dialog/                  → SearchDialog renders SearchDialogListbox
+    search-dialog.tsx
+    search-dialog-listbox.tsx     //   rendered inside SearchDialog → sub-component
+  search-dialog-button/           → SearchDialogButton (the trigger, mounted in the header)
+    search-dialog-button.tsx
+
+// ✗ concept folder lumping two peer roots together
+components/
+  search-dialog/
+    search-dialog.tsx
+    search-dialog-button.tsx      //   WRONG — the trigger isn't rendered inside SearchDialog
+    search-dialog-listbox.tsx
+```
+
 #### `index.ts` barrel
 
 Re-exports types and values separately, each block alphabetized:
