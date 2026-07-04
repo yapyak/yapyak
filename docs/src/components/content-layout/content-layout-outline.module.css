@@ -1,10 +1,11 @@
 @layer components {
   .ContentLayoutOutline {
-    padding: var(--spacing-5) var(--spacing-4);
+    display: none;
 
     @media (min-width: 1324px) {
       position: sticky;
       top: var(--header-height);
+      display: block;
       align-self: start;
       width: calc(var(--layout-outline-width) + var(--layout-side-bleed));
       padding: var(--spacing-5)

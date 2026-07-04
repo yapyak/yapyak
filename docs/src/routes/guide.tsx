@@ -53,9 +53,7 @@ function Component() {
 
   return (
     <ContentLayout>
-      {isSidebarInline && (
-        <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
-      )}
+      <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
 
       <ContentLayout.Content>
         <ContentLayout.ContentHeader
@@ -118,16 +116,14 @@ function Component() {
         </ContentLayout.ContentContent>
       </ContentLayout.Content>
 
-      {isOutlineInline && (
-        <ContentLayout.Outline>
-          <ContentAnchorNavigation
-            headings={headings}
-            indicator={true}
-            key={page.href}
-          />
-          <PageAction href={page.href} />
-        </ContentLayout.Outline>
-      )}
+      <ContentLayout.Outline>
+        <ContentAnchorNavigation
+          headings={headings}
+          indicator={true}
+          key={page.href}
+        />
+        <PageAction href={page.href} />
+      </ContentLayout.Outline>
     </ContentLayout>
   );
 }
