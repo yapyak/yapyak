@@ -20,7 +20,6 @@ export function Icon(props: IconProps) {
     <Box
       as="i"
       {...restProps}
-      aria-hidden="true"
       className={[
         styles.Icon,
         className,

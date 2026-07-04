@@ -1,6 +1,7 @@
 export function IconGlyphGithub() {
   return (
     <svg
+      aria-hidden="true"
       fill="currentColor"
       height="1em"
       shapeRendering="geometricPrecision"
