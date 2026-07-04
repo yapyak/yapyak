@@ -7,9 +7,9 @@ import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 import { ListboxBase, ListboxBaseOption } from '#primitives/listbox';
 
-import styles from './command-palette-listbox.module.css';
+import styles from './search-dialog-listbox.module.css';
 
-export type CommandPaletteListboxProps = {
+export type SearchDialogListboxProps = {
   highlightedHref: null | string;
   id: string;
   onHighlightChange: (href: null | string) => void;
@@ -17,12 +17,12 @@ export type CommandPaletteListboxProps = {
   results: SearchResult[];
 };
 
-export function CommandPaletteListbox(props: CommandPaletteListboxProps) {
+export function SearchDialogListbox(props: SearchDialogListboxProps) {
   const { highlightedHref, id, onHighlightChange, onSelect, results } = props;
 
   return (
     <ListboxBase
-      className={styles.CommandPaletteListbox}
+      className={styles.SearchDialogListbox}
       highlight={highlightedHref}
       id={id}
       onChange={onSelect}

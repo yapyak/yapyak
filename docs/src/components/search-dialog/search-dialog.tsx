@@ -1,5 +1,6 @@
 import type { SearchData } from '@yapyak/doc-compiler';
 import type { ChangeEvent, KeyboardEvent, PointerEvent } from 'react';
+import type { DialogProps } from '#components/dialog';
 
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -11,20 +12,17 @@ import { KEY_MAP } from '#constants';
 import { getSearchResults } from '#lib/search-result';
 import { Box } from '#primitives/box';
 
-import styles from './command-palette.module.css';
-import { CommandPaletteListbox } from './command-palette-listbox';
+import styles from './search-dialog.module.css';
+import { SearchDialogListbox } from './search-dialog-listbox';
 
-const LISTBOX_ID = 'command-palette-listbox';
+const LISTBOX_ID = 'search-dialog-listbox';
 
-export type CommandPaletteProps = {
-  id: string;
-  onClose: () => void;
-  open: boolean;
+export type SearchDialogProps = DialogProps & {
   searchData: SearchData | undefined;
 };
 
-export function CommandPalette(props: CommandPaletteProps) {
-  const { id, onClose, open, searchData } = props;
+export function SearchDialog(props: SearchDialogProps) {
+  const { className, open, searchData, onClose, ...restProps } = props;
 
   const navigate = useNavigate();
   const inputElement = useRef<HTMLInputElement>(null);
@@ -70,7 +68,7 @@ export function CommandPalette(props: CommandPaletteProps) {
       hash,
       to: pathname,
     });
-    onClose();
+    onClose?.();
   };
 
   const moveHighlight = (delta: number) => {
@@ -148,9 +146,12 @@ export function CommandPalette(props: CommandPaletteProps) {
 
   return (
     <Dialog
-      className={styles.CommandPalette}
+      {...restProps}
+      className={[
+        styles.SearchDialog,
+        className,
+      ]}
       data-populated={isPopulated}
-      id={id}
       onClose={onClose}
       onPointerDown={handleDialogPointerDown}
       open={open}
@@ -178,7 +179,7 @@ export function CommandPalette(props: CommandPaletteProps) {
         />
       </Box>
       {hasResults && (
-        <CommandPaletteListbox
+        <SearchDialogListbox
           highlightedHref={highlightedHref}
           id={LISTBOX_ID}
           onHighlightChange={setHighlightedHref}

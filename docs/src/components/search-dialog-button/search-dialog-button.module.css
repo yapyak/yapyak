@@ -1,5 +1,5 @@
 @layer components {
-  .CommandPaletteButton {
+  .SearchDialogButton {
     display: inline-flex;
     gap: var(--spacing-2);
     align-items: center;

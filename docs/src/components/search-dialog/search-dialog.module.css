@@ -1,5 +1,5 @@
 @layer components {
-  .CommandPalette {
+  .SearchDialog {
     .SearchBar {
       display: flex;
       flex: none;

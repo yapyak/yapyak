@@ -6,18 +6,18 @@ import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
-import styles from './command-palette-button.module.css';
+import styles from './search-dialog-button.module.css';
 
-export type CommandPaletteButtonProps = ButtonBaseProps;
+export type SearchDialogButtonProps = ButtonBaseProps;
 
-export function CommandPaletteButton(props: CommandPaletteButtonProps) {
+export function SearchDialogButton(props: SearchDialogButtonProps) {
   const { className, ...restProps } = props;
 
   return (
     <ButtonBase
       {...restProps}
       className={[
-        styles.CommandPaletteButton,
+        styles.SearchDialogButton,
         className,
       ]}
     >
