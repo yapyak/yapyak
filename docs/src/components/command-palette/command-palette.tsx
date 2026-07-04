@@ -1,5 +1,5 @@
 import type { SearchData } from '@yapyak/doc-compiler';
-import type { ChangeEvent, KeyboardEvent, MouseEvent } from 'react';
+import type { ChangeEvent, KeyboardEvent, PointerEvent } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -104,7 +104,7 @@ export function CommandPalette(props: CommandPaletteProps) {
     setQuery(event.target.value);
   };
 
-  const handleDialogMouseDown = (event: MouseEvent) => {
+  const handleDialogPointerDown = (event: PointerEvent) => {
     if (event.target !== inputElement.current) {
       event.preventDefault();
     }
@@ -152,7 +152,7 @@ export function CommandPalette(props: CommandPaletteProps) {
       data-populated={isPopulated}
       id={id}
       onClose={onClose}
-      onMouseDown={handleDialogMouseDown}
+      onPointerDown={handleDialogPointerDown}
       open={open}
     >
       <Box className={styles.SearchBar}>

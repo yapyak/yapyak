@@ -35,6 +35,21 @@ describe('getSearchResults', () => {
     ).toEqual([]);
   });
 
+  it('returns no result when nothing matches, even for a page entry', () => {
+    expect(
+      getSearchResults(
+        searchData([
+          entry({
+            body: 'Cancel',
+            kind: 'page',
+            title: 'Save',
+          }),
+        ]),
+        'zxqwv',
+      ),
+    ).toEqual([]);
+  });
+
   it('prefers an exact title match over a substring match', () => {
     const results = getSearchResults(
       searchData([

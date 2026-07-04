@@ -88,7 +88,7 @@ function getScore(entry: SearchEntry, query: string, tokens: string[]) {
     score += 40;
   }
 
-  if (entry.kind === 'page') {
+  if (score > 0 && entry.kind === 'page') {
     score += 2;
   }
 

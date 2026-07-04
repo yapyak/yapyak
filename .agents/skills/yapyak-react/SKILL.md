@@ -495,6 +495,38 @@ Never route HTML attributes (`aria-*`, `role`, `id`, `className`, `style`, `data
 
 For child-element attributes, expose a `[childElement][AttributeName]` prop — `checkboxLabel`, `triggerLabel`, `dismissLabel`. Named after the element, never the action.
 
+### Pointer events, never mouse events
+
+For pointer interaction — press, release, movement, enter/leave — use the pointer event family. Never the mouse family. Pointer events unify mouse, touch, and pen in one handler; mouse events silently miss touch and pen.
+
+| Use | Never |
+| --- | --- |
+| `onPointerDown` | `onMouseDown` |
+| `onPointerUp` | `onMouseUp` |
+| `onPointerMove` | `onMouseMove` |
+| `onPointerEnter` | `onMouseEnter` |
+| `onPointerLeave` | `onMouseLeave` |
+| `onPointerCancel` | `onMouseOut` / `onMouseOver` |
+
+`onClick` is the **activation** event — it fires for pointer *and* keyboard (Enter/Space on a `<button>`), so it stays. Use `onClick` for "the user activated this control"; use `onPointerDown` when you need the press itself (e.g. `preventDefault` on a focus steal, or driving a press interaction).
+
+```tsx
+// ✓ pointer press — keeps focus in the input on padding clicks
+<Dialog
+  onPointerDown={(event) => {
+    if (event.target !== inputElement.current) {
+      event.preventDefault();
+    }
+  }}
+/>
+
+// ✓ activation — fires for pointer and keyboard
+<button onClick={handleSubmit}>Save</button>
+
+// ✗ mouse-only — misses touch and pen
+<div onMouseDown={handlePress} onMouseEnter={handleHover} />
+```
+
 ### Hooks
 
 - One hook per file: `use-locale.ts`, `use-controllable-state.ts`.
