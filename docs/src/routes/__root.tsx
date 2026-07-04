@@ -180,6 +180,11 @@ function ShellComponent(props: ShellComponentProps) {
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{
+            __html: "history.scrollRestoration = 'manual';",
+          }}
+        />
+        <script
+          dangerouslySetInnerHTML={{
             __html: optionsPrepaintScript,
           }}
         />
