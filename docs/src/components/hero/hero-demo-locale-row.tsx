@@ -8,14 +8,20 @@ import styles from './hero-demo-locale-stack.module.css';
 
 export type HeroDemoLocaleRowProps = {
   filename: string;
-  isShimmering: boolean;
   localeCode: LocaleCode;
   savedSource: string;
+  shimmering: boolean;
   value: string | undefined;
 };
 
 export function HeroDemoLocaleRow(props: HeroDemoLocaleRowProps) {
-  const { filename, isShimmering, localeCode, savedSource, value } = props;
+  const {
+    filename,
+    localeCode,
+    savedSource,
+    shimmering: isShimmering,
+    value,
+  } = props;
 
   return (
     <Box className={styles.LocaleRow}>

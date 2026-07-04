@@ -54,7 +54,7 @@
 
       .Footer {
         display: flex;
-        flex-shrink: 0;
+        flex: none;
         gap: var(--spacing-3);
         align-items: center;
         justify-content: space-between;

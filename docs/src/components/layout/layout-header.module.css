@@ -23,7 +23,7 @@
 
     .Bar {
       display: grid;
-      flex-shrink: 0;
+      flex: none;
       grid-template-columns: 1fr auto;
       align-items: center;
       width: 100%;

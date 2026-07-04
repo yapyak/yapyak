@@ -8,7 +8,6 @@
     font-weight: var(--font-weight-medium);
     text-align: center;
     outline: var(--spacing-2) solid transparent;
-    outline-offset: 0;
     border-radius: var(--border-radius-full);
     transition:
       box-shadow var(--transition),

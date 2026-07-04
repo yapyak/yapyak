@@ -22,10 +22,8 @@
       font-weight: var(--font-weight-medium);
       color: var(--foreground-soft);
       text-align: left;
-      text-decoration: none;
       cursor: pointer;
       outline: var(--spacing-2) solid transparent;
-      outline-offset: 0;
       background-color: transparent;
       border: 0;
       border-radius: var(--border-radius-sm);

@@ -8,7 +8,6 @@
     justify-self: end;
     width: 20px;
     height: 20px;
-    padding: 0;
     color: var(--foreground-soft);
     cursor: pointer;
     outline: var(--spacing-2) solid transparent;

@@ -4,7 +4,7 @@
     overflow-x: auto;
     scrollbar-color: var(--ring-stronger) transparent;
     scrollbar-width: thin;
-    background: var(--surface);
+    background-color: var(--surface);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);
 

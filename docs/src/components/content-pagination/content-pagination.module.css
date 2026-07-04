@@ -12,7 +12,6 @@
       padding: var(--spacing-5);
 
       outline: var(--spacing-2) solid transparent;
-      outline-offset: 0;
       border-radius: var(--border-radius-md);
       box-shadow: var(--shadow-ring-inset);
       transition:

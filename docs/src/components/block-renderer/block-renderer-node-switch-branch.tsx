@@ -6,14 +6,14 @@ import { BlockRenderer } from './block-renderer';
 
 export type BlockRendererNodeSwitchBranchProps = {
   blocks: Block[];
-  isVisible: boolean;
   value: string;
+  visible: boolean;
 };
 
 export function BlockRendererNodeSwitchBranch(
   props: BlockRendererNodeSwitchBranchProps,
 ) {
-  const { blocks, isVisible, value } = props;
+  const { blocks, value, visible: isVisible } = props;
 
   return (
     <Box

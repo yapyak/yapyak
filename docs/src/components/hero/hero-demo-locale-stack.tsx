@@ -53,10 +53,10 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
       {LOCALES.map((locale) => (
         <HeroDemoLocaleRow
           filename={locale.filename}
-          isShimmering={shimmering.has(locale.code)}
           key={locale.code}
           localeCode={locale.code}
           savedSource={savedSource}
+          shimmering={shimmering.has(locale.code)}
           value={translations[locale.code]}
         />
       ))}

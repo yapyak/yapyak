@@ -1,6 +1,6 @@
 @layer components {
   .Swatch {
-    flex-shrink: 0;
+    flex: none;
     width: 8px;
     height: 8px;
     background-color: var(--foreground-softer);

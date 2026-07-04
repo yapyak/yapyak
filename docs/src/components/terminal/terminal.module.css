@@ -3,8 +3,7 @@
     position: relative;
     overflow: hidden;
     outline: var(--spacing-2) solid transparent;
-    outline-offset: 0;
-    background: var(--surface);
+    background-color: var(--surface);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);
     transition: outline var(--duration-slow);

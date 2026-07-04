@@ -25,9 +25,9 @@ export function BlockRendererNodeSwitch(props: BlockRendererNodeSwitchProps) {
       {group.options.map((option) => (
         <BlockRendererNodeSwitchBranch
           blocks={block.branches[option.value] ?? block.fallback ?? []}
-          isVisible={option.value === activeValue}
           key={option.value}
           value={option.value}
+          visible={option.value === activeValue}
         />
       ))}
     </Box>

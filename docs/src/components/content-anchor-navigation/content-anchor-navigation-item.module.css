@@ -5,9 +5,7 @@
     font-size: var(--font-size-xs);
     color: var(--foreground-soft);
     text-wrap: pretty;
-    text-decoration: none;
     outline: var(--spacing-2) solid transparent;
-    outline-offset: 0;
     border-radius: var(--border-radius-sm);
     transition:
       color var(--transition),
