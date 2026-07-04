@@ -1,6 +1,15 @@
 @layer components {
-  .CommandPaletteItem {
-    .Link {
+  .CommandPaletteListbox {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--spacing-05);
+    padding: var(--spacing-2);
+    overflow-y: auto;
+    scrollbar-color: var(--ring-stronger) transparent;
+    scrollbar-width: thin;
+
+    .Option {
       display: flex;
       gap: var(--spacing-3);
       align-items: center;
@@ -9,6 +18,7 @@
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-medium);
       color: var(--foreground-soft);
+      cursor: pointer;
       border-radius: var(--border-radius-sm);
       box-shadow: inset 0 0 0 var(--px) transparent;
       transition:
@@ -47,23 +57,13 @@
         }
       }
 
-      @media (hover: hover) {
-        &:hover {
-          color: var(--foreground);
-          background-color: var(--surface);
-          box-shadow: var(--shadow-ring-inset);
-        }
-      }
-
       &:active {
         color: var(--foreground);
         background-color: var(--surface-strong);
         box-shadow: var(--shadow-ring-inset);
       }
-    }
 
-    &[data-active] {
-      .Link {
+      &[data-highlighted] {
         color: var(--foreground);
         background-color: var(--surface);
         box-shadow: var(--shadow-ring-inset);
