@@ -113,17 +113,6 @@ export default defineConfig({
       name: 'preserve-css-layer-order',
     },
     tanstackStart({
-      pages: [
-        {
-          path: '/404',
-          prerender: {
-            outputPath: '/404.html',
-          },
-          sitemap: {
-            exclude: true,
-          },
-        },
-      ],
       prerender: {
         concurrency: 1,
         crawlLinks: true,
@@ -147,6 +136,12 @@ export default defineConfig({
             path.startsWith('/guide') ||
             path.startsWith('/reference')
           );
+        },
+      },
+      spa: {
+        enabled: true,
+        prerender: {
+          outputPath: '/404.html',
         },
       },
     }),
