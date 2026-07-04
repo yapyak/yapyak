@@ -98,6 +98,7 @@ export function useScrollRestoration() {
     if (typeof window === 'undefined') {
       return;
     }
+    window.history.scrollRestoration = 'manual';
     hydrate();
 
     const unsubscribeBeforeNavigate = router.subscribe(

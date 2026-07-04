@@ -40,7 +40,7 @@ export function MobileDialog(props: MobileDialogProps) {
               >
                 <LinkBase
                   className={styles.Link}
-                  to="/home"
+                  to="/"
                 >
                   {t('Home')}
                 </LinkBase>

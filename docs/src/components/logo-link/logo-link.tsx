@@ -16,7 +16,7 @@ export function LogoLink(props: LogoLinkProps) {
         styles.LogoLink,
         className,
       ]}
-      to="/home"
+      to="/"
     >
       <Box
         aria-label="yapyak"

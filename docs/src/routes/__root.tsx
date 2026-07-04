@@ -126,7 +126,7 @@ function Component() {
         </Layout.Header.Start>
         <Layout.Header.Center>
           <Navigation>
-            <Navigation.Link to="/home">{t('Home')}</Navigation.Link>
+            <Navigation.Link to="/">{t('Home')}</Navigation.Link>
             <Navigation.Link to="/guide">{t('Guide')}</Navigation.Link>
             <Navigation.Link to="/reference">{t('Reference')}</Navigation.Link>
           </Navigation>
@@ -178,11 +178,6 @@ function ShellComponent(props: ShellComponentProps) {
     <html lang={locale}>
       <head>
         <HeadContent />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "history.scrollRestoration = 'manual';",
-          }}
-        />
         <script
           dangerouslySetInnerHTML={{
             __html: optionsPrepaintScript,
