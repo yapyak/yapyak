@@ -11,7 +11,6 @@ import { Drawer } from '#components/drawer';
 import { Icon } from '#components/icon';
 import { IconButton } from '#components/icon-button';
 import { PageAction } from '#components/page-action';
-import { useMediaQuery } from '#hooks/use-media-query';
 
 import { doc } from 'virtual:doc-compiler';
 
@@ -29,9 +28,6 @@ export const Route = createFileRoute('/guide')({
 function Component() {
   const { sidebar } = Route.useRouteContext();
   const { page } = splatRoute.useLoaderData();
-
-  const isSidebarInline = useMediaQuery('(min-width: 1024px)');
-  const isOutlineInline = useMediaQuery('(min-width: 1324px)');
 
   const headings = useMemo(
     () =>
@@ -54,11 +50,9 @@ function Component() {
   return (
     <ContentLayout>
       <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
-
       <ContentLayout.Content>
         <ContentLayout.ContentHeader
           end={
-            !isOutlineInline &&
             headings.length > 0 && (
               <DialogTrigger
                 dialog={(dialogProps) => (
@@ -87,35 +81,31 @@ function Component() {
             )
           }
           start={
-            !isSidebarInline && (
-              <DialogTrigger
-                dialog={(dialogProps) => (
-                  <Drawer
-                    {...dialogProps}
-                    direction="start"
-                  >
-                    {sidebarContent}
-                  </Drawer>
-                )}
-              >
-                {(triggerProps) => (
-                  <IconButton
-                    {...triggerProps}
-                    icon={<Icon name="sidebar" />}
-                  >
-                    {t('Menu')}
-                  </IconButton>
-                )}
-              </DialogTrigger>
-            )
+            <DialogTrigger
+              dialog={(dialogProps) => (
+                <Drawer
+                  {...dialogProps}
+                  direction="start"
+                >
+                  {sidebarContent}
+                </Drawer>
+              )}
+            >
+              {(triggerProps) => (
+                <IconButton
+                  {...triggerProps}
+                  icon={<Icon name="sidebar" />}
+                >
+                  {t('Menu')}
+                </IconButton>
+              )}
+            </DialogTrigger>
           }
         />
-
         <ContentLayout.ContentContent>
           <Outlet />
         </ContentLayout.ContentContent>
       </ContentLayout.Content>
-
       <ContentLayout.Outline>
         <ContentAnchorNavigation
           headings={headings}

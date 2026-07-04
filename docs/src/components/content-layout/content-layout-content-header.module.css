@@ -21,6 +21,10 @@
 
     .Start {
       justify-self: start;
+
+      @media (min-width: 1024px) {
+        display: none;
+      }
     }
 
     .End {

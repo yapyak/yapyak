@@ -11,7 +11,6 @@ import { Drawer } from '#components/drawer';
 import { Icon } from '#components/icon';
 import { IconButton } from '#components/icon-button';
 import { PageAction } from '#components/page-action';
-import { useMediaQuery } from '#hooks/use-media-query';
 
 import { doc } from 'virtual:doc-compiler';
 
@@ -29,9 +28,6 @@ export const Route = createFileRoute('/reference')({
 function Component() {
   const { sidebar } = Route.useRouteContext();
   const { page } = splatRoute.useLoaderData();
-
-  const isSidebarInline = useMediaQuery('(min-width: 1024px)');
-  const isOutlineInline = useMediaQuery('(min-width: 1324px)');
 
   const headings = useMemo(
     () =>
@@ -58,55 +54,51 @@ function Component() {
       <ContentLayout.Content>
         <ContentLayout.ContentHeader
           end={
-            !isOutlineInline && (
-              <DialogTrigger
-                dialog={(dialogProps) => (
-                  <Drawer
-                    {...dialogProps}
-                    direction="end"
-                  >
-                    <ContentAnchorNavigation
-                      headings={headings}
-                      key={page.href}
-                    />
-                    <PageAction href={page.href} />
-                  </Drawer>
-                )}
-              >
-                {(triggerProps) => (
-                  <IconButton
-                    {...triggerProps}
-                    icon={<Icon name="outline" />}
-                    iconPosition="trailing"
-                  >
-                    {t('Page')}
-                  </IconButton>
-                )}
-              </DialogTrigger>
-            )
+            <DialogTrigger
+              dialog={(dialogProps) => (
+                <Drawer
+                  {...dialogProps}
+                  direction="end"
+                >
+                  <ContentAnchorNavigation
+                    headings={headings}
+                    key={page.href}
+                  />
+                  <PageAction href={page.href} />
+                </Drawer>
+              )}
+            >
+              {(triggerProps) => (
+                <IconButton
+                  {...triggerProps}
+                  icon={<Icon name="outline" />}
+                  iconPosition="trailing"
+                >
+                  {t('Page')}
+                </IconButton>
+              )}
+            </DialogTrigger>
           }
           start={
-            !isSidebarInline && (
-              <DialogTrigger
-                dialog={(dialogProps) => (
-                  <Drawer
-                    {...dialogProps}
-                    direction="start"
-                  >
-                    {sidebarContent}
-                  </Drawer>
-                )}
-              >
-                {(triggerProps) => (
-                  <IconButton
-                    {...triggerProps}
-                    icon={<Icon name="sidebar" />}
-                  >
-                    {t('Menu')}
-                  </IconButton>
-                )}
-              </DialogTrigger>
-            )
+            <DialogTrigger
+              dialog={(dialogProps) => (
+                <Drawer
+                  {...dialogProps}
+                  direction="start"
+                >
+                  {sidebarContent}
+                </Drawer>
+              )}
+            >
+              {(triggerProps) => (
+                <IconButton
+                  {...triggerProps}
+                  icon={<Icon name="sidebar" />}
+                >
+                  {t('Menu')}
+                </IconButton>
+              )}
+            </DialogTrigger>
           }
         />
 
