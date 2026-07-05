@@ -62,7 +62,7 @@ describe('extractFile', () => {
     }
   });
 
-  it('merges the fragment element with the component from the fileId', () => {
+  it('merges the fragment element with the component from the `fileId`', () => {
     const processor: Processor = {
       extensions: [
         '.vue',

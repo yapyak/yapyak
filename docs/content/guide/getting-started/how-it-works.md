@@ -245,9 +245,8 @@ doesn't ship, `createProcessor` from `yapyak/processor` builds one.
 
 ## Context
 
-yapyak extracts each message together with the component and element around it, and
-a snippet of the source as you wrote it. The shape is the same for every framework,
-whether the call sits in JSX, a Vue or Svelte template, or an Astro component:
+yapyak extracts each message together with the component and element around it, plus
+a snippet of the surrounding code:
 
 ```ts
 {
@@ -261,9 +260,9 @@ whether the call sits in JSX, a Vue or Svelte template, or an Astro component:
 ```
 
 The element tells the model it is translating a button label rather than prose, the
-component names the surface it belongs to, and the snippet carries the surrounding
-markup as it appears in your file. How much of this travels with each request is a
-setting. See [Context](/guide/translating/context) for the levels and
+component names the surface it belongs to, and the snippet shows the element as it
+appears in your file. How much of this travels with each request is a setting. See
+[Context](/guide/translating/context) for the levels and
 [Examples](/guide/translating/examples) for how yapyak seeds the model with
 translations you already made.
 
