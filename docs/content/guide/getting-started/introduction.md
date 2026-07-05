@@ -100,11 +100,21 @@ This matches Vite's build model. Routes load the modules they need, and those mo
 
 For static deploys, a build can target a single locale at compile time. The compiler rewrites every `t()` call to its target literal and tree-shakes the picker away. The resulting bundle contains no i18n runtime at all.
 
+## ICU at the call site
+
+yapyak uses ICU MessageFormat for the moving parts of a message: counts, plurals, dates. You write it inline, as the source string:
+
+```tsx
+<p>{t('You have {count, plural, one {# message} other {# messages}}', { count })}</p>
+```
+
+The ICU stays in the code that renders it, with no key and no catalog file. TypeScript reads it there and types the parameters from it, with no codegen and no declaration file.
+
 ## Correctness all the way down
 
 yapyak checks correctness at three stages: while you type, when you save, and while the app runs.
 
-The first is while you type. TypeScript reads the ICU in the source string and types every parameter from it, live in the editor. The source string is the only input. Nothing is generated, and there is no declaration file to keep in sync. Forget a value, misspell a plural keyword, or leave a placeholder open, and TypeScript flags it at the call site, in any editor, before you save.
+The first is while you type. The parameter types reject whatever doesn't fit. Forget a value, misspell a plural keyword, or leave a placeholder open, and TypeScript flags it at the call site before you save.
 
 {% diagnostics %}
 t('You have {count} messages', { count: 3 });          // ok
@@ -112,11 +122,11 @@ t('You have {count} messages', {});                    // error: missing 'count'
 t('{count, plural, oen {#} other {#}}', { count: 3 }); // error: unknown plural keyword "oen"
 {% /diagnostics %}
 
-The second is when you save. The compiler validates the translations too, across every locale. It catches a placeholder that went missing in Swedish, a plural without its `other` branch, a rich-text tag left open, or a locale file that no longer parses, and stops the build before any of them reach a user.
+The second is when you save. The compiler validates every locale, catching a placeholder gone missing in Swedish, a plural without its `other` branch, an unclosed rich-text tag, or a locale file that won't parse. The build stops before any of them ship.
 
-The third is while the app runs. In development, yapyak warns about the problems that only surface in the browser: a locale leaking between server requests, a `setLocale` for a language you never configured, a currency `Intl` cannot format.
+The third is while the app runs. In development, yapyak warns about what only surfaces in the browser: a locale leaking between server requests, a `setLocale` for an unconfigured language, a currency `Intl` cannot format.
 
-Every one of these has a number, like `YAP0042`, and a page that explains it. All 44 of them, the diagnostics of a compiler pointed at your translations.
+Each has a number, like `YAP0042`, and a page that explains it. 44 in all, from the editor to the runtime.
 
 ## Formatting outside messages
 
@@ -162,14 +172,14 @@ The first button is much longer. That can break a dialog footer or a mobile layo
 
 With live translations, you see this while the layout is still in front of you.
 
-## Built for agents
+## What changes
 
-The cumulative effect of these choices: an agent writing your application doesn't have to think about i18n. And barely you either.
+Some of this is new, like ICU type-checked at the call site. Some is proven, like ICU itself and locale files in git. The combination is what changes.
 
-It writes `<button>{t('Save changes')}</button>` because that's the natural way to express what the button says. The compiler extracts it, validates it, sends it to the translator, writes the result back, restores it on refactor, and compiles it into the bundle.
+Translations write themselves and ship bundled with the code, so you watch them land in the running app. A layout that breaks in German is something you see, not something a user reports.
 
-The agent doesn't learn a key naming system. Doesn't edit JSON. Doesn't integrate with a translation vendor. The English string at the call site is the only artifact anyone has to produce. Everything else is mechanical.
+And an agent can own it. It writes `t('Save changes')`, and ICU when it needs to, because that is how models already write. The source string is the only artifact anyone produces. Everything else is yapyak's: extract, validate, translate, restore on refactor, compile into the bundle.
 
-yapyak does the heavy lifting, then leaves the result where an agent already knows to look: in your repo, in a file, committed to git.
+i18n stops being a step you schedule and becomes part of writing the code, by whoever or whatever writes it.
 
 yapyak is i18n that keeps up. With your code, with your agents, with the pace they set.
