@@ -26,6 +26,10 @@
         }
       }
 
+      &:active {
+        background-color: var(--surface-strong);
+      }
+
       &:focus-visible {
         outline-width: var(--spacing-1);
         outline-color: var(--accent-soft);
