@@ -127,7 +127,19 @@ Each has a number, like `YAP0042`, and a page that explains it. 44 in all, from 
 
 ## Formatting outside messages
 
-Not every number lives inside a translatable message. For a price on a card or a timestamp in a footer, yapyak provides a `format` namespace covering numbers, dates, lists, and relative time. It builds on the platform's `Intl` and follows the active locale.
+yapyak also formats the values outside a message: numbers, dates, relative time, and lists. Each follows the active locale:
+
+```ts
+import { format } from 'yapyak';
+
+format.number(1234.5, { style: 'currency', currency: 'EUR' });
+// output:
+// en: '€1,234.50'
+// de: '1.234,50 €'
+// fr: '1 234,50 €'
+```
+
+It builds on the platform's `Intl`, and adds the type safety `Intl` lacks. Ask for a currency and TypeScript requires the code, and the ISO 4217 codes autocomplete. If `Intl` can't render a currency or time zone, `format` returns a readable fallback instead of throwing.
 
 ## Bundled with code
 
