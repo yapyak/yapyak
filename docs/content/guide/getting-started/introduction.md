@@ -72,23 +72,30 @@ Vite HMR updates the running application with the translated text.
 
 ## Code is the context
 
-Because yapyak is a compiler, it can read the code around each message and send that context along to the model. Especially useful for short messages, where a single word can mean different things in different places. Consider this:
+Because yapyak is a compiler, it reads the code around each message and sends it to the model with the request. Short UI strings are where the model has the least to go on: a lone label carries no sentence to place it, and that context is what a translator would otherwise have to ask for.
 
-```tsx [src/components/file-menu.tsx]
-<button onClick={openFile}>{t('Open')}</button>
+Take a button:
+
+```tsx [src/components/save-button.tsx]
+<button onClick={save}>{t('Save changes')}</button>
 ```
 
-The request to the translator carries this context:
+With the request, yapyak sends the enclosing component, the element, and the surrounding code:
 
 ```ts
 {
-  enclosingComponent: 'FileMenu',
-  enclosingElement: 'button',
-  snippet: "<button onClick={openFile}>{t('Open')}</button>",
+  source: 'Save changes',
+  context: {
+    enclosingComponent: 'SaveButton',
+    enclosingElement: 'button',
+    snippet: "<button onClick={save}>{t('Save changes')}</button>",
+  },
 }
 ```
 
-All of this happens automatically. You decide how much context the model sees, including none at all.
+The element alone tells the model this is a button, so it reaches for a concise imperative instead of a description.
+
+All of this makes for sharper translations, and how much of it travels with each request is yours to set: the surrounding code, the component and element alone, or nothing at all.
 
 ## ICU at the call site
 
@@ -134,7 +141,7 @@ For static deploys, a build can target a single locale at compile time. The comp
 
 ## What changes
 
-Put together, these become a different way to handle i18n, one shaped for how software gets built now. Two things follow.
+Put together, these become a different way to handle i18n, one shaped for how software gets built now. Three things follow.
 
 ### You watch it happen
 
@@ -168,6 +175,16 @@ In English the buttons fit in a dialog or on a mobile screen. In German:
 
 The first button is much longer, enough to break a dialog footer or a mobile layout. With live translation, you see it while the layout is still in front of you.
 
+### AI translation becomes reliable
+
+Translation models keep improving, and they already handle interface copy well. What they often lack is the context around each message. yapyak supplies it: where the message appears, the code around it, your glossary and voice, and examples from translations already in the project. That gives the model enough to choose the right words, keep them consistent, and produce translations you can use directly in the save loop.
+
+```tsx [src/components/delete-account.tsx]
+<button onClick={deleteAccount}>{t('Delete account')}</button>
+```
+
+`Delete` has two good Swedish forms, `Ta bort` and `Radera`. Because the project already translated `Delete` as `Ta bort`, this comes back as `Ta bort konto`, not `Radera konto`. The terminology stays consistent as the locale file fills in.
+
 ### An agent can own it
 
 An agent writes `<button>{t('Save changes')}</button>` because that is the natural way to say what the button says, and it writes ICU when it needs to, because that is how models already write. The source string is the only artifact anyone produces. Everything else is yapyak's: extract, validate, translate, restore on refactor, compile into the bundle, then leave the result where an agent already knows to look, in your repo, in a file, committed to git.
@@ -176,4 +193,4 @@ An agent writes `<button>{t('Save changes')}</button>` because that is the natur
 
 i18n stops being a project beside your code and becomes part of writing it, by whoever or whatever writes it.
 
-yapyak is i18n that keeps up. With your code, with your agents, with the pace they set.
+yapyak is i18n that keeps up. With your code, with your UI, with your agents, and with the pace they set.

@@ -68,3 +68,7 @@ h6 {
 th {
   text-align: left;
 }
+
+hr {
+  border: none;
+}
