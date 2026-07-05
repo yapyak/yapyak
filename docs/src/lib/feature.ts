@@ -24,21 +24,21 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'The AI sees the component, the element, and the surrounding code. Set a voice ("friendly", "terse", "lawyer at a dinner party"). Pin glossary terms so "cart" stays "kundvagn", even when the AI thinks it knows better. The AI learns your app\'s language from your past translations.',
+        'No string gets translated in a vacuum. The AI sees the component it appears in, the element wrapping it, and the code beside it. Set a voice ("friendly", "terse", "lawyer at a dinner party"). Pin glossary terms so "cart" stays "kundvagn", even when the AI thinks it knows better. The AI learns your app\'s language from your past translations.',
       ),
       number: '03',
       title: t('Context-aware AI translation'),
     },
     {
       description: t(
-        'Rename a file, move a component, or copy markup to a new one, and the translations follow. Delete a component and bring it back later, and they return with it. The compiler refuses to write a locale file in a way that would silently drop a translation still in use.',
+        'Rename the file, move the component, or paste the markup somewhere new, and the translations come with it. Delete a component and its translations do not vanish; bring it back and they are waiting. yapyak will never overwrite a locale file in a way that quietly drops a translation you still use.',
       ),
       number: '04',
-      title: t('Translations follow refactors'),
+      title: t('Refactor freely'),
     },
     {
       description: t(
-        'Forget a param and TypeScript flags it at the call site, before you save. On save, the compiler validates every locale and stops the build before a broken translation ships. At runtime, it warns about what only surfaces in the browser. 44 numbered diagnostics, each with a page, from the editor to the runtime.',
+        'Forget a param and the type checker catches it at the call site, before you even save. Save, and the compiler checks every locale, refusing to ship a translation that drifted or lost a plural. In the browser, it catches the failures that build time never sees. 44 numbered diagnostics, YAP0001 and up, each with a page that spells out the fix.',
       ),
       number: '05',
       title: t('Paranoid by default'),
@@ -59,7 +59,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'Switch locale and the UI updates instantly, with no file to fetch and no loading state. Persist the choice in a cookie, the URL, or local storage. On the server the locale comes from the request, isolated per user so nothing leaks between them.',
+        "Switch the locale and it swaps instantly: the translations are already in the bundle, so there is nothing to fetch and no spinner. Persist the choice in a cookie, the URL, or local storage. On the server, each request gets its own locale, so one user's language never bleeds into another's.",
       ),
       number: '08',
       title: t('Locale switching, handled'),
