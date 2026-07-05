@@ -2,7 +2,8 @@ import ts from 'typescript';
 
 export type CallSiteContext = {
   enclosingComponent?: string;
-  enclosingJsx?: string;
+  enclosingElement?: string;
+  snippet?: string;
 };
 
 const HOC_NAMES = new Set([
@@ -20,10 +21,11 @@ export function resolveCallSiteContext(
   let current: ts.Node | undefined = node.parent;
 
   while (current && !ts.isSourceFile(current)) {
-    if (!result.enclosingJsx) {
+    if (!result.enclosingElement) {
       const jsxTag = readJsxElementTag(current, sourceFile);
       if (jsxTag) {
-        result.enclosingJsx = jsxTag;
+        result.enclosingElement = jsxTag;
+        result.snippet = current.getText(sourceFile);
       }
     }
 

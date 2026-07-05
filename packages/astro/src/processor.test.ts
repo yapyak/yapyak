@@ -44,6 +44,21 @@ describe('astro processor — shape', () => {
 });
 
 describe('astro processor — extract', () => {
+  it('returns call-site context for a template message', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      `<button>{t('Save changes')}</button>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    expect(result.messages[0]?.locations[0]?.callSiteContext).toEqual({
+      enclosingComponent: 'A',
+      enclosingElement: 'button',
+      snippet: `<button>{t('Save changes')}</button>`,
+    });
+  });
+
   it('returns frontmatter `t()` calls when frontmatter imports yapyak', () => {
     const source = [
       '---',

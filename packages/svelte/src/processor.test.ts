@@ -49,6 +49,22 @@ describe('svelte processor — shape', () => {
 });
 
 describe('svelte processor — extract', () => {
+  it('returns call-site context for a template message', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        `<button>{t('Save changes')}</button>`,
+      ].join('\n'),
+    );
+    expect(result.messages[0]?.locations[0]?.callSiteContext).toEqual({
+      enclosingComponent: 'A',
+      enclosingElement: 'button',
+      snippet: `<button>{t('Save changes')}</button>`,
+    });
+  });
+
   it('extracts `t()` from inside an `{#if}` block', () => {
     const result = extractSvelte(
       [

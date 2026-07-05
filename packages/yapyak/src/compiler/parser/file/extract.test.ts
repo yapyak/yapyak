@@ -1,3 +1,4 @@
+import type { Processor } from '../../../processor';
 import type { ExtractFileResult } from './extract';
 
 import { describe, expect, it } from 'vitest';
@@ -59,6 +60,45 @@ describe('extractFile', () => {
         'Greeting',
       );
     }
+  });
+
+  it('merges the fragment element with the component from the fileId', () => {
+    const processor: Processor = {
+      extensions: [
+        '.vue',
+      ],
+      id: 'template',
+      parseFragments: () => [
+        {
+          code: "import { t } from 'yapyak';",
+          language: 'ts',
+          originalOffset: 0,
+          type: 'script',
+        },
+        {
+          code: "t('Save changes')",
+          enclosingElement: 'button',
+          language: 'ts',
+          originalOffset: 28,
+          snippet: `<button>{t('Save changes')}</button>`,
+          type: 'template-expression',
+        },
+      ],
+    };
+    const result = extractFile(
+      'src/a.vue',
+      "import { t } from 'yapyak'; t('Save changes')",
+      {
+        processors: [
+          processor,
+        ],
+      },
+    );
+    expect(result.messages[0]?.locations[0]?.callSiteContext).toEqual({
+      enclosingComponent: 'A',
+      enclosingElement: 'button',
+      snippet: `<button>{t('Save changes')}</button>`,
+    });
   });
 
   it('returns stable ids across runs', () => {

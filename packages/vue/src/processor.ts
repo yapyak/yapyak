@@ -24,6 +24,8 @@ const NODE_TYPE_SIMPLE_EXPRESSION = 4;
 const NODE_TYPE_INTERPOLATION = 5;
 const NODE_TYPE_DIRECTIVE = 7;
 
+const TAG_TYPE_TEMPLATE = 3;
+
 const requireFromHere = createRequire(import.meta.url);
 
 let cached: typeof VueSfc | undefined;
@@ -112,22 +114,45 @@ function toScriptFragment(block: SFCScriptBlock): Fragment {
   };
 }
 
+type EnclosingContext = {
+  element: string;
+  snippet: string;
+};
+
+function getEnclosingContext(
+  node: ElementNode,
+  source: string,
+): EnclosingContext {
+  return {
+    element: node.tag,
+    snippet: source.slice(node.loc.start.offset, node.loc.end.offset),
+  };
+}
+
 function fragmentsFromTemplate(
   node: RootNode | TemplateChildNode,
   source: string,
+  enclosingContext?: EnclosingContext,
 ): Fragment[] {
   const fragments: Fragment[] = [];
   if (isInterpolationNode(node)) {
-    fragments.push(...fragmentsFromInterpolation(node, source));
+    fragments.push(
+      ...fragmentsFromInterpolation(node, source, enclosingContext),
+    );
   }
   if (isElementNode(node)) {
+    const context = getEnclosingContext(node, source);
     for (const prop of node.props) {
-      fragments.push(...fragmentsFromProp(prop, source));
+      fragments.push(...fragmentsFromProp(prop, source, context));
     }
   }
   if (hasChildren(node)) {
+    const childContext =
+      isElementNode(node) && node.tagType !== TAG_TYPE_TEMPLATE
+        ? getEnclosingContext(node, source)
+        : enclosingContext;
     for (const child of node.children) {
-      fragments.push(...fragmentsFromTemplate(child, source));
+      fragments.push(...fragmentsFromTemplate(child, source, childContext));
     }
   }
   return fragments;
@@ -136,32 +161,39 @@ function fragmentsFromTemplate(
 function fragmentsFromInterpolation(
   node: InterpolationNode,
   source: string,
+  enclosingContext?: EnclosingContext,
 ): Fragment[] {
   const mustache = readMustache(source, node.loc.start.offset);
   if (!mustache) {
     return [];
   }
-  return [
-    {
-      code: mustache.code,
-      elisionContext: {
-        mode: 'text',
-        range: rangeFromOffsets(
-          source,
-          node.loc.start.offset,
-          mustache.endOffset,
-        ),
-      },
-      language: 'ts',
-      originalOffset: mustache.codeOffset,
-      type: 'template-expression',
+  const fragment: Fragment = {
+    code: mustache.code,
+    elisionContext: {
+      mode: 'text',
+      range: rangeFromOffsets(
+        source,
+        node.loc.start.offset,
+        mustache.endOffset,
+      ),
     },
+    language: 'ts',
+    originalOffset: mustache.codeOffset,
+    type: 'template-expression',
+  };
+  if (enclosingContext) {
+    fragment.enclosingElement = enclosingContext.element;
+    fragment.snippet = enclosingContext.snippet;
+  }
+  return [
+    fragment,
   ];
 }
 
 function fragmentsFromProp(
   prop: AttributeNode | DirectiveNode,
   source: string,
+  enclosingContext?: EnclosingContext,
 ): Fragment[] {
   if (!isDirectiveNode(prop)) {
     return [];
@@ -169,12 +201,13 @@ function fragmentsFromProp(
   if (!prop.exp) {
     return [];
   }
-  return fragmentsFromDirective(prop, source);
+  return fragmentsFromDirective(prop, source, enclosingContext);
 }
 
 function fragmentsFromDirective(
   prop: DirectiveNode,
   source: string,
+  enclosingContext?: EnclosingContext,
 ): Fragment[] {
   const expression = prop.exp;
   if (!expression) {
@@ -203,6 +236,10 @@ function fragmentsFromDirective(
         prop.loc.end.offset,
       ),
     };
+  }
+  if (enclosingContext) {
+    fragment.enclosingElement = enclosingContext.element;
+    fragment.snippet = enclosingContext.snippet;
   }
   return [
     fragment,

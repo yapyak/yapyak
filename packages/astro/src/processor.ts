@@ -119,42 +119,84 @@ function frontmatterFragment(
   };
 }
 
-function fragmentsFromBodyNode(node: BodyNode, source: string): Fragment[] {
+type EnclosingContext = {
+  element: string;
+  snippet: string;
+};
+
+function getEnclosingContext(
+  node: JSXElement,
+  source: string,
+): EnclosingContext | undefined {
+  const name = node.openingElement.name;
+  if (name.type === 'JSXIdentifier') {
+    return {
+      element: name.name,
+      snippet: source.slice(node.start, node.end),
+    };
+  }
+  return undefined;
+}
+
+function fragmentsFromBodyNode(
+  node: BodyNode,
+  source: string,
+  enclosingContext?: EnclosingContext,
+): Fragment[] {
   if (node.type === 'JSXElement') {
     return fragmentsFromJsxElement(node, source);
   }
   if (node.type === 'JSXFragment') {
     return node.children.flatMap((child) =>
-      fragmentsFromBodyNode(child, source),
+      fragmentsFromBodyNode(child, source, enclosingContext),
     );
   }
   if (node.type === 'JSXExpressionContainer') {
-    return fragmentsFromExpression(node.expression, source, {
-      mode: 'text',
-      range: rangeFromOffsets(source, node.start, node.end),
-    });
+    return fragmentsFromExpression(
+      node.expression,
+      source,
+      {
+        mode: 'text',
+        range: rangeFromOffsets(source, node.start, node.end),
+      },
+      enclosingContext,
+    );
   }
   if (node.type === 'JSXSpreadChild') {
-    return fragmentsFromExpression(node.expression, source);
+    return fragmentsFromExpression(
+      node.expression,
+      source,
+      undefined,
+      enclosingContext,
+    );
   }
   return [];
 }
 
 function fragmentsFromJsxElement(node: JSXElement, source: string): Fragment[] {
+  const enclosingContext = getEnclosingContext(node, source);
   return [
     ...node.openingElement.attributes.flatMap((attribute) =>
-      fragmentsFromAttribute(attribute, source),
+      fragmentsFromAttribute(attribute, source, enclosingContext),
     ),
-    ...node.children.flatMap((child) => fragmentsFromBodyNode(child, source)),
+    ...node.children.flatMap((child) =>
+      fragmentsFromBodyNode(child, source, enclosingContext),
+    ),
   ];
 }
 
 function fragmentsFromAttribute(
   attribute: JSXAttribute | JSXSpreadAttribute,
   source: string,
+  enclosingContext?: EnclosingContext,
 ): Fragment[] {
   if (attribute.type === 'JSXSpreadAttribute') {
-    return fragmentsFromExpression(attribute.argument, source);
+    return fragmentsFromExpression(
+      attribute.argument,
+      source,
+      undefined,
+      enclosingContext,
+    );
   }
   const value = attribute.value;
   if (value === null || value.type === 'Literal') {
@@ -165,14 +207,19 @@ function fragmentsFromAttribute(
   }
   if (value.type === 'JSXFragment') {
     return value.children.flatMap((child) =>
-      fragmentsFromBodyNode(child, source),
+      fragmentsFromBodyNode(child, source, enclosingContext),
     );
   }
-  return fragmentsFromExpression(value.expression, source, {
-    attributeName: attributeNameString(attribute.name),
-    mode: 'attribute',
-    range: rangeFromOffsets(source, attribute.start, attribute.end),
-  });
+  return fragmentsFromExpression(
+    value.expression,
+    source,
+    {
+      attributeName: attributeNameString(attribute.name),
+      mode: 'attribute',
+      range: rangeFromOffsets(source, attribute.start, attribute.end),
+    },
+    enclosingContext,
+  );
 }
 
 function attributeNameString(name: JSXIdentifier | JSXNamespacedName): string {
@@ -185,6 +232,7 @@ function fragmentsFromExpression(
   expression: Expression | JSXEmptyExpression,
   source: string,
   elisionContext?: ElisionContext,
+  enclosingContext?: EnclosingContext,
 ): Fragment[] {
   if (expression.type === 'JSXEmptyExpression') {
     return [];
@@ -194,21 +242,28 @@ function fragmentsFromExpression(
   }
   if (expression.type === 'JSXFragment') {
     return expression.children.flatMap((child) =>
-      fragmentsFromBodyNode(child, source),
+      fragmentsFromBodyNode(child, source, enclosingContext),
     );
   }
   const embedded: (JSXElement | JSXFragment)[] = [];
   collectJsx(expression, embedded);
+  const fragment: Fragment = {
+    code: source.slice(expression.start, expression.end),
+    elisionContext:
+      elisionContext && embedded.length === 0 ? elisionContext : undefined,
+    language: 'ts',
+    originalOffset: expression.start,
+    type: 'template-expression',
+  };
+  if (enclosingContext) {
+    fragment.enclosingElement = enclosingContext.element;
+    fragment.snippet = enclosingContext.snippet;
+  }
   return [
-    {
-      code: source.slice(expression.start, expression.end),
-      elisionContext:
-        elisionContext && embedded.length === 0 ? elisionContext : undefined,
-      language: 'ts',
-      originalOffset: expression.start,
-      type: 'template-expression',
-    },
-    ...embedded.flatMap((node) => fragmentsFromBodyNode(node, source)),
+    fragment,
+    ...embedded.flatMap((node) =>
+      fragmentsFromBodyNode(node, source, enclosingContext),
+    ),
   ];
 }
 

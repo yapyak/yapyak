@@ -127,8 +127,22 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.enclosingJsx).toBe('h1');
+    expect(context.enclosingElement).toBe('h1');
     expect(context.enclosingComponent).toBe('Greeting');
+  });
+
+  it('returns the enclosing element source as the snippet', () => {
+    const sourceFile = parseInline(`
+      import { t } from 'yapyak';
+      export function Greeting() {
+        return <button>{t('Save')}</button>;
+      }
+    `);
+    const context = resolveCallSiteContext(
+      findFirstCall(sourceFile),
+      sourceFile,
+    );
+    expect(context.snippet).toBe(`<button>{t('Save')}</button>`);
   });
 
   it('returns the JSX tag for a self-closing element', () => {
@@ -142,7 +156,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.enclosingJsx).toBe('Button');
+    expect(context.enclosingElement).toBe('Button');
   });
 
   it('returns the full namespaced JSX tag', () => {
@@ -157,7 +171,7 @@ describe('resolveCallSiteContext', () => {
       findFirstCall(sourceFile),
       sourceFile,
     );
-    expect(context.enclosingJsx).toBe('Menu.Item');
+    expect(context.enclosingElement).toBe('Menu.Item');
   });
 
   it('returns context for every call in a nested JSX fixture', () => {
@@ -183,9 +197,9 @@ describe('resolveCallSiteContext', () => {
     const contexts = calls.map((call) =>
       resolveCallSiteContext(call, sourceFile),
     );
-    expect(contexts[0]?.enclosingJsx).toBe('h1');
-    expect(contexts[1]?.enclosingJsx).toBe('p');
-    expect(contexts[2]?.enclosingJsx).toBe('button');
+    expect(contexts[0]?.enclosingElement).toBe('h1');
+    expect(contexts[1]?.enclosingElement).toBe('p');
+    expect(contexts[2]?.enclosingElement).toBe('button');
     for (const context of contexts) {
       expect(context.enclosingComponent).toBe('Greeting');
     }
@@ -201,7 +215,7 @@ describe('resolveCallSiteContext', () => {
       sourceFile,
     );
     expect(context.enclosingComponent).toBeUndefined();
-    expect(context.enclosingJsx).toBeUndefined();
+    expect(context.enclosingElement).toBeUndefined();
   });
 
   it('returns no component name for non-HOC callbacks', () => {

@@ -22,6 +22,7 @@ import { parsePlaceholders } from '../placeholder';
 import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';
+import { basename, extname } from 'node:path';
 
 const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
   {
@@ -211,7 +212,11 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     }
 
     const location: Location = {
-      callSiteContext: resolveCallSiteContext(fragmentCall.node, sourceFile),
+      callSiteContext: mergeCallSiteContext(
+        resolveCallSiteContext(fragmentCall.node, sourceFile),
+        fragment,
+        fileId,
+      ),
       fileId,
       range: remapRange(parsed.sourceRange, fragment, originalSource),
     };
@@ -238,6 +243,44 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     }
     messagesById.set(id, message);
   }
+}
+
+function mergeCallSiteContext(
+  context: CallSiteContext,
+  fragment: Fragment,
+  fileId: string,
+): CallSiteContext {
+  const result: CallSiteContext = {};
+  const enclosingComponent =
+    context.enclosingComponent ??
+    (fragment.type === 'template-expression'
+      ? componentNameFromFileId(fileId)
+      : undefined);
+  if (enclosingComponent !== undefined) {
+    result.enclosingComponent = enclosingComponent;
+  }
+  const enclosingElement =
+    context.enclosingElement ?? fragment.enclosingElement;
+  if (enclosingElement !== undefined) {
+    result.enclosingElement = enclosingElement;
+  }
+  const snippet = context.snippet ?? fragment.snippet;
+  if (snippet !== undefined) {
+    result.snippet = snippet;
+  }
+  return result;
+}
+
+const SEPARATOR_RX = /[-_]/;
+
+function componentNameFromFileId(fileId: string): string | undefined {
+  const stem = basename(fileId, extname(fileId));
+  const name = stem
+    .split(SEPARATOR_RX)
+    .filter((segment) => segment !== '')
+    .map((segment) => segment.charAt(0).toUpperCase() + segment.slice(1))
+    .join('');
+  return name === '' ? undefined : name;
 }
 
 function buildAmbientScope(

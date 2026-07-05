@@ -128,6 +128,23 @@ describe('vue processor — extract', () => {
     expect(result.messages[0]?.locations).toHaveLength(2);
   });
 
+  it('returns call-site context for a template message', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <button>{{ t('Save changes') }}</button>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages[0]?.locations[0]?.callSiteContext).toEqual({
+      enclosingComponent: 'A',
+      enclosingElement: 'button',
+      snippet: `<button>{{ t('Save changes') }}</button>`,
+    });
+  });
+
   it('returns no messages when no script imports `yapyak`', () => {
     const source = [
       '<template>',

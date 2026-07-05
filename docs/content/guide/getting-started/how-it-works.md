@@ -245,14 +245,9 @@ doesn't ship, `createProcessor` from `yapyak/processor` builds one.
 
 ## Context
 
-yapyak extracts each message from the syntax tree, and how much of the surrounding
-code comes with it depends on the format.
-
-{% switch group="framework" %}
-
-{% when value="react" %}
-In JSX, a `t()` call sits inside the element and component around it, so yapyak
-reads them from the same tree and sends them with the request:
+yapyak extracts each message together with the component and element around it, and
+a snippet of the source as you wrote it. The shape is the same for every framework,
+whether the call sits in JSX, a Vue or Svelte template, or an Astro component:
 
 ```ts
 {
@@ -265,48 +260,12 @@ reads them from the same tree and sends them with the request:
 }
 ```
 
-The element is `button`, so the model translates a label rather than prose.
-{% /when %}
-
-{% when value="vue" %}
-In a Vue template, yapyak extracts the `t()` call as a standalone expression, so the
-element and component around it don't travel with the request:
-
-```ts
-{
-  source: 'Save changes',
-}
-```
-{% /when %}
-
-{% when value="svelte" %}
-In Svelte markup, yapyak extracts the `t()` call as a standalone expression, so the
-element and component around it don't travel with the request:
-
-```ts
-{
-  source: 'Save changes',
-}
-```
-{% /when %}
-
-{% when value="astro" %}
-In an Astro template, yapyak extracts the `t()` call as a standalone expression, so
-the element and component around it don't travel with the request:
-
-```ts
-{
-  source: 'Save changes',
-}
-```
-{% /when %}
-
-{% /switch %}
-
-Three context levels set how much of what's available is serialized, from the full
-snippet down to the source string alone. See [Context](/guide/translating/context)
-for the levels and [Examples](/guide/translating/examples) for how yapyak seeds the
-model with translations you already made.
+The element tells the model it is translating a button label rather than prose, the
+component names the surface it belongs to, and the snippet carries the surrounding
+markup as it appears in your file. How much of this travels with each request is a
+setting. See [Context](/guide/translating/context) for the levels and
+[Examples](/guide/translating/examples) for how yapyak seeds the model with
+translations you already made.
 
 ## Locale files
 

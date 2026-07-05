@@ -127,17 +127,30 @@ function getScriptLang(script: AST.Script): 'js' | 'ts' {
   return 'js';
 }
 
-function fragmentsFromAst(ast: AST.Fragment, source: string): Fragment[] {
+type EnclosingContext = {
+  element: string;
+  snippet: string;
+};
+
+function fragmentsFromAst(
+  ast: AST.Fragment,
+  source: string,
+  enclosingContext?: EnclosingContext,
+): Fragment[] {
   const fragments: Fragment[] = [];
   for (const node of ast.nodes) {
-    fragments.push(...fragmentsFromNode(node, source));
+    fragments.push(...fragmentsFromNode(node, source, enclosingContext));
   }
   return fragments;
 }
 
 type FragmentNode = AST.Fragment['nodes'][number];
 
-function fragmentsFromNode(node: FragmentNode, source: string): Fragment[] {
+function fragmentsFromNode(
+  node: FragmentNode,
+  source: string,
+  enclosingContext?: EnclosingContext,
+): Fragment[] {
   if (isExpressionTagLike(node)) {
     const elisionContext =
       node.type === 'ExpressionTag'
@@ -146,47 +159,89 @@ function fragmentsFromNode(node: FragmentNode, source: string): Fragment[] {
             range: rangeFromOffsets(source, node.start, node.end),
           }
         : undefined;
-    return fragmentsFromExpression(node.expression, source, elisionContext);
+    return fragmentsFromExpression(
+      node.expression,
+      source,
+      elisionContext,
+      enclosingContext,
+    );
   }
   if (node.type === 'IfBlock') {
-    const fragments = fragmentsFromExpression(node.test, source);
-    fragments.push(...fragmentsFromAst(node.consequent, source));
+    const fragments = fragmentsFromExpression(
+      node.test,
+      source,
+      undefined,
+      enclosingContext,
+    );
+    fragments.push(
+      ...fragmentsFromAst(node.consequent, source, enclosingContext),
+    );
     if (node.alternate !== null) {
-      fragments.push(...fragmentsFromAst(node.alternate, source));
+      fragments.push(
+        ...fragmentsFromAst(node.alternate, source, enclosingContext),
+      );
     }
     return fragments;
   }
   if (node.type === 'EachBlock') {
-    const fragments = fragmentsFromExpression(node.expression, source);
+    const fragments = fragmentsFromExpression(
+      node.expression,
+      source,
+      undefined,
+      enclosingContext,
+    );
     if (node.key) {
-      fragments.push(...fragmentsFromExpression(node.key, source));
+      fragments.push(
+        ...fragmentsFromExpression(
+          node.key,
+          source,
+          undefined,
+          enclosingContext,
+        ),
+      );
     }
-    fragments.push(...fragmentsFromAst(node.body, source));
+    fragments.push(...fragmentsFromAst(node.body, source, enclosingContext));
     if (node.fallback) {
-      fragments.push(...fragmentsFromAst(node.fallback, source));
+      fragments.push(
+        ...fragmentsFromAst(node.fallback, source, enclosingContext),
+      );
     }
     return fragments;
   }
   if (node.type === 'AwaitBlock') {
-    const fragments = fragmentsFromExpression(node.expression, source);
+    const fragments = fragmentsFromExpression(
+      node.expression,
+      source,
+      undefined,
+      enclosingContext,
+    );
     if (node.pending !== null) {
-      fragments.push(...fragmentsFromAst(node.pending, source));
+      fragments.push(
+        ...fragmentsFromAst(node.pending, source, enclosingContext),
+      );
     }
     if (node.then !== null) {
-      fragments.push(...fragmentsFromAst(node.then, source));
+      fragments.push(...fragmentsFromAst(node.then, source, enclosingContext));
     }
     if (node.catch !== null) {
-      fragments.push(...fragmentsFromAst(node.catch, source));
+      fragments.push(...fragmentsFromAst(node.catch, source, enclosingContext));
     }
     return fragments;
   }
   if (node.type === 'KeyBlock') {
-    const fragments = fragmentsFromExpression(node.expression, source);
-    fragments.push(...fragmentsFromAst(node.fragment, source));
+    const fragments = fragmentsFromExpression(
+      node.expression,
+      source,
+      undefined,
+      enclosingContext,
+    );
+    fragments.push(
+      ...fragmentsFromAst(node.fragment, source, enclosingContext),
+    );
     return fragments;
   }
   if (node.type === 'SnippetBlock') {
-    return fragmentsFromAst(node.body, source);
+    return fragmentsFromAst(node.body, source, enclosingContext);
   }
   if (isElementLike(node)) {
     return fragmentsFromElement(node, source);
@@ -242,10 +297,15 @@ function fragmentsFromElement(
   source: string,
 ): Fragment[] {
   const fragments: Fragment[] = [];
+  const enclosingContext = getEnclosingContext(element, source);
   for (const attribute of element.attributes) {
-    fragments.push(...fragmentsFromAttribute(attribute, source));
+    fragments.push(
+      ...fragmentsFromAttribute(attribute, source, enclosingContext),
+    );
   }
-  fragments.push(...fragmentsFromAst(element.fragment, source));
+  fragments.push(
+    ...fragmentsFromAst(element.fragment, source, enclosingContext),
+  );
   if (element.type === 'SvelteElement') {
     fragments.push(...fragmentsFromExpression(element.tag, source));
   }
@@ -255,11 +315,25 @@ function fragmentsFromElement(
   return fragments;
 }
 
+function getEnclosingContext(
+  element: ElementLikeNode,
+  source: string,
+): EnclosingContext | undefined {
+  if (element.type === 'RegularElement' || element.type === 'Component') {
+    return {
+      element: element.name,
+      snippet: source.slice(element.start, element.end),
+    };
+  }
+  return undefined;
+}
+
 type AttributeNode = ElementLikeNode['attributes'][number];
 
 function fragmentsFromAttribute(
   node: AttributeNode,
   source: string,
+  enclosingContext?: EnclosingContext,
 ): Fragment[] {
   if (node.type === 'Attribute') {
     const value = node.value;
@@ -270,7 +344,14 @@ function fragmentsFromAttribute(
       const fragments: Fragment[] = [];
       for (const item of value) {
         if (item.type === 'ExpressionTag') {
-          fragments.push(...fragmentsFromExpression(item.expression, source));
+          fragments.push(
+            ...fragmentsFromExpression(
+              item.expression,
+              source,
+              undefined,
+              enclosingContext,
+            ),
+          );
         }
       }
       return fragments;
@@ -283,10 +364,20 @@ function fragmentsFromAttribute(
             range: rangeFromOffsets(source, node.start, node.end),
           }
         : undefined;
-    return fragmentsFromExpression(value.expression, source, elisionContext);
+    return fragmentsFromExpression(
+      value.expression,
+      source,
+      elisionContext,
+      enclosingContext,
+    );
   }
   if (node.type === 'SpreadAttribute') {
-    return fragmentsFromExpression(node.expression, source);
+    return fragmentsFromExpression(
+      node.expression,
+      source,
+      undefined,
+      enclosingContext,
+    );
   }
   if (node.type === 'StyleDirective') {
     const value = node.value;
@@ -297,18 +388,40 @@ function fragmentsFromAttribute(
       const fragments: Fragment[] = [];
       for (const item of value) {
         if (item.type === 'ExpressionTag') {
-          fragments.push(...fragmentsFromExpression(item.expression, source));
+          fragments.push(
+            ...fragmentsFromExpression(
+              item.expression,
+              source,
+              undefined,
+              enclosingContext,
+            ),
+          );
         }
       }
       return fragments;
     }
-    return fragmentsFromExpression(value.expression, source);
+    return fragmentsFromExpression(
+      value.expression,
+      source,
+      undefined,
+      enclosingContext,
+    );
   }
   if (node.type === 'AttachTag') {
-    return fragmentsFromExpression(node.expression, source);
+    return fragmentsFromExpression(
+      node.expression,
+      source,
+      undefined,
+      enclosingContext,
+    );
   }
   if ('expression' in node && node.expression !== null) {
-    return fragmentsFromExpression(node.expression, source);
+    return fragmentsFromExpression(
+      node.expression,
+      source,
+      undefined,
+      enclosingContext,
+    );
   }
   return [];
 }
@@ -317,6 +430,7 @@ function fragmentsFromExpression(
   expression: unknown,
   source: string,
   elisionContext?: Fragment['elisionContext'],
+  enclosingContext?: EnclosingContext,
 ): Fragment[] {
   if (expression === null || expression === undefined) {
     return [];
@@ -349,6 +463,10 @@ function fragmentsFromExpression(
   };
   if (elisionContext) {
     fragment.elisionContext = elisionContext;
+  }
+  if (enclosingContext) {
+    fragment.enclosingElement = enclosingContext.element;
+    fragment.snippet = enclosingContext.snippet;
   }
   return [
     fragment,

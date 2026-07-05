@@ -381,8 +381,8 @@ function extractContexts(
 function toLegacyContext(location: Location): MessageContext {
   return {
     enclosingComponent: location.callSiteContext.enclosingComponent ?? '',
-    enclosingElement: location.callSiteContext.enclosingJsx,
-    snippet: '',
+    enclosingElement: location.callSiteContext.enclosingElement,
+    snippet: location.callSiteContext.snippet ?? '',
   };
 }
 
