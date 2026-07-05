@@ -17,63 +17,63 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        "No more inventing names for words that already say what they mean. Write t('Save changes') — the message is the source of truth. What Tailwind did for class names, yapyak does for translation keys.",
+        "No more inventing names for words that already say what they mean. Write t('Save changes'). The message is the source of truth. What Tailwind did for class names, yapyak does for translation keys.",
       ),
       number: '02',
       title: t('Source string is the key'),
     },
     {
       description: t(
-        'Every t() is rewritten in place. Ship all locales together and Vite code-splits the catalogs along your routes. Or target a single locale at build time — the others are physically gone from the bundle, and plain text collapses to a string literal.',
+        'Every t() is rewritten in place. Ship all locales together and Vite code-splits the translations along your routes. Or target a single locale at build time. The others are physically gone from the bundle, and plain text collapses to a string literal.',
       ),
       number: '03',
       title: t('Compiled in. Choose how much.'),
     },
     {
       description: t(
-        'The translator sees the component, the element, and the surrounding code. Set a voice ("friendly", "terse", "lawyer at a dinner party"). Pin glossary terms so "Cart" stays "Korg", even when the AI thinks it knows better. The AI learns your app\'s language from every past translation.',
+        'The AI sees the component, the element, and the surrounding code. Set a voice ("friendly", "terse", "lawyer at a dinner party"). Pin glossary terms so "cart" stays "kundvagn", even when the AI thinks it knows better. The AI learns your app\'s language from your past translations.',
       ),
       number: '04',
       title: t('Context-aware AI translation'),
     },
     {
       description: t(
-        'Anthropic, OpenAI, Gemini, Ollama out of the box. A custom one in 30 lines. Or skip AI entirely and fill the JSON yourself — old habits are welcome.',
+        'Anthropic, OpenAI, Gemini, Ollama, shipped. A custom one in 30 lines. Or skip AI entirely and fill the JSON yourself. Old habits are welcome.',
       ),
       number: '05',
       title: t('Bring your own AI. Or none.'),
     },
     {
       description: t(
-        'Forget a placeholder param and TypeScript stops you before your tech lead does. Source-as-keys means types live on the call site. Same speed at 50 strings or 50,000.',
+        'Forget a param and TypeScript flags it at the call site, before your tech lead does. On save, the compiler validates every locale and stops the build before a broken translation ships. At runtime, it warns about what only surfaces in the browser. 44 numbered diagnostics, each with a page, from the editor to the runtime.',
       ),
       number: '06',
-      title: t('Type-safe params'),
+      title: t('Paranoid by default'),
     },
     {
       description: t(
-        'Inside t(): plurals, dates, numbers, lists, ordinals. Outside t(): a format namespace with eight helpers from currency to relative time. Yes, all four Polish plural forms.',
+        'Inside t(): plurals, selects, ordinals, dates, numbers. Outside t(): a format namespace for numbers, dates, relative time, and lists. Yes, all four Polish plural forms.',
       ),
       number: '07',
-      title: t('Production-ready intl'),
+      title: t('Production-ready i18n'),
     },
     {
       description: t(
-        'React, Vue, and Svelte bindings. SSR adapters for Astro, React Router, SvelteKit, and TanStack Start. Each gets its own parser, bindings, and tests.',
+        "Every supported framework is a first-class target, not a lowest-common-denominator wrapper. React, Vue, Svelte, and Astro each get their own bindings, parser, and tests, written in that framework's idioms. SSR adapters cover Astro, React Router, SvelteKit, and TanStack Start. No framework flies coach.",
       ),
       number: '08',
       title: t('Frameworks, first-class'),
     },
     {
       description: t(
-        'Every design decision serves the agent loop. For an AI agent, each t() carries the whole message at the call site. Renames migrate translations, extractions happen at save, the CLI scripts cleanly. Your agent writes the code. yapyak does the rest.',
+        "Every design decision serves the agent loop. The agent writes t('Save changes') in ICU it already knows; yapyak extracts, translates, follows renames, and scripts from the CLI. When it slips, the error is plain English, in the TypeScript error or one of 40-plus diagnostics, so the agent fixes it and moves on.",
       ),
       number: '09',
       title: t('Built for agents'),
     },
     {
       description: t(
-        "MIT-licensed, full functionality on npm. Bring your own LLM key and pay the model provider directly. yapyak doesn't sit between you and the AI bill; there's no upgrade tier.",
+        "MIT-licensed, full functionality on npm. Bring your own AI key and pay the model provider directly. yapyak doesn't sit between you and the AI bill; there's no upgrade tier.",
       ),
       number: '10',
       title: t('Open source, not open core'),

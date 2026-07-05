@@ -361,7 +361,7 @@ Default to React for the single example. Never add an 'identical in Vue/Svelte' 
 
 **Order in the switch.**
 
-The order is always **React, Vue, Svelte** — one `{% when value="…" %}` branch each, with plain `tsx` / `vue` / `svelte` code fences. Never add `[React]` / `[Vue]` / `[Svelte]` tab labels; the switch renders the labels.
+The order is always **React, Vue, Svelte**, then **Astro** when it ships the binding — one `{% when value="…" %}` branch each, with plain `tsx` / `vue` / `svelte` / `astro` code fences. Never add `[React]` / `[Vue]` / `[Svelte]` / `[Astro]` tab labels; the switch renders the labels.
 
 ````markdown
 {% switch group="framework" %}
@@ -414,6 +414,19 @@ import { t } from 'yapyak';
 ```
 {% /when %}
 
+{% when value="astro" %}
+```astro
+---
+import { RichText } from '@yapyak/astro';
+import { t } from 'yapyak';
+---
+
+<RichText value={t('Read the <link>docs</link>.')}>
+  <a slot="link" href="/docs"><RichText.Children /></a>
+</RichText>
+```
+{% /when %}
+
 {% /switch %}
 ````
 
@@ -425,9 +438,9 @@ import { t } from 'yapyak';
 - JSON examples (`locales/sv.json`)
 - Adapter-specific setup that only applies to one framework (covered on the adapter's own page)
 
-**Astro is never in the framework switch for API examples.** yapyak has no Astro component bindings — only the SSR adapter. Astro users call the same JS APIs and read whichever single-framework example we show. Cover Astro on its adapter page where it actually matters.
+**Astro is in the framework switch only when it ships the binding.** yapyak's Astro package provides a `RichText` component (a native `.astro` component using `Children` slots) plus the SSR adapter, but no reactive APIs like `useLocale()`. So a `<RichText>` example gets an Astro branch alongside React, Vue, and Svelte; hook- and rune-based examples stay React/Vue/Svelte only. Plain JS API examples (`t()`, `format.*`) never diverge, and Astro reads whichever single example we show. Cover Astro's setup on its adapter page.
 
-The trigger is **call-shape divergence** (§ above): show all three when a framework hook, rune, slot, or render-prop appears in the body, or the import path differs across React/Vue/Svelte. Rendering as a component is a sufficient sign of divergence, not a necessary one — a value-returning hook like `useLocale()` still diverges.
+The trigger is **call-shape divergence** (§ above): show a branch per framework when a framework hook, rune, slot, or render-prop appears in the body, or the import path differs — React, Vue, and Svelte always, plus Astro when it ships the binding (as with `RichText`). Rendering as a component is a sufficient sign of divergence, not a necessary one — a value-returning hook like `useLocale()` still diverges across React, Vue, and Svelte.
 
 #### Page-type templates
 

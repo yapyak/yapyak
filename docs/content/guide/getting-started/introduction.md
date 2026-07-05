@@ -21,7 +21,7 @@ export function EmptyCart() {
 }
 ```
 
-When you save, yapyak adds the message to your locale files as an empty stub. The source string is the key:
+When you save, yapyak adds the message to your locale files as an *empty stub*. The source string is the key:
 
 ```json [locales/sv.json]
 {
@@ -157,7 +157,7 @@ Put together, these become a different way to handle i18n, one shaped for how so
 
 ### You watch it happen
 
-With a translator configured, translation happens during the save loop. A new message is extracted, sent to the model, and written to your locale files. The translated text shows up in the browser while you are still working on the component, so layout problems surface while you build, not after release. Take this component:
+With a translator configured, translation happens during the *save loop*. A new message is extracted, sent to the model, and written to your locale files. The translated text shows up in the browser while you are still working on the component, so layout problems surface while you build, not after release. Take this component:
 
 ```tsx
 <div>
