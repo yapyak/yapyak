@@ -18,12 +18,14 @@ ol {
 a {
   color: inherit;
   text-decoration: none;
+  outline-offset: 0;
 }
 
 button {
   font: inherit;
   color: inherit;
   cursor: pointer;
+  outline-offset: 0;
   background: none;
   border: 0;
 }
