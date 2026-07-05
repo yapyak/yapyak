@@ -37,7 +37,7 @@ If you rename or move the source file, yapyak finds the translations again under
 
 The stub can be filled by you, by your coding agent, or by a *translator*.
 
-A translator connects directly to a model using your provider key:
+A translator connects directly to a model using your API key:
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -68,11 +68,11 @@ When you save, yapyak collects new messages and batches them into as few request
 }
 ```
 
-Vite HMR updates the running application with the translated text.
+Vite HMR updates the running app with the translated text.
 
 ## Code is the context
 
-Because yapyak is a compiler, it reads the code around each message and sends it to the model with the request. Short UI strings are where the model has the least to go on: a lone label carries no sentence to place it, and that context is what a translator would otherwise have to ask for.
+Because yapyak is a compiler, it reads the code around each message and sends it to the model with the request.
 
 Take a button:
 
@@ -145,7 +145,7 @@ Put together, these become a different way to handle i18n, one shaped for how so
 
 ### You watch it happen
 
-With a translator configured, translation happens during the save loop. A new message is extracted, sent to the model, and written to your locale files, and the translated text shows up in the browser while you are still working on the component. So layout problems surface while you build, not after release. Take this component:
+With a translator configured, translation happens during the save loop. A new message is extracted, sent to the model, and written to your locale files. The translated text shows up in the browser while you are still working on the component, so layout problems surface while you build, not after release. Take this component:
 
 ```tsx
 <div>
@@ -177,7 +177,7 @@ The first button is much longer, enough to break a dialog footer or a mobile lay
 
 ### AI translation becomes reliable
 
-Translation models keep improving, and they already handle interface copy well. What they often lack is the context around each message. yapyak supplies it: where the message appears, the code around it, your glossary and voice, and examples from translations already in the project. That gives the model enough to choose the right words, keep them consistent, and produce translations you can use directly in the save loop.
+Models already handle interface copy well. What they often lack is the context around each message. yapyak supplies it: where the message appears, the code around it, your glossary and voice, and examples from translations already in the project. That gives the model enough to choose the right words, keep them consistent, and produce translations you can use directly in the save loop.
 
 ```tsx [src/components/delete-account.tsx]
 <button onClick={deleteAccount}>{t('Delete account')}</button>
@@ -187,7 +187,7 @@ Translation models keep improving, and they already handle interface copy well. 
 
 ### An agent can own it
 
-An agent writes `<button>{t('Save changes')}</button>` because that is the natural way to say what the button says, and it writes ICU when it needs to, because that is how models already write. The source string is the only artifact anyone produces. Everything else is yapyak's: extract, validate, translate, restore on refactor, compile into the bundle, then leave the result where an agent already knows to look, in your repo, in a file, committed to git.
+An agent writes `<button>{t('Save changes')}</button>` because that is the natural way to say what the button says, and it writes ICU when it needs to, because that is how models already write. The source string is the only artifact anyone produces. Everything else is yapyak's: extract, validate, translate, restore on refactor, compile into the bundle. The result lands where an agent already knows to look: in your repo, in a file, committed to git.
 
 ---
 
