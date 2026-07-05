@@ -90,16 +90,6 @@ The request to the translator carries this context:
 
 All of this happens automatically. You decide how much context the model sees, including none at all.
 
-## Bundled with code
-
-yapyak keeps translation lookup synchronous. The compiler bundles translations into the modules that use them, so the runtime only picks the right value for the active locale.
-
-Locale switching is immediate, with no locale file to fetch and no suspense or loading state to handle.
-
-This matches Vite's build model. Routes load the modules they need, and those modules already contain the translations they render. Translation data follows the same code-splitting, caching, and deployment path as the code itself.
-
-For static deploys, a build can target a single locale at compile time. The compiler rewrites every `t()` call to its target literal and tree-shakes the picker away. The resulting bundle contains no i18n runtime at all.
-
 ## ICU at the call site
 
 yapyak uses ICU MessageFormat for the moving parts of a message: counts, plurals, dates. You write it inline, as the source string:
@@ -114,7 +104,7 @@ The ICU stays in the code that renders it, with no key and no catalog file. Type
 
 yapyak checks correctness at three stages: while you type, when you save, and while the app runs.
 
-The first is while you type. The parameter types reject whatever doesn't fit. Forget a value, misspell a plural keyword, or leave a placeholder open, and TypeScript flags it at the call site before you save.
+The first is while you type. Every parameter is checked at the call site, before you save:
 
 {% diagnostics %}
 t('You have {count} messages', { count: 3 });          // ok
@@ -122,15 +112,25 @@ t('You have {count} messages', {});                    // error: missing 'count'
 t('{count, plural, oen {#} other {#}}', { count: 3 }); // error: unknown plural keyword "oen"
 {% /diagnostics %}
 
-The second is when you save. The compiler validates every locale, catching a placeholder gone missing in Swedish, a plural without its `other` branch, an unclosed rich-text tag, or a locale file that won't parse. The build stops before any of them ship.
+The second is when you save. yapyak validates every locale and stops the build before a broken translation ships.
 
-The third is while the app runs. In development, yapyak warns about what only surfaces in the browser: a locale leaking between server requests, a `setLocale` for an unconfigured language, a currency `Intl` cannot format.
+The third is while the app runs. In development, yapyak warns about problems that only surface in the browser.
 
-Each has a number, like `YAP0042`, and a page that explains it. 44 in all, from the editor to the runtime.
+Each has a number, like `YAP0042`, and a page that explains it. 44 in all, from the editor to the runtime. The same check runs in CI, through the `yapyak` CLI.
 
 ## Formatting outside messages
 
 Not every number lives inside a translatable message. For a price on a card or a timestamp in a footer, yapyak provides a `format` namespace covering numbers, dates, lists, and relative time. It builds on the platform's `Intl` and follows the active locale.
+
+## Bundled with code
+
+yapyak keeps translation lookup synchronous. The compiler bundles translations into the modules that use them, so the runtime only picks the right value for the active locale.
+
+Locale switching is immediate, with no locale file to fetch and no suspense or loading state to handle.
+
+This matches Vite's build model. Routes load the modules they need, and those modules already contain the translations they render. Translation data follows the same code-splitting, caching, and deployment path as the code itself.
+
+For static deploys, a build can target a single locale at compile time. The compiler rewrites every `t()` call to its target literal and tree-shakes the picker away. The resulting bundle contains no i18n runtime at all.
 
 ## Live in the build loop
 
@@ -174,12 +174,12 @@ With live translations, you see this while the layout is still in front of you.
 
 ## What changes
 
-Some of this is new, like ICU type-checked at the call site. Some is proven, like ICU itself and locale files in git. The combination is what changes.
+Put together, these stop being a feature list and become a different way to handle i18n, one shaped for how software gets built now.
 
 Translations write themselves and ship bundled with the code, so you watch them land in the running app. A layout that breaks in German is something you see, not something a user reports.
 
 And an agent can own it. It writes `t('Save changes')`, and ICU when it needs to, because that is how models already write. The source string is the only artifact anyone produces. Everything else is yapyak's: extract, validate, translate, restore on refactor, compile into the bundle.
 
-i18n stops being a step you schedule and becomes part of writing the code, by whoever or whatever writes it.
+i18n stops being a project beside your code and becomes part of writing it, by whoever or whatever writes it.
 
 yapyak is i18n that keeps up. With your code, with your agents, with the pace they set.
