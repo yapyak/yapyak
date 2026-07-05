@@ -132,15 +132,13 @@ This matches Vite's build model. Routes load the modules they need, and those mo
 
 For static deploys, a build can target a single locale at compile time. The compiler rewrites every `t()` call to its target literal and tree-shakes the picker away. The resulting bundle contains no i18n runtime at all.
 
-## Live in the build loop
+## What changes
 
-With a translator configured, translation happens during the save loop.
+Put together, these become a different way to handle i18n, one shaped for how software gets built now. Two things follow.
 
-New messages are extracted, sent to the model, and written to your locale files. The translated text shows up in the browser while you are still working on the component.
+### You watch it happen
 
-This changes when you notice translation problems. German words tend to be longer than English ones. Swedish dates are written differently. A message that fits comfortably in English might overflow a button in another language.
-
-Take this component:
+With a translator configured, translation happens during the save loop. A new message is extracted, sent to the model, and written to your locale files, and the translated text shows up in the browser while you are still working on the component. So layout problems surface while you build, not after release. Take this component:
 
 ```tsx
 <div>
@@ -154,7 +152,7 @@ Take this component:
 </div>
 ```
 
-In English, the buttons fit comfortably in a dialog or on a mobile screen. In German:
+In English the buttons fit in a dialog or on a mobile screen. In German:
 
 ```tsx
 <div>
@@ -168,17 +166,13 @@ In English, the buttons fit comfortably in a dialog or on a mobile screen. In Ge
 </div>
 ```
 
-The first button is much longer. That can break a dialog footer or a mobile layout.
+The first button is much longer, enough to break a dialog footer or a mobile layout. With live translation, you see it while the layout is still in front of you.
 
-With live translations, you see this while the layout is still in front of you.
+### An agent can own it
 
-## What changes
+An agent writes `<button>{t('Save changes')}</button>` because that is the natural way to say what the button says, and it writes ICU when it needs to, because that is how models already write. The source string is the only artifact anyone produces. Everything else is yapyak's: extract, validate, translate, restore on refactor, compile into the bundle, then leave the result where an agent already knows to look, in your repo, in a file, committed to git.
 
-Put together, these stop being a feature list and become a different way to handle i18n, one shaped for how software gets built now.
-
-Translations write themselves and ship bundled with the code, so you watch them land in the running app. A layout that breaks in German is something you see, not something a user reports.
-
-And an agent can own it. It writes `t('Save changes')`, and ICU when it needs to, because that is how models already write. The source string is the only artifact anyone produces. Everything else is yapyak's: extract, validate, translate, restore on refactor, compile into the bundle.
+---
 
 i18n stops being a project beside your code and becomes part of writing it, by whoever or whatever writes it.
 
