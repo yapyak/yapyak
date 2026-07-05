@@ -100,27 +100,27 @@ This matches Vite's build model. Routes load the modules they need, and those mo
 
 For static deploys, a build can target a single locale at compile time. The compiler rewrites every `t()` call to its target literal and tree-shakes the picker away. The resulting bundle contains no i18n runtime at all.
 
-## ICU validated end-to-end
+## Correctness all the way down
 
-A real interface has counts, prices, dates, and lists. yapyak handles these inside translatable messages using ICU MessageFormat:
+yapyak checks correctness at three stages: while you type, when you save, and while the app runs.
 
-```tsx
-t('You have {count, plural, one {# message} other {# messages}}', { count });
-```
-
-TypeScript reads the source string and types every parameter instantly. Write `'You have {count} messages'` and `{ count: number }` is required at the call site:
+The first is while you type. TypeScript reads the ICU in the source string and types every parameter from it, live in the editor. The source string is the only input. Nothing is generated, and there is no declaration file to keep in sync. Forget a value, misspell a plural keyword, or leave a placeholder open, and TypeScript flags it at the call site, in any editor, before you save.
 
 {% diagnostics %}
-t('You have {count} messages', { count: 3 }); // ok
-t('You have {count} messages', {});           // error: missing 'count'
-t('You have {count} messages', { n: 3 });     // error: 'n' is not assignable
+t('You have {count} messages', { count: 3 });          // ok
+t('You have {count} messages', {});                    // error: missing 'count'
+t('{count, plural, oen {#} other {#}}', { count: 3 }); // error: unknown plural keyword "oen"
 {% /diagnostics %}
 
-The compiler then validates the ICU itself across every locale at save time. Malformed syntax, missing `other` branches in plurals and selects, parameters that drift between source and translation, dynamic message strings, and unbalanced rich-text tags inside a message all surface as YAP diagnostics. 44 codes in total, spanning source parsing, ICU validation, rich-text structure, locale persistence, and runtime safety.
+The second is when you save. The compiler validates the translations too, across every locale. It catches a placeholder that went missing in Swedish, a plural without its `other` branch, a rich-text tag left open, or a locale file that no longer parses, and stops the build before any of them reach a user.
 
-ICU is a format models write fluently. yapyak makes sure they get the details right.
+The third is while the app runs. In development, yapyak warns about the problems that only surface in the browser: a locale leaking between server requests, a `setLocale` for a language you never configured, a currency `Intl` cannot format.
 
-For values outside a translatable message, like a price in a card or a timestamp in a footer, yapyak provides a `format` namespace covering numbers, dates, lists, and relative time. Everything is built on the platform's `Intl` and respects the active locale.
+Every one of these has a number, like `YAP0042`, and a page that explains it. All 44 of them, the diagnostics of a compiler pointed at your translations.
+
+## Formatting outside messages
+
+Not every number lives inside a translatable message. For a price on a card or a timestamp in a footer, yapyak provides a `format` namespace covering numbers, dates, lists, and relative time. It builds on the platform's `Intl` and follows the active locale.
 
 ## Live in the build loop
 
