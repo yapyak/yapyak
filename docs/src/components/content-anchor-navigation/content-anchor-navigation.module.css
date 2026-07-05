@@ -53,10 +53,6 @@
 
     &[data-animation-enabled] {
       --indicator-duration: var(--duration-medium);
-
-      @media (prefers-reduced-motion: reduce) {
-        --indicator-duration: 0ms;
-      }
     }
   }
 }

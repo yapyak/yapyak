@@ -135,13 +135,4 @@
       padding: var(--spacing-24) var(--spacing-6);
     }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .Hero {
-      .PrimaryLink,
-      .SecondaryLink {
-        transition: none;
-      }
-    }
-  }
 }

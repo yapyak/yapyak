@@ -55,12 +55,4 @@
       }
     }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .MobileDialogButton {
-      .Line {
-        transition: none;
-      }
-    }
-  }
 }

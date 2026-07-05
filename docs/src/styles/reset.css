@@ -6,7 +6,14 @@
   margin: 0;
 }
 
-:where(:focus) {
+html {
+  tab-size: 2;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(:focus:not(:focus-visible)) {
   outline: none;
 }
 
@@ -45,6 +52,7 @@ video,
 svg {
   display: block;
   max-width: 100%;
+  height: auto;
 }
 
 h1,

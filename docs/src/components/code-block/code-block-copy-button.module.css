@@ -96,15 +96,4 @@
       }
     }
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .CodeBlockCopyButton {
-      transition: none;
-
-      .IconIdle,
-      .IconCopied {
-        transition: none;
-      }
-    }
-  }
 }
