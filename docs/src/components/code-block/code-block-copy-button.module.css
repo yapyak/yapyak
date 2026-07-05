@@ -74,7 +74,7 @@
 
     &:active {
       color: var(--foreground);
-      background-color: var(--surface);
+      background-color: var(--surface-strong);
     }
 
     &:focus-visible {
