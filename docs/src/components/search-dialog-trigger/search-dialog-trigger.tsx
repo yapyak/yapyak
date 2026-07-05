@@ -11,10 +11,11 @@ export function SearchDialogTrigger() {
   const [hasOpened, setHasOpened] = useState(false);
   const searchData = useSearchData(hasOpened);
 
-  const handleSelect = (href: string) => {
+  const handleSearchDialogSelect = (href: string) => {
     const hashIndex = href.indexOf('#');
     const pathname = hashIndex < 0 ? href : href.slice(0, hashIndex);
     const hash = hashIndex < 0 ? undefined : href.slice(hashIndex + 1);
+
     void navigate({
       hash,
       to: pathname,
@@ -30,7 +31,7 @@ export function SearchDialogTrigger() {
       dialog={(dialogProps) => (
         <SearchDialog
           {...dialogProps}
-          onSelect={handleSelect}
+          onSelect={handleSearchDialogSelect}
           searchData={searchData}
         />
       )}

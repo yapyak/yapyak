@@ -20,7 +20,6 @@ import { Layout } from '#components/layout';
 import { LogoLink } from '#components/logo-link';
 import { MobileDialogTrigger } from '#components/mobile-dialog-trigger';
 import { Navigation } from '#components/navigation';
-import { NotFoundView } from '#components/not-found-view';
 import { OptionMenuTrigger } from '#components/option-menu-trigger';
 import {
   OptionProvider,
@@ -29,6 +28,7 @@ import {
 import { Root } from '#components/root';
 import { RouteAnnouncer } from '#components/route-announcer';
 import { SearchDialogTrigger } from '#components/search-dialog-trigger';
+import { StatusView } from '#components/status-view';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
 import { assetUrl } from '#utils/asset';
 
@@ -36,6 +36,7 @@ import { doc } from 'virtual:doc-compiler';
 
 export const Route = createRootRoute({
   component: Component,
+  errorComponent: ErrorComponent,
   head() {
     return {
       links: [
@@ -183,6 +184,20 @@ function ShellComponent(props: ShellComponentProps) {
   );
 }
 
+function ErrorComponent() {
+  return (
+    <StatusView
+      code="500"
+      message={t('Something went wrong')}
+    />
+  );
+}
+
 function NotFoundComponent() {
-  return <NotFoundView />;
+  return (
+    <StatusView
+      code="404"
+      message={t('Page not found')}
+    />
+  );
 }
