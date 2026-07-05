@@ -24,21 +24,21 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'No string gets translated in a vacuum. The AI sees the component it appears in, the element wrapping it, and the code beside it. Set a voice ("friendly", "terse", "lawyer at a dinner party"). Pin glossary terms so "cart" stays "kundvagn", even when the AI thinks it knows better. The AI learns your app\'s language from your past translations.',
+        'No message gets translated in a vacuum. The model sees the component it appears in, the element wrapping it, and the code beside it. Set a voice ("friendly", "terse", "lawyer at a dinner party"). Pin glossary terms so "cart" stays "kundvagn", even when the model thinks it knows better. The model learns your app\'s language from your past translations.',
       ),
       number: '03',
       title: t('Context-aware AI translation'),
     },
     {
       description: t(
-        'Rename the file, move the component, or paste the markup somewhere new, and the translations come with it. Delete a component and its translations do not vanish; bring it back and they are waiting. yapyak will never overwrite a locale file in a way that quietly drops a translation you still use.',
+        "Rename the file, move the component, or paste the markup somewhere new, and the translations come with it. Delete a component and its translations don't vanish; bring it back and they're waiting. The compiler will never overwrite a locale file in a way that quietly drops a translation you still use.",
       ),
       number: '04',
       title: t('Refactor freely'),
     },
     {
       description: t(
-        'Forget a param and the type checker catches it at the call site, before you even save. Save, and the compiler checks every locale, refusing to ship a translation that drifted or lost a plural. In the browser, it catches the failures that build time never sees. 44 numbered diagnostics, YAP0001 and up, each with a page that spells out the fix.',
+        'Forget a param and TypeScript catches it at the call site, before you even save. Save, and yapyak checks every locale, refusing to ship a translation that drifted or lost a plural. In the browser, it warns about the failures that build time never sees. 44 numbered diagnostics, YAP0001 and up, each with a page that spells out the fix.',
       ),
       number: '05',
       title: t('Paranoid by default'),
@@ -52,14 +52,14 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'Every t() is rewritten in place. Ship all locales together and Vite code-splits the translations along your routes. Or target a single locale at build time. The others are physically gone from the bundle, and plain text collapses to a string literal.',
+        'The compiler rewrites every t() in place. Ship all locales together and Vite code-splits the translations along your routes. Or target a single locale at build time. The others are physically gone from the bundle, and plain text collapses to a string literal.',
       ),
       number: '07',
       title: t('Compiled in. Choose how much.'),
     },
     {
       description: t(
-        "Switch the locale and it swaps instantly: the translations are already in the bundle, so there is nothing to fetch and no spinner. Persist the choice in a cookie, the URL, or local storage. On the server, each request gets its own locale, so one user's language never bleeds into another's.",
+        "Switch the locale and it swaps instantly: the translations are already in the bundle, so there's nothing to fetch and no spinner. Persist the choice in a cookie, the URL, or local storage. On the server, each request gets its own locale, so one user's language never bleeds into another's.",
       ),
       number: '08',
       title: t('Locale switching, handled'),

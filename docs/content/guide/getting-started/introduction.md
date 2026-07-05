@@ -189,13 +189,13 @@ The first button is much longer, enough to break a dialog footer or a mobile lay
 
 ### AI translation becomes reliable
 
-Models already handle interface copy well. What they often lack is the context around each message. yapyak supplies it: where the message appears, the code around it, your glossary and voice, and examples from translations already in the project. That gives the model enough to choose the right words, keep them consistent, and produce translations you can use directly in the save loop.
+Models are already good at interface copy. What separates good from reliable is the context a translator would ask for: where the message appears, the code around it, your glossary and voice, and the translations already in the project. yapyak gives the model that, and it does what a good translator would: pick the right words, and reuse the ones you already chose. Take a button:
 
 ```tsx [src/components/delete-account.tsx]
 <button onClick={deleteAccount}>{t('Delete account')}</button>
 ```
 
-`Delete` has two good Swedish forms, `Ta bort` and `Radera`. Because the project already translated `Delete` as `Ta bort`, this comes back as `Ta bort konto`, not `Radera konto`. The terminology stays consistent as the locale file fills in.
+`Delete` has two good Swedish forms, `Ta bort` and `Radera`. Because the project already settled on `Ta bort`, this comes back as `Ta bort konto`, not `Radera konto`. Terminology holds as the locale file fills in.
 
 ### An agent can own it
 
