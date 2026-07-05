@@ -13,7 +13,7 @@ html {
   -webkit-tap-highlight-color: transparent;
 }
 
-:where(:focus:not(:focus-visible)) {
+:where(:focus) {
   outline: none;
 }
 

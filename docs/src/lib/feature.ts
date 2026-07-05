@@ -45,7 +45,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'Forget a param and TypeScript flags it at the call site, before your tech lead does. On save, the compiler validates every locale and stops the build before a broken translation ships. At runtime, it warns about what only surfaces in the browser. 44 numbered diagnostics, each with a page, from the editor to the runtime.',
+        'Forget a param and TypeScript flags it at the call site, before you save. On save, the compiler validates every locale and stops the build before a broken translation ships. At runtime, it warns about what only surfaces in the browser. 44 numbered diagnostics, each with a page, from the editor to the runtime.',
       ),
       number: '06',
       title: t('Paranoid by default'),
@@ -66,14 +66,14 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        "Every design decision serves the agent loop. The agent writes t('Save changes') in ICU it already knows; yapyak extracts, translates, follows renames, and scripts from the CLI. When it slips, the error is plain English, in the TypeScript error or one of 40-plus diagnostics, so the agent fixes it and moves on.",
+        "Every design decision serves the agent loop. The agent writes t('Save changes') in ICU it already knows; yapyak extracts, translates, follows renames, and scripts from the CLI. The whole flow is files in your repo, so the agent never leaves the code for an external service. When something's wrong, it fails early with a clear message the agent can act on, even inside the TypeScript error, not a cryptic mismatch to debug.",
       ),
       number: '09',
       title: t('Built for agents'),
     },
     {
       description: t(
-        "MIT-licensed, full functionality on npm. Bring your own AI key and pay the model provider directly. yapyak doesn't sit between you and the AI bill; there's no upgrade tier.",
+        "yapyak is a library, and only a library, MIT-licensed, all of it on npm. Everything runs on your machine, and your translations are files in your repo, committed to git. You own it the way you own the rest of your code. If you use a model, the only bill is its provider's. The pricing page is a 404.",
       ),
       number: '10',
       title: t('Open source, not open core'),
