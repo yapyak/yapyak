@@ -22,11 +22,30 @@ export function ContentNavigationLink(props: ContentNavigationLinkProps) {
   const isActiveOnMountRef = useRef(initialPathname === node.href);
 
   useEffect(() => {
-    if (isActiveOnMountRef.current) {
-      element.current?.scrollIntoView({
-        block: 'center',
-      });
+    const $element = element.current;
+    if (!isActiveOnMountRef.current || $element === null) {
+      return;
     }
+
+    let isCancelled = false;
+    let frame = 0;
+
+    const scrollToActive = () => {
+      frame = window.requestAnimationFrame(() => {
+        if (!isCancelled) {
+          $element.scrollIntoView({
+            block: 'center',
+          });
+        }
+      });
+    };
+
+    document.fonts.ready.then(scrollToActive);
+
+    return () => {
+      isCancelled = true;
+      window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   return (
