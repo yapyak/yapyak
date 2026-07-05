@@ -3,30 +3,199 @@ title: How it works
 order: 4
 ---
 
-yapyak runs in two phases: a save loop during development, and a compile step at build time.
-
-## The save loop
-
-When you save a source file, yapyak runs six steps:
-
-1. **Extract.** The right processor parses the file and finds the `t()` calls inside. The built-in processor handles `.ts` and `.tsx`; framework processors handle `.vue`, `.svelte`, and `.astro`.
-2. **Validate.** Every call is checked against its source: placeholders match the arguments, plural branches are spelled correctly, the message is a static literal.
-3. **Reconcile.** New messages get added to your locale files as empty stubs. Renamed or moved files keep their translations.
-4. **Translate.** If a translator is configured, the new stubs are batched and sent to your provider along with their call-site context.
-5. **Compile.** The `t()` calls are rewritten into synchronous `_pick()` calls that hold the locale values for that module.
-6. **Hot-replace.** Vite pushes the new module to the browser, and the rendered text updates in place.
-
-Most of the loop runs in milliseconds. The translator step adds a few seconds, depending on which model you've configured.
-
-## Extraction
-
-The compiler reads each file through a processor that understands its format. The processor splits the file into scripted parts and template parts so yapyak can parse each with TypeScript and find `t()` calls in the right places.
+yapyak works at two moments: on save, and on build. On save it keeps your locale
+files in step with your code. On build it compiles each `t()` into the module
+that renders it. This page follows one message through both.
 
 {% switch group="framework" %}
 
 {% when value="react" %}
-`@yapyak/react/processor` handles `.tsx` and `.jsx`:
+```tsx [src/components/save-button.tsx]
+import { t } from 'yapyak';
 
+export function SaveButton() {
+  return <button>{t('Save changes')}</button>;
+}
+```
+{% /when %}
+
+{% when value="vue" %}
+```vue [src/components/save-button.vue]
+<script setup lang="ts">
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <button>{{ t('Save changes') }}</button>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [src/components/save-button.svelte]
+<script lang="ts">
+  import { t } from 'yapyak';
+</script>
+
+<button>{t('Save changes')}</button>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [src/components/save-button.astro]
+---
+import { t } from 'yapyak';
+---
+
+<button>{t('Save changes')}</button>
+```
+{% /when %}
+
+{% /switch %}
+
+## Save loop
+
+When you save, yapyak reacts in one synchronous pass: it reads the file through a
+[processor](#processors), finds the `t()` calls, checks each one, and reconciles
+your locale files. A call yapyak can't compile is reported before the save
+settles.
+
+```ts
+t('Save changes');           // ok
+t(label);                    // error: source must be a static string
+t('Hi {name}', { user });    // error: missing 'name'
+```
+
+A new message is added to your locale files as an empty stub, keyed by the source
+string.
+
+{% switch group="framework" %}
+
+{% when value="react" %}
+```json [locales/sv.json]
+{
+  "src/components/save-button.tsx": {
+    "Save changes": ""
+  }
+}
+```
+{% /when %}
+
+{% when value="vue" %}
+```json [locales/sv.json]
+{
+  "src/components/save-button.vue": {
+    "Save changes": ""
+  }
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```json [locales/sv.json]
+{
+  "src/components/save-button.svelte": {
+    "Save changes": ""
+  }
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```json [locales/sv.json]
+{
+  "src/components/save-button.astro": {
+    "Save changes": ""
+  }
+}
+```
+{% /when %}
+
+{% /switch %}
+
+Translation is a separate, slower beat, and yapyak does not wait for it. With a
+[translator](/guide/translating/overview) configured, the new stubs go off in the
+background while you keep working. When the model answers, the text is written to
+the same file and the running app updates through [HMR](/guide/advanced/hmr).
+
+{% switch group="framework" %}
+
+{% when value="react" %}
+```json [locales/sv.json]
+{
+  "src/components/save-button.tsx": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+{% /when %}
+
+{% when value="vue" %}
+```json [locales/sv.json]
+{
+  "src/components/save-button.vue": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```json [locales/sv.json]
+{
+  "src/components/save-button.svelte": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```json [locales/sv.json]
+{
+  "src/components/save-button.astro": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+{% /when %}
+
+{% /switch %}
+
+Save a new string and it renders in your source language at once. A second or two
+later, the Swedish arrives on its own.
+
+Until it does, the entry is an empty stub, and yapyak treats an empty value as
+absent: it renders the source string instead. A reader who already switched to
+Swedish sees the English for that second, not an empty slot. The same fallback
+covers any string you have not translated yet.
+
+Save again before translation finishes and the request in flight is cancelled, so
+only the code you currently have is sent. A save that adds more new strings than
+[`autoTranslateThreshold`](/guide/translating/loop) writes the stubs and holds the
+translator back, which keeps one careless paste from spending an API budget at
+once.
+
+## Processors
+
+yapyak reads each file through a processor that understands its format. The
+processor splits the file into TypeScript-parseable fragments so the compiler
+finds `t()` calls in the right places. Register one per framework:
+
+```ts [yapyak.config.ts]
+import { react } from '@yapyak/react/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [react()]
+});
+```
+
+The same call, in each format a processor knows how to open:
+
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 import { t } from 'yapyak';
 
@@ -38,7 +207,6 @@ export function SaveButton() {
 
 {% when value="vue" %}
 ```vue
-<!-- .vue. Handled by @yapyak/vue/processor -->
 <script setup lang="ts">
 import { t } from 'yapyak';
 </script>
@@ -51,7 +219,6 @@ import { t } from 'yapyak';
 
 {% when value="svelte" %}
 ```svelte
-<!-- .svelte. Handled by @yapyak/svelte/processor -->
 <script lang="ts">
   import { t } from 'yapyak';
 </script>
@@ -63,7 +230,6 @@ import { t } from 'yapyak';
 {% when value="astro" %}
 ```astro
 ---
-// .astro. Handled by @yapyak/astro/processor
 import { t } from 'yapyak';
 ---
 
@@ -73,54 +239,150 @@ import { t } from 'yapyak';
 
 {% /switch %}
 
-A processor is a small adapter that knows how to split a file format into TypeScript-parseable fragments. If yapyak doesn't ship a processor for the file format you need, you can write one through `createProcessor()`.
+The built-in processor handles `.ts`, `.tsx`, and the rest of the JavaScript
+family. `.vue`, `.svelte`, and `.astro` each have their own. For a format yapyak
+doesn't ship, `createProcessor` from `yapyak/processor` builds one.
 
-## What the translator sees
+## Context
 
-When yapyak sends a new message to the model, it attaches context from the call site. By default that's the component name and the immediate element wrapping the `t()` call. You can configure more context (nearby lines, the whole component) or less (just the message).
+yapyak extracts each message from the syntax tree, and how much of the surrounding
+code comes with it depends on the format.
 
-A typical batch item looks something like this:
+{% switch group="framework" %}
 
-```json
+{% when value="react" %}
+In JSX, a `t()` call sits inside the element and component around it, so yapyak
+reads them from the same tree and sends them with the request:
+
+```ts
 {
-  "source": "Save changes",
-  "component": "SaveButton",
-  "element": "button",
-  "examples": [
-    { "source": "Save", "translation": "Spara" }
-  ]
+  source: 'Save changes',
+  context: {
+    enclosingComponent: 'SaveButton',
+    enclosingElement: 'button',
+    snippet: "<button>{t('Save changes')}</button>",
+  },
 }
 ```
 
-The examples are picked from translations already in your repository. Models tend to keep a consistent voice when they've seen prior choices the project made.
+The element is `button`, so the model translates a label rather than prose.
+{% /when %}
 
-[Voice](/guide/translating/voice) and [glossary](/guide/translating/glossary) are configured once on the translator and applied to every batch the model sees.
+{% when value="vue" %}
+In a Vue template, yapyak extracts the `t()` call as a standalone expression, so the
+element and component around it don't travel with the request:
 
-By default, yapyak batches up to 25 source strings per request and runs up to 5 requests in parallel, translating every target locale together. Batch size, concurrency, and context level are configurable in `yapyak.config.ts`.
+```ts
+{
+  source: 'Save changes',
+}
+```
+{% /when %}
 
-## What ends up in the locale files
+{% when value="svelte" %}
+In Svelte markup, yapyak extracts the `t()` call as a standalone expression, so the
+element and component around it don't travel with the request:
 
-Locale files live in your repository, one per locale, scoped by the source file that owns each message:
+```ts
+{
+  source: 'Save changes',
+}
+```
+{% /when %}
 
+{% when value="astro" %}
+In an Astro template, yapyak extracts the `t()` call as a standalone expression, so
+the element and component around it don't travel with the request:
+
+```ts
+{
+  source: 'Save changes',
+}
+```
+{% /when %}
+
+{% /switch %}
+
+Three context levels set how much of what's available is serialized, from the full
+snippet down to the source string alone. See [Context](/guide/translating/context)
+for the levels and [Examples](/guide/translating/examples) for how yapyak seeds the
+model with translations you already made.
+
+## Locale files
+
+Locale files live in your repository, one per locale. Each message is nested under
+the source file that owns it:
+
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```json [locales/sv.json]
 {
+  "src/components/checkout.tsx": {
+    "Checkout": "Kassa"
+  },
   "src/components/save-button.tsx": {
     "Save changes": "Spara ändringar"
   }
 }
 ```
+{% /when %}
 
-The scope lets yapyak follow your translations when you move or rename source files. yapyak records prior locations in `.yapyak/` and restores translations to the new path on save.
+{% when value="vue" %}
+```json [locales/sv.json]
+{
+  "src/components/checkout.vue": {
+    "Checkout": "Kassa"
+  },
+  "src/components/save-button.vue": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```json [locales/sv.json]
+{
+  "src/components/checkout.svelte": {
+    "Checkout": "Kassa"
+  },
+  "src/components/save-button.svelte": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```json [locales/sv.json]
+{
+  "src/components/checkout.astro": {
+    "Checkout": "Kassa"
+  },
+  "src/components/save-button.astro": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+{% /when %}
+
+{% /switch %}
+
+The path key is what lets yapyak follow a translation when you move or rename the
+source file. The files are plain JSON.
 
 {% callout variant="tip" %}
-Locale files are normal JSON. Open one and edit it directly to correct a model's choice, adjust tone manually, or paste in a result from a professional translator. yapyak watches the files and refreshes the browser when they change.
+Open a locale file next to the running app and edit a value by hand to correct the
+model, tune tone, or paste in a professional translation. yapyak watches the file
+and updates the browser through HMR.
 {% /callout %}
 
-## What gets compiled
+## Compile
 
-After compile, each `t()` call is rewritten to pick the right locale at render time. The compiler deduplicates imports, catalogs, and factory references across the module so the bundle stays small even with many `t()` calls.
-
-A multi-locale source file:
+The `t()` you write is not what ships. When Vite builds a module, yapyak rewrites
+every `t()` in it to a synchronous lookup over an inline catalog. A file with two
+locales:
 
 ```ts
 import { t } from 'yapyak';
@@ -162,9 +424,16 @@ _pick(_catalog_$1, { name });
 _pick(_catalog_$1, { name });
 ```
 
-The compiler deduplicates factory imports into a single `import` at module scope, sharing one catalog object across identical calls (both `t('Save')` calls reference the same `_catalog_$0`). Vite code-splits the catalogs with the modules that contain them, so a route that doesn't render a translation never downloads it.
+Identical calls share one catalog object, and the factory imports fold into a
+single `import` at module scope. Vite code-splits each catalog with the module
+that holds it, so a route that never renders a message never downloads it.
 
-**Single-locale.** When only one locale ends up in the bundle — either because that's the only one you've added, or because you've set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds) — the compiler skips `_pick`, the factory imports, and the catalog objects entirely. Each `t()` call collapses to whatever value the active locale has on disk (or to the source string if there's no translation).
+### Single locale
+
+When only one locale reaches the bundle, because it is the only one you added or
+because you set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds),
+the picker, the imports, and the catalogs all disappear. Each `t()` collapses to
+the value on disk.
 
 With `fixedLocale: 'sv'` and a Swedish translation present:
 
@@ -178,7 +447,7 @@ compiles to:
 'Spara ändringar'
 ```
 
-Without a translation, the source survives as a template literal:
+A message with parameters collapses to a template literal:
 
 ```ts
 t('Hello {name}', { name });
@@ -190,8 +459,11 @@ compiles to:
 `Hello ${name}`
 ```
 
-Inside a template expression, the call disappears into the surrounding markup:
+Inside markup, the call disappears into the surrounding text:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 <p>{t('Welcome')}</p>
 ```
@@ -201,71 +473,138 @@ compiles to:
 ```tsx
 <p>Welcome</p>
 ```
+{% /when %}
 
-The bundle ships with no i18n runtime at all.
+{% when value="vue" %}
+```vue
+<p>{{ t('Welcome') }}</p>
+```
 
-**Formatters use `Intl` directly.** A date, number, or list format compiles to a factory that calls the platform's `Intl` API at render time. No ICU library is bundled:
+compiles to:
+
+```vue
+<p>Welcome</p>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte
+<p>{t('Welcome')}</p>
+```
+
+compiles to:
+
+```svelte
+<p>Welcome</p>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro
+<p>{t('Welcome')}</p>
+```
+
+compiles to:
+
+```astro
+<p>Welcome</p>
+```
+{% /when %}
+
+{% /switch %}
+
+Nothing from yapyak's runtime is left in the output.
+
+### Formatters
+
+A date, number, or list compiles to a factory that calls the platform's `Intl` at
+render time. No ICU library is bundled.
 
 ```ts
 t('Posted on {date, date, long}', { date });
 ```
 
-The catalog entry is `_date('date', 'long')`. At render time it resolves to `new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(date)`.
+The catalog entry is `_date('date', 'long')`, which resolves to
+`new Intl.DateTimeFormat(locale, { dateStyle: 'long' }).format(date)`.
 
-**Plurals and selects stay as runtime structures** because branch selection depends on the active locale and the parameter value:
+### Plurals and selects
+
+A plural or select stays a runtime structure, because the branch depends on the
+active locale and the value:
 
 ```ts
 t('{count, plural, one {# message} other {# messages}}', { count });
 ```
 
-The catalog entry is `_plural('count', 'cardinal', { one: [...], other: [...] })`. At render time the branch is picked through `Intl.PluralRules.select()`.
+The catalog entry is `_plural('count', 'cardinal', { one: [...], other: [...] })`.
+At render time the branch is chosen through `Intl.PluralRules.select()`.
 
-## How locale switching propagates
+## Safety
 
-When the user changes locale, only the components that read translations re-render. Components that don't call `t()` are left alone. The mechanism is framework-specific.
+Every save that touches a locale file passes two checks that make silent loss
+hard.
+
+Before writing, yapyak compares the new file against the old. A write that would
+clear a filled translation for a source string still in your code is refused, and
+the conflict is reported instead of applied.
+
+When one save updates several locale files, each is staged to a temporary file
+first and renamed into place only after all of them have been staged. A crash or a
+Ctrl-C mid-write leaves your committed locales untouched.
+
+A filled entry is only ever re-translated when you ask for it, through
+[`yapyak translate --force`](/guide/translating/coverage). For how yapyak carries
+translations across renames, moves, and deletions, see
+[Renames](/guide/translating/renames).
+
+## Switching
+
+Because the translations are compiled into the modules, a locale change is a
+re-render, not a fetch. When the active locale changes, only the components that
+call `t()` re-render; the rest are left alone. The processor wires that
+subscription in at compile time, through each framework's own reactivity.
 
 {% switch group="framework" %}
 
 {% when value="react" %}
-The compiler inserts a `useYapyak()` hook at the top of every function component that calls `t()`. The hook subscribes to the locale store through React's `useSyncExternalStore`, so the component re-renders when the active locale changes.
+The compiler injects a `useYapyak()` hook at the top of every component that calls
+`t()`. It subscribes to the locale store through React's `useSyncExternalStore`,
+so the component re-renders when the active locale changes.
 {% /when %}
 
 {% when value="vue" %}
-The active locale lives in a `customRef`. Calling `t()` reads the ref, so any component that calls `t()` re-renders when the locale changes.
+The active locale lives in a `customRef`. A component that calls `t()` reads it and
+is registered as a subscriber, so it re-renders when the locale changes.
 {% /when %}
 
 {% when value="svelte" %}
-The active locale lives in a `$state` rune. Calling `t()` reads the rune, so any component that calls `t()` re-runs when the locale changes.
+The active locale is a `$state` rune. A component that calls `t()` reads it, so it
+re-runs when the locale changes.
 {% /when %}
 
 {% when value="astro" %}
-Astro pages render on the server with the active locale. Switching locale reloads the page, since Astro doesn't run yapyak's runtime in the browser.
+Astro renders on the server and runs no yapyak runtime in the browser, so
+switching the locale reloads the page.
 {% /when %}
 
 {% /switch %}
 
-## HMR for translations
-
-Editing a locale file is a special case. yapyak watches your JSON files and, when one changes, sends just the changed entries to the browser over Vite's WebSocket. The runtime updates them in memory and components re-render with the new text.
-
-Source modules aren't recompiled in this case, so component state survives — open menus, form input, scroll position all stay where they were. This is the same path the automatic save loop takes: when a model returns a translation, yapyak writes it to the locale file and HMR picks it up from there.
-
-## Translation safety
-
-yapyak makes four guarantees on every save to prevent silent loss or overwrite of translations.
-
-**The orphan cache.** Every translation yapyak has ever seen lives in `.yapyak/orphans.json`. Delete a component, add it back three months later, copy markup to a new file — the translations re-appear in `locales/<locale>.json` automatically. The cache has no expiration.
-
-Reuse is based on exact match of the source string. Close-but-not-identical strings are treated as new.
-
-**Rename detection.** When you edit a source string in place (`'Save'` → `'Save changes'`), yapyak uses position in the file to tell a rename apart from a delete-and-add. It preserves the existing translation under the new key. The behavior is controlled by [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename); see [Renames](/guide/translating/renames) for the heuristics.
-
-**The invariant barrier.** Before any locale file is written, yapyak compares the new state against the existing one. If a write would clear a non-empty stub for a string still present in your source, the write is refused and the violation surfaces as an error. A still-used translation can't silently vanish.
-
-**Atomic multi-file writes.** When yapyak updates several locale files from a single save, all of them are staged to temp files first and renamed into place only once every stage has succeeded. A crash, an SSD failure, or a Ctrl-C mid-write leaves your original locales untouched.
-
-The only path that re-translates an already-filled entry is `yapyak translate --force`. That's a deliberate escape hatch behind an explicit CLI flag.
+See [Switch](/guide/switching/switch) for the binding you call in a component.
 
 ## SSR
 
-The server renders the same compiled modules the client does. There's no separate catalog to load before rendering an interface. A small SSR adapter binds each request to its own locale. See the [Installation](/guide/getting-started/installation) page for per-framework setup.
+On the server, the same compiled modules render. There is no separate catalog to
+load first. A small adapter binds each request to its own locale, so one user's
+language never leaks into another's.
+
+```ts
+import { withResponse } from 'yapyak/adapter';
+
+await withResponse(request, async () => {
+  return await render(request);
+});
+```
+
+See [Installation](/guide/getting-started/installation) for per-framework setup and
+[Custom adapter](/guide/advanced/custom-adapter) for frameworks yapyak doesn't
+ship.
