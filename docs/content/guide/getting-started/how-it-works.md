@@ -1,6 +1,6 @@
 ---
 title: How it works
-order: 4
+order: 3
 ---
 
 yapyak works at two moments: on save, and on build. On save it keeps your locale
@@ -389,7 +389,7 @@ that holds it, so a route that never renders a message never downloads it.
 ### Single locale
 
 When only one locale reaches the bundle, because it is the only one you added or
-because you set [`fixedLocale`](/guide/getting-started/configuration#fixed-locale-builds),
+because you set [`fixedLocale`](/guide/advanced/fixed-locale),
 the picker, the imports, and the catalogs all disappear. Each `t()` collapses to
 the value on disk.
 

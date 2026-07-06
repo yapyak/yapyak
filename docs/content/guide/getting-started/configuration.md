@@ -1,32 +1,44 @@
 ---
 title: Configuration
-order: 3
+order: 4
 ---
 
-`yapyak.config.ts` at your project root configures yapyak. Every field is optional.
+yapyak reads its configuration from `yapyak.config.ts` at your project root. Every field is optional, and each one belongs to one part of what yapyak does: your locales, the code it scans, the translation that fills your stubs, and the runtime in the browser.
+
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  defaultLocale: 'en'
+});
+```
+
+`defineConfig` types the object as you write it. An empty config is a valid config.
 
 ## Quick reference
 
-| Field | Default | Description |
+| Field | Default | What it sets |
 |---|---|---|
-| [`include`](#include) | `['src']` | Patterns to scan |
-| [`exclude`](#exclude) | tests, `.d.ts`, stories, gen | Patterns to skip |
-| [`processors`](#processors) | `[]` | Framework processors |
-| [`defaultLocale`](#defaultlocale) | `'en'` | Source language |
+| [`defaultLocale`](#defaultlocale) | `'en'` | Your source language |
 | [`localesDir`](#localesdir) | `'locales'` | Where locale files live |
-| [`translator`](#translator) | — | Optional model |
-| [`examples`](#examples) | `5` | In-context style examples per request |
-| [`autoTranslateThreshold`](#autotranslatethreshold) | `20` | Skip auto-translate above N new strings on save |
-| [`preserveTranslationsOnRename`](#preservetranslationsonrename) | depends on translator | Keep translations on source edits |
-| [`persistence`](#persistence) | `'none'` | Active-locale storage |
-| [`syncHtmlLang`](#synchtmllang) | `false` | Sync `<html lang>` on locale change |
-| [`detectUserLocale`](#detectuserlocale) | `false` | Detect from `Accept-Language` (server) or `navigator.languages` (browser) |
+| [`include`](#include) | `['src']` | Which files yapyak scans |
+| [`exclude`](#exclude) | tests, generated files, `.d.ts` | Which files it skips |
+| [`processors`](#processors) | `[]` | Framework file formats |
+| [`translator`](#translator) | none | The model that fills stubs |
+| [`examples`](#examples) | `5` | Style examples sent per request |
+| [`autoTranslateThreshold`](#autotranslatethreshold) | `20` | New strings per save before the translator holds off |
+| [`preserveTranslationsOnRename`](#preservetranslationsonrename) | depends on translator | Keep a translation when a source string is edited |
+| [`persistence`](#persistence) | `'none'` | Where the active locale is stored |
+| [`detectUserLocale`](#detectuserlocale) | `false` | Detect the first-visit locale |
+| [`syncHtmlLang`](#synchtmllang) | `false` | Keep `<html lang>` in sync |
 
 ## Locales
 
+The fields that define your set of languages and where they live on disk.
+
 ### `defaultLocale`
 
-The locale yapyak falls back to when nothing else has resolved the active one. Used as the source language for [translator](/guide/translating/overview) requests and as the fallback at the end of a [BCP 47 fallback chain](/guide/switching/tags). Defaults to `'en'`. Set this only if your source language is something else:
+Your source language: the locale you write your `t()` calls in. yapyak uses it as the source for [translator](#translator) requests, and as the last step of the [fallback chain](/guide/switching/tags) when nothing else has resolved the [active locale](/guide/switching/overview). Set it only if you author in something other than English.
 
 ```ts
 defaultLocale: 'sv',
@@ -34,9 +46,19 @@ defaultLocale: 'sv',
 
 **Type**: [`Locale`](/reference/yapyak/Locale) · **Default**: `'en'`
 
+### `localesDir`
+
+Where yapyak reads and writes [locale files](/guide/getting-started/how-it-works#locale-files), relative to the project root. One JSON file per locale.
+
+```ts
+localesDir: 'src/i18n/messages',
+```
+
+**Type**: `string` · **Default**: `'locales'`
+
 ### The set of locales
 
-The list of locales your app ships isn't a config field. yapyak reads it from the JSON files in your [`localesDir`](#localesdir). One file per locale, named after its [BCP 47 tag](/guide/switching/tags). Adding a locale means adding a file:
+Which locales your app ships is not a config field. yapyak reads it from the JSON files in your `localesDir`, one file per locale, each named after its [BCP 47 tag](/guide/switching/tags). Adding a locale means adding a file, which the CLI does for you:
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}
@@ -56,29 +78,27 @@ bunx yapyak add sv
 {% /when %}
 {% /switch %}
 
-The CLI creates `locales/sv.json`, fills any existing source strings through your translator, and regenerates the `Locale` literal type. See [`yapyak add`](/reference/cli/add).
+The CLI creates `locales/sv.json`, fills any existing source strings through your translator, and regenerates the `Locale` type. See [`yapyak add`](/reference/cli/add).
 
-## Source files
+## Extraction
 
-Two fields control which files yapyak scans for `t()` calls.
+The fields that control which files yapyak scans for `t()` calls.
 
 ### `include`
 
-Patterns yapyak should scan. Each entry can be:
-
-- A bare directory name like `'src'`, which expands to every source file inside it (extensions depend on your processors)
-- A glob like `'app/**/*.tsx'`
-- A `RegExp`
+Which files to scan. Each entry is a directory name, a glob, or a `RegExp`:
 
 ```ts
 include: ['src', 'app/components'],
 ```
 
+A bare directory name expands to every source file inside it, across the extensions your [processors](#processors) handle.
+
 **Type**: [`FilterPattern`](/reference/yapyak/config/FilterPattern) · **Default**: `['src']`
 
 ### `exclude`
 
-Patterns yapyak should skip. Same shape as `include`. Tests, generated files, and `.d.ts` declarations are excluded by default. The default list:
+Which files to skip. Same shape as `include`. Tests, generated files, and `.d.ts` declarations are skipped by default:
 
 ```ts
 exclude: [
@@ -89,7 +109,7 @@ exclude: [
 ],
 ```
 
-If you set `exclude` yourself, you're replacing the defaults — not adding to them. To extend rather than replace, spread the `DEFAULT_EXCLUDE` constant exported from `yapyak/config`:
+Setting `exclude` replaces this list rather than adding to it. To extend it, spread `DEFAULT_EXCLUDE` from `yapyak/config`:
 
 ```ts
 import { defineConfig, DEFAULT_EXCLUDE } from 'yapyak/config';
@@ -103,11 +123,9 @@ export default defineConfig({
 
 **Type**: [`FilterPattern`](/reference/yapyak/config/FilterPattern) · **Default**: see above
 
-## Processors
-
-Framework-specific processors that parse `.vue`, `.svelte`, `.astro`, or any custom format so yapyak can extract `t()` calls. The built-in TypeScript/JavaScript parser handles `.ts`, `.tsx`, `.js`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs` without one.
-
 ### `processors`
+
+Framework processors that let yapyak read `.vue`, `.svelte`, `.astro`, or any custom format. The built-in parser handles `.ts`, `.tsx`, `.js`, `.jsx`, `.mts`, `.mjs`, `.cts`, and `.cjs` without one.
 
 ```ts
 import { react } from '@yapyak/react/processor';
@@ -116,7 +134,7 @@ import { vue } from '@yapyak/vue/processor';
 processors: [react(), vue()]
 ```
 
-If your project mixes frameworks, register all of them. Each processor takes responsibility for its own file extensions. The factories live in their respective binding packages:
+Register one per framework you use. Each takes responsibility for its own file extensions:
 
 | Framework | Import |
 |---|---|
@@ -125,38 +143,38 @@ If your project mixes frameworks, register all of them. Each processor takes res
 | Svelte | `import { svelte } from '@yapyak/svelte/processor'` |
 | Astro | `import { astro } from '@yapyak/astro/processor'` |
 
-**Type**: [`Processor[]`](/reference/yapyak/processor/Processor) · **Default**: `[]` (TS/JS only)
+**Type**: [`Processor[]`](/reference/yapyak/processor/Processor) · **Default**: `[]`
 
 #### React Server Components
 
-The React processor is the only one that takes an option. `rsc: boolean`. Turn it on for projects using React Server Components:
+The React processor is the only one that takes an option, `rsc`. Turn it on for projects using React Server Components:
 
 ```ts
 processors: [react({ rsc: true })]
 ```
 
-With `rsc: true`, only files marked `'use client'` get the locale subscription hook injected.
-
-Server components still have their `t()` calls rewritten. Instead of subscribing to the client locale store, they read the request-bound locale from the SSR adapter.
+With `rsc: true`, only files marked `'use client'` get the locale subscription hook. Server components still have their `t()` calls rewritten; instead of subscribing to the client locale store, they read the request-bound locale from the SSR adapter.
 
 #### Custom processors
 
-For file formats yapyak doesn't ship a processor for, build your own with [`createProcessor`](/reference/yapyak/processor/createProcessor) from `yapyak/processor`. The factory takes:
+For a file format yapyak doesn't ship a processor for, build one with [`createProcessor`](/reference/yapyak/processor/createProcessor) from `yapyak/processor`. It takes:
 
-- `id` — a stable, non-empty identifier (convention: lowercase suffix matching the package name)
-- `extensions` — file extensions to claim
-- `parseFragments` — optional, splits your format into TypeScript-readable pieces
-- `runtime` — optional, the runtime module yapyak should wire into compiled output
+- `id` — a stable, non-empty identifier
+- `extensions` — the file extensions to claim
+- `parseFragments` — optional, splits your format into TypeScript-readable fragments
+- `runtime` — optional, the runtime module yapyak wires into compiled output
 - `applyImport` — optional, controls how imports are injected
-- `skipHmrCallback: true` — optional, for formats whose compiler can't safely embed Vite HMR callbacks at module scope. Astro's `.astro` files use this.
+- `skipHmrCallback` — optional, for formats whose compiler can't embed Vite HMR callbacks at module scope. Astro's `.astro` files use it.
 
-`yapyak/processor` also exports [`offsetToOriginalPosition`](/reference/yapyak/processor/offsetToOriginalPosition) and [`rangeFromOffsets`](/reference/yapyak/processor/rangeFromOffsets) — utilities for converting byte offsets back to `{ line, column }` positions when emitting diagnostics from your processor's fragment parser.
+`yapyak/processor` also exports [`offsetToOriginalPosition`](/reference/yapyak/processor/offsetToOriginalPosition) and [`rangeFromOffsets`](/reference/yapyak/processor/rangeFromOffsets) for mapping byte offsets back to `{ line, column }` positions when your parser emits diagnostics.
 
-## Translator
+## Translation
 
-Hook up a model to fill in empty stubs automatically. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama. For anything else, write a [custom translator](/guide/advanced/custom-translator).
+The fields that control the [translator](/guide/translating/overview) that fills your empty stubs during the [save loop](/guide/getting-started/how-it-works#save-loop).
 
 ### `translator`
+
+The model that fills empty stubs on save. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; for anything else, write a [custom translator](/guide/advanced/custom-translator).
 
 ```ts
 import { anthropic } from '@yapyak/anthropic';
@@ -164,19 +182,19 @@ import { anthropic } from '@yapyak/anthropic';
 translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 ```
 
-See [Translators](/guide/translating/overview) for the full set of options each provider supports. Voice, glossary, context, batching, concurrency, model selection, and more.
+Voice, glossary, context, batching, concurrency, and model selection are options on the translator itself. See [Translators](/guide/translating/overview).
 
-**Type**: [`Translator`](/reference/yapyak/translator/Translator) · **Default**: `undefined` (stubs stay empty)
+**Type**: [`Translator`](/reference/yapyak/translator/Translator) · **Default**: none, so stubs stay empty
 
 ### `examples`
 
-How many existing translations yapyak sends to the model as in-context style examples per request. See [Examples](/guide/translating/examples).
+How many existing [translation examples](/guide/translating/examples) yapyak sends the model per request, as style reference. `0` turns them off.
 
-**Type**: `number` · **Default**: `5` (or `0` when the translator is configured with `context: 'none'`)
+**Type**: `number` · **Default**: `5`, or `0` when the translator's `context` is `'none'`
 
 ### `autoTranslateThreshold`
 
-A guardrail for development. When a single save introduces more new strings than this number, yapyak writes the stubs but holds off on auto-translating. See [Loop](/guide/translating/loop#the-threshold-guardrail).
+A guardrail for the save loop. When a single save adds more new strings than this, yapyak writes the stubs but holds the translator back, so one large paste doesn't spend an API budget at once. `0` turns auto-translation off entirely; run [`yapyak translate`](/guide/translating/loop) when you're ready.
 
 **Type**: `number` · **Default**: `20`
 
@@ -184,21 +202,19 @@ A guardrail for development. When a single save introduces more new strings than
 
 Whether yapyak keeps the existing translation when you edit a source string in place. See [Renames](/guide/translating/renames#same-path-edited-source-string).
 
-**Type**: `boolean` · **Default**: `true` without a translator, `false` with one.
+**Type**: `boolean` · **Default**: `true` without a translator, `false` with one
 
-## Persistence
+## Runtime
 
-Where the active locale lives between page loads.
+The fields baked into the runtime the browser gets. They shape how the [active locale](/guide/switching/overview) is resolved and stored.
 
 ### `persistence`
 
-Shorthand:
+Where the active locale is stored between page loads. Pass a strategy name, or an object for its options:
 
 ```ts
 persistence: 'cookie',
 ```
-
-With options:
 
 ```ts
 persistence: {
@@ -207,99 +223,38 @@ persistence: {
 },
 ```
 
-Four strategies are available: `'none'`, `'cookie'`, `'local-storage'`, and `'url'`. Each one can be passed as a shorthand string or as a config object with strategy-specific options.
+The strategies are `'none'`, `'cookie'`, `'local-storage'`, and `'url'`. See [Persistence](/guide/switching/persistence) for each one's options.
 
 **Type**: [`PersistenceConfig`](/reference/yapyak/config/PersistenceConfig) · **Default**: `'none'`
 
-See [Persistence](/guide/switching/persistence) for the full options of each strategy.
-
-### `syncHtmlLang`
-
-Keeps `<html lang>` in sync with the active locale on every switch.
-
-```ts
-syncHtmlLang: true,
-```
-
-Turn it on for SPA frameworks (React, Vue, Svelte) and for Astro projects that switch locale through client-side islands. Leave it off when your layout reads the locale itself (e.g. `<html lang={getLocale()}>` in an Astro layout that re-renders on full navigations).
-
-**Type**: `boolean` · **Default**: `false`
-
 ### `detectUserLocale`
 
-Whether to detect the user's locale from the environment when no persisted value is found.
-
-- **On the server:** reads the `Accept-Language` request header.
-- **In the browser:** reads `navigator.languages` during runtime initialization.
+Whether to detect the locale from the environment on a first visit, when no [persisted](#persistence) value exists. On the server it reads the `Accept-Language` header; in the browser it reads `navigator.languages`. The detected value is matched against your locales, and falls through to [`defaultLocale`](#defaultlocale) if none match. A persisted choice always wins.
 
 ```ts
 detectUserLocale: true,
 ```
 
-Useful for first-visit defaulting. The detected value is matched against your configured `locales`; if none match, resolution falls through to `defaultLocale`. Detection only runs when no persisted value exists, so a persisted choice (cookie, local-storage, URL) always wins.
+**Type**: `boolean` · **Default**: `false`
+
+### `syncHtmlLang`
+
+Whether to keep `<html lang>` in sync with the active locale on every switch.
+
+```ts
+syncHtmlLang: true,
+```
+
+Turn it on for SPA frameworks and for Astro projects that switch locale through client-side islands. Leave it off when your layout sets the attribute itself, such as `<html lang={getLocale()}>` in an Astro layout that re-renders on navigation.
 
 **Type**: `boolean` · **Default**: `false`
 
-## Files on disk
+## Reading the config back
 
-### `localesDir`
-
-Where yapyak reads and writes locale files. Relative to the project root.
-
-Default:
-
-```ts
-localesDir: 'locales',
-```
-
-Custom location:
-
-```ts
-localesDir: 'src/i18n/messages',
-```
-
-The directory contains one JSON file per locale. `en.json`, `sv.json`, and so on. Each file is keyed by source file path and message text. See [How it works](/guide/getting-started/how-it-works) for the structure.
-
-**Type**: `string` · **Default**: `'locales'`
-
-## Fixed-locale builds
-
-For a single-locale artifact — a static deploy that serves one language per build — pass `fixedLocale` to the Vite plugin (not `yapyak.config.ts`):
-
-```ts [vite.config.ts]
-import { yapyak } from '@yapyak/vite';
-
-export default defineConfig({
-  plugins: [
-    yapyak({ fixedLocale: 'sv' })
-  ]
-});
-```
-
-You can also drive it from an environment variable, useful for CI matrix builds:
-
-```ts [vite.config.ts]
-yapyak({ fixedLocale: process.env.YAPYAK_LOCALE })
-```
-
-```bash
-YAPYAK_LOCALE=sv pnpm build
-```
-
-In a fixed-locale build, yapyak replaces every eligible `t()` call with the target locale's literal string, tree-shakes the locale picker out of the bundle, and ships no i18n runtime at all. Calls that need runtime behaviour — `t.as()`, ICU placeholders — stay as compiled lookups.
-
-{% callout variant="info" %}
-`fixedLocale` lives on the Vite plugin rather than `yapyak.config.ts` because it's a compile-time toggle that affects the bundle shape. It isn't something the runtime ever observes.
-{% /callout %}
-
-## Reading config
-
-Set `yapyak.config.ts` once. If your code needs to read the config at runtime — to render a locale switcher, for example — read it from the runtime exports of `yapyak`:
+You set `yapyak.config.ts` once. To read what you configured at runtime, for a locale switcher say, import from `yapyak`:
 
 ```ts
 import { defaultLocale, getLocale, locales } from 'yapyak';
 ```
 
-`locales` and `defaultLocale` reflect what you set in the config. `getLocale()` returns the active value.
-
-See [Switch](/guide/switching/switch) for the rest of the runtime locale API.
+`locales` and `defaultLocale` reflect your config; `getLocale()` returns the active locale. See [Switch](/guide/switching/switch) for the rest of the runtime API.

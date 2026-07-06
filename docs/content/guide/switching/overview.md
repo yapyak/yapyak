@@ -42,7 +42,7 @@ yapyak resolves the active locale in this order, taking the first that yields a 
 2. **Detected from the environment** if [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled. The source depends on where the code runs: the `Accept-Language` request header on the server (under the [SSR adapter](/guide/getting-started/installation)), or `navigator.languages` in the browser at runtime initialization. The detected value is matched against your configured locales.
 3. **The `defaultLocale`.** Your source language, the catch-all. Set via [`defaultLocale`](/guide/getting-started/configuration#defaultlocale) (defaults to `'en'`).
 
-For fixed-locale builds, the active locale is hard-coded at compile time and there's nothing to resolve at runtime. See [Fixed-locale builds](/guide/getting-started/configuration#fixed-locale-builds).
+For fixed-locale builds, the active locale is hard-coded at compile time and there's nothing to resolve at runtime. See [Fixed-locale builds](/guide/advanced/fixed-locale).
 
 ## Changing the active locale
 
