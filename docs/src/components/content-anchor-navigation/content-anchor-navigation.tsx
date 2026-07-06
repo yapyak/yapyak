@@ -77,35 +77,24 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     };
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      () => {
         if (tryEdges()) {
           return;
         }
 
-        const intersecting = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        const topmost = intersecting[0];
-        if (topmost !== undefined) {
-          setActiveId(topmost.target.id);
-          return;
-        }
-
-        let lastAbove: string | undefined;
+        let activeHeadingId = firstId;
         for (const heading of headings) {
           const headingElement = document.getElementById(heading.id);
           if (!headingElement) {
             continue;
           }
-          if (headingElement.getBoundingClientRect().top < HEADER_OFFSET_PX) {
-            lastAbove = heading.id;
+          if (headingElement.getBoundingClientRect().top <= HEADER_OFFSET_PX) {
+            activeHeadingId = heading.id;
           } else {
             break;
           }
         }
-        if (lastAbove !== undefined) {
-          setActiveId(lastAbove);
-        }
+        setActiveId(activeHeadingId);
       },
       {
         rootMargin: `-${HEADER_OFFSET_PX}px 0px -50% 0px`,
