@@ -7,9 +7,7 @@ yapyak follows translations across renames and file moves through an orphan cach
 
 ## What yapyak tracks
 
-Within each source file, yapyak records the `line` and `column` of every `t()` call alongside its source string. Cross-file translation memory lives separately in the orphan cache (`.yapyak/orphans.json`), which keeps every translation yapyak has ever seen.
-
-On save, the compiler builds a fresh set of records from the current code and reconciles them against your locale files and the orphan cache.
+For every `t()` call, yapyak saves its `line` and `column` in the source file. It also keeps an orphan cache (`.yapyak/orphans.json`), a history of every translation it has seen. On save, yapyak matches the current code against your locale files and the cache to follow renames.
 
 ### Same source, new path
 

@@ -87,7 +87,7 @@ Any option from [`Intl.DateTimeFormatOptions`](https://developer.mozilla.org/en-
 
 ## Relative time
 
-`format.relativeTime(value, unit, options)` renders a signed offset as a phrase the user reads naturally. Negative values are in the past, positive in the future.
+`format.relativeTime(value, unit, options)` formats a time offset. Negative values read as the past (`'1 day ago'`), positive as the future (`'in 3 hours'`).
 
 ```ts
 format.relativeTime(-1, 'day');

@@ -17,7 +17,7 @@ See [How it works](/guide/getting-started/how-it-works) for the full step sequen
 
 ## Threshold
 
-A single save that adds more than `autoTranslateThreshold` new strings holds off auto-translation. yapyak writes the stubs and logs that the translator was skipped. Run [`yapyak translate`](/guide/translating/coverage) when you're ready.
+A single save that adds more than `autoTranslateThreshold` new strings skips auto-translation. yapyak writes the empty stubs and logs that the translator was skipped. Run [`yapyak translate`](/guide/translating/coverage) when you're ready.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -29,7 +29,7 @@ export default defineConfig({
 
 Default is `20`. Set it to `0` to disable auto-translation entirely (you run [`yapyak translate`](/reference/cli/translate) when you're ready); set it to a large number to never skip.
 
-The guardrail catches large refactors and agent-generated additions that would otherwise burn through your API budget on one save.
+This catches large refactors and agent-generated additions that would otherwise spend your API budget in one save.
 
 ## Adding a locale
 

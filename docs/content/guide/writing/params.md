@@ -3,7 +3,7 @@ title: Params
 order: 2
 ---
 
-When a message contains values that change at runtime, you write them as named placeholders in the source string and pass them in as a second argument.
+Messages that change at runtime use named placeholders. Write them in the source string and pass the values as a second argument.
 
 ```ts
 t('Hi {name}', { name: 'Ada' });
@@ -81,7 +81,7 @@ const params = { name: 'Ada' };
 t('Hi {name}', params);                      // error: dynamic params
 {% /diagnostics %}
 
-Pre-built parameter objects hide what each call site requires. The compiler reads each call literal at compile time, so the second argument has to be inline.
+The params must be inline. yapyak reads them at compile time, so it can't see a stored variable.
 
 {% callout variant="info" %}
 The same constraint applies to the source string itself. `t(someVariable)` and `` t(`Hi ${name}`) `` both raise a diagnostic at compile time. yapyak can only extract what it can see in the source code; anything dynamic should be a placeholder, not a string concatenation.

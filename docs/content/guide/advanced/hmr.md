@@ -42,7 +42,7 @@ The same source-file save loop, but with the translator step taking real time. T
 
 1. You write a new `t('Some new string')`.
 2. You save. The string renders in your source language immediately (no need to wait).
-3. A second or two later, the Swedish translation appears in the running browser as the model's response writes back to the locale file and HMR picks it up.
+3. A second or two later, the model translates it, writes the result to `locales/sv.json`, and HMR updates the browser.
 
 The split keeps the save loop short. The source string appears immediately; the translation arrives once the model returns.
 

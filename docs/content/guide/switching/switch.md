@@ -3,7 +3,7 @@ title: Switch
 order: 2
 ---
 
-Each framework binding wraps `getLocale()` and `setLocale()` in an idiomatic shape — a hook, a ref, a rune. Use the binding from inside components; the bare functions work everywhere else.
+React has a `useLocale` hook, Vue a `locale` ref, Svelte a `locale.current` rune. Use the binding inside components; the bare `getLocale()` and `setLocale()` work everywhere else.
 
 ## The framework binding
 

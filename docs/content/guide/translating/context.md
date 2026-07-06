@@ -25,9 +25,9 @@ export default defineConfig({
 
 | Level | What's sent | When to use |
 |---|---|---|
-| `'none'` | Source string only. | Privacy-sensitive code. The strict-no-leakage setting. |
-| `'minimal'` | Source, plus component name and enclosing element when known. | Default. Enough to tell `Open` (button) from `Open` (status badge). |
-| `'rich'` | Above plus a snippet of surrounding source code. | If voice and glossary aren't enough to disambiguate. |
+| `'none'` | Source string only. | Privacy-sensitive code. |
+| `'minimal'` | Source, component name, and element tag (when available). | Default. Enough to tell `Open` (button) from `Open` (status badge). |
+| `'rich'` | Above plus surrounding source code. | When the component name and element alone can't tell two uses apart. |
 
 A higher level produces better translations for tricky strings at the cost of more tokens per request.
 

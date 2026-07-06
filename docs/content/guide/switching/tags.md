@@ -3,7 +3,7 @@ title: Tags
 order: 4
 ---
 
-A locale in yapyak is a BCP 47 language tag — the IETF standard `Intl` uses. Examples: `en`, `en-US`, `zh-Hant-TW`. Tags are short, structured, and case-insensitive in canonical form.
+A locale in yapyak is a BCP 47 language tag, the standard `Intl` uses for language codes. Examples: `en`, `en-US`, `zh-Hant-TW`. Tags are short, structured, and case-insensitive in canonical form.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}

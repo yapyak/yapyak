@@ -31,6 +31,18 @@ YAPYAK_LOCALE=sv pnpm build
 
 ## Build output
 
-yapyak compiles every `t()` call to the fixed locale's value and tree-shakes the locale picker out of the bundle. A plain message becomes a string literal, a message with parameters becomes a template literal, and text inside markup collapses into it. See [Compile](/guide/getting-started/how-it-works#compile) for what each kind of message becomes.
+yapyak compiles every `t()` call to the fixed locale's value. With `fixedLocale: 'sv'`:
+
+```tsx
+<button>{t('Save changes')}</button>
+```
+
+compiles to:
+
+```tsx
+<button>Spara ändringar</button>
+```
+
+See [Compile](/guide/getting-started/how-it-works#compile) for parameters, plurals, and rich text.
 
 The runtime never observes `fixedLocale`. It resolves the active locale at compile time, so there is nothing left to switch and no picker to ship.

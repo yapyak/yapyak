@@ -65,7 +65,7 @@ format.number(45, { style: 'unit' });                     // error: unit missing
 
 ### Graceful currency fallback
 
-A currency code unsupported by the host `Intl` doesn't throw. yapyak falls back to a `<value> <code>` rendering so older runtimes don't break your page, and emits a [`YAP0035`](/reference/diagnostics/YAP0035) diagnostic to flag the unsupported code. The same fallback applies to units ([`YAP0036`](/reference/diagnostics/YAP0036)) and time zones ([`YAP0037`](/reference/diagnostics/YAP0037)).
+A currency code unsupported by the host `Intl` doesn't throw. yapyak falls back to a `<value> <code>` rendering (for example, `199 XXX`) so older runtimes don't break your page, and emits a [`YAP0035`](/reference/diagnostics/YAP0035) diagnostic to flag the unsupported code. The same fallback applies to units ([`YAP0036`](/reference/diagnostics/YAP0036)) and time zones ([`YAP0037`](/reference/diagnostics/YAP0037)).
 
 ## Scoping to a different locale
 
