@@ -24,6 +24,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   const element = useRef<HTMLElement | null>(null);
   const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
   const lockedIdRef = useRef<string | null>(null);
+  const wasVisibleRef = useRef(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
 
@@ -117,23 +118,31 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   ]);
 
   useLayoutEffect(() => {
-    const $element = element.current;
-    const targetId = activeId ?? headings[0]?.id;
-    if (!$element || targetId === undefined) {
+    if (activeId === null) {
+      wasVisibleRef.current = false;
       return;
     }
-    const itemElement = itemElementsRef.current.get(targetId);
-    if (!itemElement) {
+    const $element = element.current;
+    const itemElement = itemElementsRef.current.get(activeId);
+    if (!$element || !itemElement) {
       return;
+    }
+    const isAppearing = !wasVisibleRef.current;
+    wasVisibleRef.current = true;
+    if (isAppearing) {
+      $element.style.setProperty('--indicator-duration', '0ms');
     }
     $element.style.setProperty('--indicator-top', `${itemElement.offsetTop}px`);
     $element.style.setProperty(
       '--indicator-height',
       `${itemElement.offsetHeight}px`,
     );
+    if (isAppearing) {
+      void $element.offsetHeight;
+      $element.style.removeProperty('--indicator-duration');
+    }
   }, [
     activeId,
-    headings,
   ]);
 
   useEffect(() => {
