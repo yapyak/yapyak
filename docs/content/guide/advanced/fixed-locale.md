@@ -29,7 +29,7 @@ yapyak({ fixedLocale: process.env.YAPYAK_LOCALE })
 YAPYAK_LOCALE=sv pnpm build
 ```
 
-## What the build produces
+## Build output
 
 yapyak compiles every `t()` call to the fixed locale's value and tree-shakes the locale picker out of the bundle. A plain message becomes a string literal, a message with parameters becomes a template literal, and text inside markup collapses into it. See [Compile](/guide/getting-started/how-it-works#compile) for what each kind of message becomes.
 

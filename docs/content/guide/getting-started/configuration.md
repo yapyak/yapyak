@@ -5,15 +5,53 @@ order: 4
 
 yapyak reads its configuration from `yapyak.config.ts` at your project root. Every field is optional, and each one belongs to one part of what yapyak does: your locales, the code it scans, the translation that fills your stubs, and the runtime in the browser.
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```ts [yapyak.config.ts]
+import { react } from '@yapyak/react/processor';
 import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
-  defaultLocale: 'en'
+  processors: [react()]
 });
 ```
+{% /when %}
 
-`defineConfig` types the object as you write it. An empty config is a valid config.
+{% when value="vue" %}
+```ts [yapyak.config.ts]
+import { vue } from '@yapyak/vue/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [vue()]
+});
+```
+{% /when %}
+
+{% when value="svelte" %}
+```ts [yapyak.config.ts]
+import { svelte } from '@yapyak/svelte/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [svelte()]
+});
+```
+{% /when %}
+
+{% when value="astro" %}
+```ts [yapyak.config.ts]
+import { astro } from '@yapyak/astro/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [astro()]
+});
+```
+{% /when %}
+
+{% /switch %}
 
 ## Quick reference
 
@@ -159,12 +197,14 @@ With `rsc: true`, only files marked `'use client'` get the locale subscription h
 
 For a file format yapyak doesn't ship a processor for, build one with [`createProcessor`](/reference/yapyak/processor/createProcessor) from `yapyak/processor`. It takes:
 
-- `id` — a stable, non-empty identifier
-- `extensions` — the file extensions to claim
-- `parseFragments` — optional, splits your format into TypeScript-readable fragments
-- `runtime` — optional, the runtime module yapyak wires into compiled output
-- `applyImport` — optional, controls how imports are injected
-- `skipHmrCallback` — optional, for formats whose compiler can't embed Vite HMR callbacks at module scope. Astro's `.astro` files use it.
+| Field | Notes |
+|---|---|
+| `id` | A stable, non-empty identifier. |
+| `extensions` | The file extensions to claim. |
+| `parseFragments` | Optional. Splits your format into TypeScript-readable fragments. |
+| `runtime` | Optional. The runtime module yapyak wires into compiled output. |
+| `applyImport` | Optional. Controls how imports are injected. |
+| `skipHmrCallback` | Optional. For formats whose compiler can't embed Vite HMR callbacks at module scope. Astro's `.astro` files use it. |
 
 `yapyak/processor` also exports [`offsetToOriginalPosition`](/reference/yapyak/processor/offsetToOriginalPosition) and [`rangeFromOffsets`](/reference/yapyak/processor/rangeFromOffsets) for mapping byte offsets back to `{ line, column }` positions when your parser emits diagnostics.
 
@@ -249,7 +289,7 @@ Turn it on for SPA frameworks and for Astro projects that switch locale through 
 
 **Type**: `boolean` · **Default**: `false`
 
-## Reading the config back
+## Config at runtime
 
 You set `yapyak.config.ts` once. To read what you configured at runtime, for a locale switcher say, import from `yapyak`:
 
