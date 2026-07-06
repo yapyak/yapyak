@@ -323,6 +323,33 @@ describe('gemini', () => {
     ).rejects.toThrow(/blocked by Gemini recitation filter/);
   });
 
+  it('throws a safety-filter error when the prompt is blocked', async () => {
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            promptFeedback: {
+              blockReason: 'SAFETY',
+            },
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    await expect(
+      gemini({
+        apiKey: 'k',
+      })({
+        fileId: 'x',
+        source: 'Hello',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      }),
+    ).rejects.toThrow(/prompt blocked by Gemini safety filter/);
+  });
+
   it('writes `maxTokens` to `generationConfig.maxOutputTokens` when set', async () => {
     const stub = stubFetch('Hej');
     await gemini({

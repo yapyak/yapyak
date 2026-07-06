@@ -225,9 +225,21 @@ type GeminiResponseBody = {
       | 'LANGUAGE'
       | 'OTHER';
   }[];
+  promptFeedback?: {
+    blockReason?: string;
+  };
 };
 
 function validateResponse(body: GeminiResponseBody): void {
+  const blockReason = body.promptFeedback?.blockReason;
+  if (blockReason !== undefined) {
+    throw new TranslatorSafetyError(
+      `yapyak gemini: prompt blocked by Gemini safety filter (blockReason='${blockReason}'). Adjust voice or glossary, or split the batch to isolate the offending message.`,
+      {
+        vendor: 'gemini',
+      },
+    );
+  }
   const reason = body.candidates?.[0]?.finishReason;
   if (reason === 'MAX_TOKENS') {
     throw new TranslatorTruncatedError(
