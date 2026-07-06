@@ -3,7 +3,7 @@ title: Context
 order: 7
 ---
 
-`context` controls how much call-site code yapyak sends with each translation request. The model uses it to disambiguate short messages.
+`context` controls how much call-site code yapyak sends with each translation request. The model uses it to tell apart short messages that have more than one meaning.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';

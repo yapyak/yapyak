@@ -5,7 +5,7 @@ order: 3
 
 `format.dateTime()` formats an absolute date or time for the active locale. `format.relativeTime()` formats a signed offset ("yesterday", "in 3 days").
 
-Both are thin wrappers over `Intl`. They read the active locale on every call.
+Both wrap `Intl` and read the active locale on every call.
 
 ```ts
 import { format } from 'yapyak';

@@ -3,7 +3,7 @@ title: Renames
 order: 9
 ---
 
-yapyak follows translations across renames and file moves through an orphan cache and same-position rename detection, instead of orphaning them.
+yapyak finds translations when you rename or move files, so they don't get lost.
 
 ## What yapyak tracks
 

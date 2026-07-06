@@ -31,7 +31,7 @@ try {
 
 ## Retry behavior
 
-Retries happen inside the provider's fetch layer **before** any typed error is constructed. yapyak retries on HTTP 408, 429, 5xx, and on network-level failures (aborted, timed out, connection failed). Everything else fails fast. A typed error only surfaces once retries are exhausted or the failure is non-retryable.
+Retries happen inside the provider's fetch layer **before** any typed error is constructed. yapyak retries on HTTP 408, 429, 5xx, and on network-level failures (aborted, timed out, connection failed). Everything else fails fast. You only see an error after retries run out, or when the failure can't be retried.
 
 | Source of failure | Retried? | Surfaces as |
 |---|---|---|
@@ -60,7 +60,7 @@ export default defineConfig({
 
 ## Chunk failure
 
-When an error escapes retries (or fires from a non-retryable type), yapyak catches it at the chunk boundary. The whole chunk's translations are lost, the surrounding chunks complete normally, and the failure surfaces as [`YAP0033`](/reference/diagnostics/YAP0033). A chunk is `batchSize` items, so a safety block on one item drops the rest of that chunk's translations with it.
+When an error escapes retries (or fires from a non-retryable type), yapyak catches it at the chunk boundary. The whole chunk's translations are lost, the surrounding chunks complete normally, and the failure is reported as [`YAP0033`](/reference/diagnostics/YAP0033). A chunk is `batchSize` items, so a safety block on one item drops the rest of that chunk's translations with it.
 
 The translator never throws back to your application code. Chunk failures surface through the diagnostic stream; the dev-time loop continues with whatever completed.
 

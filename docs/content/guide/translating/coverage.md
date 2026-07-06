@@ -43,7 +43,7 @@ bunx yapyak status
 
 ## Filling the gaps
 
-[`yapyak translate`](/reference/cli/translate) walks every locale file, finds every empty stub, and runs them through the configured translator. Existing translations stay where they are.
+[`yapyak translate`](/reference/cli/translate) finds every empty stub and sends it to the translator. Translations you already wrote don't change.
 
 {% switch group="packageManager" %}
 {% when value="pnpm" %}

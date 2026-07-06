@@ -19,7 +19,7 @@ Three sources can write a translation:
 
 - **You.** Open `locales/sv.json` and type. Vite HMR refreshes the running app on save.
 - **Your coding agent.** Same path: the agent edits the JSON file and saves.
-- **A translator.** A model translator configured in `yapyak.config.ts` fills empty stubs as soon as they appear, batched into requests that go straight from your machine to the provider.
+- **A translator.** A model translator configured in `yapyak.config.ts` fills empty stubs as soon as they appear. Requests go straight from your machine to the provider.
 
 The three paths coexist. The translator leaves hand-written translations alone. You can also overwrite a translator-written value by hand at any time.
 

@@ -9,7 +9,7 @@ Rich text lets a translation wrap part of itself in a link, a line break, an emp
 t('Read our <link>privacy policy</link> for details.');
 ```
 
-The source is still a single string. yapyak parses the tags at compile time, and `<RichText>` renders them through handlers you provide.
+The source is still a single string. yapyak parses the tags at compile time, and `<RichText>` calls your handlers to render them.
 
 ## Pair tags and void tags
 

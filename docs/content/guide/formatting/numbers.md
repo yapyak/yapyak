@@ -38,7 +38,7 @@ format.number(0.5, { minimumFractionDigits: 2 });
 // output: en-US: '0.50'
 ```
 
-You can pass any of `Intl.NumberFormat`'s decimal options. Minimum/maximum fraction digits, minimum integer digits, grouping toggles, notation modes.
+You can pass any of [`Intl.NumberFormat`'s decimal options](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#parameters).
 
 ## Currency
 
@@ -120,7 +120,7 @@ format.number(0.4256, {
 // output: '42.6%'
 ```
 
-If your value is already in "percent units" (`42` for "forty-two percent"), divide by 100 before passing it in.
+If your value is already a percent (like `42` for "42%"), divide by 100 first.
 
 ## Unit
 

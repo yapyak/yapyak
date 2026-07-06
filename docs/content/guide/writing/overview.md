@@ -95,7 +95,7 @@ Open the file and you see exactly which source string is used where. Edit the so
 
 ## What the compiler checks
 
-Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/reference/diagnostics) — a compile-time warning or error visible in your editor and your terminal.
+Every save runs `t()` calls through a parser. Anything ambiguous becomes a [diagnostic](/reference/diagnostics), a compile-time warning or error visible in your editor and your terminal.
 
 The most common ones are early-flagged mistakes:
 

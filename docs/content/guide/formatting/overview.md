@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-[`format`](/reference/yapyak/Format) wraps the platform's `Intl` API. Every call reads the active locale, and yapyak's typed options surface compile-time errors that raw `Intl` doesn't.
+[`format`](/reference/yapyak/Format) wraps the platform's `Intl` API. Every call reads the active locale, and yapyak's typed options catch compile-time errors that raw `Intl` misses.
 
 ```ts
 import { format } from 'yapyak';

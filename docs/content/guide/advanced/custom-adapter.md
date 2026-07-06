@@ -15,7 +15,7 @@ await withResponse(request, async () => {
 });
 ```
 
-Anything inside the callback sees the request-bound locale.
+Code inside the callback can read the request-bound locale.
 
 `withResponse(request, callback, responseExtractor?)` does three things:
 
@@ -23,7 +23,7 @@ Anything inside the callback sees the request-bound locale.
 2. **Runs the callback** inside that scope.
 3. **Flushes pending headers.** Drains any response headers yapyak buffered onto the response. A `Set-Cookie` from a server-side `setLocale()` is the common case.
 
-The result of `callback()` is whatever you returned. If you returned a `Response`, yapyak appends the buffered headers to it before passing it back to you.
+If your callback returns a `Response`, yapyak appends the buffered headers to it.
 
 ## Minimal wrapper
 
@@ -65,7 +65,7 @@ For client-side switching from inside a React/Vue/Svelte runtime, enable [`syncH
 
 ## Persistence considerations
 
-Server-side persistence reads happen inside `withResponse`. Whatever [persistence strategy](/guide/switching/persistence) you've configured ([cookie](/guide/switching/persistence#cookie), [URL](/guide/switching/persistence#url)) is read off the request automatically. If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled, the `Accept-Language` header is consulted too.
+On the server, `withResponse` reads your configured [persistence strategy](/guide/switching/persistence) off the request automatically ([cookie](/guide/switching/persistence#cookie) or [URL](/guide/switching/persistence#url)). If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled, it also reads `Accept-Language`.
 
 For server-side persistence writes (a `setLocale()` call inside a request handler), yapyak buffers the headers until `withResponse` finishes, then flushes them onto the response. If your framework constructs its response object outside of `withResponse`, the buffered headers won't reach the user. Keep the response construction inside the scope.
 

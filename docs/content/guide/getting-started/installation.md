@@ -3,7 +3,7 @@ title: Installation
 order: 2
 ---
 
-yapyak installs as a Vite plugin plus a framework binding and (optionally) an SSR adapter and translator.
+To use yapyak, install the Vite plugin, a framework binding, and optionally an SSR adapter and translator.
 
 {% installation-wizard /%}
 
@@ -364,7 +364,7 @@ ollama pull llama3.1
 {% /when %}
 {% /switch %}
 
-Add yapyak's own config:
+Create `yapyak.config.ts`:
 
 {% switch group="framework" %}
 

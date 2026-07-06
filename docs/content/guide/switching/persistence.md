@@ -45,7 +45,7 @@ persistence: {
 | `name` | `'locale'` | The cookie's name |
 | `secure` | `false` | Marks the cookie `Secure`, restricting it to HTTPS contexts |
 
-The cookie is set with `SameSite=Lax` and a long expiry. On a fresh browser, it's absent until the first `setLocale()` call. Until then, the active locale falls back to `defaultLocale` (or to [environment detection](/guide/getting-started/configuration#detectuserlocale) if enabled).
+The cookie is set with `SameSite=Lax` and a long expiry. On a fresh browser, the active locale starts at `defaultLocale` (or [environment detection](/guide/getting-started/configuration#detectuserlocale) if enabled) until you call `setLocale()`.
 
 {% callout variant="info" %}
 `secure: true` restricts the cookie to HTTPS-only contexts. On plain HTTP, client-side `setLocale()` writes silently fail because the browser refuses to set a secure cookie. Leave `secure` off for local development; enable it in production. The flag has no effect on `localhost` regardless.
@@ -72,7 +72,7 @@ persistence: {
 |---|---|---|
 | `key` | `'locale'` | The `localStorage` key |
 
-`localStorage` is per-origin and survives across tabs and sessions. On a fresh device, the key is absent until the first `setLocale()` call; the active locale starts at `defaultLocale`.
+`localStorage` is per-origin and survives across tabs and sessions. On a fresh device, the active locale starts at `defaultLocale` until you call `setLocale()`.
 
 {% callout variant="warning" %}
 Local storage isn't available during SSR. If your app server-renders, the server can't read the user's stored choice on the first request, so the initial render uses `defaultLocale`.

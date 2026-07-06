@@ -56,7 +56,7 @@ import { t } from 'yapyak';
 ## Save loop
 
 When you save, yapyak reacts in one synchronous pass: it reads the file through a
-[processor](#processors), finds the `t()` calls, checks each one, and reconciles
+[processor](#processors), finds the `t()` calls, checks each one, and updates
 your locale files. A call yapyak can't compile is reported before the save
 settles.
 
@@ -502,9 +502,7 @@ At render time the branch is chosen through `Intl.PluralRules.select()`.
 Every save that touches a locale file passes two checks that make silent loss
 hard.
 
-Before writing, yapyak compares the new file against the old. A write that would
-clear a filled translation for a source string still in your code is refused, and
-the conflict is reported instead of applied.
+Before writing, yapyak compares the new file against the old. If a write would erase a translation for a source string still in your code, yapyak stops and shows the conflict instead.
 
 When one save updates several locale files, each is staged to a temporary file
 first and renamed into place only after all of them have been staged. A crash or a

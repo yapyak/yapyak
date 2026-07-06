@@ -29,7 +29,7 @@ Each translation request carries N source-translation pairs the model can imitat
 
 ## Why it helps
 
-Voice instructs the model. Examples demonstrate. A handful of source-translation pairs constrains the output more concretely than a one-sentence brief. The model reads the tone of your existing translations and matches it.
+Voice instructs the model. Examples demonstrate. A handful of source-translation pairs shape the output better than a brief written description. The model reads the tone of your existing translations and matches it.
 
 ## Tuning
 
@@ -39,4 +39,4 @@ Lower `examples` if token cost or latency matters and tone is consistent enough 
 
 ## Selection
 
-yapyak scores candidates by word-level similarity to each source string, only considering translations for the same target locale as the current batch. Ties break by same-file proximity, then alphabetically by source. The selection is deterministic: the same input produces the same prompt.
+yapyak scores candidates by word-level similarity to each source string, from the same target locale. Ties break by same-file proximity, then alphabetically. The same input always picks the same examples.

@@ -51,7 +51,7 @@ Three options usually need configuration: [Voice](/guide/translating/voice), [Gl
 
 ## OpenAI extras
 
-The OpenAI factory accepts three options the others don't: `seed` (deterministic sampling), `organization` (org ID header), and `user` (end-user identifier passed through to OpenAI).
+The OpenAI factory accepts three options the others don't: `seed` (repeatable results), `organization` (org ID), and `user` (end-user ID).
 
 ```ts
 openai({

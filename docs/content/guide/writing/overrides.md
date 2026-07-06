@@ -9,7 +9,7 @@ order: 6
 t.in('sv', 'Welcome back');
 ```
 
-This always returns the Swedish translation regardless of the active locale. The signature mirrors `t()`. Placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/reference/yapyak/Locale) union, so an unknown code is a compile-time error.
+This always returns the Swedish translation regardless of the active locale. It works like `t()`: placeholder parameters, rich-text tags, and ICU sub-formats all work the same. The locale argument is typed against your [`Locale`](/reference/yapyak/Locale) union, so an unknown code is a compile-time error.
 
 ## Chaining with as
 

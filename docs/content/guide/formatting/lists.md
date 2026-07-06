@@ -34,7 +34,7 @@ format.list(features);
 // sv-SE: 'Pull requests, Issues och Discussions'
 ```
 
-Each item passes through `t()` first to become locale-aware text. Then `format.list()` joins them in the right way for the active locale.
+Run each item through `t()` first, then `format.list()` joins them using the active locale's rules.
 
 ## Lists inside a sentence
 

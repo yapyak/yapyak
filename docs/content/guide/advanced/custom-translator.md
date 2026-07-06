@@ -32,7 +32,7 @@ export default defineConfig({
 });
 ```
 
-yapyak handles batching, deduplication, and result validation around your function. You write the call to your backend.
+You write the call to your backend. yapyak handles batching, deduplication, and result validation.
 
 Deduplication runs before your callback. Two `t()` calls with the same `fileId`, source string, and disambiguation translate once; the result is reused for both, so your `translate` never sees the duplicate.
 

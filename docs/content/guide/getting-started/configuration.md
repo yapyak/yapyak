@@ -76,7 +76,7 @@ The fields that define your set of languages and where they live on disk.
 
 ### `defaultLocale`
 
-Your source language: the locale you write your `t()` calls in. yapyak uses it as the source for [translator](#translator) requests, and as the last step of the [fallback chain](/guide/switching/tags) when nothing else has resolved the [active locale](/guide/switching/overview). Set it only if you author in something other than English.
+Your source language: the locale you write your `t()` calls in. yapyak uses it as the source for [translator](#translator) requests, and as the final [fallback](/guide/switching/tags) when no other locale matches. Set it only if you author in something other than English.
 
 ```ts
 defaultLocale: 'sv',
