@@ -166,7 +166,7 @@ Malformed tag markup is flagged at both compile time (as a `$yapyakTypeError` in
 
 ## Type safety
 
-The set of tags `<RichText>` expects is inferred from the source string at compile time. Add `<discount>` to the source and the binding requires a `discount` handler; rename `<link>` to `<a>` and the prop name updates accordingly. Removing a handler whose tag is still in the string is a TypeScript error. You can't ship a missing renderer.
+The set of tags `<RichText>` expects is inferred from the source string at compile time. Add `<discount>` to the source and `<RichText>` requires a `discount` handler; rename `<link>` to `<a>` and the prop name updates accordingly. Removing a handler whose tag is still in the string is a TypeScript error. You can't ship a missing renderer.
 
 The reverse direction is checked too: if your handler list has a key the source doesn't declare, TypeScript flags it as unexpected.
 

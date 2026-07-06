@@ -25,7 +25,7 @@ Code inside the callback can read the request-bound locale.
 
 If your callback returns a `Response`, yapyak appends the buffered headers to it.
 
-## Minimal wrapper
+## Minimal adapter
 
 The simplest framework-specific middleware wraps a request handler:
 
@@ -71,7 +71,7 @@ For server-side persistence writes (a `setLocale()` call inside a request handle
 
 ## Shipped adapters
 
-If you'd like to model your wrapper on a known-good example, the shipped adapters are short:
+If you'd like to model your adapter on a known-good example, the shipped adapters are short:
 
 - [React Router](https://github.com/yapyak/yapyak/blob/main/packages/react-router/src/middleware.ts). Wraps `withResponse(request, () => next())` in a React Router middleware function
 - [SvelteKit](https://github.com/yapyak/yapyak/blob/main/packages/sveltekit/src/handle.ts). Wraps `withResponse(event.request, () => resolve(event, ...))` in a SvelteKit `Handle`

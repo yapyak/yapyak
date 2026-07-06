@@ -30,7 +30,7 @@ getLocale();
 // output: 'sv' | 'en' | ...
 ```
 
-[`getLocale()`](/reference/yapyak/getLocale) returns the current locale. The return type is the union of every locale code you've added.
+[`getLocale()`](/reference/yapyak/getLocale) returns the active locale. The return type is the union of every locale code you've added.
 
 In components, prefer the framework binding. It subscribes the component to changes so re-renders happen automatically. See [Switch](/guide/switching/switch) for the per-framework shape.
 

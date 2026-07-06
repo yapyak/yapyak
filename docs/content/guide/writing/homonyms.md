@@ -47,4 +47,4 @@ Keep contexts short and stable. Long keys like `'open-action-button-primary'` ar
 
 The context has to be a literal string at the call site (`t.as('action', 'Open')`), not a variable. The compiler reads it directly to scope the translation, so dynamic contexts can't be extracted. A non-literal context raises [`YAP0017`](/reference/diagnostics/YAP0017).
 
-To force a fixed locale on a homonym, chain `.in()`. See [Overrides](/guide/writing/overrides#combining-with-as).
+To force a specific locale on a homonym, chain `.in()`. See [Overrides](/guide/writing/overrides#combining-with-as).

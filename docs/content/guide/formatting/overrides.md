@@ -3,7 +3,7 @@ title: Overrides
 order: 5
 ---
 
-[`format.in(locale)`](/reference/yapyak/Format) scopes a `format.*` call (or chain) to a fixed locale, regardless of the active one. Use it for one-off formatting in a non-active locale.
+[`format.in(locale)`](/reference/yapyak/Format) scopes a `format.*` call (or chain) to a forced locale, regardless of the active one. Use it for one-off formatting in a non-active locale.
 
 ```ts
 import { format } from 'yapyak';

@@ -3,7 +3,7 @@ title: Installation
 order: 2
 ---
 
-To use yapyak, install the Vite plugin, a framework binding, and optionally an SSR adapter and translator.
+To use yapyak, install the Vite plugin, a framework adapter, and optionally an SSR adapter and translator.
 
 {% installation-wizard /%}
 
