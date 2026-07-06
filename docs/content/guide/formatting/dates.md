@@ -3,7 +3,7 @@ title: Dates
 order: 3
 ---
 
-`format.dateTime()` formats an absolute date or time for the active locale. `format.relativeTime()` formats a signed offset ("yesterday", "in 3 days").
+`format.dateTime()` formats an absolute date or time for the active locale. `format.relativeTime()` formats a signed offset ("1 day ago", "in 3 days").
 
 Both wrap `Intl` and read the active locale on every call.
 

@@ -9,6 +9,8 @@ export function getRouter() {
       block: 'start',
     },
     defaultPreload: 'intent',
+    defaultPreloadStaleTime: Number.POSITIVE_INFINITY,
+    defaultStaleTime: Number.POSITIVE_INFINITY,
     routeTree,
     scrollRestoration: false,
   });

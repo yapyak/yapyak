@@ -121,9 +121,24 @@ function Component() {
         </Layout.Header.Start>
         <Layout.Header.Center>
           <Navigation>
-            <Navigation.Link to="/">{t('Home')}</Navigation.Link>
-            <Navigation.Link to="/guide">{t('Guide')}</Navigation.Link>
-            <Navigation.Link to="/reference">{t('Reference')}</Navigation.Link>
+            <Navigation.Link
+              preload="render"
+              to="/"
+            >
+              {t('Home')}
+            </Navigation.Link>
+            <Navigation.Link
+              preload="render"
+              to="/guide"
+            >
+              {t('Guide')}
+            </Navigation.Link>
+            <Navigation.Link
+              preload="render"
+              to="/reference"
+            >
+              {t('Reference')}
+            </Navigation.Link>
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
