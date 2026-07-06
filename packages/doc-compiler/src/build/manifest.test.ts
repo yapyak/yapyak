@@ -51,7 +51,6 @@ describe('buildManifest', () => {
   it('builds a manifest with version `1`', async () => {
     const config: Config = {
       collections: {},
-      out: join(dir, 'manifest.json'),
     };
 
     const manifest = await buildManifest(config);
@@ -68,7 +67,6 @@ describe('buildManifest', () => {
           source: 'markdown',
         },
       },
-      out: join(dir, 'manifest.json'),
     };
 
     const manifest = await buildManifest(config);
@@ -90,7 +88,6 @@ describe('buildManifest', () => {
           source: 'typescript',
         },
       },
-      out: join(dir, 'manifest.json'),
     };
 
     const manifest = await buildManifest(config);
@@ -114,7 +111,6 @@ describe('buildManifest', () => {
           source: 'typescript',
         },
       },
-      out: join(dir, 'manifest.json'),
     };
 
     const manifest = await buildManifest(config);
@@ -128,7 +124,6 @@ describe('buildManifest', () => {
   it('returns an empty `options` registry when none is configured', async () => {
     const config: Config = {
       collections: {},
-      out: join(dir, 'manifest.json'),
     };
 
     const manifest = await buildManifest(config);
@@ -151,7 +146,6 @@ describe('buildManifest', () => {
           ],
         },
       },
-      out: join(dir, 'manifest.json'),
     };
 
     const manifest = await buildManifest(config);

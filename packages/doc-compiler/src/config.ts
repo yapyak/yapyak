@@ -2,7 +2,6 @@ export type Config = {
   agentArtifact?: AgentArtifactOptions;
   collections: Record<string, CollectionConfig>;
   options?: OptionsRegistry;
-  out: string;
   searchData?: SearchDataOptions;
   sourceUrl?: SourceUrlConfig;
   validate?: boolean;

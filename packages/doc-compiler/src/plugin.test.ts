@@ -4,14 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { docCompiler } from './plugin';
 import { EventEmitter } from 'node:events';
-import {
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -29,7 +22,12 @@ type MockServer = {
     use: (handler: MiddlewareHandler) => void;
   };
   moduleGraph: {
-    getModuleById: (id: string) => unknown;
+    idToModuleMap: Map<
+      string,
+      {
+        id: string | null;
+      }
+    >;
     invalidateModule: (mod: unknown) => void;
   };
   watcher: MockWatcher;
@@ -68,7 +66,7 @@ function createMockServer(): MockServer {
       use: () => undefined,
     },
     moduleGraph: {
-      getModuleById: () => undefined,
+      idToModuleMap: new Map(),
       invalidateModule: () => undefined,
     },
     watcher: createMockWatcher(),
@@ -92,7 +90,6 @@ function captureMiddleware(server: MockServer): {
 
 describe('docCompiler', () => {
   let root: string;
-  let outPath: string;
   let markdownRoot: string;
 
   beforeEach(() => {
@@ -105,11 +102,9 @@ describe('docCompiler', () => {
       join(markdownRoot, 'index.md'),
       '---\ntitle: Index\n---\nbody\n',
     );
-    outPath = join(root, '.docs', 'manifest.json');
   });
 
   afterEach(() => {
-    vi.useRealTimers();
     rmSync(root, {
       force: true,
       recursive: true,
@@ -124,67 +119,60 @@ describe('docCompiler', () => {
           source: 'markdown',
         },
       },
-      out: outPath,
     };
   }
 
-  describe('buildStart', () => {
-    it('writes the manifest file to `out`', async () => {
-      const plugin = docCompiler(configFor());
-      await (plugin.buildStart as () => Promise<void>).call({
-        emitFile: () => undefined,
-      });
-      expect(existsSync(outPath)).toBe(true);
-      const manifest = JSON.parse(readFileSync(outPath, 'utf8'));
-      expect(manifest).toHaveProperty('collections');
+  async function startPlugin(plugin: ReturnType<typeof docCompiler>) {
+    await (plugin.buildStart as () => Promise<void>).call({
+      emitFile: () => undefined,
     });
-  });
+  }
 
   describe('configureServer', () => {
     it('emits a rebuild when a watched markdown file changes', async () => {
-      vi.useFakeTimers();
       const plugin = docCompiler(configFor());
       const server = createMockServer();
-      await (plugin.buildStart as () => Promise<void>).call({
-        emitFile: () => undefined,
-      });
+      let reloaded = false;
+      server.ws.send = () => {
+        reloaded = true;
+      };
+      await startPlugin(plugin);
       (plugin.configureServer as (server: MockServer) => void)(server);
 
       const newFile = join(markdownRoot, 'guide.md');
       writeFileSync(newFile, '---\ntitle: Guide\n---\nbody\n');
       server.watcher.emit('change', newFile);
-      await vi.advanceTimersByTimeAsync(220);
 
-      expect(existsSync(outPath)).toBe(true);
+      await vi.waitFor(() => {
+        expect(reloaded).toBe(true);
+      });
     });
 
     it('blocks a rebuild when a sibling-prefix directory file changes', async () => {
-      vi.useFakeTimers();
       const siblingRoot = `${markdownRoot}-extra`;
       mkdirSync(siblingRoot, {
         recursive: true,
       });
       const plugin = docCompiler(configFor());
       const server = createMockServer();
-      let invalidationAttempted = false;
-      server.moduleGraph.getModuleById = () => {
-        invalidationAttempted = true;
-        return undefined;
+      let reloaded = false;
+      server.ws.send = () => {
+        reloaded = true;
       };
-      await (plugin.buildStart as () => Promise<void>).call({
-        emitFile: () => undefined,
-      });
+      await startPlugin(plugin);
       (plugin.configureServer as (server: MockServer) => void)(server);
 
       const siblingFile = join(siblingRoot, 'a.md');
       writeFileSync(siblingFile, 'body');
       server.watcher.emit('change', siblingFile);
-      await vi.advanceTimersByTimeAsync(220);
+      await new Promise((resolve) => {
+        setTimeout(resolve, 300);
+      });
 
-      expect(invalidationAttempted).toBe(false);
+      expect(reloaded).toBe(false);
     });
 
-    it('writes the agent artifact body when middleware receives a known `.md` path', async () => {
+    it('sends the agent artifact body when middleware receives a known `.md` path', async () => {
       const plugin = docCompiler({
         ...configFor(),
         agentArtifact: {
@@ -197,9 +185,7 @@ describe('docCompiler', () => {
       });
       const server = createMockServer();
       const { capturedHandlers } = captureMiddleware(server);
-      await (plugin.buildStart as () => Promise<void>).call({
-        emitFile: () => undefined,
-      });
+      await startPlugin(plugin);
       (plugin.configureServer as (server: MockServer) => void)(server);
 
       const handler = capturedHandlers[0];
@@ -248,9 +234,7 @@ describe('docCompiler', () => {
       });
       const server = createMockServer();
       const { capturedHandlers } = captureMiddleware(server);
-      await (plugin.buildStart as () => Promise<void>).call({
-        emitFile: () => undefined,
-      });
+      await startPlugin(plugin);
       (plugin.configureServer as (server: MockServer) => void)(server);
 
       const handler = capturedHandlers[0];
@@ -272,12 +256,31 @@ describe('docCompiler', () => {
   });
 
   describe('load', () => {
-    it('returns module source code when given the resolved virtual id', () => {
+    it('returns the module source when given the resolved virtual id', () => {
       const plugin = docCompiler(configFor());
       const result = (plugin.load as (id: string) => string | undefined)(
         '\0virtual:doc-compiler',
       );
       expect(result).toContain('export const doc');
+    });
+
+    it('returns the manifest source when given the resolved manifest id', async () => {
+      const plugin = docCompiler(configFor());
+      await startPlugin(plugin);
+      const result = (plugin.load as (id: string) => string | undefined)(
+        '\0virtual:doc-compiler/manifest',
+      );
+      expect(result).toContain('export default');
+      expect(result).toContain('collections');
+    });
+
+    it('returns the page content when given a resolved content id', async () => {
+      const plugin = docCompiler(configFor());
+      await startPlugin(plugin);
+      const result = (plugin.load as (id: string) => string | undefined)(
+        '\0virtual:doc-compiler/content/0',
+      );
+      expect(result).toContain('export default');
     });
 
     it('returns `undefined` for any other id', () => {
@@ -296,6 +299,22 @@ describe('docCompiler', () => {
         'virtual:doc-compiler',
       );
       expect(result).toBe('\0virtual:doc-compiler');
+    });
+
+    it('returns the resolved manifest id when given the manifest id', () => {
+      const plugin = docCompiler(configFor());
+      const result = (plugin.resolveId as (id: string) => string | undefined)(
+        'virtual:doc-compiler/manifest',
+      );
+      expect(result).toBe('\0virtual:doc-compiler/manifest');
+    });
+
+    it('returns the resolved content id when given a content id', () => {
+      const plugin = docCompiler(configFor());
+      const result = (plugin.resolveId as (id: string) => string | undefined)(
+        'virtual:doc-compiler/content/5',
+      );
+      expect(result).toBe('\0virtual:doc-compiler/content/5');
     });
 
     it('returns `undefined` for any other id', () => {

@@ -10,7 +10,7 @@ export function getFeatures(): Feature[] {
   return [
     {
       description: t(
-        "No more inventing names for words that already say what they mean. Write t('Save changes'). The message is the source of truth. What Tailwind did for class names, yapyak does for translation keys.",
+        "No more inventing names for words that already say what they mean. Write t('Save changes') — the message is the source of truth. What Tailwind did for class names, yapyak does for translation keys.",
       ),
       number: '01',
       title: t('Source string is the key'),
@@ -73,7 +73,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'Anthropic, OpenAI, Gemini, Ollama, shipped. A custom one is 30 lines: implement one function that returns the translation. Run the model in the cloud, on your own box with Ollama, or skip AI entirely and fill the JSON yourself. Old habits are welcome.',
+        'Anthropic, OpenAI, Gemini, Ollama — shipped. A custom one is 30 lines: implement one function that returns the translation. Run the model in the cloud, on your own box with Ollama, or skip AI entirely and fill the JSON yourself. Old habits are welcome.',
       ),
       number: '10',
       title: t('Bring your own AI. Or none.'),
@@ -87,7 +87,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        "yapyak is a library, and only a library, MIT-licensed, all of it on npm. Everything runs on your machine, and your translations are files in your repo, committed to git. You own it the way you own the rest of your code. If you use a model, the only bill is its provider's. The pricing page is a 404.",
+        "yapyak is a library — and only a library — MIT-licensed, all of it on npm. Everything runs on your machine, and your translations are files in your repo, committed to git. You own it the way you own the rest of your code. If you use a model, the only bill is its provider's. The pricing page is a 404.",
       ),
       number: '12',
       title: t('Open source, not open core'),

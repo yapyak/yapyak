@@ -278,7 +278,6 @@ export default defineConfig({
           ],
         },
       },
-      out: resolve(import.meta.dirname, 'manifest.json'),
       searchData: {
         fileName: 'search-data.json',
       },

@@ -9,20 +9,19 @@ import type {
 import type { Config } from './config';
 
 import { buildAgentArtifact, buildManifest, buildSearchData } from './build';
-import { mkdir, rm, writeFile } from 'node:fs/promises';
-import { dirname, resolve, sep } from 'node:path';
+import { resolve, sep } from 'node:path';
 
 const VIRTUAL_ID = 'virtual:doc-compiler';
+const MANIFEST_ID = 'virtual:doc-compiler/manifest';
+const CONTENT_ID_PREFIX = 'virtual:doc-compiler/content/';
 const RESOLVED_ID = '\0virtual:doc-compiler';
+const RESOLVED_MANIFEST_ID = '\0virtual:doc-compiler/manifest';
+const RESOLVED_CONTENT_PREFIX = '\0virtual:doc-compiler/content/';
 const REBUILD_DEBOUNCE_MS = 200;
 
 export function docCompiler(config: Config): Plugin {
-  let outAbsolute = '';
-  let bodiesDirectory = '';
-  let bodyEntries: {
-    file: string;
-    key: string;
-  }[] = [];
+  let navigationManifest: NavigationManifest | undefined;
+  let contentEntries: ContentEntry[] = [];
   let isBuild = false;
   let cachedManifest: Manifest | undefined;
 
@@ -38,40 +37,15 @@ export function docCompiler(config: Config): Plugin {
     cachedManifest = undefined;
   };
 
-  const writeManifestFile = async () => {
-    const manifest = await getManifest();
-    const { bodies, navManifest } = splitManifest(manifest);
-    await mkdir(dirname(outAbsolute), {
-      recursive: true,
-    });
-    await writeFile(outAbsolute, JSON.stringify(navManifest, null, 2));
-    await rm(bodiesDirectory, {
-      force: true,
-      recursive: true,
-    });
-    await mkdir(bodiesDirectory, {
-      recursive: true,
-    });
-    bodyEntries = await Promise.all(
-      bodies.map(async (body, index) => {
-        const file = resolve(bodiesDirectory, `${index}.js`);
-        await writeFile(
-          file,
-          `export default ${JSON.stringify(body.blocks)};\n`,
-        );
-        return {
-          file,
-          key: body.key,
-        };
-      }),
-    );
+  const buildArtifacts = async () => {
+    const artifacts = splitManifest(await getManifest());
+    navigationManifest = artifacts.navigationManifest;
+    contentEntries = artifacts.contentEntries;
   };
 
   return {
     async buildStart() {
-      outAbsolute = resolve(config.out);
-      bodiesDirectory = resolve(dirname(outAbsolute), 'bodies');
-      await writeManifestFile();
+      await buildArtifacts();
       if (!isBuild) {
         return;
       }
@@ -99,9 +73,6 @@ export function docCompiler(config: Config): Plugin {
     },
 
     configureServer(server: ViteDevServer) {
-      outAbsolute = resolve(config.out);
-      bodiesDirectory = resolve(dirname(outAbsolute), 'bodies');
-
       if (config.agentArtifact !== undefined) {
         const agentArtifact = config.agentArtifact;
         server.middlewares.use((req, res, next) => {
@@ -164,8 +135,8 @@ export function docCompiler(config: Config): Plugin {
       const rebuild = debounce(async () => {
         try {
           invalidateManifest();
-          await writeManifestFile();
-          invalidateVirtualModule(server);
+          await buildArtifacts();
+          invalidateVirtualModules(server);
         } catch (error) {
           server.config.logger.error(
             `[doc-compiler] rebuild failed: ${String(error)}`,
@@ -195,17 +166,24 @@ export function docCompiler(config: Config): Plugin {
     },
 
     load(id) {
+      if (id === RESOLVED_MANIFEST_ID) {
+        return `export default ${JSON.stringify(navigationManifest)};`;
+      }
+      if (id.startsWith(RESOLVED_CONTENT_PREFIX)) {
+        const index = Number(id.slice(RESOLVED_CONTENT_PREFIX.length));
+        return `export default ${JSON.stringify(contentEntries[index]?.blocks ?? [])};`;
+      }
       if (id !== RESOLVED_ID) {
         return undefined;
       }
-      const bodyMap = bodyEntries
+      const contentMap = contentEntries
         .map(
-          (entry) =>
-            `  [${JSON.stringify(entry.key)}]: () => import(${JSON.stringify(entry.file)}),`,
+          (entry, index) =>
+            `  [${JSON.stringify(entry.key)}]: () => import(${JSON.stringify(`${CONTENT_ID_PREFIX}${index}`)}),`,
         )
         .join('\n');
       return `
-import manifest from ${JSON.stringify(outAbsolute)};
+import manifest from ${JSON.stringify(MANIFEST_ID)};
 import {
   findAdjacentPages as _findAdjacentPages,
   getEntryMeta as _getEntryMeta,
@@ -216,8 +194,8 @@ import {
   getSidebar as _getSidebar,
 } from '@yapyak/doc-compiler';
 
-const bodies = {
-${bodyMap}
+const content = {
+${contentMap}
 };
 
 export const doc = {
@@ -227,7 +205,7 @@ export const doc = {
     if (entry.kind !== 'page') {
       return entry;
     }
-    const { default: blocks } = await bodies[JSON.stringify([collection, path])]();
+    const { default: blocks } = await content[JSON.stringify([collection, path])]();
     return {
       kind: 'page',
       page: { ...entry.page, blocks },
@@ -249,21 +227,29 @@ export const doc = {
       if (id === VIRTUAL_ID) {
         return RESOLVED_ID;
       }
+      if (id === MANIFEST_ID) {
+        return RESOLVED_MANIFEST_ID;
+      }
+      if (id.startsWith(CONTENT_ID_PREFIX)) {
+        return `\0${id}`;
+      }
       return undefined;
     },
   };
 }
 
-type PageBody = {
+type ContentEntry = {
   blocks: Block[];
   key: string;
 };
 
-function splitManifest(manifest: Manifest): {
-  bodies: PageBody[];
-  navManifest: NavigationManifest;
-} {
-  const bodies: PageBody[] = [];
+type SplitManifestResult = {
+  contentEntries: ContentEntry[];
+  navigationManifest: NavigationManifest;
+};
+
+function splitManifest(manifest: Manifest): SplitManifestResult {
+  const contentEntries: ContentEntry[] = [];
   const collections: Record<string, NavigationCollection> = {};
   for (const [collectionName, collection] of Object.entries(
     manifest.collections,
@@ -272,7 +258,7 @@ function splitManifest(manifest: Manifest): {
     for (const [path, page] of Object.entries(collection.pages)) {
       const { blocks, ...pageMeta } = page;
       pages[path] = pageMeta;
-      bodies.push({
+      contentEntries.push({
         blocks,
         key: JSON.stringify([
           collectionName,
@@ -287,8 +273,8 @@ function splitManifest(manifest: Manifest): {
     };
   }
   return {
-    bodies,
-    navManifest: {
+    contentEntries,
+    navigationManifest: {
       collections,
       options: manifest.options,
       symbols: manifest.symbols,
@@ -297,14 +283,15 @@ function splitManifest(manifest: Manifest): {
   };
 }
 
-function invalidateVirtualModule(server: ViteDevServer) {
-  const module = server.moduleGraph.getModuleById(RESOLVED_ID);
-  if (module !== undefined) {
-    server.moduleGraph.invalidateModule(module);
-    server.ws.send({
-      type: 'full-reload',
-    });
+function invalidateVirtualModules(server: ViteDevServer) {
+  for (const module of server.moduleGraph.idToModuleMap.values()) {
+    if (module.id?.startsWith(RESOLVED_ID)) {
+      server.moduleGraph.invalidateModule(module);
+    }
   }
+  server.ws.send({
+    type: 'full-reload',
+  });
 }
 
 function getWatchedDirectories(config: Config): string[] {
