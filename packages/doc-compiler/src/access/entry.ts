@@ -1,4 +1,4 @@
-import type { Manifest, Page } from '../build';
+import type { NavigationManifest, Page, PageMeta } from '../build';
 
 export type Entry =
   | {
@@ -13,11 +13,24 @@ export type Entry =
       kind: 'not-found';
     };
 
-export function getEntry(
-  manifest: Manifest,
+export type EntryMeta =
+  | {
+      kind: 'page';
+      page: PageMeta;
+    }
+  | {
+      kind: 'redirect';
+      target: string;
+    }
+  | {
+      kind: 'not-found';
+    };
+
+export function getEntryMeta(
+  manifest: NavigationManifest,
   collectionName: string,
   path = '',
-): Entry {
+): EntryMeta {
   const collection = manifest.collections[collectionName];
   if (!collection) {
     return {

@@ -4,13 +4,8 @@ import { notFound, redirect } from '@tanstack/react-router';
 
 import { doc } from 'virtual:doc-compiler';
 
-export function loadPage(
-  collection: string,
-  path: string,
-): {
-  page: Page;
-} {
-  return pageOrThrow(doc.getEntry(collection, path));
+export async function loadPage(collection: string, path: string) {
+  return pageOrThrow(await doc.getEntry(collection, path));
 }
 
 export function redirectToFirstPage(collection: string): never {

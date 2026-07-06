@@ -1,4 +1,4 @@
-import type { Page } from '@yapyak/doc-compiler';
+import type { PageMeta } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';
@@ -7,9 +7,9 @@ import { LinkBase } from '#primitives/link';
 import styles from './content-pagination.module.css';
 
 export type ContentPaginationProps = BoxProps<'nav'> & {
-  nextPage?: Page;
+  nextPage?: PageMeta;
   nextParentLabel?: string;
-  previousPage?: Page;
+  previousPage?: PageMeta;
   previousParentLabel?: string;
 };
 

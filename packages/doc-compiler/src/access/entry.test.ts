@@ -1,18 +1,19 @@
-import type { Manifest, Page } from '../build';
+import type { NavigationManifest, PageMeta } from '../build';
 
 import { describe, expect, it } from 'vitest';
 
-import { getEntry } from './entry';
+import { getEntryMeta } from './entry';
 
-const PAGE: Page = {
-  blocks: [],
+const PAGE: PageMeta = {
   description: '',
   href: '/guide/settings',
   meta: {},
   title: 'Settings',
 };
 
-function manifest(collections: Manifest['collections']): Manifest {
+function manifest(
+  collections: NavigationManifest['collections'],
+): NavigationManifest {
   return {
     collections,
     options: {},
@@ -21,10 +22,10 @@ function manifest(collections: Manifest['collections']): Manifest {
   };
 }
 
-describe('getEntry', () => {
+describe('getEntryMeta', () => {
   it('returns a `page` entry when the path resolves to a page', () => {
     expect(
-      getEntry(
+      getEntryMeta(
         manifest({
           guide: {
             pages: {
@@ -45,7 +46,7 @@ describe('getEntry', () => {
 
   it('returns a `redirect` entry when the path resolves to a redirect', () => {
     expect(
-      getEntry(
+      getEntryMeta(
         manifest({
           guide: {
             pages: {},
@@ -65,14 +66,14 @@ describe('getEntry', () => {
   });
 
   it('returns a `not-found` entry when the collection is missing', () => {
-    expect(getEntry(manifest({}), 'missing', 'settings')).toEqual({
+    expect(getEntryMeta(manifest({}), 'missing', 'settings')).toEqual({
       kind: 'not-found',
     });
   });
 
   it('returns a `not-found` entry when the path is missing', () => {
     expect(
-      getEntry(
+      getEntryMeta(
         manifest({
           guide: {
             pages: {},

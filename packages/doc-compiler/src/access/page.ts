@@ -1,9 +1,14 @@
-import type { Manifest, Page, SidebarLink, SidebarNode } from '../build';
+import type {
+  NavigationManifest,
+  PageMeta,
+  SidebarLink,
+  SidebarNode,
+} from '../build';
 
 export type AdjacentPages = {
-  nextPage?: Page;
+  nextPage?: PageMeta;
   nextParentLabel?: string;
-  previousPage?: Page;
+  previousPage?: PageMeta;
   previousParentLabel?: string;
 };
 
@@ -14,22 +19,22 @@ type FlatEntry = {
 
 export type PageEntry = {
   collectionName: string;
-  page: Page;
+  page: PageMeta;
   path: string;
 };
 
 export function getPage(
-  manifest: Manifest,
+  manifest: NavigationManifest,
   collectionName: string,
   path = '',
-): Page | undefined {
+): PageMeta | undefined {
   return manifest.collections[collectionName]?.pages[path];
 }
 
 export function getFirstPage(
-  manifest: Manifest,
+  manifest: NavigationManifest,
   collectionName: string,
-): Page | undefined {
+): PageMeta | undefined {
   const collection = manifest.collections[collectionName];
   if (!collection) {
     return undefined;
@@ -47,8 +52,8 @@ export function getFirstPage(
 }
 
 export function findAdjacentPages(
-  manifest: Manifest,
-  page: Page,
+  manifest: NavigationManifest,
+  page: PageMeta,
 ): AdjacentPages {
   const collectionName = collectionFromHref(page.href);
   if (collectionName === undefined) {
@@ -104,7 +109,10 @@ function collectionFromHref(href: string): string | undefined {
   return match?.[1];
 }
 
-function findPageByHref(manifest: Manifest, href: string): Page | undefined {
+function findPageByHref(
+  manifest: NavigationManifest,
+  href: string,
+): PageMeta | undefined {
   for (const collectionName of Object.values(manifest.collections)) {
     for (const page of Object.values(collectionName.pages)) {
       if (page.href === href) {

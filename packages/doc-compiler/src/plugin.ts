@@ -1,9 +1,15 @@
 import type { Plugin, ViteDevServer } from 'vite';
-import type { Manifest } from './build';
+import type { Block } from './access';
+import type {
+  Manifest,
+  NavigationCollection,
+  NavigationManifest,
+  PageMeta,
+} from './build';
 import type { Config } from './config';
 
 import { buildAgentArtifact, buildManifest, buildSearchData } from './build';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, resolve, sep } from 'node:path';
 
 const VIRTUAL_ID = 'virtual:doc-compiler';
@@ -12,6 +18,11 @@ const REBUILD_DEBOUNCE_MS = 200;
 
 export function docCompiler(config: Config): Plugin {
   let outAbsolute = '';
+  let bodiesDirectory = '';
+  let bodyEntries: {
+    file: string;
+    key: string;
+  }[] = [];
   let isBuild = false;
   let cachedManifest: Manifest | undefined;
 
@@ -29,15 +40,37 @@ export function docCompiler(config: Config): Plugin {
 
   const writeManifestFile = async () => {
     const manifest = await getManifest();
+    const { bodies, navManifest } = splitManifest(manifest);
     await mkdir(dirname(outAbsolute), {
       recursive: true,
     });
-    await writeFile(outAbsolute, JSON.stringify(manifest, null, 2));
+    await writeFile(outAbsolute, JSON.stringify(navManifest, null, 2));
+    await rm(bodiesDirectory, {
+      force: true,
+      recursive: true,
+    });
+    await mkdir(bodiesDirectory, {
+      recursive: true,
+    });
+    bodyEntries = await Promise.all(
+      bodies.map(async (body, index) => {
+        const file = resolve(bodiesDirectory, `${index}.js`);
+        await writeFile(
+          file,
+          `export default ${JSON.stringify(body.blocks)};\n`,
+        );
+        return {
+          file,
+          key: body.key,
+        };
+      }),
+    );
   };
 
   return {
     async buildStart() {
       outAbsolute = resolve(config.out);
+      bodiesDirectory = resolve(dirname(outAbsolute), 'bodies');
       await writeManifestFile();
       if (!isBuild) {
         return;
@@ -67,6 +100,7 @@ export function docCompiler(config: Config): Plugin {
 
     configureServer(server: ViteDevServer) {
       outAbsolute = resolve(config.out);
+      bodiesDirectory = resolve(dirname(outAbsolute), 'bodies');
 
       if (config.agentArtifact !== undefined) {
         const agentArtifact = config.agentArtifact;
@@ -164,12 +198,17 @@ export function docCompiler(config: Config): Plugin {
       if (id !== RESOLVED_ID) {
         return undefined;
       }
-      const manifestPath = JSON.stringify(outAbsolute);
+      const bodyMap = bodyEntries
+        .map(
+          (entry) =>
+            `  [${JSON.stringify(entry.key)}]: () => import(${JSON.stringify(entry.file)}),`,
+        )
+        .join('\n');
       return `
-import manifest from ${manifestPath};
+import manifest from ${JSON.stringify(outAbsolute)};
 import {
   findAdjacentPages as _findAdjacentPages,
-  getEntry as _getEntry,
+  getEntryMeta as _getEntryMeta,
   getFirstPage as _getFirstPage,
   getHeadings as _getHeadings,
   getOptions as _getOptions,
@@ -177,9 +216,23 @@ import {
   getSidebar as _getSidebar,
 } from '@yapyak/doc-compiler';
 
+const bodies = {
+${bodyMap}
+};
+
 export const doc = {
   manifest,
-  getEntry: (collection, path) => _getEntry(manifest, collection, path),
+  getEntry: async (collection, path = '') => {
+    const entry = _getEntryMeta(manifest, collection, path);
+    if (entry.kind !== 'page') {
+      return entry;
+    }
+    const { default: blocks } = await bodies[JSON.stringify([collection, path])]();
+    return {
+      kind: 'page',
+      page: { ...entry.page, blocks },
+    };
+  },
   findAdjacentPages: (page) => _findAdjacentPages(manifest, page),
   getSidebar: (collection) => _getSidebar(manifest, collection),
   getFirstPage: (collection) => _getFirstPage(manifest, collection),
@@ -197,6 +250,49 @@ export const doc = {
         return RESOLVED_ID;
       }
       return undefined;
+    },
+  };
+}
+
+type PageBody = {
+  blocks: Block[];
+  key: string;
+};
+
+function splitManifest(manifest: Manifest): {
+  bodies: PageBody[];
+  navManifest: NavigationManifest;
+} {
+  const bodies: PageBody[] = [];
+  const collections: Record<string, NavigationCollection> = {};
+  for (const [collectionName, collection] of Object.entries(
+    manifest.collections,
+  )) {
+    const pages: Record<string, PageMeta> = {};
+    for (const [path, page] of Object.entries(collection.pages)) {
+      const { blocks, ...pageMeta } = page;
+      pages[path] = pageMeta;
+      bodies.push({
+        blocks,
+        key: JSON.stringify([
+          collectionName,
+          path,
+        ]),
+      });
+    }
+    collections[collectionName] = {
+      pages,
+      redirects: collection.redirects,
+      sidebar: collection.sidebar,
+    };
+  }
+  return {
+    bodies,
+    navManifest: {
+      collections,
+      options: manifest.options,
+      symbols: manifest.symbols,
+      version: manifest.version,
     },
   };
 }

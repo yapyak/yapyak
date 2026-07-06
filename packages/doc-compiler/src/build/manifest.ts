@@ -46,12 +46,15 @@ export type MetaValue =
       [key: string]: MetaValue;
     };
 
-export type Page = {
-  blocks: Block[];
+export type PageMeta = {
   description: string;
   href: string;
   meta: Record<string, MetaValue>;
   title: string;
+};
+
+export type Page = PageMeta & {
+  blocks: Block[];
 };
 
 export type Manifest = {
@@ -63,6 +66,19 @@ export type Manifest = {
 
 export type Collection = {
   pages: Record<string, Page>;
+  redirects: Record<string, string>;
+  sidebar: SidebarNode[];
+};
+
+export type NavigationManifest = {
+  collections: Record<string, NavigationCollection>;
+  options: OptionsRegistry;
+  symbols: Record<string, SymbolEntry>;
+  version: 1;
+};
+
+export type NavigationCollection = {
+  pages: Record<string, PageMeta>;
   redirects: Record<string, string>;
   sidebar: SidebarNode[];
 };

@@ -1,34 +1,33 @@
-import type { Manifest, Page, SidebarNode } from '../build';
+import type { NavigationManifest, PageMeta, SidebarNode } from '../build';
 
 import { describe, expect, it } from 'vitest';
 
 import { findAdjacentPages, getFirstPage, getPage } from './page';
 
-const HELLO_PAGE: Page = {
-  blocks: [],
+const HELLO_PAGE: PageMeta = {
   description: '',
   href: '/guide/hello',
   meta: {},
   title: 'Hello',
 };
 
-const WORLD_PAGE: Page = {
-  blocks: [],
+const WORLD_PAGE: PageMeta = {
   description: '',
   href: '/guide/world',
   meta: {},
   title: 'World',
 };
 
-const SETTINGS_PAGE: Page = {
-  blocks: [],
+const SETTINGS_PAGE: PageMeta = {
   description: '',
   href: '/guide/settings',
   meta: {},
   title: 'Settings',
 };
 
-function manifest(collections: Manifest['collections']): Manifest {
+function manifest(
+  collections: NavigationManifest['collections'],
+): NavigationManifest {
   return {
     collections,
     options: {},

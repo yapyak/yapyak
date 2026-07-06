@@ -39,7 +39,7 @@ export type {
   TerminalSegmentKind,
   TextBlock,
 } from './block';
-export type { Entry } from './entry';
+export type { Entry, EntryMeta } from './entry';
 export type { GetExcerptOptions } from './excerpt';
 export type { GetHeadingsOptions, HeadingEntry } from './heading';
 export type { InternalLinkEntry } from './internal-link';
@@ -47,7 +47,7 @@ export type { AdjacentPages, PageEntry } from './page';
 
 export { getCodeBlocks } from './code-block';
 export { getCollection } from './collection';
-export { getEntry } from './entry';
+export { getEntryMeta } from './entry';
 export { getExcerpt } from './excerpt';
 export { getHeadings } from './heading';
 export { getInternalLinks } from './internal-link';

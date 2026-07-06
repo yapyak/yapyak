@@ -5,6 +5,7 @@
 .env.local
 coverage
 dist
+docs/bodies
 docs/content/reference/manifest.json
 docs/manifest.json
 node_modules
