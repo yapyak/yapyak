@@ -36,8 +36,10 @@
         height: var(--indicator-height);
         pointer-events: none;
         background-color: var(--brand);
+        opacity: 0;
         transform: translateY(var(--indicator-top));
         transition:
+          opacity var(--indicator-duration) var(--ease-smooth),
           transform var(--indicator-duration) var(--ease-smooth),
           height var(--indicator-duration) var(--ease-smooth);
         will-change: transform, height;
@@ -48,6 +50,12 @@
       .Indicator {
         left: calc((var(--spacing-4) + var(--px)) * -1);
         display: block;
+      }
+    }
+
+    &[data-active] {
+      .Indicator {
+        opacity: 1;
       }
     }
 

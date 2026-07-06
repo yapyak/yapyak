@@ -27,7 +27,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   const lockedIdRef = useRef<string | null>(null);
   const lockTimeoutRef = useRef<number>(undefined);
   const lockReleaseRef = useRef<(() => void) | undefined>(undefined);
-  const [activeId, setActiveId] = useState(headings[0]?.id ?? null);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
 
   const handleUserInteraction = () => {
@@ -50,12 +50,10 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       return;
     }
 
-    const firstHeading = headings[0];
     const lastHeading = headings[headings.length - 1];
-    if (firstHeading === undefined || lastHeading === undefined) {
+    if (lastHeading === undefined) {
       return;
     }
-    const firstId = firstHeading.id;
     const lastId = lastHeading.id;
 
     const tryEdges = () => {
@@ -69,10 +67,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         setActiveId(lastId);
         return true;
       }
-      if (window.scrollY <= 0) {
-        setActiveId(firstId);
-        return true;
-      }
       return false;
     };
 
@@ -82,7 +76,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
           return;
         }
 
-        let activeHeadingId = firstId;
+        let activeHeadingId: string | null = null;
         for (const heading of headings) {
           const headingElement = document.getElementById(heading.id);
           if (!headingElement) {
@@ -125,12 +119,13 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   ]);
 
   useLayoutEffect(() => {
-    if (activeId === null) {
+    const $element = element.current;
+    const targetId = activeId ?? headings[0]?.id;
+    if (!$element || targetId === undefined) {
       return;
     }
-    const $element = element.current;
-    const itemElement = itemElementsRef.current.get(activeId);
-    if (!$element || !itemElement) {
+    const itemElement = itemElementsRef.current.get(targetId);
+    if (!itemElement) {
       return;
     }
     $element.style.setProperty('--indicator-top', `${itemElement.offsetTop}px`);
@@ -140,6 +135,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     );
   }, [
     activeId,
+    headings,
   ]);
 
   useEffect(() => {
@@ -217,6 +213,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         styles.ContentAnchorNavigation,
         className,
       ]}
+      data-active={activeId !== null}
       data-animation-enabled={isAnimationEnabled}
       data-indicator={indicator}
       ref={element}
