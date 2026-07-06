@@ -12,7 +12,6 @@ import { ContentAnchorNavigationItem } from './content-anchor-navigation-item';
 
 const HEADER_OFFSET_PX = 88;
 const BOTTOM_THRESHOLD_PX = 4;
-const SCROLL_LOCK_FALLBACK_MS = 1200;
 
 export type ContentAnchorNavigationProps = BoxProps<'nav'> & {
   headings: HeadingEntry[];
@@ -24,9 +23,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
 
   const element = useRef<HTMLElement | null>(null);
   const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
-  const lockedIdRef = useRef<string | null>(null);
-  const lockTimeoutRef = useRef<number>(undefined);
-  const lockReleaseRef = useRef<(() => void) | undefined>(undefined);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
 
@@ -46,10 +42,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   });
 
   useEffect(() => {
-    if (headings.length === 0) {
-      return;
-    }
-
     const lastHeading = headings[headings.length - 1];
     if (lastHeading === undefined) {
       return;
@@ -57,9 +49,6 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     const lastId = lastHeading.id;
 
     const tryEdges = () => {
-      if (lockedIdRef.current !== null) {
-        return true;
-      }
       const atBottom =
         window.scrollY + window.innerHeight >=
         document.documentElement.scrollHeight - BOTTOM_THRESHOLD_PX;
@@ -150,54 +139,8 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     headings,
   ]);
 
-  useEffect(
-    () => () => {
-      if (lockTimeoutRef.current !== undefined) {
-        window.clearTimeout(lockTimeoutRef.current);
-      }
-      if (lockReleaseRef.current !== undefined) {
-        window.removeEventListener('scrollend', lockReleaseRef.current);
-      }
-    },
-    [],
-  );
-
   const handleActivate = (id: string) => {
-    const targetElement = document.getElementById(id);
-    if (!targetElement) {
-      return;
-    }
-
-    lockedIdRef.current = id;
     setActiveId(id);
-
-    if (lockReleaseRef.current !== undefined) {
-      window.removeEventListener('scrollend', lockReleaseRef.current);
-    }
-    if (lockTimeoutRef.current !== undefined) {
-      window.clearTimeout(lockTimeoutRef.current);
-    }
-
-    const release = () => {
-      lockedIdRef.current = null;
-      if (lockReleaseRef.current !== undefined) {
-        window.removeEventListener('scrollend', lockReleaseRef.current);
-        lockReleaseRef.current = undefined;
-      }
-      if (lockTimeoutRef.current !== undefined) {
-        window.clearTimeout(lockTimeoutRef.current);
-        lockTimeoutRef.current = undefined;
-      }
-    };
-
-    lockReleaseRef.current = release;
-    window.addEventListener('scrollend', release, {
-      once: true,
-    });
-    lockTimeoutRef.current = window.setTimeout(
-      release,
-      SCROLL_LOCK_FALLBACK_MS,
-    );
   };
 
   if (headings.length === 0) {
