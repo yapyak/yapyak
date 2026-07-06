@@ -56,7 +56,7 @@ export default defineConfig({
 
 yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama. A custom translator is a short interface if you need one.
 
-Requests go directly from your machine to the model. There is no yapyak service in between, and the model can live anywhere your machine can reach, including the machine itself.
+Requests go directly from your machine to the model. There is no yapyak service in between, and the model can run anywhere your machine can reach, including the machine itself.
 
 When you save, yapyak collects new messages and batches them into as few requests as possible. One request carries multiple messages and every locale, so related text gets translated together. The returned translations are written to your locale files:
 
@@ -137,7 +137,7 @@ format.number(1234.5, { style: 'currency', currency: 'EUR' });
 // fr: '1 234,50 €'
 ```
 
-It builds on the platform's `Intl`, and adds the type safety `Intl` lacks. Ask for a currency and TypeScript requires the code, and the ISO 4217 codes autocomplete. If `Intl` can't render a currency or time zone, `format` returns a readable fallback instead of throwing.
+It builds on the platform's `Intl`, and adds the type safety `Intl` lacks. Ask for a currency and TypeScript requires a code, with the standard ones autocompleting. If `Intl` can't render a currency or time zone, `format` returns a readable fallback instead of throwing.
 
 ## Bundled with code
 
@@ -151,7 +151,7 @@ For static deploys, a build can target a single locale at compile time. The comp
 
 ## What changes
 
-Put together, these become a different way to handle i18n, one shaped for how software gets built now. Three things follow.
+Put together, these become a different way to handle i18n. Three things follow.
 
 ### You watch it happen
 
