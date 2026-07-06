@@ -27,6 +27,7 @@ export function BlockRendererNodeCodeExpression(
       {block.children.map((child: Block, index: number) => (
         <BlockRendererNode
           block={child}
+          className={styles.BlockRendererNodeLink}
           key={index}
         />
       ))}

@@ -13,9 +13,13 @@
     transition: background-color var(--transition);
 
     @media (hover: hover) {
-      &:has([href]:hover) {
+      &:has(.BlockRendererNodeLink:hover) {
         background-color: var(--surface-stronger);
       }
+    }
+
+    &:has(.BlockRendererNodeLink:active) {
+      background-color: var(--surface-strongest);
     }
   }
 }

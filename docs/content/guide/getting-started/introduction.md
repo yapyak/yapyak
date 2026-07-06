@@ -95,7 +95,7 @@ With the request, yapyak sends the enclosing component, the element, and the sur
 
 The element alone tells the model this is a button, so it reaches for a concise imperative instead of a description.
 
-All of this makes for sharper translations, and how much of it travels with each request is yours to set: the surrounding code, the component and element alone, or nothing at all.
+You choose how much of it reaches the model, down to nothing at all.
 
 ## ICU at the call site
 
@@ -105,13 +105,13 @@ yapyak uses ICU MessageFormat for the moving parts of a message: counts, plurals
 <p>{t('You have {count, plural, one {# message} other {# messages}}', { count })}</p>
 ```
 
-The ICU stays in the code that renders it, with no key and no catalog file. TypeScript reads it there and types the parameters from it, with no codegen and no declaration file.
+The message is the string in the call, not a key pointing into a separate file. TypeScript derives the parameter types from that string itself, so a missing or wrong parameter is an error as you type, with no codegen and no declaration file to keep in step.
 
 ## Correctness all the way down
 
 yapyak checks correctness at three stages: while you type, when you save, and while the app runs.
 
-The first is while you type. Every parameter is checked at the call site, before you save:
+The call-site check that runs as you type is the first:
 
 {% diagnostics %}
 t('You have {count} messages', { count: 3 });          // ok
@@ -119,9 +119,7 @@ t('You have {count} messages', {});                    // error: missing 'count'
 t('{count, plural, oen {#} other {#}}', { count: 3 }); // error: unknown plural keyword "oen"
 {% /diagnostics %}
 
-The second is when you save. yapyak validates every locale and stops the build before a broken translation ships.
-
-The third is while the app runs. In development, yapyak warns about problems that only surface in the browser.
+yapyak runs the second on save, validating every locale and stopping the build before a broken translation ships. The third runs at runtime: in development, it warns about problems that only surface in the browser.
 
 Each has a number, like `YAP0042`, and a page that explains it. 44 in all, from the editor to the runtime. The same check runs in CI, through the `yapyak` CLI.
 
@@ -203,6 +201,4 @@ An agent writes `<button>{t('Save changes')}</button>` because that is the natur
 
 ---
 
-i18n stops being a project beside your code and becomes part of writing it, by whoever or whatever writes it.
-
-yapyak is i18n that keeps up. With your code, with your UI, with your agents, and with the pace they set.
+With yapyak, i18n stops being a project beside your code and becomes part of writing it, by whoever or whatever writes it.

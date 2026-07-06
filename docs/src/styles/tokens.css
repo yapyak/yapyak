@@ -114,6 +114,11 @@
   --surface: color-mix(in oklab, var(--color-silver) 2%, transparent);
   --surface-strong: color-mix(in oklab, var(--color-silver) 4%, transparent);
   --surface-stronger: color-mix(in oklab, var(--color-silver) 7%, transparent);
+  --surface-strongest: color-mix(
+    in oklab,
+    var(--color-silver) 11%,
+    transparent
+  );
   --surface-elevated: color-mix(
     in oklab,
     var(--color-silver) 2%,

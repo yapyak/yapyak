@@ -1,4 +1,5 @@
 import type { Block } from '@yapyak/doc-compiler';
+import type { BoxProps } from '#primitives/box';
 
 import { BlockRendererNodeCallout } from './block-renderer-node-callout';
 import { BlockRendererNodeCodeBlock } from './block-renderer-node-code-block';
@@ -33,10 +34,11 @@ import { BlockRendererNodeText } from './block-renderer-node-text';
 
 export type BlockRendererNodeProps = {
   block: Block;
+  className?: BoxProps['className'];
 };
 
 export function BlockRendererNode(props: BlockRendererNodeProps) {
-  const { block } = props;
+  const { block, className } = props;
 
   switch (block.kind) {
     case 'text':
@@ -46,7 +48,12 @@ export function BlockRendererNode(props: BlockRendererNodeProps) {
     case 'paragraph':
       return <BlockRendererNodeParagraph block={block} />;
     case 'link':
-      return <BlockRendererNodeLink block={block} />;
+      return (
+        <BlockRendererNodeLink
+          block={block}
+          className={className}
+        />
+      );
     case 'image':
       return <BlockRendererNodeImage block={block} />;
     case 'list':

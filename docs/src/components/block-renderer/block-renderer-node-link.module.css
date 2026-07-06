@@ -38,6 +38,12 @@
         }
       }
 
+      &:active {
+        --block-renderer-node-inline-code-background-color: var(
+          --surface-strongest
+        );
+      }
+
       &:focus-visible {
         --block-renderer-node-inline-code-outline-color: var(--accent-soft);
       }

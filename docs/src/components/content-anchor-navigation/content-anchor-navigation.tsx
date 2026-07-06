@@ -10,7 +10,7 @@ import { Box } from '#primitives/box';
 import styles from './content-anchor-navigation.module.css';
 import { ContentAnchorNavigationItem } from './content-anchor-navigation-item';
 
-const HEADER_OFFSET_PX = 88;
+const ACTIVATION_LINE_PERCENT = 35;
 const BOTTOM_THRESHOLD_PX = 4;
 
 export type ContentAnchorNavigationProps = BoxProps<'nav'> & {
@@ -75,13 +75,14 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
           return;
         }
 
+        const line = (window.innerHeight * ACTIVATION_LINE_PERCENT) / 100;
         let activeHeadingId: string | null = null;
         for (const heading of headings) {
           const headingElement = document.getElementById(heading.id);
           if (!headingElement) {
             continue;
           }
-          if (headingElement.getBoundingClientRect().top <= HEADER_OFFSET_PX) {
+          if (headingElement.getBoundingClientRect().top <= line) {
             activeHeadingId = heading.id;
           } else {
             break;
@@ -90,7 +91,9 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         setActiveId(activeHeadingId);
       },
       {
-        rootMargin: `-${HEADER_OFFSET_PX}px 0px -50% 0px`,
+        rootMargin: `-${ACTIVATION_LINE_PERCENT}% 0px -${
+          100 - ACTIVATION_LINE_PERCENT
+        }% 0px`,
       },
     );
 
