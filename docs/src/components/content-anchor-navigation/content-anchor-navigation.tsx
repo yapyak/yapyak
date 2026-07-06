@@ -23,6 +23,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
 
   const element = useRef<HTMLElement | null>(null);
   const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
+  const lockedIdRef = useRef<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
 
@@ -30,16 +31,21 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     setIsAnimationEnabled(true);
   };
 
+  const handleUserScroll = () => {
+    setIsAnimationEnabled(true);
+    lockedIdRef.current = null;
+  };
+
   useWindowEventListener('pointerdown', handleUserInteraction, {
     once: true,
   });
-  useWindowEventListener('wheel', handleUserInteraction, {
-    once: true,
+  useWindowEventListener('wheel', handleUserScroll, {
     passive: true,
   });
-  useWindowEventListener('keydown', handleUserInteraction, {
-    once: true,
+  useWindowEventListener('touchmove', handleUserScroll, {
+    passive: true,
   });
+  useWindowEventListener('keydown', handleUserScroll);
 
   useEffect(() => {
     const lastHeading = headings[headings.length - 1];
@@ -49,6 +55,9 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
     const lastId = lastHeading.id;
 
     const tryEdges = () => {
+      if (lockedIdRef.current !== null) {
+        return true;
+      }
       const atBottom =
         window.scrollY + window.innerHeight >=
         document.documentElement.scrollHeight - BOTTOM_THRESHOLD_PX;
@@ -140,6 +149,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   ]);
 
   const handleActivate = (id: string) => {
+    lockedIdRef.current = id;
     setActiveId(id);
   };
 
