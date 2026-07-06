@@ -4,6 +4,7 @@ import type { BoxProps } from '#primitives/box';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
+import { useWindowEventListener } from '#hooks/use-window-event-listener';
 import { Box } from '#primitives/box';
 
 import styles from './content-anchor-navigation.module.css';
@@ -29,14 +30,20 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   const [activeId, setActiveId] = useState(headings[0]?.id ?? null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
 
-  useEffect(() => {
-    const frameHandle = window.requestAnimationFrame(() => {
-      setIsAnimationEnabled(true);
-    });
-    return () => {
-      window.cancelAnimationFrame(frameHandle);
-    };
-  }, []);
+  const handleUserInteraction = () => {
+    setIsAnimationEnabled(true);
+  };
+
+  useWindowEventListener('pointerdown', handleUserInteraction, {
+    once: true,
+  });
+  useWindowEventListener('wheel', handleUserInteraction, {
+    once: true,
+    passive: true,
+  });
+  useWindowEventListener('keydown', handleUserInteraction, {
+    once: true,
+  });
 
   useEffect(() => {
     if (headings.length === 0) {
