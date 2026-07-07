@@ -6,12 +6,13 @@
     align-items: center;
     justify-content: center;
     justify-self: end;
-    width: 20px;
-    height: 20px;
+    width: 52px;
+    height: 52px;
+    margin: calc(var(--spacing-4) * -1);
     color: var(--foreground-soft);
     cursor: pointer;
     outline: var(--spacing-2) solid transparent;
-    outline-offset: var(--spacing-1);
+    outline-offset: calc(var(--spacing-1) * -1);
     background-color: transparent;
     border: 0;
     border-radius: var(--border-radius-full);
