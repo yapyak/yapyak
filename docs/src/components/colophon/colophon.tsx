@@ -6,6 +6,7 @@ import { t } from 'yapyak';
 import { Box } from '#primitives/box';
 
 import styles from './colophon.module.css';
+import { ColophonLink } from './colophon-link';
 
 export type ColophonProps = BoxProps;
 
@@ -43,24 +44,14 @@ export function Colophon(props: ColophonProps) {
       >
         <RichText
           builtByLink={(children) => (
-            <Box
-              as="a"
-              href="https://github.com/qwuide"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
+            <ColophonLink href="https://github.com/qwuide">
               {children}
-            </Box>
+            </ColophonLink>
           )}
           licenceLink={(children) => (
-            <Box
-              as="a"
-              href="https://github.com/yapyak/yapyak/blob/main/LICENSE"
-              rel="noopener noreferrer"
-              target="_blank"
-            >
+            <ColophonLink href="https://github.com/yapyak/yapyak/blob/main/LICENSE">
               {children}
-            </Box>
+            </ColophonLink>
           )}
           value={t(
             '<licenceLink>MIT-licensed</licenceLink>. Built by <builtByLink>Joakim Uhrwing</builtByLink>.',
