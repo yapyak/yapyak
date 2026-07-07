@@ -10,9 +10,8 @@
     align-items: center;
     height: var(--content-header-height);
     padding: 0 var(--spacing-4);
-    background-color: color-mix(in oklab, var(--canvas) 72%, transparent);
+    background-color: var(--canvas);
     border-bottom: var(--px) solid var(--rule);
-    backdrop-filter: blur(20px);
 
     .Start,
     .End {
