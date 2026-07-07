@@ -1,0 +1,19 @@
+@layer components {
+  .MobileButtonBar {
+    display: flex;
+    gap: var(--spacing-1);
+    align-items: center;
+    justify-self: end;
+    margin-inline-end: calc(var(--spacing-3) * -1);
+
+    .Divider {
+      width: var(--px);
+      height: 24px;
+      background-color: var(--rule);
+    }
+
+    @media (min-width: 1024px) {
+      display: none;
+    }
+  }
+}

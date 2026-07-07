@@ -5,7 +5,6 @@ import { t } from 'yapyak';
 
 import { Icon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
-import { OptionMenuTrigger } from '#components/option-menu-trigger';
 import { KEY_MAP } from '#constants';
 import { useDocumentEventListener } from '#hooks/use-document-event-listener';
 import { useLockBodyScroll } from '#hooks/use-lock-body-scroll';
@@ -86,8 +85,6 @@ export function MobileDialog(props: MobileDialogProps) {
           as="footer"
           className={styles.Footer}
         >
-          <OptionMenuTrigger group="framework" />
-          <OptionMenuTrigger group="packageManager" />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"

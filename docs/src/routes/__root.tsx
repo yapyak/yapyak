@@ -18,9 +18,8 @@ import { Icon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { LogoLink } from '#components/logo-link';
-import { MobileDialogTrigger } from '#components/mobile-dialog-trigger';
+import { MobileButtonBar } from '#components/mobile-button-bar';
 import { Navigation } from '#components/navigation';
-import { OptionMenuTrigger } from '#components/option-menu-trigger';
 import {
   OptionProvider,
   buildPrepaintScript,
@@ -142,8 +141,7 @@ function Component() {
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
-          <SearchDialogTrigger />
-          <OptionMenuTrigger group="framework" />
+          <SearchDialogTrigger shortcut="mod+k" />
           <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
@@ -151,7 +149,7 @@ function Component() {
             <Icon name="github" />
           </IconLink>
         </Layout.Header.End>
-        <MobileDialogTrigger
+        <MobileButtonBar
           onOpenChange={setIsMobileDialogOpen}
           open={isMobileDialogOpen}
         />

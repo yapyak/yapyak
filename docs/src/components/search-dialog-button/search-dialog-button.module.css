@@ -57,5 +57,32 @@
       outline-width: 4px;
       outline-color: var(--accent-soft);
     }
+
+    &[data-variant="icon"] {
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      padding: 0;
+      border-radius: var(--border-radius-full);
+      box-shadow: none;
+
+      .SearchIcon {
+        color: currentColor;
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          background-color: transparent;
+        }
+      }
+
+      &:active {
+        background-color: transparent;
+      }
+
+      &[aria-expanded="true"] {
+        background-color: transparent;
+      }
+    }
   }
 }

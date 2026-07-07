@@ -1,3 +1,6 @@
+import type { DialogTriggerProps } from '#components/dialog-trigger';
+import type { SearchDialogButtonVariant } from '#components/search-dialog-button';
+
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
@@ -6,7 +9,12 @@ import { SearchDialog } from '#components/search-dialog';
 import { SearchDialogButton } from '#components/search-dialog-button';
 import { useSearchData } from '#hooks/use-search-data';
 
-export function SearchDialogTrigger() {
+export type SearchDialogTriggerProps = Pick<DialogTriggerProps, 'shortcut'> & {
+  variant?: SearchDialogButtonVariant;
+};
+
+export function SearchDialogTrigger(props: SearchDialogTriggerProps) {
+  const { shortcut, variant } = props;
   const navigate = useNavigate();
   const [hasOpened, setHasOpened] = useState(false);
   const searchData = useSearchData(hasOpened);
@@ -36,9 +44,14 @@ export function SearchDialogTrigger() {
         />
       )}
       onOpen={handleOpen}
-      shortcut="mod+k"
+      shortcut={shortcut}
     >
-      {(triggerProps) => <SearchDialogButton {...triggerProps} />}
+      {(triggerProps) => (
+        <SearchDialogButton
+          {...triggerProps}
+          variant={variant}
+        />
+      )}
     </DialogTrigger>
   );
 }

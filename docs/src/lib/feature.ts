@@ -66,7 +66,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        "Every supported framework is a first-class target, not a lowest-common-denominator wrapper. React, Vue, Svelte, and Astro each get their own bindings, parser, and tests, written in that framework's idioms. SSR adapters cover Astro, React Router, SvelteKit, and TanStack Start. No framework flies coach.",
+        'Every supported framework is a first-class target, not a lowest-common-denominator wrapper. React, Vue, Svelte, and Astro each get their own bindings, parser, and tests. SSR adapters cover Astro, React Router, SvelteKit, and TanStack Start. No framework flies coach.',
       ),
       number: '09',
       title: t('Frameworks, first-class'),
@@ -87,7 +87,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        "yapyak is a library — and only a library — MIT-licensed, all of it on npm. Everything runs on your machine, and your translations are files in your repo, committed to git. You own it the way you own the rest of your code. If you use a model, the only bill is its provider's. The pricing page is a 404.",
+        "yapyak is a library, and only a library. It is MIT-licensed and published entirely on npm. Everything runs on your machine. Your translations are files in your repo, committed to git and owned like the rest of your code. If you use a model, the only bill is its provider's. yapyak's pricing page is a 404.",
       ),
       number: '12',
       title: t('Open source, not open core'),
