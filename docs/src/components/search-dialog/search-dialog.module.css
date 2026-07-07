@@ -23,44 +23,6 @@
           color: var(--foreground-softer);
         }
       }
-
-      .CloseButton {
-        display: flex;
-        flex: none;
-        align-items: center;
-        justify-content: center;
-        width: var(--spacing-8);
-        height: var(--spacing-8);
-        color: var(--foreground-softer);
-        cursor: pointer;
-        outline: var(--spacing-2) solid transparent;
-        outline-offset: calc(var(--px) * -1);
-        background-color: transparent;
-        border: 0;
-        border-radius: var(--border-radius-full);
-        transition:
-          color var(--transition),
-          outline var(--duration-slow);
-
-        @media (hover: hover) {
-          &:hover {
-            color: var(--foreground);
-          }
-        }
-
-        &:active {
-          color: var(--foreground);
-        }
-
-        &:focus-visible {
-          outline-width: var(--spacing-1);
-          outline-color: var(--accent-soft);
-        }
-
-        @media (min-width: 1024px) {
-          display: none;
-        }
-      }
     }
 
     .EmptyMessage {

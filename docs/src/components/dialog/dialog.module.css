@@ -4,36 +4,25 @@
     z-index: var(--z-index-4);
     display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100dvh;
+    align-self: flex-start;
+    width: min(90vw, 640px);
+    max-height: min(60vh, 520px);
+    margin-top: min(120px, 12vh);
     overflow: hidden;
     color: var(--foreground);
     background-color: var(--surface-elevated);
+    border-radius: var(--border-radius-md);
+    box-shadow:
+      var(--shadow-ring-inset),
+      0 16px 80px color-mix(in oklab, var(--color-black) 60%, transparent);
     transition:
       transform var(--duration-slow) var(--ease-snappy),
       opacity var(--duration-slow) var(--ease-snappy);
 
     &[data-animate="enter"],
     &[data-animate="exit"] {
-      transform: translateY(var(--spacing-2));
-    }
-
-    @media (min-width: 1024px) {
-      align-self: flex-start;
-      width: min(90vw, 640px);
-      height: auto;
-      max-height: min(60vh, 520px);
-      margin-top: min(120px, 12vh);
-      border-radius: var(--border-radius-md);
-      box-shadow:
-        var(--shadow-ring-inset),
-        0 16px 80px color-mix(in oklab, var(--color-black) 60%, transparent);
-
-      &[data-animate="enter"],
-      &[data-animate="exit"] {
-        opacity: 0;
-        transform: translateY(-8px) scale(0.98);
-      }
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
     }
   }
 }

@@ -1,7 +1,6 @@
 import type { RefObject } from 'react';
 
 import { useId, useRef } from 'react';
-import { flushSync } from 'react-dom';
 
 import { useDrawer } from '#hooks/use-drawer';
 import { useEventListener } from '#hooks/use-event-listener';
@@ -46,12 +45,6 @@ export function useDialogTrigger(
 
   useOnRouteChange(drawer.close);
 
-  const openDialog = () => {
-    flushSync(() => {
-      drawer.open();
-    });
-  };
-
   useEventListener(
     shortcut === undefined || typeof document === 'undefined'
       ? null
@@ -60,13 +53,13 @@ export function useDialogTrigger(
     (event) => {
       if (shortcut !== undefined && matchesShortcut(event, shortcut)) {
         event.preventDefault();
-        openDialog();
+        drawer.open();
       }
     },
   );
 
   const handleTriggerClick = () => {
-    openDialog();
+    drawer.open();
   };
 
   const handleDialogClose = () => {

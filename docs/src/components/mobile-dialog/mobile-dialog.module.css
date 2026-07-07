@@ -12,56 +12,8 @@
       display: flex;
       flex: 1;
       flex-direction: column;
+      overflow: hidden;
       transition: transform var(--duration-medium) var(--ease-snappy);
-
-      .Scroll {
-        flex: 1;
-        overflow-y: auto;
-        scrollbar-color: var(--ring-stronger) transparent;
-        scrollbar-width: thin;
-
-        .LinkStack {
-          display: flex;
-          flex-direction: column;
-          padding: var(--spacing-4) var(--spacing-6) 0;
-
-          .Link {
-            display: block;
-            padding: var(--spacing-4);
-            font-size: var(--font-size-lg);
-            font-weight: var(--font-weight-medium);
-            color: var(--foreground-soft);
-            letter-spacing: var(--letter-spacing-tight);
-            border-bottom: var(--px) solid var(--rule);
-            transition: color var(--transition);
-
-            &:last-child {
-              border-bottom: none;
-            }
-
-            @media (hover: hover) {
-              &:hover {
-                color: var(--foreground);
-              }
-            }
-
-            &[data-status="active"] {
-              color: var(--brand);
-            }
-          }
-        }
-      }
-
-      .Footer {
-        display: flex;
-        flex: none;
-        gap: var(--spacing-3);
-        align-items: center;
-        justify-content: space-between;
-        padding: var(--spacing-6);
-        padding-bottom: max(var(--spacing-6), env(safe-area-inset-bottom));
-        box-shadow: inset 0 var(--px) 0 var(--rule);
-      }
     }
 
     &[data-animate="enter"],

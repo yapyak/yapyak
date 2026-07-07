@@ -1,6 +1,7 @@
 import '#styles/index.css';
 
 import type { ReactNode } from 'react';
+import type { MobileMode } from '#components/mobile-bar';
 
 import {
   HeadContent,
@@ -100,7 +101,8 @@ export const Route = createRootRoute({
 function Component() {
   useScrollRestoration();
 
-  const [isMobileDialogOpen, setIsMobileDialogOpen] = useState(false);
+  const [mobileMode, setMobileMode] = useState<MobileMode>('closed');
+  const isMobileDialogOpen = mobileMode !== 'closed';
 
   const shouldFadeBorder =
     useMatches({
@@ -116,9 +118,11 @@ function Component() {
   return (
     <Layout>
       <Layout.Header fadeBorder={shouldFadeBorder}>
-        <Layout.Header.Start>
-          <LogoLink />
-        </Layout.Header.Start>
+        {mobileMode === 'search' ? null : (
+          <Layout.Header.Start>
+            <LogoLink />
+          </Layout.Header.Start>
+        )}
         <Layout.Header.Center>
           <Navigation>
             <Navigation.Link
@@ -151,8 +155,8 @@ function Component() {
           </IconLink>
         </Layout.Header.End>
         <MobileBar
-          onOpenChange={setIsMobileDialogOpen}
-          open={isMobileDialogOpen}
+          mode={mobileMode}
+          onModeChange={setMobileMode}
         />
       </Layout.Header>
       <RouteAnnouncer />
