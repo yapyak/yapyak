@@ -88,8 +88,8 @@ With the request, yapyak sends the enclosing component, the element, and the sur
   context: {
     enclosingComponent: 'SaveButton',
     enclosingElement: 'button',
-    snippet: "<button onClick={save}>{t('Save changes')}</button>",
-  },
+    snippet: "<button onClick={save}>{t('Save changes')}</button>"
+  }
 }
 ```
 

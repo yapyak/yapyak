@@ -254,8 +254,8 @@ a snippet of the surrounding code:
   context: {
     enclosingComponent: 'SaveButton',
     enclosingElement: 'button',
-    snippet: "<button>{t('Save changes')}</button>",
-  },
+    snippet: "<button>{t('Save changes')}</button>"
+  }
 }
 ```
 
