@@ -4,7 +4,7 @@ import { Box } from '#primitives/box';
 
 import styles from './content-layout-content.module.css';
 
-export type ContentLayoutContentProps = BoxProps<'main'>;
+export type ContentLayoutContentProps = BoxProps;
 
 export function ContentLayoutContent(props: ContentLayoutContentProps) {
   const { className, ...restProps } = props;
@@ -12,7 +12,6 @@ export function ContentLayoutContent(props: ContentLayoutContentProps) {
   return (
     <Box
       {...restProps}
-      as="main"
       className={[
         styles.ContentLayoutContent,
         className,

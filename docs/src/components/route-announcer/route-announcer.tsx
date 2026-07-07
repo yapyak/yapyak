@@ -29,7 +29,19 @@ export function RouteAnnouncer() {
         }),
       );
       if (mainElement instanceof HTMLElement) {
-        mainElement.focus();
+        mainElement.setAttribute('tabindex', '-1');
+        mainElement.addEventListener(
+          'blur',
+          () => {
+            mainElement.removeAttribute('tabindex');
+          },
+          {
+            once: true,
+          },
+        );
+        mainElement.focus({
+          preventScroll: true,
+        });
       }
     });
     return () => {
