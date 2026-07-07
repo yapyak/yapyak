@@ -6,6 +6,8 @@
 [![npm](https://img.shields.io/npm/v/yapyak?logo=npm&color=cb3837&label=npm)](https://www.npmjs.com/package/yapyak)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+**[yapyak.dev](https://yapyak.dev)** · [Get started](https://yapyak.dev/guide/getting-started/introduction) · [Examples](https://github.com/yapyak/yapyak/tree/main/examples)
+
 yapyak is an i18n compiler with a small runtime, built for the way code gets written today: rapidly, often with help from a coding agent, and rarely pausing for a separate translation step.
 
 It's a Vite plugin. Works with React, Vue, Svelte, and Astro. SSR is supported on Astro, React Router, SvelteKit, and TanStack Start.
