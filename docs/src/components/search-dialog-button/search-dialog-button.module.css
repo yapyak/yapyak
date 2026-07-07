@@ -8,6 +8,7 @@
     font-weight: var(--font-weight-medium);
     color: var(--foreground-soft);
     outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
     background-color: transparent;
     border-radius: var(--border-radius-sm);
     box-shadow: var(--shadow-ring-inset);

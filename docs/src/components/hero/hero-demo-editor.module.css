@@ -128,21 +128,17 @@
         }
 
         &:first-of-type {
-          .TabFill {
-            border-top-left-radius: var(--border-radius-md);
-          }
+          border-top-left-radius: var(--border-radius-md);
 
-          &:focus-visible {
+          .TabFill {
             border-top-left-radius: var(--border-radius-md);
           }
         }
 
         &:last-of-type {
-          .TabFill {
-            border-top-right-radius: var(--border-radius-md);
-          }
+          border-top-right-radius: var(--border-radius-md);
 
-          &:focus-visible {
+          .TabFill {
             border-top-right-radius: var(--border-radius-md);
           }
         }
