@@ -12,28 +12,35 @@ It's a Vite plugin. Works with React, Vue, Svelte, and Astro. SSR is supported o
 
 The runtime has no dependencies, built on the platform's Intl API. About 6 KB gzipped for typical use, zero for fixed-locale builds.
 
-Read more and documentation at [yapyak.dev](https://yapyak.dev).
-
 ```tsx
-import { t } from 'yapyak'
+import { t } from 'yapyak';
 
 <button>{t('Save changes')}</button>
 ```
 
-Write the sentence you'd show a user. yapyak translates it and keeps it in step with your code.
+Save the file, and yapyak adds the string to your locale files. Connect a model and it fills in the translation in the background. Here's `locales/sv.json`:
+
+```json
+{
+  "src/components/save-button.tsx": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
 
 ## Features
 
-- **The source string is the key.** Write `t('Save changes')` — no names to invent, no catalog to keep in sync.
-- **Full ICU.** Plurals, selects, ordinals, dates, numbers, lists, and rich text that renders your own components.
-- **Translation on save.** Connect a model and new strings translate in the background, live in the browser over HMR.
-- **Context-aware.** The model sees the component, element, and code around each message, and follows your voice and glossary.
-- **Bring your own model, or none.** Anthropic, OpenAI, Gemini, Ollama, a 30-line custom one — or fill the JSON by hand.
-- **Refactor freely.** Move or rename files and the translations follow; one you still use is never quietly dropped.
-- **Checked everywhere.** Missing params as you type, every locale on save, runtime warnings in dev — 44 numbered diagnostics.
-- **Compiled in.** Translations code-split along your routes; a single-locale build ships no i18n runtime at all.
-- **Instant switching.** Locale changes re-render — no fetch, no spinner. Cookie, URL, or storage; each server request gets its own.
-- **Built for agents.** The source string is the only artifact; extract, translate, and check all happen in your repo.
+- **The source string is the key.** Write `t('Save changes')`. There are no separate names to invent.
+- **Translate on save.** New strings are translated in the background as you work, and show up in the browser right away.
+- **Context-aware.** Because yapyak is a compiler, it sends the model the code around each string, so it translates a button as a button. Set a glossary and a tone, and it learns the rest from your existing translations.
+- **Any model, or none.** Anthropic, OpenAI, Gemini, and Ollama are built in. Write your own, or skip AI and fill the JSON by hand.
+- **Refactor freely.** Move or rename files and the translations come with them. yapyak won't drop a translation you still use.
+- **Checked as you go.** Missing values are caught as you type, every locale is checked on save, and the browser warns you in development. 44 numbered diagnostics, each with a page that explains the fix.
+- **Full ICU and formatting.** Plurals, selects, ordinals, dates, numbers, lists, and rich text that renders your own components. There's also a `format` helper for values outside a message.
+- **Compiled in.** Translations ship inside the code that uses them and split along your routes. Build for one locale and there's no runtime at all.
+- **Locale switching.** Instant, with nothing to load. Keep the choice in a cookie or the URL, which work with SSR, or in local storage for a SPA.
+- **Designed for coding agents.** yapyak is built so an agent can own i18n. It writes `t('...')` like any string, and gets clear errors early, even in the TypeScript type, so it can fix them right away.
+- **Just a library.** yapyak is MIT open source and runs on your machine. Your translations are JSON files in your repo. If you use a model, requests go straight to it. There's no yapyak service in between.
 
 ## Install
 
@@ -41,16 +48,16 @@ Write the sentence you'd show a user. yapyak translates it and keeps it in step 
 npm install yapyak
 ```
 
-Add the Vite plugin and you're done. See [yapyak.dev/guide/installation](https://yapyak.dev/guide/installation).
+Add the Vite plugin and you're set. See the [installation guide](https://yapyak.dev/guide/installation).
+
+Full documentation at [yapyak.dev](https://yapyak.dev).
 
 ## Contributing
 
 yapyak is early, and contributions are very welcome.
 
-Bug reports, docs fixes, examples, adapter work, and feedback from real projects all help.
+Bug reports, docs fixes, examples, adapter work, and feedback from real projects all help. If you find yapyak useful, sharing it helps too.
 
-If you find yapyak useful, sharing it helps too. More real-world use brings better feedback and more edge cases.
+## License
 
----
-
-MIT licensed · self-hosted · BYO LLM key
+MIT
