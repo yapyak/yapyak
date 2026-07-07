@@ -14,35 +14,26 @@ The runtime has no dependencies, built on the platform's Intl API. About 6 KB gz
 
 Read more and documentation at [yapyak.dev](https://yapyak.dev).
 
-## A new way to work with i18n
-
-Write the sentence where you use it. That's the key — no names to invent, no catalog to keep in sync.
-
 ```tsx
+import { t } from 'yapyak'
+
 <button>{t('Save changes')}</button>
 ```
 
-Save the file, and yapyak writes it into your locale files. Fill it in yourself, or connect a model and let it fill in while you keep working:
+Write the sentence you'd show a user. yapyak translates it and keeps it in step with your code.
 
-```diff
-  // locales/sv.json
-  {
-    "src/components/save-button.tsx": {
--     "Save changes": ""
-+     "Save changes": "Spara ändringar"
-    }
-  }
-```
+## Features
 
-The translation lives in your repo, next to nothing but code. Move or rename the file and it comes along; delete a component and bring it back later and it returns. yapyak remembers every translation it has seen, and won't clear one you're still using.
-
-Placeholders and counts go in the sentence too, checked by TypeScript as you type:
-
-```tsx
-t('Hi {name}', { name })
-```
-
-That's the whole loop. i18n becomes part of writing the code, not a step beside it.
+- **The source string is the key.** Write `t('Save changes')` — no names to invent, no catalog to keep in sync.
+- **Full ICU.** Plurals, selects, ordinals, dates, numbers, lists, and rich text that renders your own components.
+- **Translation on save.** Connect a model and new strings translate in the background, live in the browser over HMR.
+- **Context-aware.** The model sees the component, element, and code around each message, and follows your voice and glossary.
+- **Bring your own model, or none.** Anthropic, OpenAI, Gemini, Ollama, a 30-line custom one — or fill the JSON by hand.
+- **Refactor freely.** Move or rename files and the translations follow; one you still use is never quietly dropped.
+- **Checked everywhere.** Missing params as you type, every locale on save, runtime warnings in dev — 44 numbered diagnostics.
+- **Compiled in.** Translations code-split along your routes; a single-locale build ships no i18n runtime at all.
+- **Instant switching.** Locale changes re-render — no fetch, no spinner. Cookie, URL, or storage; each server request gets its own.
+- **Built for agents.** The source string is the only artifact; extract, translate, and check all happen in your repo.
 
 ## Install
 
