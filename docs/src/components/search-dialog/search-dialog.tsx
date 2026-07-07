@@ -10,6 +10,7 @@ import { Icon } from '#components/icon';
 import { KEY_MAP } from '#constants';
 import { getSearchResults } from '#lib/search-result';
 import { Box } from '#primitives/box';
+import { ButtonBase } from '#primitives/button';
 
 import styles from './search-dialog.module.css';
 import { SearchDialogListbox } from './search-dialog-listbox';
@@ -85,7 +86,10 @@ export function SearchDialog(props: SearchDialogProps) {
   };
 
   const handleDialogPointerDown = (event: PointerEvent) => {
-    if (event.target !== inputElement.current) {
+    if (
+      event.pointerType === 'mouse' &&
+      event.target !== inputElement.current
+    ) {
       event.preventDefault();
     }
   };
@@ -158,6 +162,16 @@ export function SearchDialog(props: SearchDialogProps) {
           role="combobox"
           value={query}
         />
+        <ButtonBase
+          aria-label={t('Close search')}
+          className={styles.CloseButton}
+          onClick={onClose}
+        >
+          <Icon
+            name="x"
+            size="20"
+          />
+        </ButtonBase>
       </Box>
       {hasResults && (
         <SearchDialogListbox

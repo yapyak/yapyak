@@ -16,45 +16,33 @@ Read more and documentation at [yapyak.dev](https://yapyak.dev).
 
 ## A new way to work with i18n
 
-Write the sentence where you use it:
+Write the sentence where you use it. That's the key — no names to invent, no catalog to keep in sync.
 
 ```tsx
-import { t } from 'yapyak'
-
 <button>{t('Save changes')}</button>
 ```
 
-The sentence is the key. No key names to invent, no catalog to keep in sync.
+Save the file, and yapyak writes it into your locale files. Fill it in yourself, or connect a model and let it fill in while you keep working:
 
-Save the file, and yapyak adds it to your locale files, blank at first:
-
-```json
-// locales/sv.json
-{
-  "src/components/save-button.tsx": {
-    "Save changes": ""
+```diff
+  // locales/sv.json
+  {
+    "src/components/save-button.tsx": {
+-     "Save changes": ""
++     "Save changes": "Spara ändringar"
+    }
   }
-}
 ```
 
-Fill it in yourself, or connect a model and let it fill in while you keep working:
+The translation lives in your repo, next to nothing but code. Move or rename the file and it comes along; delete a component and bring it back later and it returns. yapyak remembers every translation it has seen, and won't clear one you're still using.
 
-```json
-// locales/sv.json
-{
-  "src/components/save-button.tsx": {
-    "Save changes": "Spara ändringar"
-  }
-}
-```
-
-Placeholders go in the sentence too, and TypeScript checks them as you type:
+Placeholders and counts go in the sentence too, checked by TypeScript as you type:
 
 ```tsx
 t('Hi {name}', { name })
 ```
 
-That's the idea. i18n becomes part of writing the code, not a step beside it.
+That's the whole loop. i18n becomes part of writing the code, not a step beside it.
 
 ## Install
 
