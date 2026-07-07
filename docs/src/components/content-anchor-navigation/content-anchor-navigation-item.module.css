@@ -6,6 +6,7 @@
     color: var(--foreground-soft);
     text-wrap: pretty;
     outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
     border-radius: var(--border-radius-sm);
     transition:
       color var(--transition),

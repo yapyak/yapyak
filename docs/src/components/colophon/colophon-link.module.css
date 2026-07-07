@@ -5,6 +5,7 @@
     text-decoration-color: transparent;
     text-underline-offset: var(--spacing-1);
     outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
     border-radius: var(--border-radius-xs);
     transition:
       text-decoration-color var(--transition),

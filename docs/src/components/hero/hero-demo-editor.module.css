@@ -41,6 +41,7 @@
         font-size: var(--font-size-xs);
         color: var(--foreground-softer);
         outline: var(--spacing-2) solid transparent;
+        outline-offset: calc(var(--px) * -1);
         box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
         transition:
           color var(--transition),

@@ -42,6 +42,7 @@
         text-align: left;
         white-space: nowrap;
         outline: var(--spacing-2) solid transparent;
+        outline-offset: calc(var(--px) * -1);
         border-radius: var(--border-radius-sm);
         transition:
           color var(--transition),
@@ -74,6 +75,7 @@
         height: 28px;
         color: var(--foreground-softer);
         outline: var(--spacing-2) solid transparent;
+        outline-offset: calc(var(--px) * -1);
         background-color: transparent;
         border-radius: var(--border-radius-sm);
         transform: translateY(-50%);

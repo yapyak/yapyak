@@ -9,6 +9,7 @@
 
     position: relative;
     outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
     background-color: var(--surface);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);

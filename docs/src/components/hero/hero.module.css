@@ -52,6 +52,7 @@
           font-weight: var(--font-weight-medium);
           color: var(--brand-contrast);
           outline: var(--spacing-2) solid transparent;
+          outline-offset: calc(var(--px) * -1);
           background-color: var(--brand);
           border-radius: var(--border-radius-full);
           transition:
@@ -83,6 +84,7 @@
           font-weight: var(--font-weight-medium);
           color: var(--foreground);
           outline: var(--spacing-2) solid transparent;
+          outline-offset: calc(var(--px) * -1);
           background-color: var(--surface-strong);
           border-radius: var(--border-radius-full);
           box-shadow:

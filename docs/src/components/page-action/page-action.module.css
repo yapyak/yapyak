@@ -24,6 +24,7 @@
       text-align: left;
       cursor: pointer;
       outline: var(--spacing-2) solid transparent;
+      outline-offset: calc(var(--px) * -1);
       background-color: transparent;
       border: 0;
       border-radius: var(--border-radius-sm);
