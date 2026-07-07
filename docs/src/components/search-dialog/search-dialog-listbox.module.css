@@ -6,6 +6,7 @@
     gap: var(--spacing-05);
     padding: var(--spacing-2);
     overflow-y: auto;
+    overscroll-behavior: contain;
     scrollbar-color: var(--ring-stronger) transparent;
     scrollbar-width: thin;
 

@@ -14,7 +14,7 @@
     background-color: var(--canvas);
     box-shadow: 0 16px 80px
       color-mix(in oklab, var(--color-black) 60%, transparent);
-    transition: transform var(--duration-slow) var(--ease-snappy);
+    transition: transform var(--duration-slow) var(--ease-smooth);
 
     &[data-direction="start"] {
       left: 0;
@@ -24,7 +24,7 @@
 
       &[data-animate="enter"],
       &[data-animate="exit"] {
-        transform: translateX(-100%);
+        transform: translateX(calc(-100% - 96px));
       }
     }
 
@@ -36,7 +36,7 @@
 
       &[data-animate="enter"],
       &[data-animate="exit"] {
-        transform: translateX(100%);
+        transform: translateX(calc(100% + 96px));
       }
     }
   }

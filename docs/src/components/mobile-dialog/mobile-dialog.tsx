@@ -6,7 +6,7 @@ import { KEY_MAP } from '#constants';
 import { useDocumentEventListener } from '#hooks/use-document-event-listener';
 import { useLockBodyScroll } from '#hooks/use-lock-body-scroll';
 import { useMediaQuery } from '#hooks/use-media-query';
-import { useOnRouteChange } from '#hooks/use-on-route-change';
+import { useOnRouteRendered } from '#hooks/use-on-route-rendered';
 import { useViewport } from '#hooks/use-viewport';
 import { Box } from '#primitives/box';
 import { px } from '#utils/px';
@@ -26,7 +26,7 @@ export function MobileDialog(props: MobileDialogProps) {
     enabled: true,
   });
 
-  useOnRouteChange(onClose);
+  useOnRouteRendered(onClose);
 
   useEffect(() => {
     if (isDesktop) {

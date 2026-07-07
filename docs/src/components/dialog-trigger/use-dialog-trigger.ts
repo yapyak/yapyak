@@ -4,7 +4,7 @@ import { useId, useRef } from 'react';
 
 import { useDrawer } from '#hooks/use-drawer';
 import { useEventListener } from '#hooks/use-event-listener';
-import { useOnRouteChange } from '#hooks/use-on-route-change';
+import { useOnRouteRendered } from '#hooks/use-on-route-rendered';
 import { getDocument } from '#utils/dom';
 
 export type DialogShortcut = 'mod+k';
@@ -43,7 +43,7 @@ export function useDialogTrigger(
     onOpen,
   });
 
-  useOnRouteChange(drawer.close);
+  useOnRouteRendered(drawer.close);
 
   useEventListener(
     shortcut === undefined || typeof document === 'undefined'

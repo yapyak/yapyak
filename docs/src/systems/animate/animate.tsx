@@ -7,6 +7,8 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { AnimateContext } from './animate-context';
 import { useAnimateContext } from './use-animate-context';
 
+const EXIT_FALLBACK_BUFFER_MS = 50;
+
 export type AnimateChildProps = {
   'data-animate'?: 'enter' | 'exit';
   inert?: true;
@@ -81,10 +83,17 @@ export function Animate(props: AnimateProps) {
       setState('unmounted');
       return;
     }
+    const handleTransitionEnd = (event: TransitionEvent) => {
+      if (event.target === $element && event.propertyName === 'transform') {
+        setState('unmounted');
+      }
+    };
+    $element.addEventListener('transitionend', handleTransitionEnd);
     const timer = window.setTimeout(() => {
       setState('unmounted');
-    }, duration);
+    }, duration + EXIT_FALLBACK_BUFFER_MS);
     return () => {
+      $element.removeEventListener('transitionend', handleTransitionEnd);
       window.clearTimeout(timer);
     };
   }, [
