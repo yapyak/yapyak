@@ -2,7 +2,7 @@ import type { SearchData } from '@yapyak/doc-compiler';
 import type { ChangeEvent, KeyboardEvent, PointerEvent } from 'react';
 import type { DialogProps } from '#components/dialog';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
 import { Dialog } from '#components/dialog';
@@ -38,13 +38,8 @@ export function SearchDialog(props: SearchDialogProps) {
     query,
   ]);
 
-  useEffect(() => {
-    const frame = window.requestAnimationFrame(() => {
-      inputElement.current?.focus();
-    });
-    return () => {
-      window.cancelAnimationFrame(frame);
-    };
+  useLayoutEffect(() => {
+    inputElement.current?.focus();
   }, []);
 
   useEffect(() => {

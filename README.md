@@ -14,7 +14,9 @@ The runtime has no dependencies, built on the platform's Intl API. About 6 KB gz
 
 Read more and documentation at [yapyak.dev](https://yapyak.dev).
 
-## How it works
+## A new way to work with i18n
+
+Write the sentence where you use it:
 
 ```tsx
 import { t } from 'yapyak'
@@ -22,24 +24,37 @@ import { t } from 'yapyak'
 <button>{t('Save changes')}</button>
 ```
 
-Save the file. yapyak finds the `t()` call, reads the surrounding code as context, and writes every locale entry. The English string is your key.
+The sentence is the key. No key names to invent, no catalog to keep in sync.
 
-## The API
+Save the file, and yapyak adds it to your locale files, blank at first:
 
-One function. The English string is always the key.
-
-```ts
-t('Save changes')
-t('Hi {name}', { name })
-t('You have {count, plural, one {# item} other {# items}}', { count })
-t('Total {n, number, integer}', { n: 1234.5 })
-t('Read our <link>privacy policy</link>.')
-
-t.as('action', 'Open')       // same word, disambiguated by context
-t.in('sv', 'Welcome back!')  // render in a specific locale
+```json
+// locales/sv.json
+{
+  "src/components/save-button.tsx": {
+    "Save changes": ""
+  }
+}
 ```
 
-Placeholders, plurals, dates, numbers, and currency run on the platform's `Intl` API. Rich text binds `<tags>` to your own components.
+Fill it in yourself, or connect a model and let it fill in while you keep working:
+
+```json
+// locales/sv.json
+{
+  "src/components/save-button.tsx": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+
+Placeholders go in the sentence too, and TypeScript checks them as you type:
+
+```tsx
+t('Hi {name}', { name })
+```
+
+That's the idea. i18n becomes part of writing the code, not a step beside it.
 
 ## Install
 
