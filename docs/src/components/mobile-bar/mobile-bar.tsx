@@ -2,7 +2,7 @@ import type { ChangeEvent } from 'react';
 import type { BoxProps } from '#primitives/box';
 
 import { useNavigate } from '@tanstack/react-router';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { t } from 'yapyak';
 
@@ -51,8 +51,20 @@ export function MobileBar(props: MobileBarProps) {
     searchData,
   });
 
+  const { setQuery } = search;
+
+  useEffect(() => {
+    if (mode !== 'search') {
+      setQuery('');
+    }
+  }, [
+    mode,
+    setQuery,
+  ]);
+
   const handleSearchOpen = () => {
     setHasSearched(true);
+
     flushSync(() => {
       onModeChange('search');
     });
@@ -68,7 +80,7 @@ export function MobileBar(props: MobileBarProps) {
   };
 
   const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    search.setQuery(event.target.value);
+    setQuery(event.target.value);
   };
 
   const isOpen = mode !== 'closed';

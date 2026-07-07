@@ -46,22 +46,10 @@
       gap: var(--spacing-2);
       align-items: center;
       min-width: 0;
-      animation: mobile-bar-search-slide var(--duration-medium)
-        var(--ease-snappy) both;
-
-      @media (prefers-reduced-motion: reduce) {
-        animation: none;
-      }
 
       .SearchIcon {
         flex: none;
         color: var(--foreground-softer);
-        animation: mobile-bar-search-fade var(--duration-medium)
-          var(--ease-snappy) both;
-
-        @media (prefers-reduced-motion: reduce) {
-          animation: none;
-        }
       }
 
       .SearchInput {
@@ -147,21 +135,5 @@
     font-size: var(--font-size-sm);
     color: var(--foreground-softer);
     text-align: center;
-  }
-
-  /*
-   * Only the field slides (transform, never opacity) so the input stays visible
-   * at focus time — iOS refuses to raise the keyboard for a fading element.
-   */
-  @keyframes mobile-bar-search-slide {
-    from {
-      transform: translateX(var(--spacing-6));
-    }
-  }
-
-  @keyframes mobile-bar-search-fade {
-    from {
-      opacity: 0;
-    }
   }
 }
