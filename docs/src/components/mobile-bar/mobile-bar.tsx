@@ -4,21 +4,21 @@ import { MobileDialogTrigger } from '#components/mobile-dialog-trigger';
 import { SearchDialogTrigger } from '#components/search-dialog-trigger';
 import { Box } from '#primitives/box';
 
-import styles from './mobile-button-bar.module.css';
+import styles from './mobile-bar.module.css';
 
-export type MobileButtonBarProps = BoxProps & {
+export type MobileBarProps = BoxProps & {
   onOpenChange: (open: boolean) => void;
   open: boolean;
 };
 
-export function MobileButtonBar(props: MobileButtonBarProps) {
+export function MobileBar(props: MobileBarProps) {
   const { className, onOpenChange, open, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
       className={[
-        styles.MobileButtonBar,
+        styles.MobileBar,
         className,
       ]}
     >

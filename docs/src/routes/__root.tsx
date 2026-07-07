@@ -18,7 +18,7 @@ import { Icon } from '#components/icon';
 import { IconLink } from '#components/icon-link';
 import { Layout } from '#components/layout';
 import { LogoLink } from '#components/logo-link';
-import { MobileButtonBar } from '#components/mobile-button-bar';
+import { MobileBar } from '#components/mobile-bar';
 import { Navigation } from '#components/navigation';
 import {
   OptionProvider,
@@ -149,7 +149,7 @@ function Component() {
             <Icon name="github" />
           </IconLink>
         </Layout.Header.End>
-        <MobileButtonBar
+        <MobileBar
           onOpenChange={setIsMobileDialogOpen}
           open={isMobileDialogOpen}
         />
