@@ -68,7 +68,9 @@ export function MobileBar(props: MobileBarProps) {
     flushSync(() => {
       onModeChange('search');
     });
-    inputElement.current?.focus();
+    inputElement.current?.focus({
+      preventScroll: true,
+    });
   };
 
   const handleToggle = () => {
