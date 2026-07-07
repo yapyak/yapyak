@@ -57,14 +57,6 @@
           transition: background-color var(--transition);
         }
 
-        &:first-of-type .TabFill {
-          border-top-left-radius: var(--border-radius-md);
-        }
-
-        &:last-of-type .TabFill {
-          border-top-right-radius: var(--border-radius-md);
-        }
-
         .TabFilenameTextShort,
         .TabFilenameTextFull {
           overflow: hidden;
@@ -135,12 +127,24 @@
           border-radius: var(--spacing-05);
         }
 
-        &:first-of-type:focus-visible {
-          border-top-left-radius: var(--border-radius-md);
+        &:first-of-type {
+          .TabFill {
+            border-top-left-radius: var(--border-radius-md);
+          }
+
+          &:focus-visible {
+            border-top-left-radius: var(--border-radius-md);
+          }
         }
 
-        &:last-of-type:focus-visible {
-          border-top-right-radius: var(--border-radius-md);
+        &:last-of-type {
+          .TabFill {
+            border-top-right-radius: var(--border-radius-md);
+          }
+
+          &:focus-visible {
+            border-top-right-radius: var(--border-radius-md);
+          }
         }
       }
     }

@@ -11,10 +11,6 @@
     display: inline-flex;
     gap: var(--spacing-2);
     align-items: center;
-    padding: var(--spacing-2);
-    background-color: var(--canvas-strong);
-    border-radius: var(--border-radius-full);
-    box-shadow: var(--shadow-ring-inset);
 
     .Indicator {
       position: absolute;
@@ -39,7 +35,6 @@
         gap: var(--spacing-2);
         align-items: center;
         width: max-content;
-        padding: var(--spacing-2);
         color: var(--brand-contrast);
       }
     }

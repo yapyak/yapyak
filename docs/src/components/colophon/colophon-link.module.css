@@ -3,7 +3,7 @@
     color: var(--foreground);
     text-decoration: underline;
     text-decoration-color: transparent;
-    text-underline-offset: 3px;
+    text-underline-offset: var(--spacing-1);
     outline: var(--spacing-2) solid transparent;
     border-radius: var(--border-radius-xs);
     transition:
@@ -14,6 +14,10 @@
       &:hover {
         text-decoration-color: currentColor;
       }
+    }
+
+    &:active {
+      text-decoration-color: currentColor;
     }
 
     &:focus-visible {

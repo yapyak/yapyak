@@ -149,7 +149,7 @@
   --shadow-ring-inset:
     inset 0 0 0 var(--px) var(--ring), inset 0 1px 0 #ffffff08;
 
-  --header-height: 56px;
+  --header-height: 64px;
   --content-header-height: 44px;
 
   --syntax-keyword: var(--color-lilac);
@@ -192,10 +192,4 @@
   --accent-claude: #cc785c;
   --accent-cursor: #ffffff;
   --accent-t3-chat: #ec4899;
-}
-
-@media (min-width: 1024px) {
-  :root {
-    --header-height: 76px;
-  }
 }
