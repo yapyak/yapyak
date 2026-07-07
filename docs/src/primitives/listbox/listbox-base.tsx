@@ -1,4 +1,9 @@
-import type { FocusEvent, KeyboardEvent, PointerEvent } from 'react';
+import type {
+  FocusEvent,
+  KeyboardEvent,
+  MouseEvent,
+  PointerEvent,
+} from 'react';
 import type { BoxProps } from '../box';
 
 import { useEffect, useId, useRef } from 'react';
@@ -258,7 +263,7 @@ export function ListboxBase(props: ListboxBaseProps) {
     }
   };
 
-  const handlePointerDown = (event: PointerEvent) => {
+  const handleClick = (event: MouseEvent) => {
     if (event.button !== 0) {
       return;
     }
@@ -299,9 +304,9 @@ export function ListboxBase(props: ListboxBaseProps) {
       aria-activedescendant={highlightedId}
       aria-orientation={orientation}
       id={listboxId}
+      onClick={handleClick}
       onFocus={handleFocus}
       onKeyDown={handleKeyDown}
-      onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       ref={element}
       role="listbox"
