@@ -146,7 +146,8 @@
   --brand-contrast: color-mix(in oklab, var(--brand) 8%, var(--color-ink));
 
   --shadow-brand-glow: 0 0 12px var(--brand-soft);
-  --shadow-ring-inset: inset 0 0 0 var(--px) var(--ring);
+  --shadow-ring-inset:
+    inset 0 0 0 var(--px) var(--ring), inset 0 1px 0 #ffffff08;
 
   --header-height: 56px;
   --content-header-height: 44px;

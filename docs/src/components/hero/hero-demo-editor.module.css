@@ -5,7 +5,6 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
     background-color: var(--surface);
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-ring-inset);
@@ -41,8 +40,12 @@
         font-family: var(--font-family-mono);
         font-size: var(--font-size-xs);
         color: var(--foreground-softer);
+        outline: var(--spacing-2) solid transparent;
         box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
-        transition: color var(--transition);
+        transition:
+          color var(--transition),
+          outline var(--duration-slow),
+          border-radius var(--duration-slow);
 
         .TabFill {
           position: absolute;
@@ -52,6 +55,14 @@
           pointer-events: none;
           background-color: transparent;
           transition: background-color var(--transition);
+        }
+
+        &:first-of-type .TabFill {
+          border-top-left-radius: var(--border-radius-md);
+        }
+
+        &:last-of-type .TabFill {
+          border-top-right-radius: var(--border-radius-md);
         }
 
         .TabFilenameTextShort,
@@ -119,10 +130,17 @@
         }
 
         &:focus-visible {
-          .TabFill {
-            border-radius: 2px;
-            box-shadow: inset 0 0 0 var(--px) var(--accent);
-          }
+          outline-width: var(--spacing-1);
+          outline-color: var(--accent-soft);
+          border-radius: var(--spacing-05);
+        }
+
+        &:first-of-type:focus-visible {
+          border-top-left-radius: var(--border-radius-md);
+        }
+
+        &:last-of-type:focus-visible {
+          border-top-right-radius: var(--border-radius-md);
         }
       }
     }
@@ -130,6 +148,8 @@
     .PreformattedText {
       padding: var(--spacing-4);
       overflow: hidden;
+      border-bottom-right-radius: var(--border-radius-md);
+      border-bottom-left-radius: var(--border-radius-md);
       mask-image: linear-gradient(
         to right,
         black 0,
