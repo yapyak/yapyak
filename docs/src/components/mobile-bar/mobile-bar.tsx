@@ -1,7 +1,6 @@
 import type { ChangeEvent } from 'react';
 import type { BoxProps } from '#primitives/box';
 
-import { useNavigate } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { t } from 'yapyak';
@@ -13,6 +12,7 @@ import { MobileDialogButton } from '#components/mobile-dialog-button';
 import { SearchDialogListbox } from '#components/search-dialog';
 import { useSearch } from '#hooks/use-search';
 import { useSearchData } from '#hooks/use-search-data';
+import { useSearchNavigation } from '#hooks/use-search-navigation';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 import { LinkBase } from '#primitives/link';
@@ -31,23 +31,15 @@ export type MobileBarProps = BoxProps & {
 
 export function MobileBar(props: MobileBarProps) {
   const { className, mode, onModeChange, ...restProps } = props;
-  const navigate = useNavigate();
   const inputElement = useRef<HTMLInputElement>(null);
   const [hasSearched, setHasSearched] = useState(false);
   const searchData = useSearchData(hasSearched);
 
+  const handleSelect = useSearchNavigation();
+
   const search = useSearch({
     listboxId: LISTBOX_ID,
-    onSelect: (href) => {
-      const hashIndex = href.indexOf('#');
-      const pathname = hashIndex < 0 ? href : href.slice(0, hashIndex);
-      const hash = hashIndex < 0 ? undefined : href.slice(hashIndex + 1);
-      void navigate({
-        hash,
-        to: pathname,
-      });
-      onModeChange('closed');
-    },
+    onSelect: handleSelect,
     searchData,
   });
 

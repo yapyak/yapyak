@@ -8,6 +8,7 @@ import { t } from 'yapyak';
 import { Dialog } from '#components/dialog';
 import { Icon } from '#components/icon';
 import { useSearch } from '#hooks/use-search';
+import { useSearchNavigation } from '#hooks/use-search-navigation';
 import { Box } from '#primitives/box';
 
 import styles from './search-dialog.module.css';
@@ -16,20 +17,17 @@ import { SearchDialogListbox } from './search-dialog-listbox';
 const LISTBOX_ID = 'search-dialog-listbox';
 
 export type SearchDialogProps = Omit<DialogProps, 'onSelect'> & {
-  onSelect: (href: string) => void;
   searchData: SearchData | undefined;
 };
 
 export function SearchDialog(props: SearchDialogProps) {
-  const { className, onSelect, searchData, onClose, ...restProps } = props;
+  const { className, searchData, onClose, ...restProps } = props;
 
   const inputElement = useRef<HTMLInputElement>(null);
+  const handleSelect = useSearchNavigation();
   const search = useSearch({
     listboxId: LISTBOX_ID,
-    onSelect: (href) => {
-      onSelect(href);
-      onClose?.();
-    },
+    onSelect: handleSelect,
     searchData,
   });
 

@@ -50,6 +50,20 @@ describe('getSearchResults', () => {
     ).toEqual([]);
   });
 
+  it('returns no result when a query word is missing', () => {
+    expect(
+      getSearchResults(
+        searchData([
+          entry({
+            body: 'Cancel',
+            title: 'Save',
+          }),
+        ]),
+        'save cancel settings',
+      ),
+    ).toEqual([]);
+  });
+
   it('prefers an exact title match over a substring match', () => {
     const results = getSearchResults(
       searchData([
@@ -116,6 +130,25 @@ describe('getSearchResults', () => {
     );
 
     expect(results).toHaveLength(1);
+  });
+
+  it('returns the entry that matches every word of the query', () => {
+    const results = getSearchResults(
+      searchData([
+        entry({
+          href: '/guide/save-changes',
+          title: 'Save changes',
+        }),
+        entry({
+          href: '/guide/settings',
+          title: 'Settings',
+        }),
+      ]),
+      'save changes',
+    );
+
+    expect(results).toHaveLength(1);
+    expect(results[0]?.entry.title).toBe('Save changes');
   });
 
   it('truncates results to the limit', () => {

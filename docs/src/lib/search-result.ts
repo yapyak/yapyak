@@ -42,6 +42,20 @@ export function getSearchResults(
 
 function getScore(entry: SearchEntry, query: string, tokens: string[]) {
   const title = entry.title.toLowerCase();
+  const breadcrumb = entry.breadcrumb.join(' ').toLowerCase();
+  const body = entry.body.toLowerCase();
+  const collapsedQuery = query.replace(/\s+/g, '');
+
+  const hasEveryToken = tokens.every(
+    (token) =>
+      title.includes(token) ||
+      breadcrumb.includes(token) ||
+      body.includes(token),
+  );
+  if (!hasEveryToken && !isSubsequence(collapsedQuery, title)) {
+    return 0;
+  }
+
   const position = title.indexOf(query);
   let score = 0;
 
@@ -70,21 +84,19 @@ function getScore(entry: SearchEntry, query: string, tokens: string[]) {
   }
   score += titleTokenHits === tokens.length ? 120 : titleTokenHits * 30;
 
-  const breadcrumb = entry.breadcrumb.join(' ').toLowerCase();
   for (const token of tokens) {
     if (breadcrumb.includes(token)) {
       score += 8;
     }
   }
 
-  const body = entry.body.toLowerCase();
   for (const token of tokens) {
     if (body.includes(token)) {
       score += 4;
     }
   }
 
-  if (score === 0 && isSubsequence(query.replace(/\s+/g, ''), title)) {
+  if (score === 0 && isSubsequence(collapsedQuery, title)) {
     score += 40;
   }
 
