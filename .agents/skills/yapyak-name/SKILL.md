@@ -499,6 +499,15 @@ Closed list. Every function starts with one of these (or follows a documented ex
 | `sort*` | Order a collection | `sortKeys()` |
 | `split*` | Divide into parts | `splitAtDepthZero()` |
 
+#### Getter noun mirrors the return type
+
+- Name a `get*` function's noun after its return type: an object → the type, a collection `T[]` → the plural.
+
+```ts
+getEntry(): Entry
+getSidebarNodes(): SidebarNode[]
+```
+
 #### Composite `*To*` / `*From*` converters
 
 Allowed when both endpoints of the conversion belong in the name:

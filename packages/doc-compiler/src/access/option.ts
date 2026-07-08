@@ -1,7 +1,9 @@
 import type { NavigationManifest } from '../build';
 import type { OptionsGroup, OptionsRegistry } from '../config';
 
-export function getOptions(manifest: NavigationManifest): OptionsRegistry {
+export function getOptionsRegistry(
+  manifest: NavigationManifest,
+): OptionsRegistry {
   return manifest.options;
 }
 

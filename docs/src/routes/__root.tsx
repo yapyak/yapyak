@@ -180,7 +180,7 @@ function ShellComponent(props: ShellComponentProps) {
   const { children } = props;
 
   const [locale] = useLocale();
-  const optionsPrepaintScript = buildPrepaintScript(doc.getOptions());
+  const optionsPrepaintScript = buildPrepaintScript(doc.getOptionsRegistry());
 
   return (
     <html lang={locale}>

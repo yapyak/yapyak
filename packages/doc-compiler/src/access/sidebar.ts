@@ -1,6 +1,6 @@
 import type { NavigationManifest, SidebarNode } from '../build';
 
-export function getSidebar(
+export function getSidebarNodes(
   manifest: NavigationManifest,
   collection: string,
 ): SidebarNode[] {

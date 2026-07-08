@@ -3,7 +3,7 @@ import type { HeadingBlock } from './block';
 
 import { blockToText } from './text';
 
-export type HeadingEntry = {
+export type Heading = {
   id: string;
   level: HeadingBlock['level'];
   text: string;
@@ -17,10 +17,10 @@ export type GetHeadingsOptions = {
 export function getHeadings(
   page: Page,
   options: GetHeadingsOptions = {},
-): HeadingEntry[] {
+): Heading[] {
   const minLevel = options.minLevel ?? 1;
   const maxLevel = options.maxLevel ?? 6;
-  const result: HeadingEntry[] = [];
+  const result: Heading[] = [];
   for (const block of page.blocks) {
     if (
       block.kind === 'heading' &&

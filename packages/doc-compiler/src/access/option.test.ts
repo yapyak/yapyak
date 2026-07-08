@@ -3,7 +3,7 @@ import type { OptionsRegistry } from '../config';
 
 import { describe, expect, it } from 'vitest';
 
-import { getOptions, getOptionsGroup } from './option';
+import { getOptionsGroup, getOptionsRegistry } from './option';
 
 function manifest(options: OptionsRegistry): Manifest {
   return {
@@ -25,10 +25,10 @@ const FRAMEWORK_GROUP = {
   ],
 };
 
-describe('getOptions', () => {
+describe('getOptionsRegistry', () => {
   it('returns the options registry', () => {
     expect(
-      getOptions(
+      getOptionsRegistry(
         manifest({
           framework: FRAMEWORK_GROUP,
         }),

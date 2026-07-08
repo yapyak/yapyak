@@ -15,20 +15,20 @@ const splatRoute = getRouteApi('/guide/$');
 export const Route = createFileRoute('/guide')({
   beforeLoad() {
     return {
-      sidebar: doc.getSidebar('guide'),
+      sidebarNodes: doc.getSidebarNodes('guide'),
     };
   },
   component: Component,
 });
 
 function Component() {
-  const { sidebar } = Route.useRouteContext();
+  const { sidebarNodes } = Route.useRouteContext();
   const { page } = splatRoute.useLoaderData();
 
   const sidebarContent = (
     <ContentNavigation
       aria-label={t('Guide navigation')}
-      tree={sidebar}
+      tree={sidebarNodes}
     />
   );
 

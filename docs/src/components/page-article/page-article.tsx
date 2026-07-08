@@ -15,7 +15,7 @@ export type PageArticleProps = BoxProps<'article'> & {
 export function PageArticle(props: PageArticleProps) {
   const { className, page, ...restProps } = props;
   const { nextPage, nextParentLabel, previousPage, previousParentLabel } =
-    doc.findAdjacentPages(page);
+    doc.getAdjacentPages(page);
 
   return (
     <Box

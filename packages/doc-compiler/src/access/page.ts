@@ -31,7 +31,7 @@ export function getPage(
   return manifest.collections[collectionName]?.pages[path];
 }
 
-export function getFirstPage(
+export function getFirstPageMeta(
   manifest: NavigationManifest,
   collectionName: string,
 ): PageMeta | undefined {
@@ -51,7 +51,7 @@ export function getFirstPage(
   return undefined;
 }
 
-export function findAdjacentPages(
+export function getAdjacentPages(
   manifest: NavigationManifest,
   page: PageMeta,
 ): AdjacentPages {

@@ -2,7 +2,7 @@ import type { NavigationManifest, PageMeta, SidebarNode } from '../build';
 
 import { describe, expect, it } from 'vitest';
 
-import { findAdjacentPages, getFirstPage, getPage } from './page';
+import { getAdjacentPages, getFirstPageMeta, getPage } from './page';
 
 const HELLO_PAGE: PageMeta = {
   breadcrumbs: [],
@@ -47,7 +47,7 @@ function link(href: string, label: string): SidebarNode {
   };
 }
 
-describe('findAdjacentPages', () => {
+describe('getAdjacentPages', () => {
   it('returns the previous and next page when in the middle', () => {
     const data = manifest({
       guide: {
@@ -65,7 +65,7 @@ describe('findAdjacentPages', () => {
       },
     });
 
-    expect(findAdjacentPages(data, WORLD_PAGE)).toEqual({
+    expect(getAdjacentPages(data, WORLD_PAGE)).toEqual({
       nextPage: SETTINGS_PAGE,
       previousPage: HELLO_PAGE,
     });
@@ -86,7 +86,7 @@ describe('findAdjacentPages', () => {
       },
     });
 
-    expect(findAdjacentPages(data, HELLO_PAGE)).toEqual({
+    expect(getAdjacentPages(data, HELLO_PAGE)).toEqual({
       nextPage: WORLD_PAGE,
     });
   });
@@ -106,7 +106,7 @@ describe('findAdjacentPages', () => {
       },
     });
 
-    expect(findAdjacentPages(data, WORLD_PAGE)).toEqual({
+    expect(getAdjacentPages(data, WORLD_PAGE)).toEqual({
       previousPage: HELLO_PAGE,
     });
   });
@@ -124,14 +124,14 @@ describe('findAdjacentPages', () => {
       },
     });
 
-    expect(findAdjacentPages(data, SETTINGS_PAGE)).toEqual({});
+    expect(getAdjacentPages(data, SETTINGS_PAGE)).toEqual({});
   });
 });
 
-describe('getFirstPage', () => {
+describe('getFirstPageMeta', () => {
   it('returns the page matching the first sidebar link', () => {
     expect(
-      getFirstPage(
+      getFirstPageMeta(
         manifest({
           guide: {
             pages: {
@@ -150,7 +150,7 @@ describe('getFirstPage', () => {
 
   it('returns the page matching the first link in a nested group', () => {
     expect(
-      getFirstPage(
+      getFirstPageMeta(
         manifest({
           guide: {
             pages: {
@@ -175,12 +175,12 @@ describe('getFirstPage', () => {
   });
 
   it('returns `undefined` when the collection is missing', () => {
-    expect(getFirstPage(manifest({}), 'missing')).toBeUndefined();
+    expect(getFirstPageMeta(manifest({}), 'missing')).toBeUndefined();
   });
 
   it('returns `undefined` when the sidebar is empty', () => {
     expect(
-      getFirstPage(
+      getFirstPageMeta(
         manifest({
           guide: {
             pages: {},

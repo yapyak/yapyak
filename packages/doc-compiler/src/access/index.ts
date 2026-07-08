@@ -41,7 +41,7 @@ export type {
 } from './block';
 export type { Entry, EntryMeta } from './entry';
 export type { GetExcerptOptions } from './excerpt';
-export type { GetHeadingsOptions, HeadingEntry } from './heading';
+export type { GetHeadingsOptions, Heading } from './heading';
 export type { InternalLinkEntry } from './internal-link';
 export type { AdjacentPages, PageEntry } from './page';
 
@@ -52,8 +52,8 @@ export { getExcerpt } from './excerpt';
 export { getHeadings } from './heading';
 export { getInternalLinks } from './internal-link';
 export { blocksToMarkdown } from './markdown';
-export { getOptions, getOptionsGroup } from './option';
-export { findAdjacentPages, getFirstPage, getPage } from './page';
-export { getSidebar } from './sidebar';
+export { getOptionsGroup, getOptionsRegistry } from './option';
+export { getAdjacentPages, getFirstPageMeta, getPage } from './page';
+export { getSidebarNodes } from './sidebar';
 export { resolveSymbol } from './symbol';
 export { blockToText, getText } from './text';

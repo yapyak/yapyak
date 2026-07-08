@@ -3,7 +3,7 @@ declare module 'virtual:doc-compiler' {
     AdjacentPages,
     Entry,
     GetHeadingsOptions,
-    HeadingEntry,
+    Heading,
     NavigationManifest,
     OptionsGroup,
     OptionsRegistry,
@@ -13,13 +13,13 @@ declare module 'virtual:doc-compiler' {
   } from '@yapyak/doc-compiler';
 
   export const doc: {
-    findAdjacentPages(page: PageMeta): AdjacentPages;
+    getAdjacentPages(page: PageMeta): AdjacentPages;
     getEntry(collection: string, path?: string): Promise<Entry>;
-    getFirstPage(collection: string): PageMeta | undefined;
-    getHeadings(page: Page, options?: GetHeadingsOptions): HeadingEntry[];
-    getOptions(): OptionsRegistry;
+    getFirstPageMeta(collection: string): PageMeta | undefined;
+    getHeadings(page: Page, options?: GetHeadingsOptions): Heading[];
+    getOptionsRegistry(): OptionsRegistry;
     getOptionsGroup(groupId: string): OptionsGroup | undefined;
-    getSidebar(collection: string): SidebarNode[];
+    getSidebarNodes(collection: string): SidebarNode[];
     manifest: NavigationManifest;
   };
 }

@@ -15,20 +15,20 @@ const splatRoute = getRouteApi('/reference/$');
 export const Route = createFileRoute('/reference')({
   beforeLoad() {
     return {
-      sidebar: doc.getSidebar('reference'),
+      sidebarNodes: doc.getSidebarNodes('reference'),
     };
   },
   component: Component,
 });
 
 function Component() {
-  const { sidebar } = Route.useRouteContext();
+  const { sidebarNodes } = Route.useRouteContext();
   const { page } = splatRoute.useLoaderData();
 
   const sidebarContent = (
     <ContentNavigation
       aria-label={t('Reference navigation')}
-      tree={sidebar}
+      tree={sidebarNodes}
     />
   );
 

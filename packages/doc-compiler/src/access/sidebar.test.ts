@@ -2,7 +2,7 @@ import type { Manifest, SidebarNode } from '../build';
 
 import { describe, expect, it } from 'vitest';
 
-import { getSidebar } from './sidebar';
+import { getSidebarNodes } from './sidebar';
 
 function manifest(collections: Manifest['collections']): Manifest {
   return {
@@ -13,7 +13,7 @@ function manifest(collections: Manifest['collections']): Manifest {
   };
 }
 
-describe('getSidebar', () => {
+describe('getSidebarNodes', () => {
   it('returns the sidebar of the collection', () => {
     const sidebar: SidebarNode[] = [
       {
@@ -23,7 +23,7 @@ describe('getSidebar', () => {
       },
     ];
     expect(
-      getSidebar(
+      getSidebarNodes(
         manifest({
           guide: {
             pages: {},
@@ -37,6 +37,6 @@ describe('getSidebar', () => {
   });
 
   it('returns an empty array when the collection is missing', () => {
-    expect(getSidebar(manifest({}), 'missing')).toEqual([]);
+    expect(getSidebarNodes(manifest({}), 'missing')).toEqual([]);
   });
 });

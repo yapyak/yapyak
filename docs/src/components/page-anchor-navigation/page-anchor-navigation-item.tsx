@@ -1,4 +1,4 @@
-import type { HeadingEntry } from '@yapyak/doc-compiler';
+import type { Heading } from '@yapyak/doc-compiler';
 import type { MouseEvent } from 'react';
 import type { LinkBaseProps } from '#primitives/link';
 
@@ -8,7 +8,7 @@ import styles from './page-anchor-navigation-item.module.css';
 
 export type PageAnchorNavigationItemProps = LinkBaseProps & {
   active: boolean;
-  heading: HeadingEntry;
+  heading: Heading;
   onActivate: (id: string) => void;
 };
 

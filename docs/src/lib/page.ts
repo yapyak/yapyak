@@ -25,13 +25,13 @@ export function getPageTitle(page: Page) {
 }
 
 export function redirectToFirstPage(collection: string): never {
-  const first = doc.getFirstPage(collection);
-  if (first === undefined) {
+  const firstPageMeta = doc.getFirstPageMeta(collection);
+  if (firstPageMeta === undefined) {
     throw notFound();
   }
   throw redirect({
     replace: true,
-    to: first.href,
+    to: firstPageMeta.href,
   });
 }
 

@@ -33,7 +33,7 @@ export type OptionProviderProps = PropsWithChildren;
 
 export function OptionProvider(props: OptionProviderProps) {
   const { children } = props;
-  const registry = doc.getOptions();
+  const registry = doc.getOptionsRegistry();
   const [state, setState] = useState<Record<string, string>>(() =>
     getDefaults(registry),
   );
