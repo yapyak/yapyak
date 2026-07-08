@@ -161,6 +161,7 @@ function Component() {
 - Pass a domain object or array whole to every domain component that derives from it.
 - Derive — select, find, filter, map, compute — inside the component that renders the result; never in an ancestor that only forwards it.
 - Pass a derived value onward only to a component that consumes that exact value.
+- Name every domain-object binding in a component the full concept — props, locals, params alike: `sidebarNodes: SidebarNode[]`, `sidebarNodes.map((sidebarNode) => …)`, `guide: Guide`. Components never drop the domain prefix; the in-domain short form of [[yapyak-name]] (`node`) is for non-component `Sidebar*` declarations only.
 
 | The child | Pass |
 |---|---|
@@ -340,6 +341,7 @@ Don't reach for context to feed one boolean to a few siblings — lifting the ra
 - Name a component that composes a region and takes no domain object (layout, shell) after its region or domain area, with no matching prop required — `ContentLayout`.
 - No "Page" components — the route `Component` function handles page layout.
 - **Dispatcher components:** when a base component renders a different sub-component based on a type/variant, name the variants `[Parent][Variant]`. `Block` dispatches to `BlockCallout` and `BlockCode` based on the block's kind.
+- Select the sub-component with a `switch`, one `case` per variant, ending in `default: return null` — always, even for two variants or a boolean flag. Never collapse the dispatch to `if`/`return`.
 
 ```tsx
 // ✗ renders the sidebar but named after a region; prop named structurally
@@ -349,6 +351,24 @@ export type ContentNavigationProps = BoxProps<'nav'> & { tree: SidebarNode[] };
 export type SidebarNodeNavigationProps = BoxProps<'nav'> & {
   sidebarNodes: SidebarNode[];
 };
+```
+
+```tsx
+// ✓ switch on the discriminant, default returns null
+switch (sidebarNode.kind) {
+  case 'group':
+    return <SidebarNodeNavigationNodeGroup sidebarNode={sidebarNode} />;
+  case 'link':
+    return <SidebarNodeNavigationNodeLink sidebarNode={sidebarNode} />;
+  default:
+    return null;
+}
+
+// ✗ if/return, even for two variants
+if (sidebarNode.kind === 'group') {
+  return <SidebarNodeNavigationNodeGroup sidebarNode={sidebarNode} />;
+}
+return <SidebarNodeNavigationNodeLink sidebarNode={sidebarNode} />;
 ```
 
 ### Layout vs domain name
