@@ -8,7 +8,7 @@ import { useWindowEventListener } from '#hooks/use-window-event-listener';
 import { Box } from '#primitives/box';
 
 import styles from './anchor-navigation.module.css';
-import { AnchorNavigationItem } from './anchor-navigation-item';
+import { AnchorNavigationLink } from './anchor-navigation-link';
 
 const ACTIVATION_LINE_PERCENT = 35;
 const BOTTOM_THRESHOLD_PX = 4;
@@ -23,10 +23,10 @@ export function AnchorNavigation(props: AnchorNavigationProps) {
 
   const element = useRef<HTMLElement | null>(null);
   const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
-  const lockedIdRef = useRef<string | null>(null);
+  const lockedIdRef = useRef<string | undefined>(undefined);
   const wasVisibleRef = useRef(false);
   const headingId = useId();
-  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeId, setActiveId] = useState<string | undefined>(undefined);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
 
   const handleUserInteraction = () => {
@@ -35,7 +35,7 @@ export function AnchorNavigation(props: AnchorNavigationProps) {
 
   const handleUserScroll = () => {
     setIsAnimationEnabled(true);
-    lockedIdRef.current = null;
+    lockedIdRef.current = undefined;
   };
 
   useWindowEventListener('pointerdown', handleUserInteraction, {
@@ -57,7 +57,7 @@ export function AnchorNavigation(props: AnchorNavigationProps) {
     const lastId = lastAnchor.id;
 
     const tryEdges = () => {
-      if (lockedIdRef.current !== null) {
+      if (lockedIdRef.current !== undefined) {
         return true;
       }
       const atBottom =
@@ -77,7 +77,7 @@ export function AnchorNavigation(props: AnchorNavigationProps) {
         }
 
         const line = (window.innerHeight * ACTIVATION_LINE_PERCENT) / 100;
-        let activeAnchorId: string | null = null;
+        let activeAnchorId: string | undefined;
         for (const anchor of anchors) {
           const headingElement = document.getElementById(anchor.id);
           if (!headingElement) {
@@ -122,7 +122,7 @@ export function AnchorNavigation(props: AnchorNavigationProps) {
   ]);
 
   useLayoutEffect(() => {
-    if (activeId === null) {
+    if (activeId === undefined) {
       wasVisibleRef.current = false;
       return;
     }
@@ -175,7 +175,7 @@ export function AnchorNavigation(props: AnchorNavigationProps) {
         styles.AnchorNavigation,
         className,
       ]}
-      data-active={activeId !== null}
+      data-active={activeId !== undefined}
       data-animation-enabled={isAnimationEnabled}
       data-indicator={indicator}
       ref={element}
@@ -188,21 +188,28 @@ export function AnchorNavigation(props: AnchorNavigationProps) {
         >
           {t('On this page')}
         </Box>
-        <Box className={styles.List}>
+        <Box
+          as="ul"
+          className={styles.List}
+        >
           {anchors.map((anchor) => (
-            <AnchorNavigationItem
-              active={activeId === anchor.id}
-              anchor={anchor}
+            <Box
+              as="li"
               key={anchor.id}
-              onActivate={handleActivate}
-              ref={(itemElement) => {
-                if (itemElement) {
-                  itemElementsRef.current.set(anchor.id, itemElement);
-                } else {
-                  itemElementsRef.current.delete(anchor.id);
-                }
-              }}
-            />
+            >
+              <AnchorNavigationLink
+                active={activeId === anchor.id}
+                anchor={anchor}
+                onActivate={handleActivate}
+                ref={(itemElement) => {
+                  if (itemElement) {
+                    itemElementsRef.current.set(anchor.id, itemElement);
+                  } else {
+                    itemElementsRef.current.delete(anchor.id);
+                  }
+                }}
+              />
+            </Box>
           ))}
         </Box>
         <Box

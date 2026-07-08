@@ -30,7 +30,7 @@ export function PaginationNavigation(props: PaginationNavigationProps) {
           className={styles.PreviousLink}
           to={previousPage.href}
         >
-          {previousSection !== undefined && (
+          {previousSection && (
             <Box
               as="span"
               className={styles.ParentText}
@@ -61,7 +61,7 @@ export function PaginationNavigation(props: PaginationNavigationProps) {
           className={styles.NextLink}
           to={nextPage.href}
         >
-          {nextSection !== undefined && (
+          {nextSection && (
             <Box
               as="span"
               className={styles.ParentText}

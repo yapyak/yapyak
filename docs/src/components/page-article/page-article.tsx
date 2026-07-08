@@ -43,7 +43,7 @@ export function PageArticle(props: PageArticleProps) {
           </Box>
         )}
       </Box>
-      <Box className={styles.Body}>{children}</Box>
+      <Box className={styles.Content}>{children}</Box>
       {(pagination.previousPage || pagination.nextPage) && (
         <Box
           as="footer"

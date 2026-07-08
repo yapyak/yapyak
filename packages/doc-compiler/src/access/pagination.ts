@@ -9,7 +9,7 @@ export function getPagination(
   manifest: NavigationManifest,
   page: Page,
 ): Pagination {
-  const collectionName = collectionFromHref(page.href);
+  const collectionName = collectionNameFromHref(page.href);
   if (collectionName === undefined) {
     return {};
   }
@@ -17,7 +17,7 @@ export function getPagination(
   if (!collection) {
     return {};
   }
-  const hrefs = flattenLinks(collection.sidebarNodes);
+  const hrefs = collectHrefs(collection.sidebarNodes);
   const index = hrefs.indexOf(page.href);
   if (index === -1) {
     return {};
@@ -46,7 +46,7 @@ function findPageAt(
   return findPageByHref(manifest, href);
 }
 
-function collectionFromHref(href: string): string | undefined {
+function collectionNameFromHref(href: string): string | undefined {
   const match = href.match(/^\/([^/]+)(?:\/|$)/);
   return match?.[1];
 }
@@ -65,7 +65,7 @@ function findPageByHref(
   return undefined;
 }
 
-function flattenLinks(sidebarNodes: SidebarNode[]): string[] {
+function collectHrefs(sidebarNodes: SidebarNode[]): string[] {
   const hrefs: string[] = [];
   for (const sidebarNode of sidebarNodes) {
     if (sidebarNode.kind === 'link') {
@@ -74,7 +74,7 @@ function flattenLinks(sidebarNodes: SidebarNode[]): string[] {
       if (sidebarNode.href !== undefined) {
         hrefs.push(sidebarNode.href);
       }
-      hrefs.push(...flattenLinks(sidebarNode.children));
+      hrefs.push(...collectHrefs(sidebarNode.children));
     }
   }
   return hrefs;

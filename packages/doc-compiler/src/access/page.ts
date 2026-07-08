@@ -39,7 +39,7 @@ function findFirstHref(sidebarNodes: SidebarNode[]): string | undefined {
     if (sidebarNode.kind === 'link') {
       return sidebarNode.href;
     }
-    if (sidebarNode.href) {
+    if (sidebarNode.href !== undefined) {
       return sidebarNode.href;
     }
     const nested = findFirstHref(sidebarNode.children);

@@ -4,15 +4,15 @@ import type { LinkBaseProps } from '#primitives/link';
 
 import { LinkBase } from '#primitives/link';
 
-import styles from './anchor-navigation-item.module.css';
+import styles from './anchor-navigation-link.module.css';
 
-export type AnchorNavigationItemProps = LinkBaseProps & {
+export type AnchorNavigationLinkProps = LinkBaseProps & {
   active: boolean;
   anchor: Anchor;
   onActivate: (id: string) => void;
 };
 
-export function AnchorNavigationItem(props: AnchorNavigationItemProps) {
+export function AnchorNavigationLink(props: AnchorNavigationLinkProps) {
   const { active, className, anchor, onActivate, ...restProps } = props;
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -32,7 +32,7 @@ export function AnchorNavigationItem(props: AnchorNavigationItemProps) {
     <LinkBase
       {...restProps}
       className={[
-        styles.AnchorNavigationItem,
+        styles.AnchorNavigationLink,
         className,
       ]}
       data-active={active}
