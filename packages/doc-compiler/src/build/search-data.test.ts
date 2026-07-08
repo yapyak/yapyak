@@ -44,7 +44,7 @@ function page(blocks: Block[]): Page {
   };
 }
 
-function manifest(pageValue: Page, sidebar: SidebarNode[]): Manifest {
+function manifest(pageValue: Page, sidebarNodes: SidebarNode[]): Manifest {
   return {
     collections: {
       guide: {
@@ -52,7 +52,7 @@ function manifest(pageValue: Page, sidebar: SidebarNode[]): Manifest {
           save: pageValue,
         },
         redirects: {},
-        sidebar,
+        sidebarNodes,
       },
     },
     options: {},
@@ -61,7 +61,7 @@ function manifest(pageValue: Page, sidebar: SidebarNode[]): Manifest {
   };
 }
 
-const sidebar: SidebarNode[] = [
+const sidebarNodes: SidebarNode[] = [
   {
     children: [
       {
@@ -83,7 +83,7 @@ describe('buildSearchData', () => {
         page([
           paragraph('Hello'),
         ]),
-        sidebar,
+        sidebarNodes,
       ),
     );
 
@@ -106,7 +106,7 @@ describe('buildSearchData', () => {
           heading(2, 'World'),
           heading(2, 'Cancel'),
         ]),
-        sidebar,
+        sidebarNodes,
       ),
     );
 
@@ -125,7 +125,7 @@ describe('buildSearchData', () => {
         page([
           heading(2, 'World'),
         ]),
-        sidebar,
+        sidebarNodes,
       ),
     );
 
@@ -146,7 +146,7 @@ describe('buildSearchData', () => {
           heading(2, 'World'),
           paragraph('Cancel'),
         ]),
-        sidebar,
+        sidebarNodes,
       ),
     );
 
@@ -164,7 +164,7 @@ describe('buildSearchData', () => {
         page([
           paragraph('Hello'),
         ]),
-        sidebar,
+        sidebarNodes,
       ),
     );
 

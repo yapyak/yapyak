@@ -13,7 +13,7 @@ export type AdjacentPages = {
 };
 
 type FlatEntry = {
-  link: SidebarLinkNode;
+  sidebarNode: SidebarLinkNode;
   parentLabel?: string;
 };
 
@@ -39,7 +39,7 @@ export function getFirstPageMeta(
   if (!collection) {
     return undefined;
   }
-  const firstHref = findFirstHref(collection.sidebar);
+  const firstHref = findFirstHref(collection.sidebarNodes);
   if (firstHref === undefined) {
     return undefined;
   }
@@ -63,8 +63,8 @@ export function getAdjacentPages(
   if (!collection) {
     return {};
   }
-  const flat = flattenLinks(collection.sidebar);
-  const index = flat.findIndex((entry) => entry.link.href === page.href);
+  const flat = flattenLinks(collection.sidebarNodes);
+  const index = flat.findIndex((entry) => entry.sidebarNode.href === page.href);
   if (index === -1) {
     return {};
   }
@@ -72,14 +72,17 @@ export function getAdjacentPages(
   const nextEntry = index < flat.length - 1 ? flat[index + 1] : undefined;
   const result: AdjacentPages = {};
   if (nextEntry) {
-    const nextPage = findPageByHref(manifest, nextEntry.link.href);
+    const nextPage = findPageByHref(manifest, nextEntry.sidebarNode.href);
     if (nextPage) {
       result.nextPage = nextPage;
       result.nextParentLabel = nextEntry.parentLabel;
     }
   }
   if (previousEntry) {
-    const previousPage = findPageByHref(manifest, previousEntry.link.href);
+    const previousPage = findPageByHref(
+      manifest,
+      previousEntry.sidebarNode.href,
+    );
     if (previousPage) {
       result.previousPage = previousPage;
       result.previousParentLabel = previousEntry.parentLabel;
@@ -88,15 +91,15 @@ export function getAdjacentPages(
   return result;
 }
 
-function findFirstHref(nodes: SidebarNode[]): string | undefined {
-  for (const node of nodes) {
-    if (node.kind === 'link') {
-      return node.href;
+function findFirstHref(sidebarNodes: SidebarNode[]): string | undefined {
+  for (const sidebarNode of sidebarNodes) {
+    if (sidebarNode.kind === 'link') {
+      return sidebarNode.href;
     }
-    if (node.href) {
-      return node.href;
+    if (sidebarNode.href) {
+      return sidebarNode.href;
     }
-    const nested = findFirstHref(node.children);
+    const nested = findFirstHref(sidebarNode.children);
     if (nested !== undefined) {
       return nested;
     }
@@ -123,27 +126,30 @@ function findPageByHref(
   return undefined;
 }
 
-function flattenLinks(nodes: SidebarNode[], parentLabel?: string): FlatEntry[] {
+function flattenLinks(
+  sidebarNodes: SidebarNode[],
+  parentLabel?: string,
+): FlatEntry[] {
   const result: FlatEntry[] = [];
-  for (const node of nodes) {
-    if (node.kind === 'link') {
+  for (const sidebarNode of sidebarNodes) {
+    if (sidebarNode.kind === 'link') {
       result.push({
-        link: node,
         parentLabel,
+        sidebarNode,
       });
     } else {
-      if (node.href !== undefined) {
+      if (sidebarNode.href !== undefined) {
         result.push({
-          link: {
-            badge: node.badge,
-            href: node.href,
-            kind: 'link',
-            label: node.label,
-          },
           parentLabel,
+          sidebarNode: {
+            badge: sidebarNode.badge,
+            href: sidebarNode.href,
+            kind: 'link',
+            label: sidebarNode.label,
+          },
         });
       }
-      result.push(...flattenLinks(node.children, node.label));
+      result.push(...flattenLinks(sidebarNode.children, sidebarNode.label));
     }
   }
   return result;

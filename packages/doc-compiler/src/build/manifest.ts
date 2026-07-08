@@ -68,7 +68,7 @@ export type Manifest = {
 export type Collection = {
   pages: Record<string, Page>;
   redirects: Record<string, string>;
-  sidebar: SidebarNode[];
+  sidebarNodes: SidebarNode[];
 };
 
 export type NavigationManifest = {
@@ -81,7 +81,7 @@ export type NavigationManifest = {
 export type NavigationCollection = {
   pages: Record<string, PageMeta>;
   redirects: Record<string, string>;
-  sidebar: SidebarNode[];
+  sidebarNodes: SidebarNode[];
 };
 
 export type SymbolEntry = {
@@ -137,30 +137,30 @@ export async function buildManifest(config: Config): Promise<Manifest> {
 }
 
 function assignBreadcrumbs(collection: Collection): void {
-  const breadcrumbsByHref = buildBreadcrumbs(collection.sidebar);
+  const breadcrumbsByHref = buildBreadcrumbs(collection.sidebarNodes);
   for (const page of Object.values(collection.pages)) {
     page.breadcrumbs = breadcrumbsByHref.get(page.href) ?? [];
   }
 }
 
-function buildBreadcrumbs(sidebar: SidebarNode[]): Map<string, string[]> {
+function buildBreadcrumbs(sidebarNodes: SidebarNode[]): Map<string, string[]> {
   const breadcrumbsByHref = new Map<string, string[]>();
-  const walk = (nodes: SidebarNode[], trail: string[]): void => {
-    for (const node of nodes) {
-      if (node.kind === 'link') {
-        breadcrumbsByHref.set(node.href, trail);
+  const walk = (sidebarNodes: SidebarNode[], trail: string[]): void => {
+    for (const sidebarNode of sidebarNodes) {
+      if (sidebarNode.kind === 'link') {
+        breadcrumbsByHref.set(sidebarNode.href, trail);
         continue;
       }
-      if (node.href !== undefined) {
-        breadcrumbsByHref.set(node.href, trail);
+      if (sidebarNode.href !== undefined) {
+        breadcrumbsByHref.set(sidebarNode.href, trail);
       }
-      walk(node.children, [
+      walk(sidebarNode.children, [
         ...trail,
-        node.label,
+        sidebarNode.label,
       ]);
     }
   };
-  walk(sidebar, []);
+  walk(sidebarNodes, []);
   return breadcrumbsByHref;
 }
 
@@ -198,11 +198,11 @@ async function buildMarkdownCollection(
   for (const [path, target] of redirectsMap) {
     redirects[path] = target;
   }
-  const sidebar = await buildMarkdownSidebar(root, collectionName);
+  const sidebarNodes = await buildMarkdownSidebar(root, collectionName);
   return {
     pages,
     redirects,
-    sidebar,
+    sidebarNodes,
   };
 }
 
@@ -252,9 +252,9 @@ async function buildTypeScriptCollection(
 ): Promise<Collection> {
   const pages: Record<string, Page> = {};
   const redirects: Record<string, string> = {};
-  const nodesByGroup = new Map<string, SidebarNode[]>();
+  const sidebarNodesByGroup = new Map<string, SidebarNode[]>();
   const groupOrder: string[] = [];
-  const ungroupedNodes: SidebarNode[] = [];
+  const ungroupedSidebarNodes: SidebarNode[] = [];
 
   const renderContexts: PackageRenderContext[] = [];
   const entries: SymbolIndexEntry[] = [];
@@ -611,26 +611,26 @@ async function buildTypeScriptCollection(
       });
     }
 
-    const packageNode = buildPackageRoot(referenceManifest, context, {
+    const packageSidebarNode = buildPackageRoot(referenceManifest, context, {
       collapsible: typescriptPackage.collapsible ?? false,
       expanded: typescriptPackage.expanded ?? false,
       label: displayName,
     });
 
     if (typescriptPackage.group === undefined) {
-      ungroupedNodes.push(packageNode);
+      ungroupedSidebarNodes.push(packageSidebarNode);
       continue;
     }
-    let groupBucket = nodesByGroup.get(typescriptPackage.group);
+    let groupBucket = sidebarNodesByGroup.get(typescriptPackage.group);
     if (groupBucket === undefined) {
       groupBucket = [];
-      nodesByGroup.set(typescriptPackage.group, groupBucket);
+      sidebarNodesByGroup.set(typescriptPackage.group, groupBucket);
       groupOrder.push(typescriptPackage.group);
     }
-    groupBucket.push(packageNode);
+    groupBucket.push(packageSidebarNode);
   }
 
-  const supplementNodes: SidebarNode[] = [];
+  const supplementSidebarNodes: SidebarNode[] = [];
   for (const supplement of supplements ?? []) {
     const result = await buildSupplement({
       collectionName,
@@ -645,27 +645,27 @@ async function buildTypeScriptCollection(
     for (const [symbolKey, entry] of Object.entries(result.symbols)) {
       symbols[symbolKey] = entry;
     }
-    supplementNodes.push(result.group);
+    supplementSidebarNodes.push(result.sidebarNode);
   }
 
-  const sidebar: SidebarNode[] = [
-    ...ungroupedNodes,
+  const sidebarNodes: SidebarNode[] = [
+    ...ungroupedSidebarNodes,
   ];
   for (const groupLabel of groupOrder) {
-    const children = nodesByGroup.get(groupLabel) ?? [];
-    sidebar.push({
+    const children = sidebarNodesByGroup.get(groupLabel) ?? [];
+    sidebarNodes.push({
       children,
       collapsible: false,
       kind: 'group',
       label: groupLabel,
     });
   }
-  sidebar.push(...supplementNodes);
+  sidebarNodes.push(...supplementSidebarNodes);
 
   return {
     pages,
     redirects,
-    sidebar,
+    sidebarNodes,
   };
 }
 

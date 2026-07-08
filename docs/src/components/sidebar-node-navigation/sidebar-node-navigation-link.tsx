@@ -9,19 +9,19 @@ import { LinkBase } from '#primitives/link';
 import styles from './sidebar-node-navigation-link.module.css';
 
 export type SidebarNodeNavigationLinkProps = LinkBaseProps & {
-  node: SidebarLinkNode;
+  sidebarNode: SidebarLinkNode;
 };
 
 export function SidebarNodeNavigationLink(
   props: SidebarNodeNavigationLinkProps,
 ) {
-  const { className, node, ...restProps } = props;
-  const isDeprecated = node.badge?.variant === 'deprecated';
+  const { className, sidebarNode, ...restProps } = props;
+  const isDeprecated = sidebarNode.badge?.variant === 'deprecated';
   const element = useRef<HTMLAnchorElement>(null);
   const initialPathname = useLocation({
     select: (location) => location.pathname,
   });
-  const isActiveOnMountRef = useRef(initialPathname === node.href);
+  const isActiveOnMountRef = useRef(initialPathname === sidebarNode.href);
 
   useEffect(() => {
     const $element = element.current;
@@ -62,9 +62,9 @@ export function SidebarNodeNavigationLink(
       ]}
       data-deprecated={isDeprecated}
       ref={element}
-      to={node.href}
+      to={sidebarNode.href}
     >
-      {node.label}
+      {sidebarNode.label}
     </LinkBase>
   );
 }

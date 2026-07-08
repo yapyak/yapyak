@@ -22,7 +22,7 @@ describe('buildSupplement', () => {
   it('builds a `group` node whose label matches the supplement label', async () => {
     writeFileSync(join(dir, 'YAP0001.md'), '---\ntitle: Hello\n---');
 
-    const { group } = await buildSupplement({
+    const { sidebarNode } = await buildSupplement({
       collectionName: 'reference',
       supplement: {
         label: 'Diagnostics',
@@ -31,15 +31,15 @@ describe('buildSupplement', () => {
       },
     });
 
-    expect(group.label).toBe('Diagnostics');
-    expect(group.kind).toBe('group');
+    expect(sidebarNode.label).toBe('Diagnostics');
+    expect(sidebarNode.kind).toBe('group');
   });
 
   it('builds a child `link` per markdown file under the supplement root', async () => {
     writeFileSync(join(dir, 'YAP0001.md'), '---\ntitle: Hello\n---');
     writeFileSync(join(dir, 'YAP0007.md'), '---\ntitle: World\n---');
 
-    const { group } = await buildSupplement({
+    const { sidebarNode } = await buildSupplement({
       collectionName: 'reference',
       supplement: {
         label: 'Diagnostics',
@@ -48,7 +48,7 @@ describe('buildSupplement', () => {
       },
     });
 
-    expect(group.children).toEqual([
+    expect(sidebarNode.children).toEqual([
       {
         href: '/reference/diagnostics/YAP0001',
         kind: 'link',
@@ -65,7 +65,7 @@ describe('buildSupplement', () => {
   it('returns the file slug as label when frontmatter `title` is missing', async () => {
     writeFileSync(join(dir, 'YAP0001.md'), 'Hello');
 
-    const { group } = await buildSupplement({
+    const { sidebarNode } = await buildSupplement({
       collectionName: 'reference',
       supplement: {
         label: 'Diagnostics',
@@ -74,7 +74,7 @@ describe('buildSupplement', () => {
       },
     });
 
-    expect(group.children[0]).toEqual({
+    expect(sidebarNode.children[0]).toEqual({
       href: '/reference/diagnostics/YAP0001',
       kind: 'link',
       label: 'YAP0001',
@@ -85,7 +85,7 @@ describe('buildSupplement', () => {
     writeFileSync(join(dir, 'index.md'), '---\ntitle: Overview\n---');
     writeFileSync(join(dir, 'YAP0001.md'), '---\ntitle: Hello\n---');
 
-    const { group } = await buildSupplement({
+    const { sidebarNode } = await buildSupplement({
       collectionName: 'reference',
       supplement: {
         label: 'Diagnostics',
@@ -94,13 +94,13 @@ describe('buildSupplement', () => {
       },
     });
 
-    expect(group.href).toBe('/reference/diagnostics');
+    expect(sidebarNode.href).toBe('/reference/diagnostics');
   });
 
   it('returns no group `href` when `index.md` is absent', async () => {
     writeFileSync(join(dir, 'YAP0001.md'), '---\ntitle: Hello\n---');
 
-    const { group } = await buildSupplement({
+    const { sidebarNode } = await buildSupplement({
       collectionName: 'reference',
       supplement: {
         label: 'Diagnostics',
@@ -109,7 +109,7 @@ describe('buildSupplement', () => {
       },
     });
 
-    expect(group.href).toBeUndefined();
+    expect(sidebarNode.href).toBeUndefined();
   });
 
   it('lists every page under the supplement path prefix', async () => {
@@ -151,7 +151,7 @@ describe('buildSupplement', () => {
   it('returns `defaultOpen` only when the supplement is collapsible', async () => {
     writeFileSync(join(dir, 'YAP0001.md'), '---\ntitle: Hello\n---');
 
-    const { group } = await buildSupplement({
+    const { sidebarNode } = await buildSupplement({
       collectionName: 'reference',
       supplement: {
         collapsible: true,
@@ -162,15 +162,15 @@ describe('buildSupplement', () => {
       },
     });
 
-    expect(group.collapsible).toBe(true);
-    expect(group.defaultOpen).toBe(true);
+    expect(sidebarNode.collapsible).toBe(true);
+    expect(sidebarNode.defaultOpen).toBe(true);
   });
 
   it('sorts children by frontmatter `order` before falling back to slug', async () => {
     writeFileSync(join(dir, 'YAP0001.md'), '---\ntitle: A\norder: 2\n---');
     writeFileSync(join(dir, 'YAP0007.md'), '---\ntitle: B\norder: 1\n---');
 
-    const { group } = await buildSupplement({
+    const { sidebarNode } = await buildSupplement({
       collectionName: 'reference',
       supplement: {
         label: 'Diagnostics',
@@ -179,7 +179,7 @@ describe('buildSupplement', () => {
       },
     });
 
-    expect(group.children.map((child) => child.label)).toEqual([
+    expect(sidebarNode.children.map((child) => child.label)).toEqual([
       'B',
       'A',
     ]);

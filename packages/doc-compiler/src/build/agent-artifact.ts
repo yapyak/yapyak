@@ -47,7 +47,7 @@ function buildLlmsIndex(
   )) {
     out.push(`## ${capitalize(collectionId)}`);
     const links = collectLink(
-      collection.sidebar,
+      collection.sidebarNodes,
       collection.pages,
       config.siteUrl,
     );
@@ -59,26 +59,33 @@ function buildLlmsIndex(
 }
 
 function collectLink(
-  nodes: SidebarNode[],
+  sidebarNodes: SidebarNode[],
   pages: Record<string, Page>,
   siteUrl: string,
   depth = 0,
 ): string[] {
   const lines: string[] = [];
   const indent = '  '.repeat(depth);
-  for (const node of nodes) {
-    if (node.kind === 'link') {
-      const page = findPageByHref(pages, node.href);
+  for (const sidebarNode of sidebarNodes) {
+    if (sidebarNode.kind === 'link') {
+      const page = findPageByHref(pages, sidebarNode.href);
       const description = page?.description ?? '';
-      const url = `${siteUrl}${node.href}`;
+      const url = `${siteUrl}${sidebarNode.href}`;
       const descriptionSuffix = description === '' ? '' : `: ${description}`;
-      lines.push(`${indent}- [${node.label}](${url})${descriptionSuffix}`);
+      lines.push(
+        `${indent}- [${sidebarNode.label}](${url})${descriptionSuffix}`,
+      );
       continue;
     }
-    if (node.label !== '') {
-      lines.push(`${indent}- **${node.label}**`);
+    if (sidebarNode.label !== '') {
+      lines.push(`${indent}- **${sidebarNode.label}**`);
     }
-    const childLines = collectLink(node.children, pages, siteUrl, depth + 1);
+    const childLines = collectLink(
+      sidebarNode.children,
+      pages,
+      siteUrl,
+      depth + 1,
+    );
     for (const childLine of childLines) {
       lines.push(childLine);
     }

@@ -11,9 +11,10 @@ import styles from './sidebar-node-navigation-group.module.css';
 export function SidebarNodeNavigationGroupStatic(
   props: SidebarNodeNavigationGroupProps,
 ) {
-  const { className, depth, node, ...restProps } = props;
+  const { className, depth, sidebarNode, ...restProps } = props;
   const location = useLocation();
-  const isActive = node.href !== undefined && location.pathname === node.href;
+  const isActive =
+    sidebarNode.href !== undefined && location.pathname === sidebarNode.href;
 
   return (
     <Box
@@ -24,27 +25,27 @@ export function SidebarNodeNavigationGroupStatic(
       ]}
       data-depth={depth}
     >
-      {node.href === undefined ? (
+      {sidebarNode.href === undefined ? (
         <Box
           as="h3"
           className={styles.TitleHeading}
         >
-          {node.label}
+          {sidebarNode.label}
         </Box>
       ) : (
         <LinkBase
           className={styles.TitleLink}
           data-active={isActive}
-          to={node.href}
+          to={sidebarNode.href}
         >
-          {node.label}
+          {sidebarNode.label}
         </LinkBase>
       )}
       <Box
         as="ul"
         className={styles.List}
       >
-        {node.children.map((child) => (
+        {sidebarNode.children.map((child) => (
           <Box
             as="li"
             key={getKey(child)}

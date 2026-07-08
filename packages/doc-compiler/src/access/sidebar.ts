@@ -4,5 +4,5 @@ export function getSidebarNodes(
   manifest: NavigationManifest,
   collection: string,
 ): SidebarNode[] {
-  return manifest.collections[collection]?.sidebar ?? [];
+  return manifest.collections[collection]?.sidebarNodes ?? [];
 }

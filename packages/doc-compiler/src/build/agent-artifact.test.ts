@@ -43,7 +43,7 @@ function buildManifest(page: Page): Manifest {
           'getting-started/installation': page,
         },
         redirects: {},
-        sidebar: buildSidebar(),
+        sidebarNodes: buildSidebar(),
       },
     },
     options: {},

@@ -15,7 +15,7 @@ function manifest(collections: Manifest['collections']): Manifest {
 
 describe('getSidebarNodes', () => {
   it('returns the sidebar of the collection', () => {
-    const sidebar: SidebarNode[] = [
+    const sidebarNodes: SidebarNode[] = [
       {
         href: '/guide/settings',
         kind: 'link',
@@ -28,12 +28,12 @@ describe('getSidebarNodes', () => {
           guide: {
             pages: {},
             redirects: {},
-            sidebar,
+            sidebarNodes,
           },
         }),
         'guide',
       ),
-    ).toBe(sidebar);
+    ).toBe(sidebarNodes);
   });
 
   it('returns an empty array when the collection is missing', () => {

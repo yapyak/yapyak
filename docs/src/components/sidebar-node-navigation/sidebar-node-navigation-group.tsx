@@ -7,13 +7,13 @@ import { SidebarNodeNavigationLink } from './sidebar-node-navigation-link';
 
 export type SidebarNodeNavigationGroupProps = BoxProps & {
   depth: number;
-  node: SidebarGroupNode;
+  sidebarNode: SidebarGroupNode;
 };
 
 export function SidebarNodeNavigationGroup(
   props: SidebarNodeNavigationGroupProps,
 ) {
-  if (props.node.collapsible) {
+  if (props.sidebarNode.collapsible) {
     return <SidebarNodeNavigationGroupCollapsible {...props} />;
   }
   return <SidebarNodeNavigationGroupStatic {...props} />;
@@ -24,29 +24,32 @@ export function renderChild(child: SidebarNode, depth: number) {
     return (
       <SidebarNodeNavigationGroup
         depth={depth}
-        node={child}
+        sidebarNode={child}
       />
     );
   }
-  return <SidebarNodeNavigationLink node={child} />;
+  return <SidebarNodeNavigationLink sidebarNode={child} />;
 }
 
-export function getKey(node: SidebarNode): string {
-  if (node.kind === 'link') {
-    return node.href;
+export function getKey(sidebarNode: SidebarNode): string {
+  if (sidebarNode.kind === 'link') {
+    return sidebarNode.href;
   }
-  return `group:${node.label}`;
+  return `group:${sidebarNode.label}`;
 }
 
 export function childrenContainPath(
-  nodes: SidebarNode[],
+  sidebarNodes: SidebarNode[],
   pathname: string,
 ): boolean {
-  for (const node of nodes) {
-    if (node.kind === 'link' && pathname.startsWith(node.href)) {
+  for (const sidebarNode of sidebarNodes) {
+    if (sidebarNode.kind === 'link' && pathname.startsWith(sidebarNode.href)) {
       return true;
     }
-    if (node.kind === 'group' && childrenContainPath(node.children, pathname)) {
+    if (
+      sidebarNode.kind === 'group' &&
+      childrenContainPath(sidebarNode.children, pathname)
+    ) {
       return true;
     }
   }

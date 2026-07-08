@@ -18,7 +18,7 @@ describe('getCollection', () => {
     const guide = {
       pages: {},
       redirects: {},
-      sidebar: [],
+      sidebarNodes: [],
     };
     expect(
       getCollection(

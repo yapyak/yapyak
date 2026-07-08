@@ -18,11 +18,12 @@ import { SidebarNodeNavigationGroupChevronIcon } from './sidebar-node-navigation
 export function SidebarNodeNavigationGroupCollapsible(
   props: SidebarNodeNavigationGroupProps,
 ) {
-  const { className, depth, node, ...restProps } = props;
+  const { className, depth, sidebarNode, ...restProps } = props;
   const location = useLocation();
-  const isOnPath = childrenContainPath(node.children, location.pathname);
-  const isActive = node.href !== undefined && location.pathname === node.href;
-  const [isOpen, setIsOpen] = useState(node.defaultOpen || isOnPath);
+  const isOnPath = childrenContainPath(sidebarNode.children, location.pathname);
+  const isActive =
+    sidebarNode.href !== undefined && location.pathname === sidebarNode.href;
+  const [isOpen, setIsOpen] = useState(sidebarNode.defaultOpen || isOnPath);
   const listRef = useRef<HTMLUListElement>(null);
 
   useEffect(() => {
@@ -75,20 +76,20 @@ export function SidebarNodeNavigationGroupCollapsible(
         data-on-path={isOnPath && !isActive}
         data-open={isOpen}
       >
-        {node.href === undefined ? (
+        {sidebarNode.href === undefined ? (
           <ButtonBase
             className={styles.GroupToggle}
             onClick={handleToggleClick}
           >
-            {node.label}
+            {sidebarNode.label}
           </ButtonBase>
         ) : (
           <LinkBase
             className={styles.GroupLink}
             onClick={handleLinkClick}
-            to={node.href}
+            to={sidebarNode.href}
           >
-            {node.label}
+            {sidebarNode.label}
           </LinkBase>
         )}
         <ButtonBase
@@ -106,7 +107,7 @@ export function SidebarNodeNavigationGroupCollapsible(
         hidden={!isOpen}
         ref={listRef}
       >
-        {node.children.map((child) => (
+        {sidebarNode.children.map((child) => (
           <Box
             as="li"
             key={getKey(child)}

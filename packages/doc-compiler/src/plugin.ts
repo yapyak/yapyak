@@ -269,7 +269,7 @@ function splitManifest(manifest: Manifest): SplitManifestResult {
     collections[collectionName] = {
       pages,
       redirects: collection.redirects,
-      sidebar: collection.sidebar,
+      sidebarNodes: collection.sidebarNodes,
     };
   }
   return {

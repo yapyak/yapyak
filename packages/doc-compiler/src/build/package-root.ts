@@ -72,12 +72,12 @@ function moduleChildren(
   for (const symbol of module.exports) {
     exportsByName.set(symbol.name, symbol);
   }
-  const nodes: SidebarNode[] = [];
+  const sidebarNodes: SidebarNode[] = [];
   const entries = expandModuleEntries(module.exports);
   for (const entry of entries) {
     const parentName = entry.segment.split('.')[0] ?? entry.segment;
     const parentSymbol = exportsByName.get(parentName);
-    nodes.push({
+    sidebarNodes.push({
       href: buildSymbolHref(module.id, entry.segment, {
         collectionName,
         packageName,
@@ -97,7 +97,7 @@ function moduleChildren(
     .sort((a, b) => a.id.localeCompare(b.id));
   for (const child of subModules) {
     const childSlug = child.id.slice(packageName.length + 1);
-    nodes.push({
+    sidebarNodes.push({
       children: moduleChildren(child, modulesById, childrenByParentId, context),
       collapsible: true,
       href: `/${collectionName}/${packageSlug}/${childSlug}`,
@@ -105,7 +105,7 @@ function moduleChildren(
       label: lastSegment(child.id),
     });
   }
-  return nodes;
+  return sidebarNodes;
 }
 
 function topLevelSubpathChildren(

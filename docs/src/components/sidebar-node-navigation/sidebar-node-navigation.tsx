@@ -23,21 +23,23 @@ export function SidebarNodeNavigation(props: SidebarNodeNavigationProps) {
         className,
       ]}
     >
-      {sidebarNodes.map((node) =>
-        node.kind === 'group' ? (
+      {sidebarNodes.map((sidebarNode) =>
+        sidebarNode.kind === 'group' ? (
           <SidebarNodeNavigationGroup
             className={
-              node.collapsible ? styles.CollapsibleGroup : styles.StaticGroup
+              sidebarNode.collapsible
+                ? styles.CollapsibleGroup
+                : styles.StaticGroup
             }
             depth={0}
-            key={`group:${node.label}`}
-            node={node}
+            key={`group:${sidebarNode.label}`}
+            sidebarNode={sidebarNode}
           />
         ) : (
           <SidebarNodeNavigationLink
             className={styles.Link}
-            key={node.href}
-            node={node}
+            key={sidebarNode.href}
+            sidebarNode={sidebarNode}
           />
         ),
       )}

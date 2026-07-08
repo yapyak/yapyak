@@ -33,7 +33,7 @@ describe('getEntryMeta', () => {
               settings: PAGE,
             },
             redirects: {},
-            sidebar: [],
+            sidebarNodes: [],
           },
         }),
         'guide',
@@ -54,7 +54,7 @@ describe('getEntryMeta', () => {
             redirects: {
               old: '/guide/settings',
             },
-            sidebar: [],
+            sidebarNodes: [],
           },
         }),
         'guide',
@@ -79,7 +79,7 @@ describe('getEntryMeta', () => {
           guide: {
             pages: {},
             redirects: {},
-            sidebar: [],
+            sidebarNodes: [],
           },
         }),
         'guide',

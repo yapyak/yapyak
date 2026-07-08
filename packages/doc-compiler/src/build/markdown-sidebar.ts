@@ -25,7 +25,7 @@ async function walkDirectory(
     return [];
   }
   const collected: {
-    node: SidebarNode;
+    sidebarNode: SidebarNode;
     order: number;
     name: string;
   }[] = [];
@@ -45,8 +45,8 @@ async function walkDirectory(
       if (group !== undefined) {
         collected.push({
           name: entry.name,
-          node: group.node,
           order: group.order,
+          sidebarNode: group.sidebarNode,
         });
       }
       continue;
@@ -62,8 +62,8 @@ async function walkDirectory(
       if (link !== undefined) {
         collected.push({
           name: slug,
-          node: link.node,
           order: link.order,
+          sidebarNode: link.sidebarNode,
         });
       }
     }
@@ -76,7 +76,7 @@ async function walkDirectory(
     return a.name.localeCompare(b.name);
   });
 
-  return collected.map((item) => item.node);
+  return collected.map((item) => item.sidebarNode);
 }
 
 async function buildLink(absolutePath: string, href: string) {
@@ -97,12 +97,12 @@ async function buildLink(absolutePath: string, href: string) {
       ? frontmatter.order
       : Number.POSITIVE_INFINITY;
   return {
-    node: {
+    order,
+    sidebarNode: {
       href,
       kind: 'link' as const,
       label,
     },
-    order,
   };
 }
 
@@ -135,13 +135,13 @@ async function buildGroup(
       : Number.POSITIVE_INFINITY;
 
   return {
-    node: {
+    order,
+    sidebarNode: {
       children: items,
       collapsible: false,
       kind: 'group' as const,
       label,
     },
-    order,
   };
 }
 

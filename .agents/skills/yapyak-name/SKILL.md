@@ -691,11 +691,28 @@ When a field or parameter holds a value of a specific named type, the name is th
 | Case | Name | Example |
 | --- | --- | --- |
 | Holds a single named type, no surrounding context carries it | `camelCase(TypeName)` | `attributeNode: AttributeNode` |
-| Polymorphic (the type **is** a union) | `camelCase` of the type's **last** PascalCase segment | `node: AstNode` |
+| Polymorphic — the type is a union **or** a member of one | the **union** name in `camelCase`; in-domain, drop the domain prefix to the bare last segment | `sidebarNode: SidebarLinkNode`; `node` in a `Sidebar*` scope |
 | Collection of one named type | plural of `camelCase(TypeName)` | `attributeNodes: AttributeNode[]` |
 | Callable type (`*Fn` / function) | `camelCase(TypeName)` with the trailing `Fn` **removed** | `warn: WarnFn` |
 
-Each row is a string operation on the type name — no judgment. Polymorphic `AstNode` → last segment `Node` → `node`; callable `WarnFn` → drop `Fn` → `warn`; `ParseFragmentsFn` → `parseFragments`.
+Each row is a string operation on the type name — no judgment. A discriminated-union member takes the **union** name, never its own variant: `SidebarLinkNode` and `SidebarGroupNode` both → `sidebarNode`, identical to the union `SidebarNode`. Callable `WarnFn` → drop `Fn` → `warn`; `ParseFragmentsFn` → `parseFragments`.
+
+**A member names the union, never the member** — `Node` is the base, à la the DOM where a `Text` or `Comment` value is still a `node`.
+
+**Drop the domain prefix only in-domain.** `sidebarNode` collapses to the bare last segment `node` only inside a declaration whose own name carries that domain — a `Sidebar*` type or function (`SidebarDefinition`, `buildSidebar`), including its fields and locals. Outside such a scope the value keeps the full union name.
+
+```ts
+// ✓ inside a Sidebar* declaration — prefix dropped
+type SidebarDefinition = { node: SidebarNode; label: string };
+
+// ✓ outside the sidebar domain — full union name
+type FlatEntry = { sidebarNode: SidebarLinkNode; parentLabel?: string };
+
+// ✗ names the variant, not the union
+type FlatEntry = { linkNode: SidebarLinkNode; parentLabel?: string };
+```
+
+Qualify a member only to break a real collision — when 2+ members of one union share a scope, prefix each by its distinguishing segment: `linkNode`, `groupNode`.
 
 **Context-carry exception.** When a function operates on a single named type, the function name carries the full type name; the parameter drops to the generic noun from the type's last PascalCase segment:
 

@@ -14,7 +14,7 @@ export type BuildSupplementInput = {
 };
 
 export type BuildSupplementResult = {
-  group: SidebarGroupNode;
+  sidebarNode: SidebarGroupNode;
   pages: Map<string, Page>;
   redirects: Map<string, string>;
   symbols: Record<string, SymbolEntry>;
@@ -35,7 +35,7 @@ export async function buildSupplement(
   );
 
   const links: {
-    node: SidebarLinkNode;
+    sidebarNode: SidebarLinkNode;
     order: number;
     slug: string;
   }[] = [];
@@ -55,12 +55,12 @@ export async function buildSupplement(
         ? page.meta.order
         : Number.POSITIVE_INFINITY;
     links.push({
-      node: {
+      order,
+      sidebarNode: {
         href: page.href,
         kind: 'link',
         label,
       },
-      order,
       slug,
     });
     symbols[`${pathPrefix}/${slug}`] = {
@@ -80,8 +80,10 @@ export async function buildSupplement(
   const hasIndex = pages.has(pathPrefix);
 
   return {
-    group: {
-      children: links.map((link) => link.node),
+    pages,
+    redirects,
+    sidebarNode: {
+      children: links.map((link) => link.sidebarNode),
       collapsible,
       kind: 'group',
       label: supplement.label,
@@ -92,8 +94,6 @@ export async function buildSupplement(
         defaultOpen: supplement.expanded ?? false,
       }),
     },
-    pages,
-    redirects,
     symbols,
     watchedFiles,
   };

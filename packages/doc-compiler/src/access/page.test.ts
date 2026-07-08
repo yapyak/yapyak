@@ -57,7 +57,7 @@ describe('getAdjacentPages', () => {
           world: WORLD_PAGE,
         },
         redirects: {},
-        sidebar: [
+        sidebarNodes: [
           link('/guide/hello', 'Hello'),
           link('/guide/world', 'World'),
           link('/guide/settings', 'Settings'),
@@ -79,7 +79,7 @@ describe('getAdjacentPages', () => {
           world: WORLD_PAGE,
         },
         redirects: {},
-        sidebar: [
+        sidebarNodes: [
           link('/guide/hello', 'Hello'),
           link('/guide/world', 'World'),
         ],
@@ -99,7 +99,7 @@ describe('getAdjacentPages', () => {
           world: WORLD_PAGE,
         },
         redirects: {},
-        sidebar: [
+        sidebarNodes: [
           link('/guide/hello', 'Hello'),
           link('/guide/world', 'World'),
         ],
@@ -118,7 +118,7 @@ describe('getAdjacentPages', () => {
           settings: SETTINGS_PAGE,
         },
         redirects: {},
-        sidebar: [
+        sidebarNodes: [
           link('/guide/hello', 'Hello'),
         ],
       },
@@ -138,7 +138,7 @@ describe('getFirstPageMeta', () => {
               hello: HELLO_PAGE,
             },
             redirects: {},
-            sidebar: [
+            sidebarNodes: [
               link('/guide/hello', 'Hello'),
             ],
           },
@@ -157,7 +157,7 @@ describe('getFirstPageMeta', () => {
               hello: HELLO_PAGE,
             },
             redirects: {},
-            sidebar: [
+            sidebarNodes: [
               {
                 children: [
                   link('/guide/hello', 'Hello'),
@@ -185,7 +185,7 @@ describe('getFirstPageMeta', () => {
           guide: {
             pages: {},
             redirects: {},
-            sidebar: [],
+            sidebarNodes: [],
           },
         }),
         'guide',
@@ -204,7 +204,7 @@ describe('getPage', () => {
               hello: HELLO_PAGE,
             },
             redirects: {},
-            sidebar: [],
+            sidebarNodes: [],
           },
         }),
         'guide',
