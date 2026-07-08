@@ -1,3 +1,4 @@
+import type { Page } from '@yapyak/doc-compiler';
 import type { SwatchAccent } from '#components/swatch';
 import type { BoxProps } from '#primitives/box';
 
@@ -47,11 +48,11 @@ const CHAT_PROVIDERS: ChatProvider[] = [
 ];
 
 export type PageActionProps = BoxProps & {
-  href: string;
+  page: Page;
 };
 
 export function PageAction(props: PageActionProps) {
-  const { className, href, ...restProps } = props;
+  const { className, page, ...restProps } = props;
   const [isCopied, setIsCopied] = useState(false);
   const [origin, setOrigin] = useState<string>();
   const timeoutRef = useRef<number>(undefined);
@@ -69,7 +70,7 @@ export function PageAction(props: PageActionProps) {
     [],
   );
 
-  const markdownPath = assetUrl(`${href.slice(1)}.md`);
+  const markdownPath = assetUrl(`${page.href.slice(1)}.md`);
 
   const handleChatSelect = (provider: ChatProvider) => {
     if (origin === undefined) {

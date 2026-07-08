@@ -13,6 +13,8 @@ export type UseDialogTriggerOptions = {
   initialOpen?: boolean;
   onClose?: () => void;
   onOpen?: () => void;
+  onOpenChange?: (isOpen: boolean) => void;
+  open?: boolean;
   shortcut?: DialogShortcut;
 };
 
@@ -34,13 +36,22 @@ export type UseDialogTriggerReturn = {
 export function useDialogTrigger(
   options: UseDialogTriggerOptions = {},
 ): UseDialogTriggerReturn {
-  const { initialOpen = false, onClose, onOpen, shortcut } = options;
+  const {
+    initialOpen = false,
+    onClose,
+    onOpen,
+    onOpenChange,
+    open,
+    shortcut,
+  } = options;
 
   const targetElement = useRef<HTMLButtonElement>(null);
   const id = useId();
   const drawer = useDrawer(initialOpen, {
     onClose,
     onOpen,
+    onOpenChange,
+    open,
   });
 
   useOnRouteRendered(drawer.close);

@@ -1,8 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+
+import { useControllableState } from './use-controllable-state';
 
 export type UseDrawerOptions = {
   onClose?: () => void;
   onOpen?: () => void;
+  onOpenChange?: (isOpen: boolean) => void;
+  open?: boolean;
 };
 
 export type UseDrawerReturn = {
@@ -16,9 +20,13 @@ export function useDrawer(
   initialOpen = false,
   options: UseDrawerOptions = {},
 ): UseDrawerReturn {
-  const { onClose, onOpen } = options;
+  const { onClose, onOpen, onOpenChange, open: controlledOpen } = options;
 
-  const [isOpen, setIsOpen] = useState(initialOpen);
+  const [isOpen = false, setIsOpen] = useControllableState<boolean>({
+    defaultValue: initialOpen,
+    onChange: onOpenChange,
+    value: controlledOpen,
+  });
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: yap yap yap
   useEffect(() => {

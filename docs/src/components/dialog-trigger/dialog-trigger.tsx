@@ -21,12 +21,23 @@ export type DialogTriggerProps = UseDialogTriggerOptions & {
 };
 
 export function DialogTrigger(props: DialogTriggerProps) {
-  const { children, dialog, initialOpen, onClose, onOpen, shortcut } = props;
+  const {
+    children,
+    dialog,
+    initialOpen,
+    onClose,
+    onOpen,
+    onOpenChange,
+    open,
+    shortcut,
+  } = props;
 
   const { dialogProps, isOpen, triggerProps } = useDialogTrigger({
     initialOpen,
     onClose,
     onOpen,
+    onOpenChange,
+    open,
     shortcut,
   });
 

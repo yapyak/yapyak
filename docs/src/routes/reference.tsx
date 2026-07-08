@@ -6,11 +6,9 @@ import { t } from 'yapyak';
 import { ContentAnchorNavigation } from '#components/content-anchor-navigation';
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
-import { DialogTrigger } from '#components/dialog-trigger';
-import { Drawer } from '#components/drawer';
-import { Icon } from '#components/icon';
-import { IconButton } from '#components/icon-button';
+import { OutlineDrawerTrigger } from '#components/outline-drawer-trigger';
 import { PageAction } from '#components/page-action';
+import { SidebarDrawerTrigger } from '#components/sidebar-drawer-trigger';
 
 import { doc } from 'virtual:doc-compiler';
 
@@ -50,70 +48,22 @@ function Component() {
   return (
     <ContentLayout>
       <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
-
       <ContentLayout.Content>
         <ContentLayout.ContentHeader
-          end={
-            <DialogTrigger
-              dialog={(dialogProps) => (
-                <Drawer
-                  {...dialogProps}
-                  direction="end"
-                >
-                  <ContentAnchorNavigation
-                    headings={headings}
-                    key={page.href}
-                  />
-                  <PageAction href={page.href} />
-                </Drawer>
-              )}
-            >
-              {(triggerProps) => (
-                <IconButton
-                  {...triggerProps}
-                  icon={<Icon name="page" />}
-                  iconPosition="trailing"
-                >
-                  {t('Page')}
-                </IconButton>
-              )}
-            </DialogTrigger>
-          }
-          start={
-            <DialogTrigger
-              dialog={(dialogProps) => (
-                <Drawer
-                  {...dialogProps}
-                  direction="start"
-                >
-                  {sidebarContent}
-                </Drawer>
-              )}
-            >
-              {(triggerProps) => (
-                <IconButton
-                  {...triggerProps}
-                  icon={<Icon name="menu" />}
-                >
-                  {t('Menu')}
-                </IconButton>
-              )}
-            </DialogTrigger>
-          }
+          end={<OutlineDrawerTrigger page={page} />}
+          start={<SidebarDrawerTrigger drawer={sidebarContent} />}
         />
-
         <ContentLayout.ContentContent>
           <Outlet />
         </ContentLayout.ContentContent>
       </ContentLayout.Content>
-
       <ContentLayout.Outline>
         <ContentAnchorNavigation
           headings={headings}
           indicator={true}
           key={page.href}
         />
-        <PageAction href={page.href} />
+        <PageAction page={page} />
       </ContentLayout.Outline>
     </ContentLayout>
   );
