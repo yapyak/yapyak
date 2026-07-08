@@ -4,7 +4,6 @@ import type { SidebarNodeNavigationNodeGroupProps } from './sidebar-node-navigat
 import { useLocation } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
-import { getSidebarNodeKey } from '#lib/sidebar-node';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 import { LinkBase } from '#primitives/link';
@@ -106,10 +105,10 @@ export function SidebarNodeNavigationNodeGroupCollapsible(
         hidden={!isOpen}
         ref={listRef}
       >
-        {sidebarNode.children.map((child) => (
+        {sidebarNode.children.map((child, index) => (
           <Box
             as="li"
-            key={getSidebarNodeKey(child)}
+            key={index}
           >
             <SidebarNodeNavigationNode
               depth={depth + 1}

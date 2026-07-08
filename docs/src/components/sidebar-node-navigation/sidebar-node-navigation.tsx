@@ -1,7 +1,6 @@
 import type { SidebarNode } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { getSidebarNodeKey } from '#lib/sidebar-node';
 import { Box } from '#primitives/box';
 
 import styles from './sidebar-node-navigation.module.css';
@@ -23,9 +22,9 @@ export function SidebarNodeNavigation(props: SidebarNodeNavigationProps) {
         className,
       ]}
     >
-      {sidebarNodes.map((sidebarNode) => (
+      {sidebarNodes.map((sidebarNode, index) => (
         <SidebarNodeNavigationNode
-          key={getSidebarNodeKey(sidebarNode)}
+          key={index}
           sidebarNode={sidebarNode}
         />
       ))}

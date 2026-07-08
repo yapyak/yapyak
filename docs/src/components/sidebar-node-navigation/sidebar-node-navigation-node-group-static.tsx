@@ -2,7 +2,6 @@ import type { SidebarNodeNavigationNodeGroupProps } from './sidebar-node-navigat
 
 import { useLocation } from '@tanstack/react-router';
 
-import { getSidebarNodeKey } from '#lib/sidebar-node';
 import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 
@@ -47,10 +46,10 @@ export function SidebarNodeNavigationNodeGroupStatic(
         as="ul"
         className={styles.List}
       >
-        {sidebarNode.children.map((child) => (
+        {sidebarNode.children.map((child, index) => (
           <Box
             as="li"
-            key={getSidebarNodeKey(child)}
+            key={index}
           >
             <SidebarNodeNavigationNode
               depth={depth + 1}
