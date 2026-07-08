@@ -13,7 +13,7 @@ export async function loadPage(collection: string, path: string) {
 export function getPageTitle(page: Page) {
   const qualifier = page.breadcrumbs.at(-1);
   if (
-    qualifier == null ||
+    qualifier === undefined ||
     qualifier === '' ||
     qualifier === page.title ||
     qualifier === BRAND
