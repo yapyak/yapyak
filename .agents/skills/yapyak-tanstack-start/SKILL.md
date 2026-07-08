@@ -63,7 +63,7 @@ component: FooPage,
 | Rule | Detail |
 |---|---|
 | Loaders return an object | Always use explicit `return`, never implicit arrow shorthand. |
-| Pass loaded data straight through | Never transform or reshape in the loader. Derivation happens in `Component`. |
+| Pass loaded data straight through | Never transform or reshape in the loader. Derivation happens at the point of use in the component that renders it — see [[yapyak-react]] § Pass whole objects. |
 | `useLoaderData()` only in `Component` | Never call it in domain components. |
 | Loader data is always defined | No `\| undefined` guards needed. |
 

@@ -1,13 +1,11 @@
 import { Outlet, createFileRoute, getRouteApi } from '@tanstack/react-router';
-import { getHeadings } from '@yapyak/doc-compiler';
-import { useMemo } from 'react';
 import { t } from 'yapyak';
 
-import { ContentAnchorNavigation } from '#components/content-anchor-navigation';
 import { ContentLayout } from '#components/content-layout';
 import { ContentNavigation } from '#components/content-navigation';
 import { OutlineDrawerTrigger } from '#components/outline-drawer-trigger';
 import { PageAction } from '#components/page-action';
+import { PageAnchorNavigation } from '#components/page-anchor-navigation';
 import { SidebarDrawerTrigger } from '#components/sidebar-drawer-trigger';
 
 import { doc } from 'virtual:doc-compiler';
@@ -26,17 +24,6 @@ export const Route = createFileRoute('/reference')({
 function Component() {
   const { sidebar } = Route.useRouteContext();
   const { page } = splatRoute.useLoaderData();
-
-  const headings = useMemo(
-    () =>
-      getHeadings(page, {
-        maxLevel: 3,
-        minLevel: 2,
-      }),
-    [
-      page,
-    ],
-  );
 
   const sidebarContent = (
     <ContentNavigation
@@ -58,10 +45,10 @@ function Component() {
         </ContentLayout.ContentContent>
       </ContentLayout.Content>
       <ContentLayout.Outline>
-        <ContentAnchorNavigation
-          headings={headings}
+        <PageAnchorNavigation
           indicator={true}
           key={page.href}
+          page={page}
         />
         <PageAction page={page} />
       </ContentLayout.Outline>

@@ -1,25 +1,44 @@
-import type { HeadingEntry } from '@yapyak/doc-compiler';
+import type { Page } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { getHeadings } from '@yapyak/doc-compiler';
+import {
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { t } from 'yapyak';
 
 import { useWindowEventListener } from '#hooks/use-window-event-listener';
 import { Box } from '#primitives/box';
 
-import styles from './content-anchor-navigation.module.css';
-import { ContentAnchorNavigationItem } from './content-anchor-navigation-item';
+import styles from './page-anchor-navigation.module.css';
+import { PageAnchorNavigationItem } from './page-anchor-navigation-item';
 
 const ACTIVATION_LINE_PERCENT = 35;
 const BOTTOM_THRESHOLD_PX = 4;
-
-export type ContentAnchorNavigationProps = BoxProps<'nav'> & {
-  headings: HeadingEntry[];
-  indicator?: boolean;
+const HEADING_LEVELS = {
+  maxLevel: 3,
+  minLevel: 2,
 };
 
-export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
-  const { className, headings, indicator = false, ...restProps } = props;
+export type PageAnchorNavigationProps = BoxProps<'nav'> & {
+  indicator?: boolean;
+  page: Page;
+};
+
+export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
+  const { className, indicator = false, page, ...restProps } = props;
+
+  const headings = useMemo(
+    () => getHeadings(page, HEADING_LEVELS),
+    [
+      page,
+    ],
+  );
 
   const element = useRef<HTMLElement | null>(null);
   const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
@@ -176,7 +195,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       aria-labelledby={headingId}
       as="nav"
       className={[
-        styles.ContentAnchorNavigation,
+        styles.PageAnchorNavigation,
         className,
       ]}
       data-active={activeId !== null}
@@ -194,7 +213,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
         </Box>
         <Box className={styles.List}>
           {headings.map((heading) => (
-            <ContentAnchorNavigationItem
+            <PageAnchorNavigationItem
               active={activeId === heading.id}
               heading={heading}
               key={heading.id}

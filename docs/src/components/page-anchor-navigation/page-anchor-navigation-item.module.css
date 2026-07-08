@@ -1,5 +1,5 @@
 @layer components {
-  .ContentAnchorNavigationItem {
+  .PageAnchorNavigationItem {
     display: block;
     padding: var(--spacing-1) var(--spacing-3);
     font-size: var(--font-size-xs);

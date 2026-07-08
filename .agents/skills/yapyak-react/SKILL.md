@@ -156,6 +156,30 @@ function Component() {
 }
 ```
 
+#### Pass whole objects; derive at the point of use
+
+- Pass a domain object or array whole to every domain component that derives from it.
+- Derive — select, find, filter, map, compute — inside the component that renders the result; never in an ancestor that only forwards it.
+- Pass a derived value onward only to a component that consumes that exact value.
+
+| The child | Pass |
+|---|---|
+| Renders or derives from the object or array | the whole object or array |
+| Only renders or acts on an already-derived value | that derived value |
+
+```tsx
+// ✓ whole array + whole object in; find inside; pass the result to its consumer
+function GuideNav(props) {
+  const { guides, guide } = props;
+  const parent = guides.find((candidate) => candidate.id === guide.parentId);
+  return <GuideCard guide={parent} />;
+}
+
+// ✗ found in an ancestor; GuideNav gets a slice it should derive
+const parent = guides.find((candidate) => candidate.id === guide.parentId);
+<GuideNav parent={parent} />;
+```
+
 #### Trigger and overlay are separate components
 
 Never author a toggle and the overlay it opens (dialog, drawer, sheet, menu, popover) in one component → give the trigger and the overlay each its own component.
