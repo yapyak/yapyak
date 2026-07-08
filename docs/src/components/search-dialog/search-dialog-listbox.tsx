@@ -46,12 +46,12 @@ export function SearchDialogListbox(props: SearchDialogListboxProps) {
               as="span"
               className={styles.Stack}
             >
-              {entry.breadcrumb.length > 0 && (
+              {entry.breadcrumbs.length > 0 && (
                 <Box
                   as="span"
                   className={styles.BreadcrumbText}
                 >
-                  {entry.breadcrumb.join(' › ')}
+                  {entry.breadcrumbs.join(' › ')}
                 </Box>
               )}
               <Box

@@ -59,6 +59,7 @@ async function loadMarkdownPage(
   const { blocks, frontmatter } = parseMarkdown(source);
   return {
     blocks: resolveBlocks(blocks, href),
+    breadcrumbs: [],
     description: (frontmatter.description as string | undefined) ?? '',
     href,
     meta: frontmatter,

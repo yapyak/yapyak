@@ -1,4 +1,4 @@
-import type { LocaleCode } from '#lib/hero-demo';
+import type { Locale } from '#lib/hero-demo';
 
 import { useEffect, useState } from 'react';
 
@@ -13,9 +13,9 @@ export type DemoState = {
   receiving: boolean;
   savedSource: string;
   saving: boolean;
-  shimmering: Set<LocaleCode>;
+  shimmering: Set<Locale>;
   source: string;
-  translations: Record<LocaleCode, string>;
+  translations: Record<Locale, string>;
   typing: boolean;
 };
 
@@ -113,7 +113,7 @@ export function useDemoState() {
           ...previous,
           receiving: true,
           savedSource: scene.source,
-          shimmering: new Set(LOCALES.map((locale) => locale.code)),
+          shimmering: new Set(LOCALES),
           translations: EMPTY_TRANSLATIONS,
         }));
         await sleep(360);

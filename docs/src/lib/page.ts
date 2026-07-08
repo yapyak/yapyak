@@ -4,8 +4,24 @@ import { notFound, redirect } from '@tanstack/react-router';
 
 import { doc } from 'virtual:doc-compiler';
 
+const BRAND = 'yapyak';
+
 export async function loadPage(collection: string, path: string) {
   return pageOrThrow(await doc.getEntry(collection, path));
+}
+
+export function getPageTitle(page: Page) {
+  const qualifier = page.breadcrumbs.at(-1);
+  if (
+    qualifier == null ||
+    qualifier === '' ||
+    qualifier === page.title ||
+    qualifier === BRAND
+  ) {
+    return `${page.title} - ${BRAND}`;
+  }
+
+  return `${page.title} - ${qualifier} - ${BRAND}`;
 }
 
 export function redirectToFirstPage(collection: string): never {

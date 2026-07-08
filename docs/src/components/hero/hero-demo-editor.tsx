@@ -1,6 +1,7 @@
-import type { Language } from '#lib/tokenize';
+import type { Framework } from '#lib/hero-demo';
 import type { BoxProps } from '#primitives/box';
 
+import { FRAMEWORK_DEFINITIONS } from '#lib/hero-demo';
 import { tokenize } from '#lib/tokenize';
 import { Box } from '#primitives/box';
 
@@ -11,50 +12,9 @@ import {
 } from './hero-demo-editor-code-token';
 import { HeroDemoEditorTab } from './hero-demo-editor-tab';
 
-export type HeroDemoFramework = 'astro' | 'react' | 'svelte' | 'vue';
-
-type FrameworkConfig = {
-  filename: string;
-  id: HeroDemoFramework;
-  label: string;
-  language: Language;
-};
-
-export const FRAMEWORKS: [
-  FrameworkConfig,
-  FrameworkConfig,
-  FrameworkConfig,
-  FrameworkConfig,
-] = [
-  {
-    filename: 'app.tsx',
-    id: 'react',
-    label: 'React',
-    language: 'tsx',
-  },
-  {
-    filename: 'app.vue',
-    id: 'vue',
-    label: 'Vue',
-    language: 'vue',
-  },
-  {
-    filename: 'app.svelte',
-    id: 'svelte',
-    label: 'Svelte',
-    language: 'svelte',
-  },
-  {
-    filename: 'app.astro',
-    id: 'astro',
-    label: 'Astro',
-    language: 'astro',
-  },
-];
-
 export type HeroDemoEditorProps = BoxProps & {
-  framework: HeroDemoFramework;
-  onFrameworkChange: (framework: HeroDemoFramework) => void;
+  framework: Framework;
+  onFrameworkChange: (framework: Framework) => void;
   saving: boolean;
   source: string;
   typing: boolean;
@@ -71,10 +31,12 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
     ...restProps
   } = props;
   const activeIndex = Math.max(
-    FRAMEWORKS.findIndex((entry) => entry.id === framework),
+    FRAMEWORK_DEFINITIONS.findIndex(
+      (frameworkDefinition) => frameworkDefinition.id === framework,
+    ),
     0,
   );
-  const config = FRAMEWORKS[activeIndex] ?? FRAMEWORKS[0];
+  const config = FRAMEWORK_DEFINITIONS[activeIndex] ?? FRAMEWORK_DEFINITIONS[0];
   const code = buildCode(framework, source);
   const tokens = tokenize(code, config.language);
 
@@ -96,12 +58,11 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
           as="span"
           className={styles.TabIndicatorBar}
         />
-        {FRAMEWORKS.map((entry) => (
+        {FRAMEWORK_DEFINITIONS.map((frameworkDefinition) => (
           <HeroDemoEditorTab
             activeFramework={framework}
-            filename={entry.filename}
-            framework={entry.id}
-            key={entry.id}
+            frameworkDefinition={frameworkDefinition}
+            key={frameworkDefinition.id}
             onSelect={onFrameworkChange}
             saving={saving}
             typing={typing}
@@ -129,7 +90,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
   );
 }
 
-function buildCode(framework: HeroDemoFramework, source: string) {
+function buildCode(framework: Framework, source: string) {
   const safe = source.replace(/'/g, "\\'");
   const value = `${safe}${CARET_MARKER}`;
   switch (framework) {

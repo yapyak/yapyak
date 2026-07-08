@@ -1,32 +1,58 @@
-export type LocaleCode = 'es' | 'fr' | 'ja' | 'sv';
+import type { Language } from './tokenize';
 
-export type DemoLocale = {
-  code: LocaleCode;
+export type Locale = 'es' | 'fr' | 'ja' | 'sv';
+
+export const LOCALES: Locale[] = [
+  'es',
+  'fr',
+  'ja',
+  'sv',
+];
+
+export type Framework = 'astro' | 'react' | 'svelte' | 'vue';
+
+export type FrameworkDefinition = {
   filename: string;
+  id: Framework;
+  label: string;
+  language: Language;
 };
 
-export const LOCALES: DemoLocale[] = [
+export const FRAMEWORK_DEFINITIONS: [
+  FrameworkDefinition,
+  FrameworkDefinition,
+  FrameworkDefinition,
+  FrameworkDefinition,
+] = [
   {
-    code: 'es',
-    filename: 'es.json',
+    filename: 'app.tsx',
+    id: 'react',
+    label: 'React',
+    language: 'tsx',
   },
   {
-    code: 'fr',
-    filename: 'fr.json',
+    filename: 'app.vue',
+    id: 'vue',
+    label: 'Vue',
+    language: 'vue',
   },
   {
-    code: 'ja',
-    filename: 'ja.json',
+    filename: 'app.svelte',
+    id: 'svelte',
+    label: 'Svelte',
+    language: 'svelte',
   },
   {
-    code: 'sv',
-    filename: 'sv.json',
+    filename: 'app.astro',
+    id: 'astro',
+    label: 'Astro',
+    language: 'astro',
   },
 ];
 
 export type Scene = {
   source: string;
-  translations: Record<LocaleCode, string>;
+  translations: Record<Locale, string>;
 };
 
 export const INITIAL_SCENE: Scene = {
@@ -69,7 +95,7 @@ export const SCENES: Scene[] = [
   },
 ];
 
-export const EMPTY_TRANSLATIONS: Record<LocaleCode, string> = {
+export const EMPTY_TRANSLATIONS: Record<Locale, string> = {
   es: '',
   fr: '',
   ja: '',

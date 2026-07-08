@@ -1,5 +1,5 @@
+import type { Framework } from '#lib/hero-demo';
 import type { BoxProps } from '#primitives/box';
-import type { HeroDemoFramework } from './hero-demo-editor';
 
 import { useState } from 'react';
 
@@ -14,7 +14,7 @@ export type HeroDemoProps = BoxProps;
 
 export function HeroDemo(props: HeroDemoProps) {
   const { className, ...restProps } = props;
-  const [framework, setFramework] = useState<HeroDemoFramework>('react');
+  const [framework, setFramework] = useState<Framework>('react');
   const state = useDemoState();
 
   return (

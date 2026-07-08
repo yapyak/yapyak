@@ -34,6 +34,9 @@ function heading(level: HeadingBlock['level'], text: string): HeadingBlock {
 function page(blocks: Block[]): Page {
   return {
     blocks,
+    breadcrumbs: [
+      'Settings',
+    ],
     description: '',
     href: '/guide/save',
     meta: {},
@@ -86,7 +89,7 @@ describe('buildSearchData', () => {
 
     expect(searchData.entries).toContainEqual({
       body: 'Hello',
-      breadcrumb: [
+      breadcrumbs: [
         'Settings',
       ],
       collection: 'guide',
@@ -129,7 +132,7 @@ describe('buildSearchData', () => {
     const [headingEntry] = searchData.entries.filter(
       (entry) => entry.kind === 'heading',
     );
-    expect(headingEntry?.breadcrumb).toEqual([
+    expect(headingEntry?.breadcrumbs).toEqual([
       'Settings',
       'Save',
     ]);

@@ -7,7 +7,7 @@ import { getSearchResults } from './search-result';
 function entry(overrides: Partial<SearchEntry> = {}): SearchEntry {
   return {
     body: '',
-    breadcrumb: [],
+    breadcrumbs: [],
     collection: 'guide',
     href: '/guide/save',
     kind: 'page',

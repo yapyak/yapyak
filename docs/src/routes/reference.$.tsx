@@ -1,9 +1,9 @@
-import type { EyebrowBlock, Page } from '@yapyak/doc-compiler';
+import type { Page } from '@yapyak/doc-compiler';
 
 import { createFileRoute } from '@tanstack/react-router';
 
 import { PageArticle } from '#components/page-article';
-import { loadPage } from '#lib/page';
+import { getPageTitle, loadPage } from '#lib/page';
 
 type LoaderData = {
   page: Page;
@@ -20,18 +20,10 @@ export const Route = createFileRoute('/reference/$')({
       return {};
     }
     const { page } = loaderData;
-    const eyebrow = page.blocks.find(
-      (block): block is EyebrowBlock => block.kind === 'eyebrow',
-    );
-    const module = eyebrow?.module;
-    const shouldHideModule = module == null || module === page.title;
-    const title = shouldHideModule
-      ? `${page.title} - yapyak`
-      : `${page.title} - ${module} - yapyak`;
     return {
       meta: [
         {
-          title,
+          title: getPageTitle(page),
         },
       ],
     };

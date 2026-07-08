@@ -42,7 +42,7 @@ export function getSearchResults(
 
 function getScore(entry: SearchEntry, query: string, tokens: string[]) {
   const title = entry.title.toLowerCase();
-  const breadcrumb = entry.breadcrumb.join(' ').toLowerCase();
+  const breadcrumb = entry.breadcrumbs.join(' ').toLowerCase();
   const body = entry.body.toLowerCase();
   const collapsedQuery = query.replace(/\s+/g, '');
 

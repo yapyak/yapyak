@@ -47,6 +47,7 @@ export type MetaValue =
     };
 
 export type PageMeta = {
+  breadcrumbs: string[];
   description: string;
   href: string;
   meta: Record<string, MetaValue>;
@@ -123,6 +124,7 @@ export async function buildManifest(config: Config): Promise<Manifest> {
       symbols,
       config.sourceUrl,
     );
+    assignBreadcrumbs(collection);
     collections[name] = collection;
   }
 
@@ -132,6 +134,34 @@ export async function buildManifest(config: Config): Promise<Manifest> {
     symbols,
     version: 1,
   };
+}
+
+function assignBreadcrumbs(collection: Collection): void {
+  const breadcrumbsByHref = buildBreadcrumbs(collection.sidebar);
+  for (const page of Object.values(collection.pages)) {
+    page.breadcrumbs = breadcrumbsByHref.get(page.href) ?? [];
+  }
+}
+
+function buildBreadcrumbs(sidebar: SidebarNode[]): Map<string, string[]> {
+  const breadcrumbsByHref = new Map<string, string[]>();
+  const walk = (nodes: SidebarNode[], trail: string[]): void => {
+    for (const node of nodes) {
+      if (node.kind === 'link') {
+        breadcrumbsByHref.set(node.href, trail);
+        continue;
+      }
+      if (node.href !== undefined) {
+        breadcrumbsByHref.set(node.href, trail);
+      }
+      walk(node.children, [
+        ...trail,
+        node.label,
+      ]);
+    }
+  };
+  walk(sidebar, []);
+  return breadcrumbsByHref;
 }
 
 async function buildCollection(

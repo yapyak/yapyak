@@ -180,6 +180,26 @@ const parent = guides.find((candidate) => candidate.id === guide.parentId);
 <GuideNav parent={parent} />;
 ```
 
+#### Prop-value types stay; shared concepts live in `lib/`
+
+- Keep a value type used only as one component's own prop in that component file, prefixed with the component name.
+- Never export a non-`*Props` type from a component file for another component to import → move the shared type to `lib/` and name it as a bare concept.
+
+| The type | Home |
+|---|---|
+| Used only as this component's own prop (union, enum) | its component file, component-prefixed |
+| Imported by another component, or backing shared data | `lib/`, bare concept |
+
+```tsx
+// ✓ prop-only union — component file, component-prefixed
+export type DrawerDirection = 'end' | 'start';
+
+// ✗ shared shape exported from a component for another to import
+export type FrameworkDefinition = {
+  /* … */
+}; // → declare in lib/, import from #lib
+```
+
 #### Trigger and overlay are separate components
 
 Never author a toggle and the overlay it opens (dialog, drawer, sheet, menu, popover) in one component → give the trigger and the overlay each its own component.

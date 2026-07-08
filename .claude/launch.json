@@ -1,0 +1,18 @@
+{
+  "configurations": [
+    {
+      "name": "docs-dev",
+      "port": 4321,
+      "runtimeArgs": [
+        "--filter",
+        "@yapyak/docs",
+        "dev",
+        "--port",
+        "4321",
+        "--strictPort"
+      ],
+      "runtimeExecutable": "pnpm"
+    }
+  ],
+  "version": "0.0.1"
+}

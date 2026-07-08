@@ -74,6 +74,37 @@ describe('buildManifest', () => {
     expect(manifest.collections.guide?.pages.hello?.title).toBe('Hello');
   });
 
+  it('populates page breadcrumbs from the sidebar', async () => {
+    const root = join(dir, 'guide');
+    mkdirSync(join(root, 'settings'), {
+      recursive: true,
+    });
+    writeFileSync(
+      join(root, 'settings', 'index.md'),
+      '---\ntitle: Settings\n---\nGroup',
+    );
+    writeFileSync(
+      join(root, 'settings', 'save.md'),
+      '---\ntitle: Save\n---\nBody',
+    );
+    const config: Config = {
+      collections: {
+        guide: {
+          root,
+          source: 'markdown',
+        },
+      },
+    };
+
+    const manifest = await buildManifest(config);
+
+    expect(
+      manifest.collections.guide?.pages['settings/save']?.breadcrumbs,
+    ).toEqual([
+      'Settings',
+    ]);
+  });
+
   it('builds a `typescript` collection from a workspace package', async () => {
     const root = writePackage('yapyak');
     const config: Config = {

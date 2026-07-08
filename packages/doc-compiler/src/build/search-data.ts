@@ -1,10 +1,10 @@
-import type { Manifest, Page, SidebarNode } from './manifest';
+import type { Manifest, Page } from './manifest';
 
 import { blockToText } from '../access';
 
 export type SearchEntry = {
   body: string;
-  breadcrumb: string[];
+  breadcrumbs: string[];
   collection: string;
   href: string;
   kind: 'heading' | 'page';
@@ -21,13 +21,12 @@ export function buildSearchData(manifest: Manifest): SearchData {
   for (const [collectionName, collection] of Object.entries(
     manifest.collections,
   )) {
-    const breadcrumbByHref = buildBreadcrumbs(collection.sidebar);
     for (const page of Object.values(collection.pages)) {
-      const breadcrumb = breadcrumbByHref.get(page.href) ?? [];
+      const breadcrumbs = page.breadcrumbs;
       const { intro, sections } = splitSections(page);
       entries.push({
         body: intro,
-        breadcrumb,
+        breadcrumbs,
         collection: collectionName,
         href: page.href,
         kind: 'page',
@@ -36,8 +35,8 @@ export function buildSearchData(manifest: Manifest): SearchData {
       for (const section of sections) {
         entries.push({
           body: section.body,
-          breadcrumb: [
-            ...breadcrumb,
+          breadcrumbs: [
+            ...breadcrumbs,
             page.title,
           ],
           collection: collectionName,
@@ -52,27 +51,6 @@ export function buildSearchData(manifest: Manifest): SearchData {
     entries,
     version: 1,
   };
-}
-
-function buildBreadcrumbs(sidebar: SidebarNode[]): Map<string, string[]> {
-  const breadcrumbByHref = new Map<string, string[]>();
-  const walk = (nodes: SidebarNode[], trail: string[]): void => {
-    for (const node of nodes) {
-      if (node.kind === 'link') {
-        breadcrumbByHref.set(node.href, trail);
-        continue;
-      }
-      if (node.href !== undefined) {
-        breadcrumbByHref.set(node.href, trail);
-      }
-      walk(node.children, [
-        ...trail,
-        node.label,
-      ]);
-    }
-  };
-  walk(sidebar, []);
-  return breadcrumbByHref;
 }
 
 type Section = {

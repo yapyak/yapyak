@@ -1,4 +1,4 @@
-import type { LocaleCode } from '#lib/hero-demo';
+import type { Locale } from '#lib/hero-demo';
 
 import { CodeBlockToken } from '#components/code-block-token';
 import { Box } from '#primitives/box';
@@ -7,21 +7,15 @@ import { HeroDemoLocaleFlag } from './hero-demo-locale-flag';
 import styles from './hero-demo-locale-stack.module.css';
 
 export type HeroDemoLocaleRowProps = {
-  filename: string;
-  localeCode: LocaleCode;
+  locale: Locale;
   savedSource: string;
   shimmering: boolean;
   value: string | undefined;
 };
 
 export function HeroDemoLocaleRow(props: HeroDemoLocaleRowProps) {
-  const {
-    filename,
-    localeCode,
-    savedSource,
-    shimmering: isShimmering,
-    value,
-  } = props;
+  const { locale, savedSource, shimmering: isShimmering, value } = props;
+  const filename = `${locale}.json`;
 
   return (
     <Box className={styles.LocaleRow}>
@@ -30,7 +24,7 @@ export function HeroDemoLocaleRow(props: HeroDemoLocaleRowProps) {
         as="span"
         className={styles.FlagIcon}
       >
-        <HeroDemoLocaleFlag code={localeCode} />
+        <HeroDemoLocaleFlag locale={locale} />
       </Box>
       <Box
         as="span"

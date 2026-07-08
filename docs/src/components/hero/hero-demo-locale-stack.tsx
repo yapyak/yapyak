@@ -1,4 +1,4 @@
-import type { LocaleCode } from '#lib/hero-demo';
+import type { Locale } from '#lib/hero-demo';
 import type { BoxProps } from '#primitives/box';
 
 import { useEffect, useState } from 'react';
@@ -12,8 +12,8 @@ import styles from './hero-demo-locale-stack.module.css';
 export type HeroDemoLocaleStackProps = BoxProps & {
   receiving: boolean;
   savedSource: string;
-  shimmering: Set<LocaleCode>;
-  translations: Record<LocaleCode, string>;
+  shimmering: Set<Locale>;
+  translations: Record<Locale, string>;
 };
 
 export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
@@ -52,12 +52,11 @@ export function HeroDemoLocaleStack(props: HeroDemoLocaleStackProps) {
       />
       {LOCALES.map((locale) => (
         <HeroDemoLocaleRow
-          filename={locale.filename}
-          key={locale.code}
-          localeCode={locale.code}
+          key={locale}
+          locale={locale}
           savedSource={savedSource}
-          shimmering={shimmering.has(locale.code)}
-          value={translations[locale.code]}
+          shimmering={shimmering.has(locale)}
+          value={translations[locale]}
         />
       ))}
     </Box>

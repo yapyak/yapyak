@@ -1,18 +1,16 @@
 import type { SVGProps } from 'react';
-import type { LocaleCode } from '#lib/hero-demo';
+import type { Locale } from '#lib/hero-demo';
 
 import { useId } from 'react';
 
 import styles from './hero-demo-locale-flag.module.css';
 
-export type HeroDemoLocaleFlagCode = LocaleCode;
-
 export type HeroDemoLocaleFlagProps = SVGProps<SVGSVGElement> & {
-  code: HeroDemoLocaleFlagCode;
+  locale: Locale;
 };
 
 export function HeroDemoLocaleFlag(props: HeroDemoLocaleFlagProps) {
-  const { code, ...restProps } = props;
+  const { locale, ...restProps } = props;
   const id = useId();
   const clipId = `${id}-clip`;
   return (
@@ -31,7 +29,7 @@ export function HeroDemoLocaleFlag(props: HeroDemoLocaleFlagProps) {
           width="18"
         />
       </clipPath>
-      <g clipPath={`url(#${clipId})`}>{renderFlag(code)}</g>
+      <g clipPath={`url(#${clipId})`}>{renderFlag(locale)}</g>
       <rect
         fill="none"
         height="11"
@@ -46,8 +44,8 @@ export function HeroDemoLocaleFlag(props: HeroDemoLocaleFlagProps) {
   );
 }
 
-function renderFlag(code: HeroDemoLocaleFlagCode) {
-  switch (code) {
+function renderFlag(locale: Locale) {
+  switch (locale) {
     case 'es':
       return (
         <>

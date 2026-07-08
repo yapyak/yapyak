@@ -1,4 +1,4 @@
-import type { HeroDemoFramework } from './hero-demo-editor';
+import type { Framework, FrameworkDefinition } from '#lib/hero-demo';
 
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
@@ -6,25 +6,26 @@ import { ButtonBase } from '#primitives/button';
 import styles from './hero-demo-editor.module.css';
 
 export type HeroDemoEditorTabProps = {
-  activeFramework: HeroDemoFramework;
-  filename: string;
-  framework: HeroDemoFramework;
-  onSelect: (framework: HeroDemoFramework) => void;
+  activeFramework: Framework;
+  frameworkDefinition: FrameworkDefinition;
+  onSelect: (framework: Framework) => void;
   saving: boolean;
   typing: boolean;
 };
 
 export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
-  const { activeFramework, filename, framework, onSelect, saving, typing } =
+  const { activeFramework, frameworkDefinition, onSelect, saving, typing } =
     props;
 
-  const isActive = framework === activeFramework;
+  const isActive = frameworkDefinition.id === activeFramework;
   const isDirty = isActive && (typing || saving);
 
-  const extension = filename.slice(filename.indexOf('.') + 1);
+  const extension = frameworkDefinition.filename.slice(
+    frameworkDefinition.filename.indexOf('.') + 1,
+  );
 
   const handleClick = () => {
-    onSelect(framework);
+    onSelect(frameworkDefinition.id);
   };
 
   return (
@@ -47,7 +48,7 @@ export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
         as="span"
         className={styles.TabFilenameTextFull}
       >
-        {filename}
+        {frameworkDefinition.filename}
       </Box>
       <Box
         aria-hidden="true"

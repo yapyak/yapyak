@@ -321,6 +321,7 @@ export function buildSymbolPage(
 
   return {
     blocks,
+    breadcrumbs: [],
     description: '',
     href: input.href,
     meta: {},
@@ -391,6 +392,7 @@ export function buildPropertyMemberPage(
 
   return {
     blocks,
+    breadcrumbs: [],
     description: '',
     href: input.href,
     meta: {},
@@ -540,6 +542,7 @@ export function buildMethodPage(
 
   return {
     blocks,
+    breadcrumbs: [],
     description: '',
     href: input.href,
     meta: {},
@@ -605,6 +608,7 @@ export function buildPackageIndexPage(
 
   return {
     blocks,
+    breadcrumbs: [],
     description: '',
     href: input.href,
     meta: {},
@@ -682,6 +686,7 @@ export function buildModulePage(
 
   return {
     blocks,
+    breadcrumbs: [],
     description: '',
     href: input.href,
     meta: {},
