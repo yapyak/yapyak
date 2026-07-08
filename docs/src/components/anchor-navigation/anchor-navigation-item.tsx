@@ -1,19 +1,19 @@
-import type { Heading } from '@yapyak/doc-compiler';
+import type { Anchor } from '@yapyak/doc-compiler';
 import type { MouseEvent } from 'react';
 import type { LinkBaseProps } from '#primitives/link';
 
 import { LinkBase } from '#primitives/link';
 
-import styles from './page-anchor-navigation-item.module.css';
+import styles from './anchor-navigation-item.module.css';
 
-export type PageAnchorNavigationItemProps = LinkBaseProps & {
+export type AnchorNavigationItemProps = LinkBaseProps & {
   active: boolean;
-  heading: Heading;
+  anchor: Anchor;
   onActivate: (id: string) => void;
 };
 
-export function PageAnchorNavigationItem(props: PageAnchorNavigationItemProps) {
-  const { active, className, heading, onActivate, ...restProps } = props;
+export function AnchorNavigationItem(props: AnchorNavigationItemProps) {
+  const { active, className, anchor, onActivate, ...restProps } = props;
 
   const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     if (
@@ -25,23 +25,23 @@ export function PageAnchorNavigationItem(props: PageAnchorNavigationItemProps) {
     ) {
       return;
     }
-    onActivate(heading.id);
+    onActivate(anchor.id);
   };
 
   return (
     <LinkBase
       {...restProps}
       className={[
-        styles.PageAnchorNavigationItem,
+        styles.AnchorNavigationItem,
         className,
       ]}
       data-active={active}
-      data-level={heading.level}
-      hash={heading.id}
+      data-level={anchor.level}
+      hash={anchor.id}
       onClick={handleClick}
       to="."
     >
-      {heading.text}
+      {anchor.text}
     </LinkBase>
   );
 }

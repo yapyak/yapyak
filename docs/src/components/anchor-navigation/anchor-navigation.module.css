@@ -1,5 +1,5 @@
 @layer components {
-  .PageAnchorNavigation {
+  .AnchorNavigation {
     --indicator-top: 0px;
     --indicator-height: 0px;
     --indicator-duration: 0ms;

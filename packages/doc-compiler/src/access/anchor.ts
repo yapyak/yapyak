@@ -2,24 +2,24 @@ import type { Block, HeadingBlock } from './block';
 
 import { blockToText } from './text';
 
-export type Heading = {
+export type Anchor = {
   id: string;
   level: HeadingBlock['level'];
   text: string;
 };
 
-export type GetHeadingsOptions = {
+export type GetAnchorsOptions = {
   maxLevel?: number;
   minLevel?: number;
 };
 
-export function getHeadings(
+export function getAnchors(
   blocks: Block[],
-  options: GetHeadingsOptions = {},
-): Heading[] {
+  options: GetAnchorsOptions = {},
+): Anchor[] {
   const minLevel = options.minLevel ?? 1;
   const maxLevel = options.maxLevel ?? 6;
-  const result: Heading[] = [];
+  const result: Anchor[] = [];
   for (const block of blocks) {
     if (
       block.kind === 'heading' &&

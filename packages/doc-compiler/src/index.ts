@@ -11,6 +11,7 @@
  */
 
 export type {
+  Anchor,
   Block,
   CalloutBlock,
   CodeBlock,
@@ -25,9 +26,8 @@ export type {
   EntryMeta,
   ExportKind,
   EyebrowBlock,
+  GetAnchorsOptions,
   GetExcerptOptions,
-  GetHeadingsOptions,
-  Heading,
   HeadingBlock,
   ImageBlock,
   InlineCodeBlock,
@@ -88,12 +88,12 @@ export type {
 
 export {
   blocksToMarkdown,
+  getAnchors,
   getCodeBlocks,
   getCollection,
   getEntryMeta,
   getExcerpt,
   getFirstPage,
-  getHeadings,
   getInternalLinks,
   getOptionsGroup,
   getOptionsRegistry,

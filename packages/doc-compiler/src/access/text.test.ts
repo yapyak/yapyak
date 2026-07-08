@@ -1,12 +1,6 @@
-import type { Block } from './block';
-
 import { describe, expect, it } from 'vitest';
 
 import { blockToText, getText } from './text';
-
-function blocks(items: Block[]): Block[] {
-  return items;
-}
 
 describe('blockToText', () => {
   it('returns the value of a `text` block', () => {
@@ -308,40 +302,36 @@ describe('blockToText', () => {
 describe('getText', () => {
   it('returns the page text joined by newline', () => {
     expect(
-      getText(
-        blocks([
-          {
-            children: [
-              {
-                kind: 'text',
-                value: 'Hello',
-              },
-            ],
-            kind: 'paragraph',
-          },
-          {
-            children: [
-              {
-                kind: 'text',
-                value: 'World',
-              },
-            ],
-            kind: 'paragraph',
-          },
-        ]),
-      ),
+      getText([
+        {
+          children: [
+            {
+              kind: 'text',
+              value: 'Hello',
+            },
+          ],
+          kind: 'paragraph',
+        },
+        {
+          children: [
+            {
+              kind: 'text',
+              value: 'World',
+            },
+          ],
+          kind: 'paragraph',
+        },
+      ]),
     ).toBe('Hello\nWorld');
   });
 
   it('returns an empty string when no block has text', () => {
     expect(
-      getText(
-        blocks([
-          {
-            kind: 'divider',
-          },
-        ]),
-      ),
+      getText([
+        {
+          kind: 'divider',
+        },
+      ]),
     ).toBe('');
   });
 });

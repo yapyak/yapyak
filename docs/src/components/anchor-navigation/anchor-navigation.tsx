@@ -1,44 +1,25 @@
-import type { Block } from '@yapyak/doc-compiler';
+import type { Anchor } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { getHeadings } from '@yapyak/doc-compiler';
-import {
-  useEffect,
-  useId,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
 import { useWindowEventListener } from '#hooks/use-window-event-listener';
 import { Box } from '#primitives/box';
 
-import styles from './page-anchor-navigation.module.css';
-import { PageAnchorNavigationItem } from './page-anchor-navigation-item';
+import styles from './anchor-navigation.module.css';
+import { AnchorNavigationItem } from './anchor-navigation-item';
 
 const ACTIVATION_LINE_PERCENT = 35;
 const BOTTOM_THRESHOLD_PX = 4;
-const HEADING_LEVELS = {
-  maxLevel: 3,
-  minLevel: 2,
-};
 
-export type PageAnchorNavigationProps = BoxProps<'nav'> & {
-  blocks: Block[];
+export type AnchorNavigationProps = BoxProps<'nav'> & {
+  anchors: Anchor[];
   indicator?: boolean;
 };
 
-export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
-  const { blocks, className, indicator = false, ...restProps } = props;
-
-  const headings = useMemo(
-    () => getHeadings(blocks, HEADING_LEVELS),
-    [
-      blocks,
-    ],
-  );
+export function AnchorNavigation(props: AnchorNavigationProps) {
+  const { anchors, className, indicator = false, ...restProps } = props;
 
   const element = useRef<HTMLElement | null>(null);
   const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
@@ -69,11 +50,11 @@ export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
   useWindowEventListener('keydown', handleUserScroll);
 
   useEffect(() => {
-    const lastHeading = headings[headings.length - 1];
-    if (lastHeading === undefined) {
+    const lastAnchor = anchors[anchors.length - 1];
+    if (lastAnchor === undefined) {
       return;
     }
-    const lastId = lastHeading.id;
+    const lastId = lastAnchor.id;
 
     const tryEdges = () => {
       if (lockedIdRef.current !== null) {
@@ -96,19 +77,19 @@ export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
         }
 
         const line = (window.innerHeight * ACTIVATION_LINE_PERCENT) / 100;
-        let activeHeadingId: string | null = null;
-        for (const heading of headings) {
-          const headingElement = document.getElementById(heading.id);
+        let activeAnchorId: string | null = null;
+        for (const anchor of anchors) {
+          const headingElement = document.getElementById(anchor.id);
           if (!headingElement) {
             continue;
           }
           if (headingElement.getBoundingClientRect().top <= line) {
-            activeHeadingId = heading.id;
+            activeAnchorId = anchor.id;
           } else {
             break;
           }
         }
-        setActiveId(activeHeadingId);
+        setActiveId(activeAnchorId);
       },
       {
         rootMargin: `-${ACTIVATION_LINE_PERCENT}% 0px -${
@@ -117,8 +98,8 @@ export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
       },
     );
 
-    for (const heading of headings) {
-      const headingElement = document.getElementById(heading.id);
+    for (const anchor of anchors) {
+      const headingElement = document.getElementById(anchor.id);
       if (headingElement) {
         observer.observe(headingElement);
       }
@@ -137,7 +118,7 @@ export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [
-    headings,
+    anchors,
   ]);
 
   useLayoutEffect(() => {
@@ -173,11 +154,11 @@ export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
     if (!hash) {
       return;
     }
-    if (headings.some((heading) => heading.id === hash)) {
+    if (anchors.some((anchor) => anchor.id === hash)) {
       setActiveId(hash);
     }
   }, [
-    headings,
+    anchors,
   ]);
 
   const handleActivate = (id: string) => {
@@ -185,17 +166,13 @@ export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
     setActiveId(id);
   };
 
-  if (headings.length === 0) {
-    return null;
-  }
-
   return (
     <Box
       {...restProps}
       aria-labelledby={headingId}
       as="nav"
       className={[
-        styles.PageAnchorNavigation,
+        styles.AnchorNavigation,
         className,
       ]}
       data-active={activeId !== null}
@@ -212,17 +189,17 @@ export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
           {t('On this page')}
         </Box>
         <Box className={styles.List}>
-          {headings.map((heading) => (
-            <PageAnchorNavigationItem
-              active={activeId === heading.id}
-              heading={heading}
-              key={heading.id}
+          {anchors.map((anchor) => (
+            <AnchorNavigationItem
+              active={activeId === anchor.id}
+              anchor={anchor}
+              key={anchor.id}
               onActivate={handleActivate}
               ref={(itemElement) => {
                 if (itemElement) {
-                  itemElementsRef.current.set(heading.id, itemElement);
+                  itemElementsRef.current.set(anchor.id, itemElement);
                 } else {
-                  itemElementsRef.current.delete(heading.id);
+                  itemElementsRef.current.delete(anchor.id);
                 }
               }}
             />

@@ -1,8 +1,9 @@
 declare module 'virtual:doc-compiler' {
   import type {
+    Anchor,
+    Block,
     Entry,
-    GetHeadingsOptions,
-    Heading,
+    GetAnchorsOptions,
     NavigationManifest,
     OptionsGroup,
     OptionsRegistry,
@@ -14,7 +15,7 @@ declare module 'virtual:doc-compiler' {
   export const doc: {
     getEntry(collection: string, path?: string): Promise<Entry>;
     getFirstPage(collection: string): Page | undefined;
-    getHeadings(page: Page, options?: GetHeadingsOptions): Heading[];
+    getAnchors(blocks: Block[], options?: GetAnchorsOptions): Anchor[];
     getOptionsRegistry(): OptionsRegistry;
     getOptionsGroup(groupId: string): OptionsGroup | undefined;
     getPagination(page: Page): Pagination;

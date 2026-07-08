@@ -1,23 +1,23 @@
-import type { Block, Page } from '@yapyak/doc-compiler';
+import type { Anchor, Page } from '@yapyak/doc-compiler';
 
 import { useEffect, useState } from 'react';
 import { t } from 'yapyak';
 
+import { AnchorNavigation } from '#components/anchor-navigation';
 import { DialogTrigger } from '#components/dialog-trigger';
 import { Drawer } from '#components/drawer';
 import { Icon } from '#components/icon';
 import { IconButton } from '#components/icon-button';
 import { PageAction } from '#components/page-action';
-import { PageAnchorNavigation } from '#components/page-anchor-navigation';
 import { useMediaQuery } from '#hooks/use-media-query';
 
 export type OutlineDrawerTriggerProps = {
-  blocks: Block[];
+  anchors: Anchor[];
   page: Page;
 };
 
 export function OutlineDrawerTrigger(props: OutlineDrawerTriggerProps) {
-  const { blocks, page } = props;
+  const { anchors, page } = props;
   const isOutlineInline = useMediaQuery('(min-width: 1324px)');
   const [isOpen, setIsOpen] = useState(false);
 
@@ -36,10 +36,12 @@ export function OutlineDrawerTrigger(props: OutlineDrawerTriggerProps) {
           {...dialogProps}
           direction="end"
         >
-          <PageAnchorNavigation
-            blocks={blocks}
-            key={page.href}
-          />
+          {anchors.length > 0 && (
+            <AnchorNavigation
+              anchors={anchors}
+              key={page.href}
+            />
+          )}
           <PageAction page={page} />
         </Drawer>
       )}

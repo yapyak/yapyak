@@ -1,7 +1,6 @@
-import type { Block, Page } from '@yapyak/doc-compiler';
+import type { Page } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { BlockRenderer } from '#components/block-renderer';
 import { PaginationNavigation } from '#components/pagination-navigation';
 import { Box } from '#primitives/box';
 
@@ -9,12 +8,11 @@ import styles from './page-article.module.css';
 import { doc } from 'virtual:doc-compiler';
 
 export type PageArticleProps = BoxProps<'article'> & {
-  blocks: Block[];
   page: Page;
 };
 
 export function PageArticle(props: PageArticleProps) {
-  const { blocks, className, page, ...restProps } = props;
+  const { children, className, page, ...restProps } = props;
   const pagination = doc.getPagination(page);
 
   return (
@@ -45,9 +43,7 @@ export function PageArticle(props: PageArticleProps) {
           </Box>
         )}
       </Box>
-      <Box className={styles.Body}>
-        <BlockRenderer blocks={blocks} />
-      </Box>
+      <Box className={styles.Body}>{children}</Box>
       {(pagination.previousPage || pagination.nextPage) && (
         <Box
           as="footer"

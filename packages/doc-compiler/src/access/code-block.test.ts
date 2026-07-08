@@ -1,12 +1,8 @@
-import type { Block, CodeBlock } from './block';
+import type { CodeBlock } from './block';
 
 import { describe, expect, it } from 'vitest';
 
 import { getCodeBlocks } from './code-block';
-
-function blocks(items: Block[]): Block[] {
-  return items;
-}
 
 const HELLO_CODE_BLOCK: CodeBlock = {
   kind: 'code-block',
@@ -27,12 +23,10 @@ const WORLD_CODE_BLOCK: CodeBlock = {
 describe('getCodeBlocks', () => {
   it('lists every `code-block` at the top level', () => {
     expect(
-      getCodeBlocks(
-        blocks([
-          HELLO_CODE_BLOCK,
-          WORLD_CODE_BLOCK,
-        ]),
-      ),
+      getCodeBlocks([
+        HELLO_CODE_BLOCK,
+        WORLD_CODE_BLOCK,
+      ]),
     ).toEqual([
       HELLO_CODE_BLOCK,
       WORLD_CODE_BLOCK,
@@ -41,19 +35,17 @@ describe('getCodeBlocks', () => {
 
   it('returns an empty list when no `code-block` is present', () => {
     expect(
-      getCodeBlocks(
-        blocks([
-          {
-            children: [
-              {
-                kind: 'text',
-                value: 'Hello',
-              },
-            ],
-            kind: 'paragraph',
-          },
-        ]),
-      ),
+      getCodeBlocks([
+        {
+          children: [
+            {
+              kind: 'text',
+              value: 'Hello',
+            },
+          ],
+          kind: 'paragraph',
+        },
+      ]),
     ).toEqual([]);
   });
 });

@@ -1,12 +1,8 @@
-import type { Block, HeadingBlock } from './block';
+import type { HeadingBlock } from './block';
 
 import { describe, expect, it } from 'vitest';
 
-import { getHeadings } from './heading';
-
-function blocks(items: Block[]): Block[] {
-  return items;
-}
+import { getAnchors } from './anchor';
 
 function heading(level: HeadingBlock['level'], text: string): HeadingBlock {
   return {
@@ -22,17 +18,15 @@ function heading(level: HeadingBlock['level'], text: string): HeadingBlock {
   };
 }
 
-describe('getHeadings', () => {
+describe('getAnchors', () => {
   describe('with defaults', () => {
     it('lists every heading at every level', () => {
       expect(
-        getHeadings(
-          blocks([
-            heading(1, 'Hello'),
-            heading(2, 'World'),
-            heading(6, 'Settings'),
-          ]),
-        ),
+        getAnchors([
+          heading(1, 'Hello'),
+          heading(2, 'World'),
+          heading(6, 'Settings'),
+        ]),
       ).toEqual([
         {
           id: 'hello',
@@ -54,13 +48,11 @@ describe('getHeadings', () => {
 
     it('returns an empty list when no heading exists', () => {
       expect(
-        getHeadings(
-          blocks([
-            {
-              kind: 'divider',
-            },
-          ]),
-        ),
+        getAnchors([
+          {
+            kind: 'divider',
+          },
+        ]),
       ).toEqual([]);
     });
   });
@@ -68,11 +60,11 @@ describe('getHeadings', () => {
   describe('with overrides', () => {
     it('lists every heading at or above `minLevel`', () => {
       expect(
-        getHeadings(
-          blocks([
+        getAnchors(
+          [
             heading(1, 'Hello'),
             heading(3, 'World'),
-          ]),
+          ],
           {
             minLevel: 2,
           },
@@ -88,11 +80,11 @@ describe('getHeadings', () => {
 
     it('lists every heading at or below `maxLevel`', () => {
       expect(
-        getHeadings(
-          blocks([
+        getAnchors(
+          [
             heading(2, 'Hello'),
             heading(4, 'World'),
-          ]),
+          ],
           {
             maxLevel: 3,
           },

@@ -1,10 +1,11 @@
 import { Outlet, createFileRoute, getRouteApi } from '@tanstack/react-router';
+import { getAnchors } from '@yapyak/doc-compiler';
 import { t } from 'yapyak';
 
+import { AnchorNavigation } from '#components/anchor-navigation';
 import { ContentLayout } from '#components/content-layout';
 import { OutlineDrawerTrigger } from '#components/outline-drawer-trigger';
 import { PageAction } from '#components/page-action';
-import { PageAnchorNavigation } from '#components/page-anchor-navigation';
 import { SidebarDrawerTrigger } from '#components/sidebar-drawer-trigger';
 import { SidebarNodeNavigation } from '#components/sidebar-node-navigation';
 
@@ -24,6 +25,10 @@ export const Route = createFileRoute('/guide')({
 function Component() {
   const { sidebarNodes } = Route.useRouteContext();
   const { blocks, page } = splatRoute.useLoaderData();
+  const anchors = getAnchors(blocks, {
+    maxLevel: 3,
+    minLevel: 2,
+  });
 
   const sidebarContent = (
     <SidebarNodeNavigation
@@ -39,7 +44,7 @@ function Component() {
         <ContentLayout.ContentHeader
           end={
             <OutlineDrawerTrigger
-              blocks={blocks}
+              anchors={anchors}
               page={page}
             />
           }
@@ -50,11 +55,13 @@ function Component() {
         </ContentLayout.ContentContent>
       </ContentLayout.Content>
       <ContentLayout.Outline>
-        <PageAnchorNavigation
-          blocks={blocks}
-          indicator={true}
-          key={page.href}
-        />
+        {anchors.length > 0 && (
+          <AnchorNavigation
+            anchors={anchors}
+            indicator={true}
+            key={page.href}
+          />
+        )}
         <PageAction page={page} />
       </ContentLayout.Outline>
     </ContentLayout>

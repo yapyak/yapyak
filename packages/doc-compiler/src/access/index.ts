@@ -1,3 +1,4 @@
+export type { Anchor, GetAnchorsOptions } from './anchor';
 export type {
   Block,
   CalloutBlock,
@@ -41,16 +42,15 @@ export type {
 } from './block';
 export type { Entry, EntryMeta } from './entry';
 export type { GetExcerptOptions } from './excerpt';
-export type { GetHeadingsOptions, Heading } from './heading';
 export type { InternalLinkEntry } from './internal-link';
 export type { PageEntry } from './page';
 export type { Pagination } from './pagination';
 
+export { getAnchors } from './anchor';
 export { getCodeBlocks } from './code-block';
 export { getCollection } from './collection';
 export { getEntryMeta } from './entry';
 export { getExcerpt } from './excerpt';
-export { getHeadings } from './heading';
 export { getInternalLinks } from './internal-link';
 export { blocksToMarkdown } from './markdown';
 export { getOptionsGroup, getOptionsRegistry } from './option';

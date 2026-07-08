@@ -186,7 +186,7 @@ import manifest from ${JSON.stringify(MANIFEST_ID)};
 import {
   getEntryMeta as _getEntryMeta,
   getFirstPage as _getFirstPage,
-  getHeadings as _getHeadings,
+  getAnchors as _getAnchors,
   getOptionsRegistry as _getOptionsRegistry,
   getOptionsGroup as _getOptionsGroup,
   getPagination as _getPagination,
@@ -216,7 +216,7 @@ export const doc = {
   getFirstPage: (collection) => _getFirstPage(manifest, collection),
   getOptionsRegistry: () => _getOptionsRegistry(manifest),
   getOptionsGroup: (groupId) => _getOptionsGroup(manifest, groupId),
-  getHeadings: _getHeadings,
+  getAnchors: _getAnchors,
 };
 `;
     },

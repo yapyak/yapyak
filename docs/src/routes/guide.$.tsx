@@ -2,6 +2,7 @@ import type { Page } from '@yapyak/doc-compiler';
 
 import { createFileRoute } from '@tanstack/react-router';
 
+import { BlockRenderer } from '#components/block-renderer';
 import { PageArticle } from '#components/page-article';
 import { getPageTitle, loadPage } from '#lib/page';
 
@@ -37,9 +38,8 @@ function Component() {
   const { blocks, page } = Route.useLoaderData();
 
   return (
-    <PageArticle
-      blocks={blocks}
-      page={page}
-    />
+    <PageArticle page={page}>
+      <BlockRenderer blocks={blocks} />
+    </PageArticle>
   );
 }
