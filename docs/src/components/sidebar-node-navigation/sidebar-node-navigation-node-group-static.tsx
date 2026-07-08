@@ -2,7 +2,7 @@ import type { SidebarNodeNavigationNodeGroupProps } from './sidebar-node-navigat
 
 import { useLocation } from '@tanstack/react-router';
 
-import { getSidebarNodeKey } from '#lib/sidebar-node-key';
+import { getSidebarNodeKey } from '#lib/sidebar-node';
 import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 
