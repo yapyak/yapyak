@@ -31,25 +31,25 @@ function heading(level: HeadingBlock['level'], text: string): HeadingBlock {
   };
 }
 
-function page(blocks: Block[]): Page {
-  return {
-    blocks,
-    breadcrumbs: [
-      'Settings',
-    ],
-    description: '',
-    href: '/guide/save',
-    meta: {},
-    title: 'Save',
-  };
-}
+const PAGE: Page = {
+  breadcrumbs: [
+    'Settings',
+  ],
+  description: '',
+  href: '/guide/save',
+  meta: {},
+  title: 'Save',
+};
 
-function manifest(pageValue: Page, sidebarNodes: SidebarNode[]): Manifest {
+function manifest(blocks: Block[], sidebarNodes: SidebarNode[]): Manifest {
   return {
     collections: {
       guide: {
+        content: {
+          save: blocks,
+        },
         pages: {
-          save: pageValue,
+          save: PAGE,
         },
         redirects: {},
         sidebarNodes,
@@ -80,9 +80,9 @@ describe('buildSearchData', () => {
   it('builds a page entry from a page', () => {
     const searchData = buildSearchData(
       manifest(
-        page([
+        [
           paragraph('Hello'),
-        ]),
+        ],
         sidebarNodes,
       ),
     );
@@ -102,10 +102,10 @@ describe('buildSearchData', () => {
   it('builds a heading entry for each section', () => {
     const searchData = buildSearchData(
       manifest(
-        page([
+        [
           heading(2, 'World'),
           heading(2, 'Cancel'),
-        ]),
+        ],
         sidebarNodes,
       ),
     );
@@ -122,9 +122,9 @@ describe('buildSearchData', () => {
   it('holds the page title in the heading breadcrumb', () => {
     const searchData = buildSearchData(
       manifest(
-        page([
+        [
           heading(2, 'World'),
-        ]),
+        ],
         sidebarNodes,
       ),
     );
@@ -141,11 +141,11 @@ describe('buildSearchData', () => {
   it('splits the section body at headings', () => {
     const searchData = buildSearchData(
       manifest(
-        page([
+        [
           paragraph('Hello'),
           heading(2, 'World'),
           paragraph('Cancel'),
-        ]),
+        ],
         sidebarNodes,
       ),
     );
@@ -161,9 +161,9 @@ describe('buildSearchData', () => {
   it('builds no heading entry when the page has no heading', () => {
     const searchData = buildSearchData(
       manifest(
-        page([
+        [
           paragraph('Hello'),
-        ]),
+        ],
         sidebarNodes,
       ),
     );

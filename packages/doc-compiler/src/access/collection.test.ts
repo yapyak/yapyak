@@ -16,6 +16,7 @@ function manifest(collections: Manifest['collections']): Manifest {
 describe('getCollection', () => {
   it('returns the collection when found', () => {
     const guide = {
+      content: {},
       pages: {},
       redirects: {},
       sidebarNodes: [],

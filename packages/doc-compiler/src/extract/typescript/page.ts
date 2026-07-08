@@ -6,7 +6,7 @@ import type {
   TableCellColumn,
   TableRowBlock,
 } from '../../access';
-import type { Page } from '../../build';
+import type { LoadedPage } from '../../build';
 import type { SourceUrlConfig } from '../../config';
 import type { PackageContext } from './package-context';
 import type { SymbolIndex, SymbolIndexEntry } from './symbol-index';
@@ -74,7 +74,7 @@ export function buildSymbolPage(
   context: PackageContext,
   input: BuildSymbolPageInput,
   options: BuildSymbolPageOptions = {},
-): Page {
+): LoadedPage {
   currentIndex = input.index;
   currentLinkedNames = new Set();
   currentSourceModuleId = input.moduleId;
@@ -321,14 +321,16 @@ export function buildSymbolPage(
 
   return {
     blocks,
-    breadcrumbs: [],
-    description: '',
-    href: input.href,
-    meta: {},
-    title: formatSymbolLabel(
-      symbol.name,
-      options.eyebrowKind ?? symbol.displayKind,
-    ),
+    page: {
+      breadcrumbs: [],
+      description: '',
+      href: input.href,
+      meta: {},
+      title: formatSymbolLabel(
+        symbol.name,
+        options.eyebrowKind ?? symbol.displayKind,
+      ),
+    },
   };
 }
 
@@ -338,7 +340,7 @@ export function buildPropertyMemberPage(
   _context: PackageContext,
   input: BuildMemberPageInput,
   options: BuildSymbolPageOptions = {},
-): Page {
+): LoadedPage {
   currentIndex = input.index;
   currentLinkedNames = new Set();
   currentSourceModuleId = input.moduleId;
@@ -392,11 +394,13 @@ export function buildPropertyMemberPage(
 
   return {
     blocks,
-    breadcrumbs: [],
-    description: '',
-    href: input.href,
-    meta: {},
-    title: formatSymbolLabel(fullName, memberKind),
+    page: {
+      breadcrumbs: [],
+      description: '',
+      href: input.href,
+      meta: {},
+      title: formatSymbolLabel(fullName, memberKind),
+    },
   };
 }
 
@@ -427,7 +431,7 @@ export function buildMethodPage(
   _context: PackageContext,
   input: BuildMemberPageInput,
   options: BuildSymbolPageOptions = {},
-): Page {
+): LoadedPage {
   currentIndex = input.index;
   currentLinkedNames = new Set();
   currentSourceModuleId = input.moduleId;
@@ -542,11 +546,13 @@ export function buildMethodPage(
 
   return {
     blocks,
-    breadcrumbs: [],
-    description: '',
-    href: input.href,
-    meta: {},
-    title: formatSymbolLabel(fullName, classifyMemberDisplayKind(member)),
+    page: {
+      breadcrumbs: [],
+      description: '',
+      href: input.href,
+      meta: {},
+      title: formatSymbolLabel(fullName, classifyMemberDisplayKind(member)),
+    },
   };
 }
 
@@ -591,7 +597,7 @@ type BuildPackageIndexPageInput = {
 export function buildPackageIndexPage(
   context: PackageContext,
   input: BuildPackageIndexPageInput,
-): Page {
+): LoadedPage {
   const blocks: Block[] = [];
 
   blocks.push({
@@ -608,11 +614,13 @@ export function buildPackageIndexPage(
 
   return {
     blocks,
-    breadcrumbs: [],
-    description: '',
-    href: input.href,
-    meta: {},
-    title: input.label,
+    page: {
+      breadcrumbs: [],
+      description: '',
+      href: input.href,
+      meta: {},
+      title: input.label,
+    },
   };
 }
 
@@ -661,7 +669,7 @@ export function buildModulePage(
   module: ReferenceModule,
   _context: PackageContext,
   input: BuildModulePageInput,
-): Page {
+): LoadedPage {
   currentIndex = input.index;
   currentLinkedNames = new Set();
   currentSourceModuleId = input.moduleId;
@@ -686,11 +694,13 @@ export function buildModulePage(
 
   return {
     blocks,
-    breadcrumbs: [],
-    description: '',
-    href: input.href,
-    meta: {},
-    title: input.label,
+    page: {
+      breadcrumbs: [],
+      description: '',
+      href: input.href,
+      meta: {},
+      title: input.label,
+    },
   };
 }
 

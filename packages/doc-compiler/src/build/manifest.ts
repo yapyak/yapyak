@@ -46,7 +46,7 @@ export type MetaValue =
       [key: string]: MetaValue;
     };
 
-export type PageMeta = {
+export type Page = {
   breadcrumbs: string[];
   description: string;
   href: string;
@@ -54,8 +54,9 @@ export type PageMeta = {
   title: string;
 };
 
-export type Page = PageMeta & {
+export type LoadedPage = {
   blocks: Block[];
+  page: Page;
 };
 
 export type Manifest = {
@@ -66,6 +67,7 @@ export type Manifest = {
 };
 
 export type Collection = {
+  content: Record<string, Block[]>;
   pages: Record<string, Page>;
   redirects: Record<string, string>;
   sidebarNodes: SidebarNode[];
@@ -79,7 +81,7 @@ export type NavigationManifest = {
 };
 
 export type NavigationCollection = {
-  pages: Record<string, PageMeta>;
+  pages: Record<string, Page>;
   redirects: Record<string, string>;
   sidebarNodes: SidebarNode[];
 };
@@ -190,9 +192,11 @@ async function buildMarkdownCollection(
     root,
     collectionName,
   );
+  const content: Record<string, Block[]> = {};
   const pages: Record<string, Page> = {};
-  for (const [path, page] of pagesMap) {
-    pages[path] = page;
+  for (const [path, loadedPage] of pagesMap) {
+    content[path] = loadedPage.blocks;
+    pages[path] = loadedPage.page;
   }
   const redirects: Record<string, string> = {};
   for (const [path, target] of redirectsMap) {
@@ -200,6 +204,7 @@ async function buildMarkdownCollection(
   }
   const sidebarNodes = await buildMarkdownSidebar(root, collectionName);
   return {
+    content,
     pages,
     redirects,
     sidebarNodes,
@@ -250,6 +255,7 @@ async function buildTypeScriptCollection(
   symbols: Record<string, SymbolEntry>,
   sourceUrl: SourceUrlConfig | undefined,
 ): Promise<Collection> {
+  const content: Record<string, Block[]> = {};
   const pages: Record<string, Page> = {};
   const redirects: Record<string, string> = {};
   const sidebarNodesByGroup = new Map<string, SidebarNode[]>();
@@ -469,7 +475,7 @@ async function buildTypeScriptCollection(
             path: typePath,
           };
         } else {
-          const page = buildSymbolPage(
+          const loadedPage = buildSymbolPage(
             symbol,
             context,
             {
@@ -494,7 +500,8 @@ async function buildTypeScriptCollection(
               sourceUrl,
             },
           );
-          pages[path] = page;
+          pages[path] = loadedPage.page;
+          content[path] = loadedPage.blocks;
           symbols[`${packageSlug}/${symbol.name}`] = {
             collection: collectionName,
             path,
@@ -554,7 +561,7 @@ async function buildTypeScriptCollection(
           const subOptions = {
             sourceUrl,
           };
-          pages[memberPath] =
+          const memberLoadedPage =
             member.kind === 'method'
               ? buildMethodPage(symbol, member, context, subInput, subOptions)
               : buildPropertyMemberPage(
@@ -564,6 +571,8 @@ async function buildTypeScriptCollection(
                   subInput,
                   subOptions,
                 );
+          pages[memberPath] = memberLoadedPage.page;
+          content[memberPath] = memberLoadedPage.blocks;
           symbols[`${packageSlug}/${symbol.name}.${member.name}`] = {
             collection: collectionName,
             path: memberPath,
@@ -571,7 +580,7 @@ async function buildTypeScriptCollection(
         }
       }
 
-      pages[modulePath] = buildModulePage(module, context, {
+      const moduleLoadedPage = buildModulePage(module, context, {
         href: moduleHref,
         index,
         label: moduleLabel,
@@ -581,6 +590,8 @@ async function buildTypeScriptCollection(
           sourceUrl,
         ),
       });
+      pages[modulePath] = moduleLoadedPage.page;
+      content[modulePath] = moduleLoadedPage.blocks;
     }
 
     const hasRootModule = referenceManifest.modules.some(
@@ -603,12 +614,14 @@ async function buildTypeScriptCollection(
           subpath: `./${tail}`,
         };
       });
-      pages[packageSlug] = buildPackageIndexPage(context, {
+      const packageLoadedPage = buildPackageIndexPage(context, {
         href: `/${collectionName}/${packageSlug}`,
         label: displayName,
         sourceHref: buildDirectorySourceHref(typescriptPackage.root, sourceUrl),
         subpaths,
       });
+      pages[packageSlug] = packageLoadedPage.page;
+      content[packageSlug] = packageLoadedPage.blocks;
     }
 
     const packageSidebarNode = buildPackageRoot(referenceManifest, context, {
@@ -639,6 +652,9 @@ async function buildTypeScriptCollection(
     for (const [pagePath, page] of result.pages) {
       pages[pagePath] = page;
     }
+    for (const [pagePath, blocks] of result.content) {
+      content[pagePath] = blocks;
+    }
     for (const [pagePath, target] of result.redirects) {
       redirects[pagePath] = target;
     }
@@ -663,6 +679,7 @@ async function buildTypeScriptCollection(
   sidebarNodes.push(...supplementSidebarNodes);
 
   return {
+    content,
     pages,
     redirects,
     sidebarNodes,

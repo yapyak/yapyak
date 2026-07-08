@@ -1,13 +1,13 @@
 import type { Dirent } from 'node:fs';
 import type { Block } from '../../access';
-import type { Page } from '../../build';
+import type { LoadedPage, Page } from '../../build';
 
 import { parseMarkdown } from './parse';
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative, sep } from 'node:path';
 
 type ExtractMarkdownResult = {
-  pages: Map<string, Page>;
+  pages: Map<string, LoadedPage>;
   redirects: Map<string, string>;
   watchedFiles: string[];
 };
@@ -18,18 +18,18 @@ export async function extractMarkdown(
   pathPrefix = '',
 ): Promise<ExtractMarkdownResult> {
   const files = await walkMarkdownFiles(root);
-  const pages = new Map<string, Page>();
+  const pages = new Map<string, LoadedPage>();
   const redirects = new Map<string, string>();
   for (const absolutePath of files) {
     const path = joinPath(pathPrefix, filePathToRoutePath(absolutePath, root));
     const href =
       path === '' ? `/${collectionName}` : `/${collectionName}/${path}`;
-    const page = await loadMarkdownPage(absolutePath, href);
-    if (page === undefined) {
+    const loadedPage = await loadMarkdownPage(absolutePath, href);
+    if (loadedPage === undefined) {
       continue;
     }
     const redirectTarget = resolvePageRedirectTarget(
-      page,
+      loadedPage.page,
       path,
       collectionName,
     );
@@ -37,7 +37,7 @@ export async function extractMarkdown(
       redirects.set(path, redirectTarget);
       continue;
     }
-    pages.set(path, page);
+    pages.set(path, loadedPage);
   }
   return {
     pages,
@@ -49,7 +49,7 @@ export async function extractMarkdown(
 async function loadMarkdownPage(
   absolutePath: string,
   href: string,
-): Promise<Page | undefined> {
+): Promise<LoadedPage | undefined> {
   let source: string;
   try {
     source = await readFile(absolutePath, 'utf8');
@@ -59,11 +59,13 @@ async function loadMarkdownPage(
   const { blocks, frontmatter } = parseMarkdown(source);
   return {
     blocks: resolveBlocks(blocks, href),
-    breadcrumbs: [],
-    description: (frontmatter.description as string | undefined) ?? '',
-    href,
-    meta: frontmatter,
-    title: (frontmatter.title as string | undefined) ?? '',
+    page: {
+      breadcrumbs: [],
+      description: (frontmatter.description as string | undefined) ?? '',
+      href,
+      meta: frontmatter,
+      title: (frontmatter.title as string | undefined) ?? '',
+    },
   };
 }
 

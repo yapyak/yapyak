@@ -1,10 +1,10 @@
-import type { NavigationManifest, PageMeta, SidebarNode } from '../build';
+import type { NavigationManifest, Page, SidebarNode } from '../build';
 
 import { describe, expect, it } from 'vitest';
 
 import { getPagination } from './pagination';
 
-const HELLO_PAGE: PageMeta = {
+const HELLO_PAGE: Page = {
   breadcrumbs: [],
   description: '',
   href: '/guide/hello',
@@ -12,7 +12,7 @@ const HELLO_PAGE: PageMeta = {
   title: 'Hello',
 };
 
-const WORLD_PAGE: PageMeta = {
+const WORLD_PAGE: Page = {
   breadcrumbs: [],
   description: '',
   href: '/guide/world',
@@ -20,7 +20,7 @@ const WORLD_PAGE: PageMeta = {
   title: 'World',
 };
 
-const SETTINGS_PAGE: PageMeta = {
+const SETTINGS_PAGE: Page = {
   breadcrumbs: [],
   description: '',
   href: '/guide/settings',
@@ -66,8 +66,8 @@ describe('getPagination', () => {
     });
 
     expect(getPagination(data, WORLD_PAGE)).toEqual({
-      nextPageMeta: SETTINGS_PAGE,
-      previousPageMeta: HELLO_PAGE,
+      nextPage: SETTINGS_PAGE,
+      previousPage: HELLO_PAGE,
     });
   });
 
@@ -87,8 +87,7 @@ describe('getPagination', () => {
     });
 
     expect(getPagination(data, HELLO_PAGE)).toEqual({
-      nextPageMeta: WORLD_PAGE,
-      previousPageMeta: null,
+      nextPage: WORLD_PAGE,
     });
   });
 
@@ -108,12 +107,11 @@ describe('getPagination', () => {
     });
 
     expect(getPagination(data, WORLD_PAGE)).toEqual({
-      nextPageMeta: null,
-      previousPageMeta: HELLO_PAGE,
+      previousPage: HELLO_PAGE,
     });
   });
 
-  it('returns nulls when the page href is not in the sidebar', () => {
+  it('returns an empty pagination when the page href is not in the sidebar', () => {
     const data = manifest({
       guide: {
         pages: {
@@ -126,9 +124,6 @@ describe('getPagination', () => {
       },
     });
 
-    expect(getPagination(data, SETTINGS_PAGE)).toEqual({
-      nextPageMeta: null,
-      previousPageMeta: null,
-    });
+    expect(getPagination(data, SETTINGS_PAGE)).toEqual({});
   });
 });

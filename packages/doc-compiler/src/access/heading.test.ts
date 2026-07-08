@@ -1,19 +1,11 @@
-import type { Page } from '../build';
-import type { HeadingBlock } from './block';
+import type { Block, HeadingBlock } from './block';
 
 import { describe, expect, it } from 'vitest';
 
 import { getHeadings } from './heading';
 
-function page(blocks: Page['blocks']): Page {
-  return {
-    blocks,
-    breadcrumbs: [],
-    description: '',
-    href: '/guide/settings',
-    meta: {},
-    title: 'Settings',
-  };
+function blocks(items: Block[]): Block[] {
+  return items;
 }
 
 function heading(level: HeadingBlock['level'], text: string): HeadingBlock {
@@ -35,7 +27,7 @@ describe('getHeadings', () => {
     it('lists every heading at every level', () => {
       expect(
         getHeadings(
-          page([
+          blocks([
             heading(1, 'Hello'),
             heading(2, 'World'),
             heading(6, 'Settings'),
@@ -63,7 +55,7 @@ describe('getHeadings', () => {
     it('returns an empty list when no heading exists', () => {
       expect(
         getHeadings(
-          page([
+          blocks([
             {
               kind: 'divider',
             },
@@ -77,7 +69,7 @@ describe('getHeadings', () => {
     it('lists every heading at or above `minLevel`', () => {
       expect(
         getHeadings(
-          page([
+          blocks([
             heading(1, 'Hello'),
             heading(3, 'World'),
           ]),
@@ -97,7 +89,7 @@ describe('getHeadings', () => {
     it('lists every heading at or below `maxLevel`', () => {
       expect(
         getHeadings(
-          page([
+          blocks([
             heading(2, 'Hello'),
             heading(4, 'World'),
           ]),

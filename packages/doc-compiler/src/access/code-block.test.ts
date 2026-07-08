@@ -1,19 +1,11 @@
-import type { Page } from '../build';
-import type { CodeBlock } from './block';
+import type { Block, CodeBlock } from './block';
 
 import { describe, expect, it } from 'vitest';
 
 import { getCodeBlocks } from './code-block';
 
-function page(blocks: Page['blocks']): Page {
-  return {
-    blocks,
-    breadcrumbs: [],
-    description: '',
-    href: '/guide/settings',
-    meta: {},
-    title: 'Settings',
-  };
+function blocks(items: Block[]): Block[] {
+  return items;
 }
 
 const HELLO_CODE_BLOCK: CodeBlock = {
@@ -36,7 +28,7 @@ describe('getCodeBlocks', () => {
   it('lists every `code-block` at the top level', () => {
     expect(
       getCodeBlocks(
-        page([
+        blocks([
           HELLO_CODE_BLOCK,
           WORLD_CODE_BLOCK,
         ]),
@@ -50,7 +42,7 @@ describe('getCodeBlocks', () => {
   it('returns an empty list when no `code-block` is present', () => {
     expect(
       getCodeBlocks(
-        page([
+        blocks([
           {
             children: [
               {

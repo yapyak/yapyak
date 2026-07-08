@@ -1,9 +1,11 @@
-import type { NavigationManifest, Page, PageMeta } from '../build';
+import type { NavigationManifest, Page } from '../build';
+import type { Block } from './block';
 
 export type Entry =
   | {
       kind: 'page';
       page: Page;
+      blocks: Block[];
     }
   | {
       kind: 'redirect';
@@ -16,7 +18,7 @@ export type Entry =
 export type EntryMeta =
   | {
       kind: 'page';
-      page: PageMeta;
+      page: Page;
     }
   | {
       kind: 'redirect';

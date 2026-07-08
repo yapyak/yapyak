@@ -1,10 +1,10 @@
-import type { NavigationManifest, PageMeta, SidebarNode } from '../build';
+import type { NavigationManifest, Page, SidebarNode } from '../build';
 
 import { describe, expect, it } from 'vitest';
 
-import { getFirstPageMeta, getPage } from './page';
+import { getFirstPage, getPage } from './page';
 
-const HELLO_PAGE: PageMeta = {
+const HELLO_PAGE: Page = {
   breadcrumbs: [],
   description: '',
   href: '/guide/hello',
@@ -31,10 +31,10 @@ function link(href: string, label: string): SidebarNode {
   };
 }
 
-describe('getFirstPageMeta', () => {
+describe('getFirstPage', () => {
   it('returns the page matching the first sidebar link', () => {
     expect(
-      getFirstPageMeta(
+      getFirstPage(
         manifest({
           guide: {
             pages: {
@@ -53,7 +53,7 @@ describe('getFirstPageMeta', () => {
 
   it('returns the page matching the first link in a nested group', () => {
     expect(
-      getFirstPageMeta(
+      getFirstPage(
         manifest({
           guide: {
             pages: {
@@ -78,12 +78,12 @@ describe('getFirstPageMeta', () => {
   });
 
   it('returns `undefined` when the collection is missing', () => {
-    expect(getFirstPageMeta(manifest({}), 'missing')).toBeUndefined();
+    expect(getFirstPage(manifest({}), 'missing')).toBeUndefined();
   });
 
   it('returns `undefined` when the sidebar is empty', () => {
     expect(
-      getFirstPageMeta(
+      getFirstPage(
         manifest({
           guide: {
             pages: {},

@@ -1,4 +1,4 @@
-import type { Page } from '../build';
+import type { Block } from './block';
 
 import { blockToText } from './text';
 
@@ -7,11 +7,11 @@ export type GetExcerptOptions = {
 };
 
 export function getExcerpt(
-  page: Page,
+  blocks: Block[],
   options: GetExcerptOptions = {},
 ): string {
   const maxLength = options.maxLength ?? 160;
-  for (const block of page.blocks) {
+  for (const block of blocks) {
     if (block.kind !== 'paragraph') {
       continue;
     }

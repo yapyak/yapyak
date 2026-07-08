@@ -1,3 +1,4 @@
+import type { Block } from '../access';
 import type { Manifest, Page, SidebarNode } from './manifest';
 
 import { blocksToMarkdown } from '../access';
@@ -22,8 +23,11 @@ export function buildAgentArtifact(
   files.set('llms.txt', buildLlmsIndex(manifest, config));
   files.set('llms-full.txt', buildLlmsFull(manifest, config));
   for (const collection of Object.values(manifest.collections)) {
-    for (const page of Object.values(collection.pages)) {
-      files.set(hrefToFilePath(page.href), renderPageMarkdown(page));
+    for (const [path, page] of Object.entries(collection.pages)) {
+      files.set(
+        hrefToFilePath(page.href),
+        renderPageMarkdown(page, collection.content[path] ?? []),
+      );
     }
   }
   return {
@@ -113,21 +117,21 @@ function buildLlmsFull(
   out.push(`# ${config.siteName}`);
   out.push(`> ${config.description}`);
   for (const collection of Object.values(manifest.collections)) {
-    for (const page of Object.values(collection.pages)) {
+    for (const [path, page] of Object.entries(collection.pages)) {
       out.push('---');
-      out.push(renderPageMarkdown(page));
+      out.push(renderPageMarkdown(page, collection.content[path] ?? []));
     }
   }
   return `${out.join('\n\n')}\n`;
 }
 
-function renderPageMarkdown(page: Page): string {
+function renderPageMarkdown(page: Page, blocks: Block[]): string {
   const out: string[] = [];
   out.push(`# ${page.title}`);
   if (page.description.trim() !== '') {
     out.push(`> ${page.description}`);
   }
-  const body = blocksToMarkdown(page.blocks);
+  const body = blocksToMarkdown(blocks);
   if (body !== '') {
     out.push(body);
   }

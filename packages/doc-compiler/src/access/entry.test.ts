@@ -1,10 +1,10 @@
-import type { NavigationManifest, PageMeta } from '../build';
+import type { NavigationManifest, Page } from '../build';
 
 import { describe, expect, it } from 'vitest';
 
 import { getEntryMeta } from './entry';
 
-const PAGE: PageMeta = {
+const PAGE: Page = {
   breadcrumbs: [],
   description: '',
   href: '/guide/settings',

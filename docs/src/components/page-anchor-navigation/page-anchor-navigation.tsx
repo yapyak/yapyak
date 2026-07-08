@@ -1,4 +1,4 @@
-import type { Page } from '@yapyak/doc-compiler';
+import type { Block } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { getHeadings } from '@yapyak/doc-compiler';
@@ -26,17 +26,17 @@ const HEADING_LEVELS = {
 };
 
 export type PageAnchorNavigationProps = BoxProps<'nav'> & {
+  blocks: Block[];
   indicator?: boolean;
-  page: Page;
 };
 
 export function PageAnchorNavigation(props: PageAnchorNavigationProps) {
-  const { className, indicator = false, page, ...restProps } = props;
+  const { blocks, className, indicator = false, ...restProps } = props;
 
   const headings = useMemo(
-    () => getHeadings(page, HEADING_LEVELS),
+    () => getHeadings(blocks, HEADING_LEVELS),
     [
-      page,
+      blocks,
     ],
   );
 

@@ -54,7 +54,7 @@ export { getHeadings } from './heading';
 export { getInternalLinks } from './internal-link';
 export { blocksToMarkdown } from './markdown';
 export { getOptionsGroup, getOptionsRegistry } from './option';
-export { getFirstPageMeta, getPage } from './page';
+export { getFirstPage, getPage } from './page';
 export { getPagination } from './pagination';
 export { getSidebarNodes } from './sidebar';
 export { resolveSymbol } from './symbol';

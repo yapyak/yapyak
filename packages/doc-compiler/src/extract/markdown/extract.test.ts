@@ -25,8 +25,8 @@ describe('extractMarkdown', () => {
     const result = await extractMarkdown(dir, 'guide');
 
     const page = result.pages.get('settings');
-    expect(page?.href).toBe('/guide/settings');
-    expect(page?.title).toBe('Settings');
+    expect(page?.page.href).toBe('/guide/settings');
+    expect(page?.page.title).toBe('Settings');
   });
 
   it('walks every nested directory for markdown files', async () => {

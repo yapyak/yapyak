@@ -1,16 +1,15 @@
-import type { Page } from '../build';
-import type { CodeBlock } from './block';
+import type { Block, CodeBlock } from './block';
 
 import { walkBlocks } from './block';
 
-export function getCodeBlocks(page: Page): CodeBlock[] {
-  const blocks: CodeBlock[] = [];
-  for (const block of page.blocks) {
+export function getCodeBlocks(blocks: Block[]): CodeBlock[] {
+  const codeBlocks: CodeBlock[] = [];
+  for (const block of blocks) {
     walkBlocks(block, (current) => {
       if (current.kind === 'code-block') {
-        blocks.push(current);
+        codeBlocks.push(current);
       }
     });
   }
-  return blocks;
+  return codeBlocks;
 }

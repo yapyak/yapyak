@@ -10,7 +10,6 @@ vi.mock('virtual:doc-compiler', () => ({
 
 function page(overrides: Partial<Page> = {}): Page {
   return {
-    blocks: [],
     breadcrumbs: [],
     description: '',
     href: '/guide/save',

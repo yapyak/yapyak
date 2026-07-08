@@ -1,8 +1,7 @@
-import type { Page } from '../build';
 import type { Block } from './block';
 
-export function getText(page: Page): string {
-  return page.blocks
+export function getText(blocks: Block[]): string {
+  return blocks
     .map(blockToText)
     .filter((text) => text.length > 0)
     .join('\n');

@@ -26,6 +26,7 @@ describe('getSidebarNodes', () => {
       getSidebarNodes(
         manifest({
           guide: {
+            content: {},
             pages: {},
             redirects: {},
             sidebarNodes,

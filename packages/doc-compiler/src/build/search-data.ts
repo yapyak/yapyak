@@ -1,4 +1,5 @@
-import type { Manifest, Page } from './manifest';
+import type { Block } from '../access';
+import type { Manifest } from './manifest';
 
 import { blockToText } from '../access';
 
@@ -21,9 +22,9 @@ export function buildSearchData(manifest: Manifest): SearchData {
   for (const [collectionName, collection] of Object.entries(
     manifest.collections,
   )) {
-    for (const page of Object.values(collection.pages)) {
+    for (const [path, page] of Object.entries(collection.pages)) {
       const breadcrumbs = page.breadcrumbs;
-      const { intro, sections } = splitSections(page);
+      const { intro, sections } = splitSections(collection.content[path] ?? []);
       entries.push({
         body: intro,
         breadcrumbs,
@@ -62,7 +63,7 @@ type Section = {
 const SECTION_MIN_LEVEL = 2;
 const SECTION_MAX_LEVEL = 3;
 
-function splitSections(page: Page): {
+function splitSections(blocks: Block[]): {
   intro: string;
   sections: Section[];
 } {
@@ -87,7 +88,7 @@ function splitSections(page: Page): {
     });
   };
 
-  for (const block of page.blocks) {
+  for (const block of blocks) {
     if (block.kind === 'heading') {
       if (
         block.level >= SECTION_MIN_LEVEL &&

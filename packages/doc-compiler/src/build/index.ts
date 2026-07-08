@@ -1,11 +1,11 @@
 export type {
   Collection,
+  LoadedPage,
   Manifest,
   MetaValue,
   NavigationCollection,
   NavigationManifest,
   Page,
-  PageMeta,
   SidebarBadge,
   SidebarGroupNode,
   SidebarLinkNode,

@@ -23,7 +23,7 @@ export const Route = createFileRoute('/guide')({
 
 function Component() {
   const { sidebarNodes } = Route.useRouteContext();
-  const { page } = splatRoute.useLoaderData();
+  const { blocks, page } = splatRoute.useLoaderData();
 
   const sidebarContent = (
     <SidebarNodeNavigation
@@ -37,7 +37,12 @@ function Component() {
       <ContentLayout.Sidebar>{sidebarContent}</ContentLayout.Sidebar>
       <ContentLayout.Content>
         <ContentLayout.ContentHeader
-          end={<OutlineDrawerTrigger page={page} />}
+          end={
+            <OutlineDrawerTrigger
+              blocks={blocks}
+              page={page}
+            />
+          }
           start={<SidebarDrawerTrigger drawer={sidebarContent} />}
         />
         <ContentLayout.ContentContent>
@@ -46,9 +51,9 @@ function Component() {
       </ContentLayout.Content>
       <ContentLayout.Outline>
         <PageAnchorNavigation
+          blocks={blocks}
           indicator={true}
           key={page.href}
-          page={page}
         />
         <PageAction page={page} />
       </ContentLayout.Outline>

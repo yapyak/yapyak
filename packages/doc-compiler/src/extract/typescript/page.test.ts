@@ -146,8 +146,8 @@ describe('buildModulePage', () => {
       moduleId: 'yapyak',
     });
 
-    expect(page.title).toBe('yapyak');
-    expect(page.href).toBe('/reference/yapyak');
+    expect(page.page.title).toBe('yapyak');
+    expect(page.page.href).toBe('/reference/yapyak');
   });
 
   it('builds an `Exports` heading and table when the module has exports', () => {
@@ -275,7 +275,7 @@ describe('buildSymbolPage', () => {
   it('builds a page with `()` suffix in the title for a function', () => {
     const page = buildSymbolPage(functionSymbol(), CONTEXT, SYMBOL_PAGE_INPUT);
 
-    expect(page.title).toBe('createTranslator()');
+    expect(page.page.title).toBe('createTranslator()');
   });
 
   it('builds a page without `()` suffix in the title for a non-function', () => {
@@ -284,7 +284,7 @@ describe('buildSymbolPage', () => {
       href: '/reference/yapyak/Settings',
     });
 
-    expect(page.title).toBe('Settings');
+    expect(page.page.title).toBe('Settings');
   });
 
   it('builds a `callout` block when the symbol is deprecated', () => {

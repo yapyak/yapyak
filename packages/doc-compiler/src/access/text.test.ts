@@ -1,18 +1,11 @@
-import type { Page } from '../build';
+import type { Block } from './block';
 
 import { describe, expect, it } from 'vitest';
 
 import { blockToText, getText } from './text';
 
-function page(blocks: Page['blocks']): Page {
-  return {
-    blocks,
-    breadcrumbs: [],
-    description: '',
-    href: '/guide/settings',
-    meta: {},
-    title: 'Settings',
-  };
+function blocks(items: Block[]): Block[] {
+  return items;
 }
 
 describe('blockToText', () => {
@@ -316,7 +309,7 @@ describe('getText', () => {
   it('returns the page text joined by newline', () => {
     expect(
       getText(
-        page([
+        blocks([
           {
             children: [
               {
@@ -343,7 +336,7 @@ describe('getText', () => {
   it('returns an empty string when no block has text', () => {
     expect(
       getText(
-        page([
+        blocks([
           {
             kind: 'divider',
           },

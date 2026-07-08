@@ -1,5 +1,4 @@
-import type { Page } from '../build';
-import type { HeadingBlock } from './block';
+import type { Block, HeadingBlock } from './block';
 
 import { blockToText } from './text';
 
@@ -15,13 +14,13 @@ export type GetHeadingsOptions = {
 };
 
 export function getHeadings(
-  page: Page,
+  blocks: Block[],
   options: GetHeadingsOptions = {},
 ): Heading[] {
   const minLevel = options.minLevel ?? 1;
   const maxLevel = options.maxLevel ?? 6;
   const result: Heading[] = [];
-  for (const block of page.blocks) {
+  for (const block of blocks) {
     if (
       block.kind === 'heading' &&
       block.level >= minLevel &&

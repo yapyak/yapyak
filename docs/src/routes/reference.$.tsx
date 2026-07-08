@@ -34,7 +34,12 @@ export const Route = createFileRoute('/reference/$')({
 });
 
 function Component() {
-  const { page } = Route.useLoaderData();
+  const { blocks, page } = Route.useLoaderData();
 
-  return <PageArticle page={page} />;
+  return (
+    <PageArticle
+      blocks={blocks}
+      page={page}
+    />
+  );
 }

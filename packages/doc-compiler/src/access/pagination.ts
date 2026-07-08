@@ -1,52 +1,49 @@
-import type { NavigationManifest, PageMeta, SidebarNode } from '../build';
+import type { NavigationManifest, Page, SidebarNode } from '../build';
 
 export type Pagination = {
-  previousPageMeta: PageMeta | null;
-  nextPageMeta: PageMeta | null;
+  nextPage?: Page;
+  previousPage?: Page;
 };
 
 export function getPagination(
   manifest: NavigationManifest,
-  pageMeta: PageMeta,
+  page: Page,
 ): Pagination {
-  const collectionName = collectionFromHref(pageMeta.href);
+  const collectionName = collectionFromHref(page.href);
   if (collectionName === undefined) {
-    return {
-      nextPageMeta: null,
-      previousPageMeta: null,
-    };
+    return {};
   }
   const collection = manifest.collections[collectionName];
   if (!collection) {
-    return {
-      nextPageMeta: null,
-      previousPageMeta: null,
-    };
+    return {};
   }
   const hrefs = flattenLinks(collection.sidebarNodes);
-  const index = hrefs.indexOf(pageMeta.href);
+  const index = hrefs.indexOf(page.href);
   if (index === -1) {
-    return {
-      nextPageMeta: null,
-      previousPageMeta: null,
-    };
+    return {};
   }
-  return {
-    nextPageMeta: pageMetaAt(manifest, hrefs, index + 1),
-    previousPageMeta: pageMetaAt(manifest, hrefs, index - 1),
-  };
+  const result: Pagination = {};
+  const previousPage = findPageAt(manifest, hrefs, index - 1);
+  if (previousPage !== undefined) {
+    result.previousPage = previousPage;
+  }
+  const nextPage = findPageAt(manifest, hrefs, index + 1);
+  if (nextPage !== undefined) {
+    result.nextPage = nextPage;
+  }
+  return result;
 }
 
-function pageMetaAt(
+function findPageAt(
   manifest: NavigationManifest,
   hrefs: string[],
   index: number,
-): PageMeta | null {
+): Page | undefined {
   const href = hrefs[index];
   if (href === undefined) {
-    return null;
+    return undefined;
   }
-  return findPageByHref(manifest, href) ?? null;
+  return findPageByHref(manifest, href);
 }
 
 function collectionFromHref(href: string): string | undefined {
@@ -57,11 +54,11 @@ function collectionFromHref(href: string): string | undefined {
 function findPageByHref(
   manifest: NavigationManifest,
   href: string,
-): PageMeta | undefined {
+): Page | undefined {
   for (const collection of Object.values(manifest.collections)) {
-    for (const pageMeta of Object.values(collection.pages)) {
-      if (pageMeta.href === href) {
-        return pageMeta;
+    for (const page of Object.values(collection.pages)) {
+      if (page.href === href) {
+        return page;
       }
     }
   }

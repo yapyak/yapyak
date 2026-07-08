@@ -1,21 +1,14 @@
-import type { Page } from '../build';
+import type { Block } from './block';
 
 import { describe, expect, it } from 'vitest';
 
 import { getExcerpt } from './excerpt';
 
-function page(blocks: Page['blocks']): Page {
-  return {
-    blocks,
-    breadcrumbs: [],
-    description: '',
-    href: '/guide/settings',
-    meta: {},
-    title: 'Settings',
-  };
+function blocks(items: Block[]): Block[] {
+  return items;
 }
 
-function paragraph(text: string): Page['blocks'][number] {
+function paragraph(text: string): Block {
   return {
     children: [
       {
@@ -32,7 +25,7 @@ describe('getExcerpt', () => {
     it('returns the first paragraph text', () => {
       expect(
         getExcerpt(
-          page([
+          blocks([
             paragraph('Hello World'),
           ]),
         ),
@@ -43,7 +36,7 @@ describe('getExcerpt', () => {
       const text = 'Hello '.repeat(40).trim();
       expect(
         getExcerpt(
-          page([
+          blocks([
             paragraph(text),
           ]),
         ),
@@ -53,7 +46,7 @@ describe('getExcerpt', () => {
     it('skips paragraphs with no text', () => {
       expect(
         getExcerpt(
-          page([
+          blocks([
             paragraph('   '),
             paragraph('Hello'),
           ]),
@@ -64,7 +57,7 @@ describe('getExcerpt', () => {
     it('skips blocks that are not paragraphs', () => {
       expect(
         getExcerpt(
-          page([
+          blocks([
             {
               kind: 'divider',
             },
@@ -77,7 +70,7 @@ describe('getExcerpt', () => {
     it('returns an empty string when no paragraph exists', () => {
       expect(
         getExcerpt(
-          page([
+          blocks([
             {
               kind: 'divider',
             },
@@ -91,7 +84,7 @@ describe('getExcerpt', () => {
     it('returns the full text when under the custom `maxLength`', () => {
       expect(
         getExcerpt(
-          page([
+          blocks([
             paragraph('Hello World'),
           ]),
           {
@@ -104,7 +97,7 @@ describe('getExcerpt', () => {
     it('returns the truncated text when over the custom `maxLength`', () => {
       expect(
         getExcerpt(
-          page([
+          blocks([
             paragraph('Hello World'),
           ]),
           {

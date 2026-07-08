@@ -1,3 +1,4 @@
+import type { Block } from '../access';
 import type { Manifest, Page, SidebarNode } from './manifest';
 
 import { describe, expect, it } from 'vitest';
@@ -6,7 +7,6 @@ import { buildAgentArtifact } from './agent-artifact';
 
 function buildPage(overrides: Partial<Page> = {}): Page {
   return {
-    blocks: [],
     breadcrumbs: [],
     description: '',
     href: '/guide/getting-started/installation',
@@ -35,10 +35,13 @@ function buildSidebar(): SidebarNode[] {
   ];
 }
 
-function buildManifest(page: Page): Manifest {
+function buildManifest(page: Page, blocks: Block[] = []): Manifest {
   return {
     collections: {
       guide: {
+        content: {
+          'getting-started/installation': blocks,
+        },
         pages: {
           'getting-started/installation': page,
         },
@@ -92,20 +95,20 @@ describe('buildAgentArtifact', () => {
 
   it('emits llms-full.txt with concatenated page content', () => {
     const page = buildPage({
-      blocks: [
-        {
-          children: [
-            {
-              kind: 'text',
-              value: 'Step 1.',
-            },
-          ],
-          kind: 'paragraph',
-        },
-      ],
       description: 'Install yapyak.',
     });
-    const result = buildAgentArtifact(buildManifest(page), {
+    const blocks: Block[] = [
+      {
+        children: [
+          {
+            kind: 'text',
+            value: 'Step 1.',
+          },
+        ],
+        kind: 'paragraph',
+      },
+    ];
+    const result = buildAgentArtifact(buildManifest(page, blocks), {
       description: 'i18n.',
       instructions: '',
       outDir: '',

@@ -1,8 +1,8 @@
-import type { NavigationManifest, PageMeta, SidebarNode } from '../build';
+import type { NavigationManifest, Page, SidebarNode } from '../build';
 
 export type PageEntry = {
   collectionName: string;
-  page: PageMeta;
+  page: Page;
   path: string;
 };
 
@@ -10,14 +10,14 @@ export function getPage(
   manifest: NavigationManifest,
   collectionName: string,
   path = '',
-): PageMeta | undefined {
+): Page | undefined {
   return manifest.collections[collectionName]?.pages[path];
 }
 
-export function getFirstPageMeta(
+export function getFirstPage(
   manifest: NavigationManifest,
   collectionName: string,
-): PageMeta | undefined {
+): Page | undefined {
   const collection = manifest.collections[collectionName];
   if (!collection) {
     return undefined;

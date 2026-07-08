@@ -12,9 +12,9 @@ export type PaginationNavigationProps = BoxProps<'nav'> & {
 
 export function PaginationNavigation(props: PaginationNavigationProps) {
   const { className, pagination, ...restProps } = props;
-  const { nextPageMeta, previousPageMeta } = pagination;
-  const previousSection = previousPageMeta?.breadcrumbs.at(-1);
-  const nextSection = nextPageMeta?.breadcrumbs.at(-1);
+  const { nextPage, previousPage } = pagination;
+  const previousSection = previousPage?.breadcrumbs.at(-1);
+  const nextSection = nextPage?.breadcrumbs.at(-1);
 
   return (
     <Box
@@ -25,10 +25,10 @@ export function PaginationNavigation(props: PaginationNavigationProps) {
         className,
       ]}
     >
-      {previousPageMeta ? (
+      {previousPage ? (
         <LinkBase
           className={styles.PreviousLink}
-          to={previousPageMeta.href}
+          to={previousPage.href}
         >
           {previousSection !== undefined && (
             <Box
@@ -42,24 +42,24 @@ export function PaginationNavigation(props: PaginationNavigationProps) {
             as="span"
             className={styles.TitleText}
           >
-            {previousPageMeta.title}
+            {previousPage.title}
           </Box>
-          {previousPageMeta.description && (
+          {previousPage.description && (
             <Box
               as="span"
               className={styles.DescriptionText}
             >
-              {previousPageMeta.description}
+              {previousPage.description}
             </Box>
           )}
         </LinkBase>
       ) : (
         <Box className={styles.Spacer} />
       )}
-      {nextPageMeta ? (
+      {nextPage ? (
         <LinkBase
           className={styles.NextLink}
-          to={nextPageMeta.href}
+          to={nextPage.href}
         >
           {nextSection !== undefined && (
             <Box
@@ -73,14 +73,14 @@ export function PaginationNavigation(props: PaginationNavigationProps) {
             as="span"
             className={styles.TitleText}
           >
-            {nextPageMeta.title}
+            {nextPage.title}
           </Box>
-          {nextPageMeta.description && (
+          {nextPage.description && (
             <Box
               as="span"
               className={styles.DescriptionText}
             >
-              {nextPageMeta.description}
+              {nextPage.description}
             </Box>
           )}
         </LinkBase>

@@ -1,3 +1,4 @@
+import type { Block } from '../access';
 import type { Supplement } from '../config';
 import type {
   Page,
@@ -14,6 +15,7 @@ export type BuildSupplementInput = {
 };
 
 export type BuildSupplementResult = {
+  content: Map<string, Block[]>;
   sidebarNode: SidebarGroupNode;
   pages: Map<string, Page>;
   redirects: Map<string, string>;
@@ -28,11 +30,18 @@ export async function buildSupplement(
   const pathPrefix = supplement.slug;
   const indexHref = `/${collectionName}/${pathPrefix}`;
 
-  const { pages, redirects, watchedFiles } = await extractMarkdown(
-    supplement.root,
-    collectionName,
-    pathPrefix,
-  );
+  const {
+    pages: loadedPages,
+    redirects,
+    watchedFiles,
+  } = await extractMarkdown(supplement.root, collectionName, pathPrefix);
+
+  const content = new Map<string, Block[]>();
+  const pages = new Map<string, Page>();
+  for (const [pagePath, loadedPage] of loadedPages) {
+    content.set(pagePath, loadedPage.blocks);
+    pages.set(pagePath, loadedPage.page);
+  }
 
   const links: {
     sidebarNode: SidebarLinkNode;
@@ -80,6 +89,7 @@ export async function buildSupplement(
   const hasIndex = pages.has(pathPrefix);
 
   return {
+    content,
     pages,
     redirects,
     sidebarNode: {

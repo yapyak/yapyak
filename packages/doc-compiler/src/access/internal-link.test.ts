@@ -1,25 +1,18 @@
-import type { Page } from '../build';
+import type { Block } from './block';
 
 import { describe, expect, it } from 'vitest';
 
 import { getInternalLinks } from './internal-link';
 
-function page(blocks: Page['blocks']): Page {
-  return {
-    blocks,
-    breadcrumbs: [],
-    description: '',
-    href: '/guide/settings',
-    meta: {},
-    title: 'Settings',
-  };
+function blocks(items: Block[]): Block[] {
+  return items;
 }
 
 describe('getInternalLinks', () => {
   it('lists every internal link in the page', () => {
     expect(
       getInternalLinks(
-        page([
+        blocks([
           {
             children: [
               {
@@ -49,7 +42,7 @@ describe('getInternalLinks', () => {
   it('returns no entry for an external link', () => {
     expect(
       getInternalLinks(
-        page([
+        blocks([
           {
             children: [
               {

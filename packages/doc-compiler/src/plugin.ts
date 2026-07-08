@@ -4,7 +4,6 @@ import type {
   Manifest,
   NavigationCollection,
   NavigationManifest,
-  PageMeta,
 } from './build';
 import type { Config } from './config';
 
@@ -186,7 +185,7 @@ export function docCompiler(config: Config): Plugin {
 import manifest from ${JSON.stringify(MANIFEST_ID)};
 import {
   getEntryMeta as _getEntryMeta,
-  getFirstPageMeta as _getFirstPageMeta,
+  getFirstPage as _getFirstPage,
   getHeadings as _getHeadings,
   getOptionsRegistry as _getOptionsRegistry,
   getOptionsGroup as _getOptionsGroup,
@@ -208,12 +207,13 @@ export const doc = {
     const { default: blocks } = await content[JSON.stringify([collection, path])]();
     return {
       kind: 'page',
-      page: { ...entry.page, blocks },
+      page: entry.page,
+      blocks,
     };
   },
-  getPagination: (pageMeta) => _getPagination(manifest, pageMeta),
+  getPagination: (page) => _getPagination(manifest, page),
   getSidebarNodes: (collection) => _getSidebarNodes(manifest, collection),
-  getFirstPageMeta: (collection) => _getFirstPageMeta(manifest, collection),
+  getFirstPage: (collection) => _getFirstPage(manifest, collection),
   getOptionsRegistry: () => _getOptionsRegistry(manifest),
   getOptionsGroup: (groupId) => _getOptionsGroup(manifest, groupId),
   getHeadings: _getHeadings,
@@ -254,10 +254,7 @@ function splitManifest(manifest: Manifest): SplitManifestResult {
   for (const [collectionName, collection] of Object.entries(
     manifest.collections,
   )) {
-    const pages: Record<string, PageMeta> = {};
-    for (const [path, page] of Object.entries(collection.pages)) {
-      const { blocks, ...pageMeta } = page;
-      pages[path] = pageMeta;
+    for (const [path, blocks] of Object.entries(collection.content)) {
       contentEntries.push({
         blocks,
         key: JSON.stringify([
@@ -267,7 +264,7 @@ function splitManifest(manifest: Manifest): SplitManifestResult {
       });
     }
     collections[collectionName] = {
-      pages,
+      pages: collection.pages,
       redirects: collection.redirects,
       sidebarNodes: collection.sidebarNodes,
     };

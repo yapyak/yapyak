@@ -1,4 +1,4 @@
-import type { Page } from '@yapyak/doc-compiler';
+import type { Block, Page } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { BlockRenderer } from '#components/block-renderer';
@@ -9,11 +9,12 @@ import styles from './page-article.module.css';
 import { doc } from 'virtual:doc-compiler';
 
 export type PageArticleProps = BoxProps<'article'> & {
+  blocks: Block[];
   page: Page;
 };
 
 export function PageArticle(props: PageArticleProps) {
-  const { className, page, ...restProps } = props;
+  const { blocks, className, page, ...restProps } = props;
   const pagination = doc.getPagination(page);
 
   return (
@@ -45,9 +46,9 @@ export function PageArticle(props: PageArticleProps) {
         )}
       </Box>
       <Box className={styles.Body}>
-        <BlockRenderer blocks={page.blocks} />
+        <BlockRenderer blocks={blocks} />
       </Box>
-      {(pagination.previousPageMeta || pagination.nextPageMeta) && (
+      {(pagination.previousPage || pagination.nextPage) && (
         <Box
           as="footer"
           className={styles.Footer}
