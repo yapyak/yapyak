@@ -334,9 +334,22 @@ Don't reach for context to feed one boolean to a few siblings — lifting the ra
 ### Domain naming
 
 - Singular resource in component names: `GuideCard`, never `GuidesCard`.
-- Domain components named `[Resource][Element]`: `GuideCard`, `ReferenceTable`, `GuideNavigation`.
+- Name a component that renders or derives from a domain object `[Resource][Element]` — `[Resource]` = the object of its primary prop (object `Foo` → `Foo`, collection `Foo[]` → `Foo`), `[Element]` = its root element's ElementType noun ([[yapyak-element-type]]).
+- Name that component's primary prop after the object, never a structural word (`tree`, `data`, `items`).
+- Never name a component that operates on a domain object after a region or context word (`Content`, `Main`) → name it after the head object.
+- Name a component that composes a region and takes no domain object (layout, shell) after its region or domain area, with no matching prop required — `ContentLayout`.
 - No "Page" components — the route `Component` function handles page layout.
 - **Dispatcher components:** when a base component renders a different sub-component based on a type/variant, name the variants `[Parent][Variant]`. `Block` dispatches to `BlockCallout` and `BlockCode` based on the block's kind.
+
+```tsx
+// ✗ renders the sidebar but named after a region; prop named structurally
+export type ContentNavigationProps = BoxProps<'nav'> & { tree: SidebarNode[] };
+
+// ✓ named after the head object; prop mirrors it
+export type SidebarNodeNavigationProps = BoxProps<'nav'> & {
+  sidebarNodes: SidebarNode[];
+};
+```
 
 ### Layout vs domain name
 
