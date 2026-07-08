@@ -1,7 +1,7 @@
 import type { HeadingEntry } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
 import { useWindowEventListener } from '#hooks/use-window-event-listener';
@@ -25,6 +25,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   const itemElementsRef = useRef(new Map<string, HTMLAnchorElement>());
   const lockedIdRef = useRef<string | null>(null);
   const wasVisibleRef = useRef(false);
+  const headingId = useId();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [isAnimationEnabled, setIsAnimationEnabled] = useState(false);
 
@@ -172,7 +173,7 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
   return (
     <Box
       {...restProps}
-      aria-label={t('On this page')}
+      aria-labelledby={headingId}
       as="nav"
       className={[
         styles.ContentAnchorNavigation,
@@ -184,7 +185,13 @@ export function ContentAnchorNavigation(props: ContentAnchorNavigationProps) {
       ref={element}
     >
       <Box className={styles.Rail}>
-        <Box className={styles.Eyebrow}>{t('On this page')}</Box>
+        <Box
+          as="h3"
+          className={styles.Heading}
+          id={headingId}
+        >
+          {t('On this page')}
+        </Box>
         <Box className={styles.List}>
           {headings.map((heading) => (
             <ContentAnchorNavigationItem

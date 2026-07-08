@@ -12,7 +12,7 @@
       flex-direction: column;
       gap: var(--spacing-3);
 
-      .Eyebrow {
+      .Heading {
         padding: 0 var(--spacing-3);
         font-size: var(--font-size-xs);
         font-weight: var(--font-weight-semibold);
