@@ -336,6 +336,7 @@ Don't reach for context to feed one boolean to a few siblings — lifting the ra
 
 - Singular resource in component names: `GuideCard`, never `GuidesCard`.
 - Name a component that renders or derives from a domain object `[Resource][Element]` — `[Resource]` = the object of its primary prop (object `Foo` → `Foo`, collection `Foo[]` → `Foo`), `[Element]` = its root element's ElementType noun ([[yapyak-element-type]]).
+- Take `[Resource]` from the primary prop's **type**, never from the data the component derives or renders — a `page: PageMeta` prop → `Page…` even when it renders the *adjacent* pages.
 - Name that component's primary prop after the object, never a structural word (`tree`, `data`, `items`).
 - Never name a component that operates on a domain object after a region or context word (`Content`, `Main`) → name it after the head object.
 - Name a component that composes a region and takes no domain object (layout, shell) after its region or domain area, with no matching prop required — `ContentLayout`.
@@ -351,6 +352,14 @@ export type ContentNavigationProps = BoxProps<'nav'> & { tree: SidebarNode[] };
 export type SidebarNodeNavigationProps = BoxProps<'nav'> & {
   sidebarNodes: SidebarNode[];
 };
+```
+
+```tsx
+// ✗ named after the derived/rendered data, not the prop it takes
+export type AdjacentPageNavigationProps = BoxProps<'nav'> & { page: PageMeta };
+
+// ✓ named after the primary prop's type — page → Page
+export type PagePaginationProps = BoxProps<'nav'> & { page: PageMeta };
 ```
 
 ```tsx
