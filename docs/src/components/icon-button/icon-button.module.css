@@ -3,15 +3,14 @@
     display: inline-flex;
     gap: var(--spacing-2);
     align-items: center;
-    padding: 0 var(--spacing-2);
+    padding: var(--spacing-1-5);
     font-family: inherit;
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-medium);
     color: var(--foreground-soft);
     cursor: pointer;
     outline: var(--spacing-2) solid transparent;
-    outline-offset: calc(var(--px) * -1);
-    background-color: transparent;
+
     border: 0;
     border-radius: var(--border-radius-sm);
     transition:
@@ -34,7 +33,7 @@
     }
 
     &:focus-visible {
-      outline-width: 4px;
+      outline-width: var(--spacing-1);
       outline-color: var(--accent-soft);
     }
   }

@@ -9,7 +9,7 @@
     grid-template-columns: 1fr 1fr;
     align-items: center;
     height: var(--content-header-height);
-    padding: 0 var(--spacing-4);
+    padding: 0 var(--spacing-4-5);
     background-color: var(--canvas);
     border-bottom: var(--px) solid var(--rule);
 
