@@ -5,8 +5,9 @@
     gap: var(--spacing-1);
     font-size: var(--font-size-sm);
 
-    .StaticGroup + .CollapsibleGroup,
-    .StaticGroup + .Link {
+    > [data-kind="group"]:not([data-collapsible])
+      + [data-kind="group"][data-collapsible],
+    > [data-kind="group"]:not([data-collapsible]) + [data-kind="link"] {
       padding-top: var(--spacing-5);
       margin-top: var(--spacing-3);
       border-top: var(--px) solid var(--rule);

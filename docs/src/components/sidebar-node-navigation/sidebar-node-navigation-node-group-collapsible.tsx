@@ -1,22 +1,20 @@
-import type { SidebarNodeNavigationGroupProps } from './sidebar-node-navigation-group';
+import type { SidebarNode } from '@yapyak/doc-compiler';
+import type { SidebarNodeNavigationNodeGroupProps } from './sidebar-node-navigation-node-group';
 
 import { useLocation } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
+import { getSidebarNodeKey } from '#lib/sidebar-node-key';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 import { LinkBase } from '#primitives/link';
 
-import {
-  childrenContainPath,
-  getKey,
-  renderChild,
-} from './sidebar-node-navigation-group';
-import styles from './sidebar-node-navigation-group.module.css';
-import { SidebarNodeNavigationGroupChevronIcon } from './sidebar-node-navigation-group-chevron-icon';
+import { SidebarNodeNavigationNode } from './sidebar-node-navigation-node';
+import styles from './sidebar-node-navigation-node-group.module.css';
+import { SidebarNodeNavigationNodeGroupChevronIcon } from './sidebar-node-navigation-node-group-chevron-icon';
 
-export function SidebarNodeNavigationGroupCollapsible(
-  props: SidebarNodeNavigationGroupProps,
+export function SidebarNodeNavigationNodeGroupCollapsible(
+  props: SidebarNodeNavigationNodeGroupProps,
 ) {
   const { className, depth, sidebarNode, ...restProps } = props;
   const location = useLocation();
@@ -64,11 +62,12 @@ export function SidebarNodeNavigationGroupCollapsible(
     <Box
       {...restProps}
       className={[
-        styles.SidebarNodeNavigationGroup,
+        styles.SidebarNodeNavigationNodeGroup,
         className,
       ]}
       data-collapsible={true}
       data-depth={depth}
+      data-kind="group"
     >
       <Box
         className={styles.GroupBar}
@@ -98,7 +97,7 @@ export function SidebarNodeNavigationGroupCollapsible(
           className={styles.ToggleButton}
           onClick={handleToggleClick}
         >
-          <SidebarNodeNavigationGroupChevronIcon />
+          <SidebarNodeNavigationNodeGroupChevronIcon />
         </ButtonBase>
       </Box>
       <Box
@@ -110,12 +109,33 @@ export function SidebarNodeNavigationGroupCollapsible(
         {sidebarNode.children.map((child) => (
           <Box
             as="li"
-            key={getKey(child)}
+            key={getSidebarNodeKey(child)}
           >
-            {renderChild(child, depth + 1)}
+            <SidebarNodeNavigationNode
+              depth={depth + 1}
+              sidebarNode={child}
+            />
           </Box>
         ))}
       </Box>
     </Box>
   );
+}
+
+function childrenContainPath(
+  sidebarNodes: SidebarNode[],
+  pathname: string,
+): boolean {
+  for (const sidebarNode of sidebarNodes) {
+    if (sidebarNode.kind === 'link' && pathname.startsWith(sidebarNode.href)) {
+      return true;
+    }
+    if (
+      sidebarNode.kind === 'group' &&
+      childrenContainPath(sidebarNode.children, pathname)
+    ) {
+      return true;
+    }
+  }
+  return false;
 }

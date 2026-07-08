@@ -1,15 +1,16 @@
-import type { SidebarNodeNavigationGroupProps } from './sidebar-node-navigation-group';
+import type { SidebarNodeNavigationNodeGroupProps } from './sidebar-node-navigation-node-group';
 
 import { useLocation } from '@tanstack/react-router';
 
+import { getSidebarNodeKey } from '#lib/sidebar-node-key';
 import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 
-import { getKey, renderChild } from './sidebar-node-navigation-group';
-import styles from './sidebar-node-navigation-group.module.css';
+import { SidebarNodeNavigationNode } from './sidebar-node-navigation-node';
+import styles from './sidebar-node-navigation-node-group.module.css';
 
-export function SidebarNodeNavigationGroupStatic(
-  props: SidebarNodeNavigationGroupProps,
+export function SidebarNodeNavigationNodeGroupStatic(
+  props: SidebarNodeNavigationNodeGroupProps,
 ) {
   const { className, depth, sidebarNode, ...restProps } = props;
   const location = useLocation();
@@ -20,10 +21,11 @@ export function SidebarNodeNavigationGroupStatic(
     <Box
       {...restProps}
       className={[
-        styles.SidebarNodeNavigationGroup,
+        styles.SidebarNodeNavigationNodeGroup,
         className,
       ]}
       data-depth={depth}
+      data-kind="group"
     >
       {sidebarNode.href === undefined ? (
         <Box
@@ -48,9 +50,12 @@ export function SidebarNodeNavigationGroupStatic(
         {sidebarNode.children.map((child) => (
           <Box
             as="li"
-            key={getKey(child)}
+            key={getSidebarNodeKey(child)}
           >
-            {renderChild(child, depth + 1)}
+            <SidebarNodeNavigationNode
+              depth={depth + 1}
+              sidebarNode={child}
+            />
           </Box>
         ))}
       </Box>

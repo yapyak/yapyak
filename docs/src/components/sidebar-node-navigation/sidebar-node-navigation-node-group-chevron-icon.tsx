@@ -1,6 +1,6 @@
-import styles from './sidebar-node-navigation-group.module.css';
+import styles from './sidebar-node-navigation-node-group.module.css';
 
-export function SidebarNodeNavigationGroupChevronIcon() {
+export function SidebarNodeNavigationNodeGroupChevronIcon() {
   return (
     <svg
       aria-hidden="true"

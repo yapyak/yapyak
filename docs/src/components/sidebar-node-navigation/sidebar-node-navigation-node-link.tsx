@@ -6,14 +6,14 @@ import { useEffect, useRef } from 'react';
 
 import { LinkBase } from '#primitives/link';
 
-import styles from './sidebar-node-navigation-link.module.css';
+import styles from './sidebar-node-navigation-node-link.module.css';
 
-export type SidebarNodeNavigationLinkProps = LinkBaseProps & {
+export type SidebarNodeNavigationNodeLinkProps = LinkBaseProps & {
   sidebarNode: SidebarLinkNode;
 };
 
-export function SidebarNodeNavigationLink(
-  props: SidebarNodeNavigationLinkProps,
+export function SidebarNodeNavigationNodeLink(
+  props: SidebarNodeNavigationNodeLinkProps,
 ) {
   const { className, sidebarNode, ...restProps } = props;
   const isDeprecated = sidebarNode.badge?.variant === 'deprecated';
@@ -57,10 +57,11 @@ export function SidebarNodeNavigationLink(
         exact: true,
       }}
       className={[
-        styles.SidebarNodeNavigationLink,
+        styles.SidebarNodeNavigationNodeLink,
         className,
       ]}
       data-deprecated={isDeprecated}
+      data-kind="link"
       ref={element}
       to={sidebarNode.href}
     >
