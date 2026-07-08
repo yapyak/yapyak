@@ -8,6 +8,7 @@ import { getCodeBlocks } from './code-block';
 function page(blocks: Page['blocks']): Page {
   return {
     blocks,
+    breadcrumbs: [],
     description: '',
     href: '/guide/settings',
     meta: {},

@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { getEntryMeta } from './entry';
 
 const PAGE: PageMeta = {
+  breadcrumbs: [],
   description: '',
   href: '/guide/settings',
   meta: {},

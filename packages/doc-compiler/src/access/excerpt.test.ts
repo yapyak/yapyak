@@ -7,6 +7,7 @@ import { getExcerpt } from './excerpt';
 function page(blocks: Page['blocks']): Page {
   return {
     blocks,
+    breadcrumbs: [],
     description: '',
     href: '/guide/settings',
     meta: {},

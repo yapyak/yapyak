@@ -7,6 +7,7 @@ import { getInternalLinks } from './internal-link';
 function page(blocks: Page['blocks']): Page {
   return {
     blocks,
+    breadcrumbs: [],
     description: '',
     href: '/guide/settings',
     meta: {},

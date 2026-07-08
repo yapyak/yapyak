@@ -7,6 +7,7 @@ import { blockToText, getText } from './text';
 function page(blocks: Page['blocks']): Page {
   return {
     blocks,
+    breadcrumbs: [],
     description: '',
     href: '/guide/settings',
     meta: {},

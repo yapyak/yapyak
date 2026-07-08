@@ -7,6 +7,7 @@ import { buildAgentArtifact } from './agent-artifact';
 function buildPage(overrides: Partial<Page> = {}): Page {
   return {
     blocks: [],
+    breadcrumbs: [],
     description: '',
     href: '/guide/getting-started/installation',
     meta: {},

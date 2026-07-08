@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { findAdjacentPages, getFirstPage, getPage } from './page';
 
 const HELLO_PAGE: PageMeta = {
+  breadcrumbs: [],
   description: '',
   href: '/guide/hello',
   meta: {},
@@ -12,6 +13,7 @@ const HELLO_PAGE: PageMeta = {
 };
 
 const WORLD_PAGE: PageMeta = {
+  breadcrumbs: [],
   description: '',
   href: '/guide/world',
   meta: {},
@@ -19,6 +21,7 @@ const WORLD_PAGE: PageMeta = {
 };
 
 const SETTINGS_PAGE: PageMeta = {
+  breadcrumbs: [],
   description: '',
   href: '/guide/settings',
   meta: {},
