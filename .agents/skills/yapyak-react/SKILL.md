@@ -182,17 +182,19 @@ const parent = guides.find((candidate) => candidate.id === guide.parentId);
 
 #### Prop-value types stay; shared concepts live in `lib/`
 
-- Keep a value type used only as one component's own prop in that component file, prefixed with the component name.
-- Never export a non-`*Props` type from a component file for another component to import → move the shared type to `lib/` and name it as a bare concept.
+- Keep a value type used only as one component's own prop in that component file; name it `[Component][Concept]`.
+- Name the prop the bare concept, without the component prefix — `name: IconName`, never `iconName`.
+- Never export a non-`*Props` type from a component file for another component to import → move a shared type to `lib/`, named a bare concept.
 
-| The type | Home |
+| The type | Home and name |
 |---|---|
-| Used only as this component's own prop (union, enum) | its component file, component-prefixed |
-| Imported by another component, or backing shared data | `lib/`, bare concept |
+| Used only as this component's own prop | component file, `[Component][Concept]` — `IconName`, `DrawerDirection` |
+| Imported by another component, or backing shared data | `lib/`, bare concept — `FrameworkDefinition` |
 
 ```tsx
-// ✓ prop-only union — component file, component-prefixed
-export type DrawerDirection = 'end' | 'start';
+// ✓ component-local prop-value type — [Component][Concept]; prop is the bare concept
+export type IconName = 'chevron' | 'copy' | 'search';
+export type IconProps = BoxProps<'svg'> & { name: IconName };
 
 // ✗ shared shape exported from a component for another to import
 export type FrameworkDefinition = {
