@@ -134,9 +134,6 @@ useState<boolean>(false)
 
 // ✓ Variable
 <Button disabled={isDisabled} />
-
-// ✓ Non-default value — explicit
-<Button disabled />
 ```
 
 Applies to JSX props, function arguments, object literals, class instantiation.
