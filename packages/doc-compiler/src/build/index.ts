@@ -7,8 +7,8 @@ export type {
   Page,
   PageMeta,
   SidebarBadge,
-  SidebarGroup,
-  SidebarLink,
+  SidebarGroupNode,
+  SidebarLinkNode,
   SidebarNode,
   SymbolEntry,
 } from './manifest';

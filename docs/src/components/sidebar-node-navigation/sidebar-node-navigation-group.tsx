@@ -1,32 +1,34 @@
-import type { SidebarGroup, SidebarNode } from '@yapyak/doc-compiler';
+import type { SidebarGroupNode, SidebarNode } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { ContentNavigationGroupCollapsible } from './content-navigation-group-collapsible';
-import { ContentNavigationGroupStatic } from './content-navigation-group-static';
-import { ContentNavigationLink } from './content-navigation-link';
+import { SidebarNodeNavigationGroupCollapsible } from './sidebar-node-navigation-group-collapsible';
+import { SidebarNodeNavigationGroupStatic } from './sidebar-node-navigation-group-static';
+import { SidebarNodeNavigationLink } from './sidebar-node-navigation-link';
 
-export type ContentNavigationGroupProps = BoxProps & {
+export type SidebarNodeNavigationGroupProps = BoxProps & {
   depth: number;
-  node: SidebarGroup;
+  node: SidebarGroupNode;
 };
 
-export function ContentNavigationGroup(props: ContentNavigationGroupProps) {
+export function SidebarNodeNavigationGroup(
+  props: SidebarNodeNavigationGroupProps,
+) {
   if (props.node.collapsible) {
-    return <ContentNavigationGroupCollapsible {...props} />;
+    return <SidebarNodeNavigationGroupCollapsible {...props} />;
   }
-  return <ContentNavigationGroupStatic {...props} />;
+  return <SidebarNodeNavigationGroupStatic {...props} />;
 }
 
 export function renderChild(child: SidebarNode, depth: number) {
   if (child.kind === 'group') {
     return (
-      <ContentNavigationGroup
+      <SidebarNodeNavigationGroup
         depth={depth}
         node={child}
       />
     );
   }
-  return <ContentNavigationLink node={child} />;
+  return <SidebarNodeNavigationLink node={child} />;
 }
 
 export function getKey(node: SidebarNode): string {

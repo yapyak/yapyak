@@ -1,5 +1,10 @@
 import type { Supplement } from '../config';
-import type { Page, SidebarGroup, SidebarLink, SymbolEntry } from './manifest';
+import type {
+  Page,
+  SidebarGroupNode,
+  SidebarLinkNode,
+  SymbolEntry,
+} from './manifest';
 
 import { extractMarkdown } from '../extract/markdown';
 
@@ -9,7 +14,7 @@ export type BuildSupplementInput = {
 };
 
 export type BuildSupplementResult = {
-  group: SidebarGroup;
+  group: SidebarGroupNode;
   pages: Map<string, Page>;
   redirects: Map<string, string>;
   symbols: Record<string, SymbolEntry>;
@@ -30,7 +35,7 @@ export async function buildSupplement(
   );
 
   const links: {
-    node: SidebarLink;
+    node: SidebarLinkNode;
     order: number;
     slug: string;
   }[] = [];

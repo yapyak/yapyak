@@ -89,14 +89,14 @@ export type SymbolEntry = {
   path: string;
 };
 
-export type SidebarNode = SidebarGroup | SidebarLink;
+export type SidebarNode = SidebarGroupNode | SidebarLinkNode;
 
 export type SidebarBadge = {
   text?: string;
   variant: 'deprecated' | 'kind';
 };
 
-export type SidebarGroup = {
+export type SidebarGroupNode = {
   badge?: SidebarBadge;
   children: SidebarNode[];
   collapsible: boolean;
@@ -106,7 +106,7 @@ export type SidebarGroup = {
   kind: 'group';
 };
 
-export type SidebarLink = {
+export type SidebarLinkNode = {
   badge?: SidebarBadge;
   href: string;
   label: string;

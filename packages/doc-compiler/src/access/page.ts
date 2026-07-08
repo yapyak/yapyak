@@ -1,7 +1,7 @@
 import type {
   NavigationManifest,
   PageMeta,
-  SidebarLink,
+  SidebarLinkNode,
   SidebarNode,
 } from '../build';
 
@@ -13,7 +13,7 @@ export type AdjacentPages = {
 };
 
 type FlatEntry = {
-  link: SidebarLink;
+  link: SidebarLinkNode;
   parentLabel?: string;
 };
 

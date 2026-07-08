@@ -2,11 +2,11 @@ import { Outlet, createFileRoute, getRouteApi } from '@tanstack/react-router';
 import { t } from 'yapyak';
 
 import { ContentLayout } from '#components/content-layout';
-import { ContentNavigation } from '#components/content-navigation';
 import { OutlineDrawerTrigger } from '#components/outline-drawer-trigger';
 import { PageAction } from '#components/page-action';
 import { PageAnchorNavigation } from '#components/page-anchor-navigation';
 import { SidebarDrawerTrigger } from '#components/sidebar-drawer-trigger';
+import { SidebarNodeNavigation } from '#components/sidebar-node-navigation';
 
 import { doc } from 'virtual:doc-compiler';
 
@@ -26,9 +26,9 @@ function Component() {
   const { page } = splatRoute.useLoaderData();
 
   const sidebarContent = (
-    <ContentNavigation
+    <SidebarNodeNavigation
       aria-label={t('Guide navigation')}
-      tree={sidebarNodes}
+      sidebarNodes={sidebarNodes}
     />
   );
 

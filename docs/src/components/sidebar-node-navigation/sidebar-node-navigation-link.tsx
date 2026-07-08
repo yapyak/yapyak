@@ -1,4 +1,4 @@
-import type { SidebarLink } from '@yapyak/doc-compiler';
+import type { SidebarLinkNode } from '@yapyak/doc-compiler';
 import type { LinkBaseProps } from '#primitives/link';
 
 import { useLocation } from '@tanstack/react-router';
@@ -6,13 +6,15 @@ import { useEffect, useRef } from 'react';
 
 import { LinkBase } from '#primitives/link';
 
-import styles from './content-navigation-link.module.css';
+import styles from './sidebar-node-navigation-link.module.css';
 
-export type ContentNavigationLinkProps = LinkBaseProps & {
-  node: SidebarLink;
+export type SidebarNodeNavigationLinkProps = LinkBaseProps & {
+  node: SidebarLinkNode;
 };
 
-export function ContentNavigationLink(props: ContentNavigationLinkProps) {
+export function SidebarNodeNavigationLink(
+  props: SidebarNodeNavigationLinkProps,
+) {
   const { className, node, ...restProps } = props;
   const isDeprecated = node.badge?.variant === 'deprecated';
   const element = useRef<HTMLAnchorElement>(null);
@@ -55,7 +57,7 @@ export function ContentNavigationLink(props: ContentNavigationLinkProps) {
         exact: true,
       }}
       className={[
-        styles.ContentNavigationLink,
+        styles.SidebarNodeNavigationLink,
         className,
       ]}
       data-deprecated={isDeprecated}

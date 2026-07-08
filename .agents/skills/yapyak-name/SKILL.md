@@ -713,6 +713,18 @@ function resolveCallSite(site: CallSite): ResolvedSite { ... }
 
 **Callable types drop `Fn`.** A value held in a **named** `*Fn` type is `camelCase(TypeName)` minus the trailing `Fn`: `WarnFn` → `warn`, `ParseFragmentsFn` → `parseFragments` — never `warnFn` (the `Fn` marks the *type*, not the value). A **roleless generic** function — the wrapped callback in a `memoize`/`once`-style helper, `(...) => T` with no concept — defaults to `callback`; use `fn` only when `callback` already names another binding in scope. `function` is a reserved word, so the short form `fn` is the [[#no-abbreviations]] reserved-spelling exception. That exception is what makes `fn` legal and nothing else: a generic string/number/object value names its type **in full** (`string`, `number`, `object`, `value`), never `str`/`num`/`obj`, because those words are legal identifiers.
 
+### Union member types carry the union's category suffix
+
+- Give every named member of a category union the union's suffix: a `*Node` union's members are `*Node`, a `*Block` union's are `*Block`. (A `*Config` union is the strategy-union exception — its variants take `*Options`.)
+
+```ts
+// ✓
+type SidebarNode = SidebarGroupNode | SidebarLinkNode;
+
+// ✗ members drop the category the union asserts
+type SidebarNode = SidebarGroup | SidebarLink;
+```
+
 ### Discriminator fields — `type` vs `kind`
 
 The discriminator field of a tagged union is named by a single mechanical rule. No judgment.

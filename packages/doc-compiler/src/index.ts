@@ -70,8 +70,8 @@ export type {
   SearchData,
   SearchEntry,
   SidebarBadge,
-  SidebarGroup,
-  SidebarLink,
+  SidebarGroupNode,
+  SidebarLinkNode,
   SidebarNode,
   SymbolEntry,
 } from './build';

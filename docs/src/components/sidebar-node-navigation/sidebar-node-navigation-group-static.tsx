@@ -1,15 +1,15 @@
-import type { ContentNavigationGroupProps } from './content-navigation-group';
+import type { SidebarNodeNavigationGroupProps } from './sidebar-node-navigation-group';
 
 import { useLocation } from '@tanstack/react-router';
 
 import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 
-import { getKey, renderChild } from './content-navigation-group';
-import styles from './content-navigation-group.module.css';
+import { getKey, renderChild } from './sidebar-node-navigation-group';
+import styles from './sidebar-node-navigation-group.module.css';
 
-export function ContentNavigationGroupStatic(
-  props: ContentNavigationGroupProps,
+export function SidebarNodeNavigationGroupStatic(
+  props: SidebarNodeNavigationGroupProps,
 ) {
   const { className, depth, node, ...restProps } = props;
   const location = useLocation();
@@ -19,7 +19,7 @@ export function ContentNavigationGroupStatic(
     <Box
       {...restProps}
       className={[
-        styles.ContentNavigationGroup,
+        styles.SidebarNodeNavigationGroup,
         className,
       ]}
       data-depth={depth}

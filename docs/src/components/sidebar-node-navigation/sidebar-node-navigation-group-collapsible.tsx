@@ -1,4 +1,4 @@
-import type { ContentNavigationGroupProps } from './content-navigation-group';
+import type { SidebarNodeNavigationGroupProps } from './sidebar-node-navigation-group';
 
 import { useLocation } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -11,12 +11,12 @@ import {
   childrenContainPath,
   getKey,
   renderChild,
-} from './content-navigation-group';
-import styles from './content-navigation-group.module.css';
-import { ContentNavigationGroupChevronIcon } from './content-navigation-group-chevron-icon';
+} from './sidebar-node-navigation-group';
+import styles from './sidebar-node-navigation-group.module.css';
+import { SidebarNodeNavigationGroupChevronIcon } from './sidebar-node-navigation-group-chevron-icon';
 
-export function ContentNavigationGroupCollapsible(
-  props: ContentNavigationGroupProps,
+export function SidebarNodeNavigationGroupCollapsible(
+  props: SidebarNodeNavigationGroupProps,
 ) {
   const { className, depth, node, ...restProps } = props;
   const location = useLocation();
@@ -63,7 +63,7 @@ export function ContentNavigationGroupCollapsible(
     <Box
       {...restProps}
       className={[
-        styles.ContentNavigationGroup,
+        styles.SidebarNodeNavigationGroup,
         className,
       ]}
       data-collapsible={true}
@@ -97,7 +97,7 @@ export function ContentNavigationGroupCollapsible(
           className={styles.ToggleButton}
           onClick={handleToggleClick}
         >
-          <ContentNavigationGroupChevronIcon />
+          <SidebarNodeNavigationGroupChevronIcon />
         </ButtonBase>
       </Box>
       <Box

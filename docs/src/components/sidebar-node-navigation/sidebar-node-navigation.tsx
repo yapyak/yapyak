@@ -3,29 +3,29 @@ import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';
 
-import styles from './content-navigation.module.css';
-import { ContentNavigationGroup } from './content-navigation-group';
-import { ContentNavigationLink } from './content-navigation-link';
+import styles from './sidebar-node-navigation.module.css';
+import { SidebarNodeNavigationGroup } from './sidebar-node-navigation-group';
+import { SidebarNodeNavigationLink } from './sidebar-node-navigation-link';
 
-export type ContentNavigationProps = BoxProps<'nav'> & {
-  tree: SidebarNode[];
+export type SidebarNodeNavigationProps = BoxProps<'nav'> & {
+  sidebarNodes: SidebarNode[];
 };
 
-export function ContentNavigation(props: ContentNavigationProps) {
-  const { className, tree, ...restProps } = props;
+export function SidebarNodeNavigation(props: SidebarNodeNavigationProps) {
+  const { className, sidebarNodes, ...restProps } = props;
 
   return (
     <Box
       {...restProps}
       as="nav"
       className={[
-        styles.ContentNavigation,
+        styles.SidebarNodeNavigation,
         className,
       ]}
     >
-      {tree.map((node) =>
+      {sidebarNodes.map((node) =>
         node.kind === 'group' ? (
-          <ContentNavigationGroup
+          <SidebarNodeNavigationGroup
             className={
               node.collapsible ? styles.CollapsibleGroup : styles.StaticGroup
             }
@@ -34,7 +34,7 @@ export function ContentNavigation(props: ContentNavigationProps) {
             node={node}
           />
         ) : (
-          <ContentNavigationLink
+          <SidebarNodeNavigationLink
             className={styles.Link}
             key={node.href}
             node={node}
