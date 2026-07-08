@@ -1,8 +1,3 @@
 export type { ContentLayoutProps } from './content-layout';
-export type { ContentLayoutContentProps } from './content-layout-content';
-export type { ContentLayoutContentContentProps } from './content-layout-content-content';
-export type { ContentLayoutContentHeaderProps } from './content-layout-content-header';
-export type { ContentLayoutOutlineProps } from './content-layout-outline';
-export type { ContentLayoutSidebarProps } from './content-layout-sidebar';
 
 export { ContentLayout } from './content-layout';

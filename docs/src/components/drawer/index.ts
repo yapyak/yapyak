@@ -1,3 +1,3 @@
-export type { DrawerDirection, DrawerProps } from './drawer';
+export type { DrawerProps } from './drawer';
 
 export { Drawer } from './drawer';
