@@ -1,11 +1,11 @@
 @layer components {
-  .ContentPagination {
+  .PaginationNavigation {
     display: grid;
     grid-template-columns: 1fr;
     gap: var(--spacing-3);
 
-    .PreviousCard,
-    .NextCard {
+    .PreviousLink,
+    .NextLink {
       display: flex;
       flex-direction: column;
       gap: var(--spacing-2);
@@ -37,7 +37,7 @@
       }
     }
 
-    .NextCard {
+    .NextLink {
       align-items: flex-end;
       text-align: right;
     }

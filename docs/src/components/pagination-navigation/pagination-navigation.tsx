@@ -1,97 +1,86 @@
-import type { PageMeta } from '@yapyak/doc-compiler';
+import type { Pagination } from '@yapyak/doc-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';
 import { LinkBase } from '#primitives/link';
 
-import styles from './content-pagination.module.css';
+import styles from './pagination-navigation.module.css';
 
-export type ContentPaginationProps = BoxProps<'nav'> & {
-  nextPage?: PageMeta;
-  nextParentLabel?: string;
-  previousPage?: PageMeta;
-  previousParentLabel?: string;
+export type PaginationNavigationProps = BoxProps<'nav'> & {
+  pagination: Pagination;
 };
 
-export function ContentPagination(props: ContentPaginationProps) {
-  const {
-    className,
-    nextPage,
-    nextParentLabel,
-    previousPage,
-    previousParentLabel,
-    ...restProps
-  } = props;
-
-  if (!nextPage && !previousPage) {
-    return null;
-  }
+export function PaginationNavigation(props: PaginationNavigationProps) {
+  const { className, pagination, ...restProps } = props;
+  const { nextPageMeta, previousPageMeta } = pagination;
+  const previousSection = previousPageMeta?.breadcrumbs.at(-1);
+  const nextSection = nextPageMeta?.breadcrumbs.at(-1);
 
   return (
     <Box
       {...restProps}
       as="nav"
       className={[
-        styles.ContentPagination,
+        styles.PaginationNavigation,
         className,
       ]}
     >
-      {previousPage ? (
+      {previousPageMeta ? (
         <LinkBase
-          className={styles.PreviousCard}
-          to={previousPage.href}
+          className={styles.PreviousLink}
+          to={previousPageMeta.href}
         >
-          {previousParentLabel !== undefined && (
+          {previousSection !== undefined && (
             <Box
               as="span"
               className={styles.ParentText}
             >
-              {previousParentLabel}
+              {previousSection}
             </Box>
           )}
           <Box
             as="span"
             className={styles.TitleText}
           >
-            {previousPage.title}
+            {previousPageMeta.title}
           </Box>
-          {previousPage.description && (
+          {previousPageMeta.description && (
             <Box
               as="span"
               className={styles.DescriptionText}
             >
-              {previousPage.description}
+              {previousPageMeta.description}
             </Box>
           )}
         </LinkBase>
       ) : (
         <Box className={styles.Spacer} />
       )}
-      {nextPage ? (
+      {nextPageMeta ? (
         <LinkBase
-          className={styles.NextCard}
-          to={nextPage.href}
+          className={styles.NextLink}
+          to={nextPageMeta.href}
         >
-          {nextParentLabel !== undefined && (
+          {nextSection !== undefined && (
             <Box
               as="span"
               className={styles.ParentText}
             >
-              {nextParentLabel}
+              {nextSection}
             </Box>
           )}
           <Box
             as="span"
             className={styles.TitleText}
           >
-            {nextPage.title}
+            {nextPageMeta.title}
           </Box>
-          {nextPage.description && (
+          {nextPageMeta.description && (
             <Box
               as="span"
               className={styles.DescriptionText}
             >
-              {nextPage.description}
+              {nextPageMeta.description}
             </Box>
           )}
         </LinkBase>

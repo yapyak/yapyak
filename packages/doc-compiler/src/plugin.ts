@@ -185,12 +185,12 @@ export function docCompiler(config: Config): Plugin {
       return `
 import manifest from ${JSON.stringify(MANIFEST_ID)};
 import {
-  getAdjacentPages as _getAdjacentPages,
   getEntryMeta as _getEntryMeta,
   getFirstPageMeta as _getFirstPageMeta,
   getHeadings as _getHeadings,
   getOptionsRegistry as _getOptionsRegistry,
   getOptionsGroup as _getOptionsGroup,
+  getPagination as _getPagination,
   getSidebarNodes as _getSidebarNodes,
 } from '@yapyak/doc-compiler';
 
@@ -211,7 +211,7 @@ export const doc = {
       page: { ...entry.page, blocks },
     };
   },
-  getAdjacentPages: (page) => _getAdjacentPages(manifest, page),
+  getPagination: (pageMeta) => _getPagination(manifest, pageMeta),
   getSidebarNodes: (collection) => _getSidebarNodes(manifest, collection),
   getFirstPageMeta: (collection) => _getFirstPageMeta(manifest, collection),
   getOptionsRegistry: () => _getOptionsRegistry(manifest),

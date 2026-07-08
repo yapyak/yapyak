@@ -11,7 +11,6 @@
  */
 
 export type {
-  AdjacentPages,
   Block,
   CalloutBlock,
   CodeBlock,
@@ -43,6 +42,7 @@ export type {
   OutputBlock,
   OutputLine,
   PageEntry,
+  Pagination,
   ParagraphBlock,
   PickerBlock,
   QuoteBlock,
@@ -89,7 +89,6 @@ export type {
 
 export {
   blocksToMarkdown,
-  getAdjacentPages,
   getCodeBlocks,
   getCollection,
   getEntryMeta,
@@ -100,6 +99,7 @@ export {
   getOptionsGroup,
   getOptionsRegistry,
   getPage,
+  getPagination,
   getSidebarNodes,
   getText,
   resolveSymbol,
