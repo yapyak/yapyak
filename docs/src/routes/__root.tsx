@@ -30,7 +30,6 @@ import { RouteAnnouncer } from '#components/route-announcer';
 import { SearchDialogTrigger } from '#components/search-dialog-trigger';
 import { StatusView } from '#components/status-view';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
-import { assetUrl } from '#utils/asset';
 
 import { doc } from 'virtual:doc-compiler';
 
@@ -39,7 +38,7 @@ export const Route = createRootRoute({
     return {
       links: [
         {
-          href: assetUrl('favicon.svg'),
+          href: '/favicon.svg',
           rel: 'icon',
           type: 'image/svg+xml',
         },

@@ -92,7 +92,6 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
 ];
 
 export default defineConfig({
-  base: process.env.DOCS_BASEPATH ?? '/',
   css: {
     transformer: 'lightningcss',
   },
@@ -122,19 +121,10 @@ export default defineConfig({
           if (!page.fromCrawl) {
             return true;
           }
-          const basepath = process.env.DOCS_BASEPATH ?? '/';
-          const stripped =
-            basepath === '/'
-              ? page.path
-              : page.path.replace(
-                  new RegExp(`^${basepath.replace(/\/$/, '')}`),
-                  '',
-                );
-          const path = stripped === '' ? '/' : stripped;
           return (
-            path === '/' ||
-            path.startsWith('/guide') ||
-            path.startsWith('/reference')
+            page.path === '/' ||
+            page.path.startsWith('/guide') ||
+            page.path.startsWith('/reference')
           );
         },
       },

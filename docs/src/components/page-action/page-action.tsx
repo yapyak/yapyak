@@ -9,7 +9,6 @@ import { Icon } from '#components/icon';
 import { Menu, MenuTrigger } from '#components/menu';
 import { Swatch } from '#components/swatch';
 import { Box } from '#primitives/box';
-import { assetUrl } from '#utils/asset';
 
 import styles from './page-action.module.css';
 import { PageActionButton } from './page-action-button';
@@ -70,7 +69,7 @@ export function PageAction(props: PageActionProps) {
     [],
   );
 
-  const markdownPath = assetUrl(`${page.href.slice(1)}.md`);
+  const markdownPath = `${page.href}.md`;
 
   const handleChatSelect = (provider: ChatProvider) => {
     if (origin === undefined) {
