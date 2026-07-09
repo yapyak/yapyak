@@ -1,3 +1,0 @@
-# Remove this file before yapyak.dev launch.
-User-agent: *
-Disallow: /
