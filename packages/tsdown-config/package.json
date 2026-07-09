@@ -18,6 +18,10 @@
     "build": "tsdown",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@arethetypeswrong/core": "catalog:",
+    "publint": "catalog:"
+  },
   "devDependencies": {
     "@types/node": "catalog:",
     "@yapyak/typescript-config": "workspace:*",
