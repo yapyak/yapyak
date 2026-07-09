@@ -7,7 +7,7 @@ import type {
 import type { SidebarNode } from './manifest';
 
 import { expandModuleEntries } from '../extract/typescript';
-import { buildSymbolHref } from '../symbol-path';
+import { buildSymbolHref } from '../symbol-href';
 
 type BuildPackageRootInput = {
   collapsible: boolean;

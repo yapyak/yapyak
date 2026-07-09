@@ -28,7 +28,7 @@ import type {
 
 import { nullify } from '../../nullify';
 import { slugify } from '../../slugify';
-import { buildSymbolHref } from '../../symbol-path';
+import { buildSymbolHref } from '../../symbol-href';
 import {
   parseMarkdown,
   tryBuildDiagnosticFromCode,

@@ -72,6 +72,34 @@ Step 4 drops a leading segment **iff it is literally in the MODIFIER closed list
 | `interpolate` | drop `interpolate` → empty → fall back | `interpolate.ts` |
 | `t` | drop `t` → empty → fall back | `t.ts` |
 
+### Attribute-getter collapse
+
+The algorithm above derives the filename from the export's own name. When that name is `verb` + `<Subject>` + `<Attribute>` and the export merely computes a **primitive attribute of a domain object it already receives**, the file is the subject's — not a compound `<subject>-<attribute>.ts`. `Title` is an attribute of `Page`, so `getPageTitle` lives in `page.ts`, just as `getFirstPage` does — and for the same reason there is no `first-page.ts`.
+
+Mechanical test — a compound name collapses to its subject **iff all three hold**:
+
+1. The return type is a primitive (`string`, `number`, `boolean`) — not a domain type, array, object, `void`, or `never`.
+2. The first parameter is a domain type `T`.
+3. The name's noun (after the verb drop) begins with `T` — i.e. the name is `verb` + `T` + `Attribute`.
+
+Then the filename is `kebab-case(T)` (parent-strip still applies); the `Attribute` tail is dropped.
+
+| Export | Signature | Collapses? | Filename |
+| --- | --- | --- | --- |
+| `getPageTitle` | `(page: Page) => string` | ✓ all three | `page.ts` |
+| `getMessageContext` | `(message: Message) => string` | ✓ all three | `message.ts` |
+
+**When it does NOT collapse — the compound name stands:**
+
+| Export | Signature | Why it stands |
+| --- | --- | --- |
+| `buildMarkdownSidebar` | `() => SidebarNode[]` | Fails (1): returns a domain type. The file names a concept/role, not an attribute. |
+| `renderErrorDiagnostics` | `(…) => Diagnostic[]` | Fails (1): returns a domain type. `error-diagnostic` is a role, not an attribute of `Diagnostic`. |
+| `toMessageKey` | `(source: string) => string` | Fails (2): the first parameter is a primitive, not a subject. |
+| `buildSymbolHref` | `(moduleId: string, …) => string` | Fails (2): the first parameter is a primitive, not a subject. |
+
+A producer that returns a domain type is named for its own concept even when several such files return the same type — `markdown-sidebar.ts` and `package-root.ts` both yield `SidebarNode` yet stay distinct. Collapse applies only to a primitive attribute read of a subject the function already holds.
+
 ### Folder threshold
 
 ```

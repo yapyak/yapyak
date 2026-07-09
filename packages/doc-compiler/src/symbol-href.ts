@@ -1,8 +1,6 @@
 import type { PackageContext } from './extract/typescript';
 
-export function encodeSymbolSegment(name: string): string {
-  return name.replace(/^\$/, '');
-}
+import { encodeSymbolSegment } from './symbol-segment';
 
 export function buildSymbolHref(
   moduleId: string,

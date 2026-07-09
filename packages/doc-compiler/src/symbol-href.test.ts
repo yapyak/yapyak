@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildSymbolHref, encodeSymbolSegment } from './symbol-path';
+import { buildSymbolHref } from './symbol-href';
 
 describe('buildSymbolHref', () => {
   it('builds an href for a root-module export', () => {
@@ -21,15 +21,5 @@ describe('buildSymbolHref', () => {
         packageSlug: 'yapyak',
       }),
     ).toBe('/reference/yapyak/processor/createProcessor');
-  });
-});
-
-describe('encodeSymbolSegment', () => {
-  it('returns the segment unchanged when no leading `$`', () => {
-    expect(encodeSymbolSegment('Greeter')).toBe('Greeter');
-  });
-
-  it('strips a leading `$` from the segment', () => {
-    expect(encodeSymbolSegment('$Greeter')).toBe('Greeter');
   });
 });

@@ -29,7 +29,7 @@ import {
   resolveTypeExport,
 } from '../extract/typescript';
 import { slugify } from '../slugify';
-import { encodeSymbolSegment } from '../symbol-path';
+import { encodeSymbolSegment } from '../symbol-segment';
 import { buildMarkdownSidebar } from './markdown-sidebar';
 import { buildPackageRoot } from './package-root';
 import { buildSupplement } from './supplement';
