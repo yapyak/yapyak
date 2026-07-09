@@ -215,6 +215,18 @@
           }
         }
       }
+    },
+    {
+      "assist": {
+        "actions": {
+          "source": {
+            "useSortedKeys": "off"
+          }
+        }
+      },
+      "includes": [
+        "**/src/routes/**/*.tsx"
+      ]
     }
   ],
   "vcs": {

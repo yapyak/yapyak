@@ -55,7 +55,7 @@ component: FooPage,
 4. onEnter, onStay, onLeave, onCatch
 5. head, meta, scripts, headers
 6. pendingMs, pendingMinMs, wrapInSuspense
-7. component, pendingComponent, errorComponent, notFoundComponent
+7. component, pendingComponent, errorComponent, notFoundComponent, shellComponent
 ```
 
 ### Loaders

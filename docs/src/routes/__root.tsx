@@ -35,8 +35,6 @@ import { assetUrl } from '#utils/asset';
 import { doc } from 'virtual:doc-compiler';
 
 export const Route = createRootRoute({
-  component: Component,
-  errorComponent: ErrorComponent,
   head() {
     return {
       links: [
@@ -94,6 +92,8 @@ export const Route = createRootRoute({
       ],
     };
   },
+  component: Component,
+  errorComponent: ErrorComponent,
   notFoundComponent: NotFoundComponent,
   shellComponent: ShellComponent,
 });

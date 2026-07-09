@@ -1,22 +1,14 @@
-import type { Page } from '@yapyak/doc-compiler';
-
 import { createFileRoute } from '@tanstack/react-router';
 
 import { BlockRenderer } from '#components/block-renderer';
 import { PageArticle } from '#components/page-article';
 import { getPageTitle, loadPage } from '#lib/page';
 
-type LoaderData = {
-  page: Page;
-};
-
-type HeadContext = {
-  loaderData?: LoaderData;
-};
-
 export const Route = createFileRoute('/guide/$')({
-  component: Component,
-  head({ loaderData }: HeadContext) {
+  loader({ params }) {
+    return loadPage('guide', params._splat ?? '');
+  },
+  head({ loaderData }) {
     if (loaderData === undefined) {
       return {};
     }
@@ -29,9 +21,7 @@ export const Route = createFileRoute('/guide/$')({
       ],
     };
   },
-  loader({ params }) {
-    return loadPage('guide', params._splat ?? '');
-  },
+  component: Component,
 });
 
 function Component() {
