@@ -23,7 +23,8 @@
     "@changesets/changelog-github": "catalog:",
     "@changesets/cli": "catalog:",
     "knip": "catalog:",
-    "vitest": "catalog:"
+    "vitest": "catalog:",
+    "wrangler": "catalog:"
   },
   "packageManager": "pnpm@10.33.0",
   "engines": {
