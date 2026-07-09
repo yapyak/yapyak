@@ -56,11 +56,12 @@
 
           .KeyText {
             display: inline-block;
-            margin-inline-start: 1ch;
+            margin-inline-start: var(--spacing-2);
           }
 
           @media (min-width: 640px) {
-            display: contents;
+            display: inline-flex;
+            align-items: center;
           }
         }
 
@@ -69,7 +70,7 @@
           width: 128px;
           height: 0.85em;
           padding: 0 var(--px);
-          margin-inline: 1ch;
+          margin-inline: var(--spacing-2);
           background: linear-gradient(
             90deg,
             var(--ring) 0%,
@@ -86,14 +87,15 @@
 
         .ValueText {
           display: inline-block;
-          margin-inline: 1ch;
+          margin-inline: var(--spacing-2);
         }
 
         .JsonClosing {
           display: none;
 
           @media (min-width: 640px) {
-            display: contents;
+            display: inline-flex;
+            align-items: center;
           }
         }
       }
