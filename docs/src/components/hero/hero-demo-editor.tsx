@@ -32,13 +32,14 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
   } = props;
   const activeIndex = Math.max(
     FRAMEWORK_DEFINITIONS.findIndex(
-      (frameworkDefinition) => frameworkDefinition.id === framework,
+      (frameworkDefinition) => frameworkDefinition.framework === framework,
     ),
     0,
   );
-  const config = FRAMEWORK_DEFINITIONS[activeIndex] ?? FRAMEWORK_DEFINITIONS[0];
+  const activeFrameworkDefinition =
+    FRAMEWORK_DEFINITIONS[activeIndex] ?? FRAMEWORK_DEFINITIONS[0];
   const code = buildCode(framework, source);
-  const tokens = tokenize(code, config.language);
+  const tokens = tokenize(code, activeFrameworkDefinition.language);
 
   return (
     <Box
@@ -62,7 +63,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
           <HeroDemoEditorTab
             activeFramework={framework}
             frameworkDefinition={frameworkDefinition}
-            key={frameworkDefinition.id}
+            key={frameworkDefinition.framework}
             onSelect={onFrameworkChange}
             saving={saving}
             typing={typing}

@@ -13,7 +13,7 @@ export type Framework = 'astro' | 'react' | 'svelte' | 'vue';
 
 export type FrameworkDefinition = {
   filename: string;
-  id: Framework;
+  framework: Framework;
   label: string;
   language: Language;
 };
@@ -26,25 +26,25 @@ export const FRAMEWORK_DEFINITIONS: [
 ] = [
   {
     filename: 'app.tsx',
-    id: 'react',
+    framework: 'react',
     label: 'React',
     language: 'tsx',
   },
   {
     filename: 'app.vue',
-    id: 'vue',
+    framework: 'vue',
     label: 'Vue',
     language: 'vue',
   },
   {
     filename: 'app.svelte',
-    id: 'svelte',
+    framework: 'svelte',
     label: 'Svelte',
     language: 'svelte',
   },
   {
     filename: 'app.astro',
-    id: 'astro',
+    framework: 'astro',
     label: 'Astro',
     language: 'astro',
   },

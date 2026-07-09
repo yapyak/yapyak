@@ -17,7 +17,7 @@ export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
   const { activeFramework, frameworkDefinition, onSelect, saving, typing } =
     props;
 
-  const isActive = frameworkDefinition.id === activeFramework;
+  const isActive = frameworkDefinition.framework === activeFramework;
   const isDirty = isActive && (typing || saving);
 
   const extension = frameworkDefinition.filename.slice(
@@ -25,7 +25,7 @@ export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
   );
 
   const handleClick = () => {
-    onSelect(frameworkDefinition.id);
+    onSelect(frameworkDefinition.framework);
   };
 
   return (
