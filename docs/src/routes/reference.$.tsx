@@ -6,8 +6,12 @@ import { loadEntry } from '#lib/entry';
 import { getPageTitle } from '#lib/page';
 
 export const Route = createFileRoute('/reference/$')({
-  loader({ params }) {
-    return loadEntry('reference', params._splat ?? '');
+  async loader({ params }) {
+    const entry = await loadEntry('reference', params._splat ?? '');
+    return {
+      blocks: entry.blocks,
+      page: entry.page,
+    };
   },
   head({ loaderData }) {
     if (loaderData === undefined) {

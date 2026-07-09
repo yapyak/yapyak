@@ -63,9 +63,25 @@ component: FooPage,
 | Rule | Detail |
 |---|---|
 | Loaders return an object | Always use explicit `return`, never implicit arrow shorthand. |
-| Pass loaded data straight through | Never transform or reshape in the loader. Derivation happens at the point of use in the component that renders it — see [[yapyak-react]] § Pass whole objects. |
+| Project fields, never derive | The loader may **select** fields off the fetched value — property access, destructuring, renaming, a literal/spread built from those. It may NOT **derive** — no call that computes over the loaded data (`getAnchors(blocks)`, `.filter(…)`, `getPageTitle(page)`), no value-producing operator on it. Derivation happens at the point of use in the component — see [[yapyak-react]] § Pass whole objects. |
 | `useLoaderData()` only in `Component` | Never call it in domain components. |
 | Loader data is always defined | No `\| undefined` guards needed. |
+
+**Projection vs derivation — mechanical test.** Set aside the fetch call and its argument prep (`params._splat ?? ''` is input, not output). The returned expression is a legal **projection** iff it holds no call expressions and no value-deriving operators over the loaded data — only property access, destructuring, renaming, literals, and spread. A single computing call (`getAnchors(blocks)`, `.filter(…)`) makes it **derivation** → move it to the component.
+
+```ts
+// ✓ projection — select the fields this route needs
+async loader({ params }) {
+  const entry = await loadEntry('guide', params._splat ?? '');
+  return { blocks: entry.blocks, page: entry.page };
+}
+
+// ✗ derivation — getAnchors computes a new value
+async loader({ params }) {
+  const entry = await loadEntry('guide', params._splat ?? '');
+  return { anchors: getAnchors(entry.blocks), page: entry.page };
+}
+```
 
 ### Search params
 
