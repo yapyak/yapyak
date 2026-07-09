@@ -95,6 +95,18 @@ export function tokenizeBash(code: string) {
       }
     }
 
+    if (character === '<') {
+      const placeholder = /^<[^<>\s]+>/.exec(code.slice(index));
+      if (placeholder) {
+        tokens.push({
+          kind: 'bash-placeholder',
+          value: placeholder[0],
+        });
+        index += placeholder[0].length;
+        continue;
+      }
+    }
+
     if (character === '-') {
       const previous = index > 0 ? (code[index - 1] ?? '') : '';
       const isWordContinuation = /[A-Za-z0-9_./@-]/.test(previous);

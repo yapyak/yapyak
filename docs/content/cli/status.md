@@ -3,7 +3,7 @@ title: status
 order: 4
 ---
 
-```
+```bash
 yapyak status [--json]
 ```
 

@@ -123,5 +123,10 @@
     &[data-kind="bash-package"] {
       color: var(--syntax-string);
     }
+
+    &[data-kind="bash-placeholder"] {
+      font-style: italic;
+      color: var(--syntax-fn-call);
+    }
   }
 }

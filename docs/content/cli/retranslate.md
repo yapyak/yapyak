@@ -3,7 +3,7 @@ title: retranslate
 order: 3
 ---
 
-```
+```bash
 yapyak retranslate <source> [--locale <code>] [--as <ctx>] [--file <path>]
 ```
 

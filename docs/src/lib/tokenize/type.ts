@@ -43,7 +43,8 @@ export type TokenKind =
   | 'bash-var'
   | 'bash-flag'
   | 'bash-subcommand'
-  | 'bash-package';
+  | 'bash-package'
+  | 'bash-placeholder';
 
 export type Token = {
   kind: TokenKind;

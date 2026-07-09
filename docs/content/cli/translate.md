@@ -3,7 +3,7 @@ title: translate
 order: 2
 ---
 
-```
+```bash
 yapyak translate [<locale>] [--force]
 ```
 

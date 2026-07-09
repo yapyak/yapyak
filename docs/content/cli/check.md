@@ -3,7 +3,7 @@ title: check
 order: 5
 ---
 
-```
+```bash
 yapyak check
 ```
 

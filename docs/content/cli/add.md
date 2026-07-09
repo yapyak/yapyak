@@ -3,7 +3,7 @@ title: add
 order: 1
 ---
 
-```
+```bash
 yapyak add <locale> [<locale>...]
 ```
 

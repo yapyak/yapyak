@@ -48,4 +48,8 @@ describe('tokenizeBash', () => {
   it('returns a `number` token for a numeric literal', () => {
     expect(types('sleep 5')).toContain('number');
   });
+
+  it('returns a `bash-placeholder` token for an `<arg>` metavariable', () => {
+    expect(types('yapyak add <locale>')).toContain('bash-placeholder');
+  });
 });

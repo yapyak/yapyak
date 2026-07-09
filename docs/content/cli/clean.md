@@ -3,7 +3,7 @@ title: clean
 order: 6
 ---
 
-```
+```bash
 yapyak clean [--write]
 ```
 

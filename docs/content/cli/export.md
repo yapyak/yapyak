@@ -3,7 +3,7 @@ title: export
 order: 7
 ---
 
-```
+```bash
 yapyak export [<locale...>] [--out <path>] [--split]
 ```
 
