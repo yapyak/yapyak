@@ -17,10 +17,14 @@ export function defineConfig(overrides: UserConfig): UserConfig {
   const userOnSuccess = overrides.onSuccess;
 
   return {
+    attw: {
+      profile: 'esm-only',
+    },
     clean: true,
     dts: true,
     fixedExtension: false,
     format: 'esm',
+    publint: true,
     treeshake: {
       moduleSideEffects: 'no-external',
     },

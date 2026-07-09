@@ -1,0 +1,36 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "access": "public",
+  "baseBranch": "main",
+  "changelog": [
+    "@changesets/changelog-github",
+    {
+      "repo": "yapyak/yapyak"
+    }
+  ],
+  "commit": false,
+  "fixed": [
+    [
+      "yapyak",
+      "@yapyak/anthropic",
+      "@yapyak/astro",
+      "@yapyak/gemini",
+      "@yapyak/ollama",
+      "@yapyak/openai",
+      "@yapyak/react",
+      "@yapyak/react-router",
+      "@yapyak/svelte",
+      "@yapyak/sveltekit",
+      "@yapyak/tanstack-start",
+      "@yapyak/vite",
+      "@yapyak/vue"
+    ]
+  ],
+  "ignore": [],
+  "linked": [],
+  "privatePackages": {
+    "tag": false,
+    "version": false
+  },
+  "updateInternalDependencies": "patch"
+}

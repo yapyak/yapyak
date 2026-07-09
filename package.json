@@ -19,8 +19,12 @@
     "typecheck": "pnpm -r --parallel typecheck"
   },
   "devDependencies": {
+    "@arethetypeswrong/core": "catalog:",
     "@biomejs/biome": "catalog:",
+    "@changesets/changelog-github": "catalog:",
+    "@changesets/cli": "catalog:",
     "knip": "catalog:",
+    "publint": "catalog:",
     "vitest": "catalog:"
   },
   "packageManager": "pnpm@10.33.0",
