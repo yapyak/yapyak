@@ -74,7 +74,7 @@ Include only conditions needed. Keep relative order regardless of subset. Decisi
 #### In a pnpm monorepo
 
 - External dependencies in `dependencies`/`devDependencies` use `catalog:` — never inline version strings. Versions live exactly once in `pnpm-workspace.yaml` under `catalog:`.
-- Internal workspace packages use `workspace:*` — in `dependencies`, `devDependencies`, and `peerDependencies`. Publish rewrites it to an exact pin → the `/internal` coupling carries no cross-version guarantee, so a caret peer range promises combinations the packages do not keep.
+- Internal workspace packages use `workspace:*` — in `dependencies`, `devDependencies`, and `peerDependencies` alike. Publish rewrites it to an exact pin; `/internal` carries no cross-version guarantee, so a caret peer promises combinations the packages do not keep.
 
 Adding a new external dep: pin in `pnpm-workspace.yaml` under `catalog:` first, then reference with `"catalog:"`.
 

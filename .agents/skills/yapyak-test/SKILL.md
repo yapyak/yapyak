@@ -48,7 +48,7 @@ Files that do **NOT** get unit tests:
 
 ### Browser e2e — `*.spec.ts`
 
-- Playwright specs live in `e2e/src` and use the `*.spec.ts` suffix — never `*.test.ts` → the suffix marks which rule set applies.
+- Playwright specs live in `e2e/src` with the `*.spec.ts` suffix; `*.test.ts` is unit-only — the suffix marks which rule set applies.
 - `test` names draw from the Yap List; fixtures draw from the Yak Pool.
 - The unit rules — symbol selection, source-file mirroring, `describe` structure, category formulas — do not apply to e2e specs.
 
