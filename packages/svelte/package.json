@@ -62,7 +62,7 @@
   },
   "peerDependencies": {
     "svelte": ">=5",
-    "yapyak": "workspace:*"
+    "yapyak": "workspace:^"
   },
   "engines": {
     "node": ">=22.12"

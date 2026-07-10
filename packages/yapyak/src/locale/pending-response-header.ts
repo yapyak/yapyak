@@ -1,4 +1,4 @@
-type ResponseHeaderWriter = (name: string, value: string) => void;
+type ResponseHeaderWriter = (name: string, value: string) => boolean;
 
 let responseHeaderWriter: ResponseHeaderWriter | undefined;
 
@@ -17,6 +17,5 @@ export function appendPendingResponseHeader(
   if (responseHeaderWriter === undefined) {
     return false;
   }
-  responseHeaderWriter(name, value);
-  return true;
+  return responseHeaderWriter(name, value);
 }

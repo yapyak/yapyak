@@ -20,6 +20,7 @@ export function Layout({ children }: { children: ReactNode }) {
           content="width=device-width, initial-scale=1"
           name="viewport"
         />
+        <title>yapyak — React Router example</title>
         <Meta />
         <Links />
       </head>

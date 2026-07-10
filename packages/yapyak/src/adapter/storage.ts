@@ -20,7 +20,12 @@ export function createStorage(): Storage {
   };
   setRequestReader(() => requests.getStore());
   setResponseHeaderWriter((name, value) => {
-    headers.getStore()?.append(name, value);
+    const responseHeaders = headers.getStore();
+    if (responseHeaders === undefined) {
+      return false;
+    }
+    responseHeaders.append(name, value);
+    return true;
   });
   return storage;
 }

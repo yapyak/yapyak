@@ -35,7 +35,7 @@ Retries happen inside the provider's fetch layer **before** any typed error is c
 
 | Source of failure | Retried? | Surfaces as |
 |---|---|---|
-| HTTP 429 | Yes. Backoff up to `maxRetries`. Honors `Retry-After`. | `TranslatorRateLimitError` |
+| HTTP 429 | Yes. Backoff up to `maxRetries`. Honors `Retry-After` up to 60 seconds. | `TranslatorRateLimitError` |
 | HTTP 408 / 5xx | Yes. Up to `maxRetries`. | `TranslatorNetworkError` (with `status`) |
 | Network failure (abort, timeout, connection error) | Yes. Up to `maxRetries`. | `TranslatorTimeoutError` or `TranslatorNetworkError` |
 | HTTP 4xx (other than 408/429) | No. | `TranslatorNetworkError` (with `status`) |

@@ -1,5 +1,3 @@
-import type { ResolveOptions } from '@sveltejs/kit';
-
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { setLocale } from 'yapyak';
 import { resetLocale } from 'yapyak/internal';
@@ -20,10 +18,6 @@ vi.mock('yapyak/runtime', () => ({
   SYNC_HTML_LANG: false,
 }));
 
-type ResolveCall = {
-  options: ResolveOptions | undefined;
-};
-
 function makeEvent(request: Request): Parameters<typeof handle>[0]['event'] {
   return {
     request,
@@ -36,14 +30,10 @@ describe('handle', () => {
   });
 
   it('transforms `%yapyak.lang%` with the current locale in the page chunk', async () => {
-    const calls: ResolveCall[] = [];
     const event = makeEvent(new Request('http://example.com/'));
-    await handle({
+    const response = await handle({
       event,
       resolve: async (_event, options) => {
-        calls.push({
-          options,
-        });
         const html = options?.transformPageChunk?.({
           done: true,
           html: '<html lang="%yapyak.lang%">',
@@ -51,7 +41,8 @@ describe('handle', () => {
         return new Response(typeof html === 'string' ? html : '');
       },
     } as Parameters<typeof handle>[0]);
-    expect(calls).toHaveLength(1);
+
+    expect(await response.text()).toBe('<html lang="en">');
   });
 
   it('writes Set-Cookie onto the response when `setLocale()` is called server-side', async () => {

@@ -142,6 +142,64 @@ describe('fetchWithRetry', () => {
     expect(result.ok).toBe(true);
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
+
+  it('returns the response after a `Retry-After` delay above the backoff cap', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response('rate limited', {
+          headers: {
+            'retry-after': '30',
+          },
+          status: 429,
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response('ok', {
+          status: 200,
+        }),
+      );
+    vi.stubGlobal('fetch', fetchMock);
+    const promise = fetchWithRetry(URL, INIT, {
+      maxRetries: 1,
+      timeout: 60_000,
+    });
+    await vi.advanceTimersByTimeAsync(29_999);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(2);
+    const result = await promise;
+    expect(result.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('truncates the `Retry-After` delay to 60 seconds', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(
+        new Response('rate limited', {
+          headers: {
+            'retry-after': '120',
+          },
+          status: 429,
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response('ok', {
+          status: 200,
+        }),
+      );
+    vi.stubGlobal('fetch', fetchMock);
+    const promise = fetchWithRetry(URL, INIT, {
+      maxRetries: 1,
+      timeout: 120_000,
+    });
+    await vi.advanceTimersByTimeAsync(59_999);
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    await vi.advanceTimersByTimeAsync(2);
+    const result = await promise;
+    expect(result.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
 });
 
 describe('parseRetryAfterMs', () => {

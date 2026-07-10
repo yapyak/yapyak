@@ -42,7 +42,7 @@
     "vitest": "catalog:"
   },
   "peerDependencies": {
-    "yapyak": "workspace:*"
+    "yapyak": "workspace:^"
   },
   "engines": {
     "node": ">=22.12"

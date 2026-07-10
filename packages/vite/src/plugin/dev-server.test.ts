@@ -1,14 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { toMessageKey } from 'yapyak/compiler/internal';
 
-import {
-  derivePatches,
-  readLocaleFile,
-  toExtractedKeysForFile,
-} from './dev-server';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { derivePatches, toExtractedKeysForFile } from './dev-server';
 
 describe('derivePatches', () => {
   it('returns no patches when before and after match', () => {
@@ -143,85 +136,6 @@ describe('derivePatches', () => {
         locale: 'sv',
         value: '',
       },
-    ]);
-  });
-});
-
-describe('readLocaleFile', () => {
-  let directory: string;
-
-  beforeEach(() => {
-    directory = mkdtempSync(join(tmpdir(), 'yapyak-vite-dev-server-'));
-  });
-
-  afterEach(() => {
-    rmSync(directory, {
-      force: true,
-      recursive: true,
-    });
-  });
-
-  it('reads and parses a locale file', () => {
-    const path = join(directory, 'sv.json');
-    writeFileSync(
-      path,
-      JSON.stringify({
-        'src/a.ts': {
-          Hello: 'Hej',
-        },
-      }),
-    );
-    expect(readLocaleFile(path)).toEqual({
-      'src/a.ts': {
-        Hello: 'Hej',
-      },
-    });
-  });
-
-  it('returns an empty object when the file does not exist', () => {
-    expect(readLocaleFile(join(directory, 'missing.json'))).toEqual({});
-  });
-
-  it('returns an empty object for invalid JSON', () => {
-    const path = join(directory, 'sv.json');
-    writeFileSync(path, '{ not valid');
-    expect(readLocaleFile(path)).toEqual({});
-  });
-
-  it('returns an empty object when the parsed value is not an object', () => {
-    const path = join(directory, 'sv.json');
-    writeFileSync(path, '["array", "not", "object"]');
-    expect(readLocaleFile(path)).toEqual({});
-  });
-
-  it('normalizes source keys to NFC like the canonical reader', () => {
-    const path = join(directory, 'sv.json');
-    const nfdKey = 'Cafe\u0301';
-    writeFileSync(
-      path,
-      JSON.stringify({
-        'src/a.ts': {
-          [nfdKey]: 'Caf\u00e9',
-        },
-      }),
-    );
-    const entries = readLocaleFile(path)['src/a.ts'];
-    expect(entries).toBeDefined();
-    expect(Object.keys(entries ?? {})).toEqual([
-      'Caf\u00e9'.normalize(),
-    ]);
-  });
-
-  it('refuses to set the result prototype when the JSON has a top-level `__proto__` key', () => {
-    const path = join(directory, 'sv.json');
-    writeFileSync(
-      path,
-      '{"__proto__":{"leaked":{"Hello":"PWNED"}},"src/a.ts":{"Hello":"Hej"}}',
-    );
-    const result = readLocaleFile(path);
-    expect(Object.getPrototypeOf(result)).toBeNull();
-    expect(Object.keys(result)).toEqual([
-      'src/a.ts',
     ]);
   });
 });

@@ -9,11 +9,14 @@ import type {
 import type { State } from './state';
 
 import {
+  CorruptLocaleFileError,
+  YAP,
   detectRenames,
   extractFile,
+  getDocsUrl,
   migrateLocales,
-  parseLocaleFile,
   parseTemplate,
+  readLocaleFile,
   syncLocaleFiles,
   toMessageKey,
   validateLocaleCode,
@@ -107,7 +110,18 @@ export function createDevServerPlugin(state: State): Plugin {
         for (const localePath of pendingLocalePaths) {
           const locale = localeFromPath(localePath);
           const before = previousLocaleData.get(locale) ?? {};
-          const after = readLocaleFile(localePath);
+          let after: LocaleFile;
+          try {
+            after = readLocaleFile(localePath);
+          } catch (error) {
+            if (error instanceof CorruptLocaleFileError) {
+              state.logger.warn(
+                `${error.message}\nSee ${getDocsUrl(YAP.CATALOG_LOCALE_FILE_CORRUPT.code)}`,
+              );
+              continue;
+            }
+            throw error;
+          }
           previousLocaleData.set(locale, after);
           const localePatches = derivePatches(before, after, locale);
           for (const patch of localePatches) {
@@ -221,7 +235,18 @@ export function createDevServerPlugin(state: State): Plugin {
           state.logger.info(
             `[yapyak] New locale '${locale}' detected. ${hint}`,
           );
-          const initial = readLocaleFile(path);
+          let initial: LocaleFile;
+          try {
+            initial = readLocaleFile(path);
+          } catch (error) {
+            if (error instanceof CorruptLocaleFileError) {
+              state.logger.warn(
+                `${error.message}\nSee ${getDocsUrl(YAP.CATALOG_LOCALE_FILE_CORRUPT.code)}`,
+              );
+              return;
+            }
+            throw error;
+          }
           previousLocaleData.set(locale, initial);
           const initialPatches = derivePatches({}, initial, locale);
           if (initialPatches.length > 0) {
@@ -340,22 +365,6 @@ function isLocaleFile(state: State, path: string): boolean {
 function localeFromPath(path: string): string {
   const base = basename(path);
   return base.slice(0, -extname(base).length);
-}
-
-export function readLocaleFile(path: string): LocaleFile {
-  let raw: string;
-  try {
-    raw = readFileSync(path, 'utf8');
-  } catch {
-    return {};
-  }
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(raw);
-  } catch {
-    return {};
-  }
-  return parseLocaleFile(parsed);
 }
 
 export function derivePatches(

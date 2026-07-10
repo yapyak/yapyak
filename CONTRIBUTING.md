@@ -13,6 +13,7 @@ pnpm install
 Then run the verification chain:
 
 ```bash
+pnpm build         # build every package; tests and typecheck resolve workspace packages through dist
 pnpm test          # all tests
 pnpm check         # biome (lint + format)
 pnpm -r typecheck  # tsc across every package
@@ -22,7 +23,7 @@ pnpm -r typecheck  # tsc across every package
 
 ## Style
 
-This repo encodes its conventions in [`AGENTS.md`](AGENTS.md) and the modular rules in [`agents/`](agents/). Read those before opening a pull request. Both human contributors and AI-assisted contributors are expected to follow them.
+This repo encodes its conventions in [`AGENTS.md`](AGENTS.md) and the modular rules in [`.agents/skills/`](.agents/skills/). Read those before opening a pull request. Both human contributors and AI-assisted contributors are expected to follow them.
 
 ## Pull requests
 

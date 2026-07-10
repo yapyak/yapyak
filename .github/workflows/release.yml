@@ -25,7 +25,7 @@ jobs:
       - uses: changesets/action@v1
         with:
           version: pnpm changeset version
-          publish: pnpm typecheck && pnpm test && pnpm build && pnpm changeset publish
+          publish: pnpm build && pnpm typecheck && pnpm test && pnpm changeset publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: "true"

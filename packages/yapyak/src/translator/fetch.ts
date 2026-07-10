@@ -7,6 +7,7 @@ export type FetchWithRetryOptions = {
 const DEFAULT_MAX_RETRIES = 3;
 const DEFAULT_TIMEOUT = 30_000;
 const MAX_BACKOFF_MS = 8000;
+const MAX_RETRY_AFTER_MS = 60_000;
 const BASE_BACKOFF_MS = 250;
 const JITTER_RANGE = 0.4;
 
@@ -108,7 +109,7 @@ function resolveRetryDelayMs(
 ): number {
   const fromHeader = parseRetryAfterMs(retryAfter);
   if (fromHeader !== undefined) {
-    return Math.min(MAX_BACKOFF_MS, fromHeader);
+    return Math.min(MAX_RETRY_AFTER_MS, fromHeader);
   }
   return getBackoffMs(attempt);
 }

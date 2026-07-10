@@ -115,7 +115,8 @@ pnpm changeset            # write the "initial release" note
 pnpm changeset version    # bumps all packages from 0.0.0; needs GITHUB_TOKEN set locally
 npm config set //registry.npmjs.org/:_authToken=<granular-token>
 pnpm build
-pnpm check:publish
+pnpm typecheck
+pnpm test
 pnpm -r publish --access public --no-git-checks
 ```
 

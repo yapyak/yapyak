@@ -134,12 +134,13 @@ describe('cookie', () => {
     });
 
     it('writes `Set-Cookie` via the registered writer', () => {
-      setResponseHeaderWriter((name, value) =>
+      setResponseHeaderWriter((name, value) => {
         writes.push([
           name,
           value,
-        ]),
-      );
+        ]);
+        return true;
+      });
       cookie({
         name: 'locale',
       }).set('sv');
@@ -152,12 +153,13 @@ describe('cookie', () => {
     });
 
     it('transforms the locale value when writing the cookie string', () => {
-      setResponseHeaderWriter((name, value) =>
+      setResponseHeaderWriter((name, value) => {
         writes.push([
           name,
           value,
-        ]),
-      );
+        ]);
+        return true;
+      });
       cookie({
         name: 'locale',
       }).set('en-US');
@@ -165,12 +167,13 @@ describe('cookie', () => {
     });
 
     it('holds the configured cookie name in the writer call', () => {
-      setResponseHeaderWriter((name, value) =>
+      setResponseHeaderWriter((name, value) => {
         writes.push([
           name,
           value,
-        ]),
-      );
+        ]);
+        return true;
+      });
       cookie({
         name: 'app-locale',
       }).set('de');
@@ -178,12 +181,13 @@ describe('cookie', () => {
     });
 
     it('returns false from set when a writer is registered', () => {
-      setResponseHeaderWriter((name, value) =>
+      setResponseHeaderWriter((name, value) => {
         writes.push([
           name,
           value,
-        ]),
-      );
+        ]);
+        return true;
+      });
       expect(
         cookie({
           name: 'locale',
