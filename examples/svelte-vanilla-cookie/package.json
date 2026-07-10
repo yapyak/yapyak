@@ -1,0 +1,21 @@
+{
+  "name": "@yapyak-examples/svelte-vanilla-cookie",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@yapyak/svelte": "workspace:*",
+    "svelte": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "catalog:",
+    "@yapyak/vite": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

@@ -19,6 +19,12 @@ const EXAMPLES: Example[] = [
     serverSwitch: false,
   },
   {
+    name: 'astro-url',
+    persistence: 'url',
+    port: 5311,
+    serverSwitch: false,
+  },
+  {
     name: 'react-react-router-cookie',
     persistence: 'cookie',
     port: 5302,
@@ -43,9 +49,21 @@ const EXAMPLES: Example[] = [
     serverSwitch: false,
   },
   {
+    name: 'react-vanilla-cookie',
+    persistence: 'cookie',
+    port: 5312,
+    serverSwitch: false,
+  },
+  {
     name: 'react-vanilla-local-storage',
     persistence: 'local-storage',
     port: 5306,
+    serverSwitch: false,
+  },
+  {
+    name: 'react-vanilla-url',
+    persistence: 'url',
+    port: 5313,
     serverSwitch: false,
   },
   {
@@ -61,15 +79,39 @@ const EXAMPLES: Example[] = [
     serverSwitch: false,
   },
   {
+    name: 'svelte-vanilla-cookie',
+    persistence: 'cookie',
+    port: 5314,
+    serverSwitch: false,
+  },
+  {
     name: 'svelte-vanilla-local-storage',
     persistence: 'local-storage',
     port: 5309,
     serverSwitch: false,
   },
   {
+    name: 'svelte-vanilla-url',
+    persistence: 'url',
+    port: 5315,
+    serverSwitch: false,
+  },
+  {
+    name: 'vue-vanilla-cookie',
+    persistence: 'cookie',
+    port: 5316,
+    serverSwitch: false,
+  },
+  {
     name: 'vue-vanilla-local-storage',
     persistence: 'local-storage',
     port: 5310,
+    serverSwitch: false,
+  },
+  {
+    name: 'vue-vanilla-url',
+    persistence: 'url',
+    port: 5317,
     serverSwitch: false,
   },
 ];
