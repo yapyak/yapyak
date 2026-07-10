@@ -45,7 +45,7 @@
   },
   "peerDependencies": {
     "@tanstack/react-start": ">=1.168",
-    "yapyak": "workspace:^"
+    "yapyak": "workspace:*"
   },
   "engines": {
     "node": ">=22.12"

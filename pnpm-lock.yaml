@@ -847,7 +847,7 @@ importers:
   packages/anthropic:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
@@ -875,7 +875,7 @@ importers:
         specifier: workspace:*
         version: link:../vite
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@types/estree':
@@ -940,7 +940,7 @@ importers:
   packages/gemini:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
@@ -962,7 +962,7 @@ importers:
   packages/ollama:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
@@ -984,7 +984,7 @@ importers:
   packages/openai:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
@@ -1006,7 +1006,7 @@ importers:
   packages/react:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@testing-library/react':
@@ -1049,7 +1049,7 @@ importers:
   packages/react-router:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@yapyak/tsdown-config':
@@ -1074,7 +1074,7 @@ importers:
   packages/svelte:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
@@ -1117,7 +1117,7 @@ importers:
   packages/sveltekit:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@sveltejs/kit':
@@ -1145,7 +1145,7 @@ importers:
   packages/tanstack-start:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@tanstack/react-start':
@@ -1194,7 +1194,7 @@ importers:
   packages/vite:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@types/node':
@@ -1250,7 +1250,7 @@ importers:
   packages/vue:
     dependencies:
       yapyak:
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../yapyak
     devDependencies:
       '@testing-library/vue':

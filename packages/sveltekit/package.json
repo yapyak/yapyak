@@ -46,7 +46,7 @@
   },
   "peerDependencies": {
     "@sveltejs/kit": ">=2",
-    "yapyak": "workspace:^"
+    "yapyak": "workspace:*"
   },
   "engines": {
     "node": ">=22.12"
