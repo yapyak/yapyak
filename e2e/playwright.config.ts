@@ -88,12 +88,14 @@ export default defineConfig<ExampleOptions>({
   retries: IS_CI ? 2 : 0,
   testDir: './src',
   use: {
+    timezoneId: 'Europe/Stockholm',
     trace: 'on-first-retry',
   },
   webServer: EXAMPLES.map((example) => ({
     command: `pnpm --filter @yapyak-examples/${example.name} dev --port ${example.port}`,
     env: {
       ASTRO_DEV_BACKGROUND: '1',
+      TZ: 'Europe/Stockholm',
     },
     port: example.port,
   })),
