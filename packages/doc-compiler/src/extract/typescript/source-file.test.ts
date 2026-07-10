@@ -25,7 +25,9 @@ describe('parseSourceFile', () => {
     const path = join(dir, 'a.ts');
     writeFileSync(path, 'export const greeting = "Hello";');
     const sourceFile = parseSourceFile(path);
-    expect(sourceFile.fileName).toBe(path);
+    expect(sourceFile.fileName.split('\\').join('/')).toBe(
+      path.split('\\').join('/'),
+    );
     expect(sourceFile.text).toBe('export const greeting = "Hello";');
   });
 

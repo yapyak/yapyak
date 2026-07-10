@@ -45,12 +45,10 @@ function buildResolver(): LocaleResolver {
 
 describe('createScanPlugin', () => {
   let projectRoot: string;
-  let localesDir: string;
 
   beforeEach(() => {
     projectRoot = mkdtempSync(join(tmpdir(), 'yapyak-scan-'));
-    localesDir = join(projectRoot, 'locales');
-    mkdirSync(localesDir, {
+    mkdirSync(join(projectRoot, 'locales'), {
       recursive: true,
     });
     mkdirSync(join(projectRoot, 'src'), {
@@ -69,9 +67,7 @@ describe('createScanPlugin', () => {
     it('blocks when the command is `build`', () => {
       const state = createState();
       state.command = 'build';
-      state.normalized = normalizeYapyakConfig({
-        localesDir,
-      });
+      state.normalized = normalizeYapyakConfig({});
       state.resolver = buildResolver();
       state.projectRoot = projectRoot;
       state.filter = () => true;
@@ -90,9 +86,7 @@ describe('createScanPlugin', () => {
       );
       const state = createState();
       state.command = 'serve';
-      state.normalized = normalizeYapyakConfig({
-        localesDir,
-      });
+      state.normalized = normalizeYapyakConfig({});
       state.resolver = buildResolver();
       state.projectRoot = projectRoot;
       state.filter = () => true;

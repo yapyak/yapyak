@@ -93,9 +93,7 @@ describe('syncAll', () => {
     const resolver = buildResolver();
     const invalidate = vi.spyOn(resolver, 'invalidateData');
     const state = createState();
-    state.normalized = normalizeYapyakConfig({
-      localesDir: 'locales',
-    });
+    state.normalized = normalizeYapyakConfig({});
     state.resolver = resolver;
     state.projectRoot = projectRoot;
     state.messagesByFile.set('src/a.tsx', [
@@ -110,9 +108,7 @@ describe('syncAll', () => {
   it('writes every aggregated message to the synced locale files', () => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     const state = createState();
-    state.normalized = normalizeYapyakConfig({
-      localesDir: 'locales',
-    });
+    state.normalized = normalizeYapyakConfig({});
     state.resolver = buildResolver();
     state.projectRoot = projectRoot;
     state.messagesByFile.set('src/a.tsx', [

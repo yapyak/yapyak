@@ -139,7 +139,9 @@ describe('findOrphan', () => {
 
 describe('getDefaultYapyakDir', () => {
   it('builds a `.yapyak` path under the project root', () => {
-    expect(getDefaultYapyakDir('/tmp/project')).toBe('/tmp/project/.yapyak');
+    expect(getDefaultYapyakDir('/tmp/project')).toBe(
+      join('/tmp/project', '.yapyak'),
+    );
   });
 });
 

@@ -146,19 +146,22 @@ describe('walkSourceFiles', () => {
     }
   });
 
-  it('returns no files when a file is unreadable', () => {
-    mkdirSync(join(projectRoot, 'src'), {
-      recursive: true,
-    });
-    const filePath = join(projectRoot, 'src', 'a.ts');
-    writeFileSync(filePath, 'Hello');
-    chmodSync(filePath, 0o000);
+  it.skipIf(process.platform === 'win32')(
+    'returns no files when a file is unreadable',
+    () => {
+      mkdirSync(join(projectRoot, 'src'), {
+        recursive: true,
+      });
+      const filePath = join(projectRoot, 'src', 'a.ts');
+      writeFileSync(filePath, 'Hello');
+      chmodSync(filePath, 0o000);
 
-    try {
-      const files = walkSourceFiles(() => true, projectRoot);
-      expect(files).toEqual([]);
-    } finally {
-      chmodSync(filePath, 0o644);
-    }
-  });
+      try {
+        const files = walkSourceFiles(() => true, projectRoot);
+        expect(files).toEqual([]);
+      } finally {
+        chmodSync(filePath, 0o644);
+      }
+    },
+  );
 });
