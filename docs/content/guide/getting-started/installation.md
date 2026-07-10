@@ -15,20 +15,17 @@ To use yapyak, install the Vite plugin, a framework adapter, and optionally an S
 {% switch group="adapter" %}
 {% when value="none" %}
 - Node.js 22.12 or later
-- TypeScript 5 or later
 - Vite 8 or later
 - React 19 or later
 {% /when %}
 {% when value="react-router" %}
 - Node.js 22.22 or later
-- TypeScript 5 or later
 - Vite 8 or later
 - React 19 or later
 - React Router 7.9 or later
 {% /when %}
 {% when value="tanstack-start" %}
 - Node.js 22.12 or later
-- TypeScript 5 or later
 - Vite 8 or later
 - React 19 or later
 - TanStack Start 1.168 or later
@@ -38,7 +35,6 @@ To use yapyak, install the Vite plugin, a framework adapter, and optionally an S
 
 {% when value="vue" %}
 - Node.js 22.12 or later
-- TypeScript 5 or later
 - Vite 8 or later
 - Vue 3.4 or later
 {% /when %}
@@ -47,13 +43,11 @@ To use yapyak, install the Vite plugin, a framework adapter, and optionally an S
 {% switch group="adapter" %}
 {% when value="none" %}
 - Node.js 22.12 or later
-- TypeScript 5 or later
 - Vite 8 or later
 - Svelte 5 or later
 {% /when %}
 {% when value="sveltekit" %}
 - Node.js 22.12 or later
-- TypeScript 5 or later
 - Vite 8 or later
 - Svelte 5 or later
 - SvelteKit 2 or later
@@ -63,7 +57,6 @@ To use yapyak, install the Vite plugin, a framework adapter, and optionally an S
 
 {% when value="astro" %}
 - Node.js 22.12 or later
-- TypeScript 5 or later
 - Astro 7 or later
 {% /when %}
 

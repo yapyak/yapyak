@@ -1,4 +1,4 @@
-import type * as ts from 'typescript';
+import type * as ts from '@typescript/typescript6';
 import type { Fragment, Position } from '../../processor';
 
 import { offsetToOriginalPosition } from '../../processor';

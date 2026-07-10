@@ -1,4 +1,4 @@
-import type { TypeNode } from 'typescript';
+import type { TypeNode } from '@typescript/typescript6';
 import type { TypeToken } from './type';
 
 export function buildTypeTokens(node?: TypeNode): TypeToken[] {

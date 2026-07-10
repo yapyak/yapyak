@@ -1,6 +1,6 @@
 import type { ReferenceTag, ReferenceTypeParameter, TypeToken } from './type';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { buildTypeTokens } from './type-token';
 

@@ -1,7 +1,10 @@
-import type { NodeArray, TypeParameterDeclaration } from 'typescript';
+import type {
+  NodeArray,
+  TypeParameterDeclaration,
+} from '@typescript/typescript6';
 import type { ReferenceTypeParameter } from './type';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { getCommentText } from './jsdoc';
 import { buildTypeTokens } from './type-token';

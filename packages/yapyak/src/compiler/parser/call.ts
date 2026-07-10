@@ -2,7 +2,7 @@ import type { ElisionContext, Range } from '../../processor';
 import type { Binding, BindingTable } from './binding';
 import type { Diagnostic } from './diagnostic';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../diagnostic';
 import { RUNTIME_NAME } from './binding';

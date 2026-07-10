@@ -1,4 +1,4 @@
-import type * as ts from 'typescript';
+import type * as ts from '@typescript/typescript6';
 import type { Fragment, Range } from '../../processor';
 
 import { remapPosition, toPosition } from './position';

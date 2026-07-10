@@ -2,7 +2,7 @@ import type { Range } from '../../../../processor';
 import type { Placeholder } from '../../placeholder';
 import type { ParsedCallSite } from '../extract';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { findMatchingBraceIndex } from '../../matching-brace';
 import { findFreeIdentifiers } from './identifier';

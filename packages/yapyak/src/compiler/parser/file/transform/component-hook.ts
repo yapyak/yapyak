@@ -2,7 +2,7 @@ import type MagicString from 'magic-string';
 import type { ComponentHook, Fragment } from '../../../../processor';
 import type { ParsedCallSite } from '../extract';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { getScriptKind } from '../../script-kind';
 import { extractPrologueDirectives } from './directive';

@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 export function resolveDirectivePrologueEnd(source: string): number {
   const directives = extractPrologueStatements(source);

@@ -80,6 +80,7 @@
     "@fast-check/vitest": "catalog:",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:",
+    "@typescript/typescript6": "catalog:",
     "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vitest-config": "workspace:*",
@@ -87,9 +88,6 @@
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"
-  },
-  "peerDependencies": {
-    "typescript": ">=5.0.0"
   },
   "engines": {
     "node": ">=22.12"

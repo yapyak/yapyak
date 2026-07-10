@@ -1,6 +1,6 @@
 import type { Fragment } from '../../processor';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 export function getScriptKind(
   fileId: string,

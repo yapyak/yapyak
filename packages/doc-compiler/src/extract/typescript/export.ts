@@ -1,6 +1,6 @@
-import type { Node, SourceFile } from 'typescript';
+import type { Node, SourceFile } from '@typescript/typescript6';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { resolveImport } from './resolve-import';
 import { parseSourceFile } from './source-file';

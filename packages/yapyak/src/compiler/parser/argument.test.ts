@@ -1,6 +1,6 @@
 import type { ParsedArguments } from './argument';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 import { describe, expect, it } from 'vitest';
 
 import { parseArguments } from './argument';

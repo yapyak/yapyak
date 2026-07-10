@@ -1,4 +1,4 @@
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 export type Binding = {
   kind: 'direct' | 'namespace' | 'shadow' | 'wrapper';

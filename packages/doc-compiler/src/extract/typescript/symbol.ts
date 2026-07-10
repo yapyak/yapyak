@@ -8,7 +8,7 @@ import type {
   TypeNode,
   VariableDeclaration,
   VariableStatement,
-} from 'typescript';
+} from '@typescript/typescript6';
 import type { ExportKind } from '../../access';
 import type {
   ReferenceCallSignature,
@@ -18,7 +18,7 @@ import type {
   TypeToken,
 } from './type';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { classifyExportKind } from './classify';
 import { extractJsDoc } from './jsdoc';

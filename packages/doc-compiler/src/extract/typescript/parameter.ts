@@ -4,10 +4,10 @@ import type {
   Node,
   NodeArray,
   ParameterDeclaration,
-} from 'typescript';
+} from '@typescript/typescript6';
 import type { ReferenceParameter } from './type';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { buildTypeTokens } from './type-token';
 

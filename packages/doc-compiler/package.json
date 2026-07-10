@@ -26,7 +26,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@markdoc/markdoc": "catalog:"
+    "@markdoc/markdoc": "catalog:",
+    "@typescript/typescript6": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

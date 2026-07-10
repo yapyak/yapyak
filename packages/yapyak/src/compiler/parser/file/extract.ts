@@ -11,7 +11,7 @@ import type { CallSiteContext } from '../call-site-context';
 import type { Diagnostic } from '../diagnostic';
 import type { Placeholder } from '../placeholder';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { parseArguments } from '../argument';
 import { resolveBindings } from '../binding';

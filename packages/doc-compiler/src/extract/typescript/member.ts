@@ -3,7 +3,7 @@ import type {
   NodeArray,
   PropertySignature,
   TypeElement,
-} from 'typescript';
+} from '@typescript/typescript6';
 import type {
   ReferenceMember,
   ReferenceMethodMember,
@@ -12,7 +12,7 @@ import type {
   ReferenceTag,
 } from './type';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { extractJsDoc } from './jsdoc';
 import { buildLocation } from './location';

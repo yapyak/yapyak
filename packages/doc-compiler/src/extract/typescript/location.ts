@@ -1,4 +1,4 @@
-import type { Node, SourceFile } from 'typescript';
+import type { Node, SourceFile } from '@typescript/typescript6';
 import type { ReferenceLocation } from './type';
 
 import { relative } from 'node:path';

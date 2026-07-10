@@ -4,7 +4,7 @@ import type {
   MethodSignature,
   Node,
   SignatureDeclaration,
-} from 'typescript';
+} from '@typescript/typescript6';
 import type { ReferenceCallSignature, ReferenceOverload } from './type';
 
 import { extractParameters } from './parameter';

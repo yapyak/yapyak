@@ -1,6 +1,6 @@
 import type { BuildSymbolInput } from './symbol';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 import { describe, expect, it } from 'vitest';
 
 import { buildSymbol } from './symbol';

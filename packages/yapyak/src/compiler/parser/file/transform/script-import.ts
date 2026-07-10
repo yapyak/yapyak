@@ -1,7 +1,7 @@
 import type MagicString from 'magic-string';
 import type { Fragment } from '../../../../processor';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { YAPYAK_MODULE } from '../../binding';
 import { getScriptKind } from '../../script-kind';

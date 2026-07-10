@@ -1,7 +1,12 @@
-import type { JSDoc, JSDocComment, Node, NodeArray } from 'typescript';
+import type {
+  JSDoc,
+  JSDocComment,
+  Node,
+  NodeArray,
+} from '@typescript/typescript6';
 import type { ReferenceExample, ReferenceTag, ReferenceThrows } from './type';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { nullify } from '../../nullify';
 

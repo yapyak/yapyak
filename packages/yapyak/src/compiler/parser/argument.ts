@@ -4,7 +4,7 @@ import type { Diagnostic } from './diagnostic';
 import type { TemplateDiagnostic } from './placeholder';
 import type { TagIssue } from './tag';
 
-import ts from 'typescript';
+import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../diagnostic';
 import { parsePlaceholders } from './placeholder';
