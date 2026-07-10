@@ -10,6 +10,7 @@ type ReferencePackage = {
   collapsible?: boolean;
   dir: string;
   group?: string;
+  label: string;
   subpaths?: string[];
 };
 
@@ -17,6 +18,7 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   {
     collapsible: true,
     dir: 'yapyak',
+    label: 'yapyak',
     subpaths: [
       './adapter',
       './config',
@@ -28,11 +30,13 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   {
     dir: 'vite',
     group: 'Bundlers',
+    label: 'Vite',
   },
 
   {
     dir: 'react',
     group: 'Frameworks',
+    label: 'React',
     subpaths: [
       './processor',
     ],
@@ -40,6 +44,7 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   {
     dir: 'vue',
     group: 'Frameworks',
+    label: 'Vue',
     subpaths: [
       './processor',
     ],
@@ -47,6 +52,7 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   {
     dir: 'svelte',
     group: 'Frameworks',
+    label: 'Svelte',
     subpaths: [
       './processor',
     ],
@@ -54,6 +60,7 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   {
     dir: 'astro',
     group: 'Frameworks',
+    label: 'Astro',
     subpaths: [
       './integration',
       './processor',
@@ -63,33 +70,47 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   {
     dir: 'sveltekit',
     group: 'Adapters',
+    label: 'SvelteKit',
   },
   {
     dir: 'tanstack-start',
     group: 'Adapters',
+    label: 'TanStack Start',
   },
   {
     dir: 'react-router',
     group: 'Adapters',
+    label: 'React Router',
   },
 
   {
     dir: 'anthropic',
     group: 'Translators',
+    label: 'Anthropic',
   },
   {
     dir: 'openai',
     group: 'Translators',
+    label: 'OpenAI',
   },
   {
     dir: 'gemini',
     group: 'Translators',
+    label: 'Gemini',
   },
   {
     dir: 'ollama',
     group: 'Translators',
+    label: 'Ollama',
   },
 ];
+
+const FRAMEWORK_PACKAGES = REFERENCE_PACKAGES.filter(
+  (pkg) => pkg.group === 'Frameworks',
+);
+const TRANSLATOR_PACKAGES = REFERENCE_PACKAGES.filter(
+  (pkg) => pkg.group === 'Translators',
+);
 
 export default defineConfig({
   css: {
@@ -137,11 +158,11 @@ export default defineConfig({
         instructions: [
           'yapyak uses the English source string as the translation key.',
           "Write `t('Sign up')`, never `t('auth.signupButton')`.",
-          'Source files: `t()` calls in TS/JS/JSX/TSX/Vue/Svelte/Astro.',
-          'Catalogs: JSON files in `localesDir` (default `locales/`).',
-          'A translator is optional. If the user configures one (Anthropic, OpenAI, Gemini, Ollama, or custom), empty stubs are filled on save. Without a translator, stubs stay empty and the user fills them in by hand.',
+          `Source files: \`t()\` calls in TS/JS and ${FRAMEWORK_PACKAGES.map((pkg) => pkg.label).join('/')} components.`,
+          'Catalogs: JSON files in `localesDir`.',
+          `A translator is optional. If the user configures one (${TRANSLATOR_PACKAGES.map((pkg) => pkg.label).join(', ')}, or custom), empty stubs are filled on save. Without a translator, stubs stay empty and the user fills them in by hand.`,
           'yapyak only fills empty stubs. Existing translations are never overwritten.',
-          'Large saves are guarded: when a single save adds more than `autoTranslateThreshold` strings (default 20), yapyak skips auto-translate and leaves stubs empty until the user runs `yapyak translate`.',
+          'Large saves are guarded: when a single save adds more than `autoTranslateThreshold` strings, yapyak skips auto-translate and leaves stubs empty until the user runs `yapyak translate`.',
           'Every `t()` call is rewritten in place at build time. Locale catalogs code-split along Vite routes.',
         ].join('\n'),
         outDir: resolve(import.meta.dirname, 'dist/client'),
@@ -204,24 +225,10 @@ export default defineConfig({
         framework: {
           default: 'react',
           label: 'Framework',
-          options: [
-            {
-              label: 'React',
-              value: 'react',
-            },
-            {
-              label: 'Vue',
-              value: 'vue',
-            },
-            {
-              label: 'Svelte',
-              value: 'svelte',
-            },
-            {
-              label: 'Astro',
-              value: 'astro',
-            },
-          ],
+          options: FRAMEWORK_PACKAGES.map((pkg) => ({
+            label: pkg.label,
+            value: pkg.dir,
+          })),
         },
         packageManager: {
           default: 'npm',
@@ -249,22 +256,10 @@ export default defineConfig({
               label: 'None',
               value: 'none',
             },
-            {
-              label: 'Anthropic',
-              value: 'anthropic',
-            },
-            {
-              label: 'OpenAI',
-              value: 'openai',
-            },
-            {
-              label: 'Gemini',
-              value: 'gemini',
-            },
-            {
-              label: 'Ollama',
-              value: 'ollama',
-            },
+            ...TRANSLATOR_PACKAGES.map((pkg) => ({
+              label: pkg.label,
+              value: pkg.dir,
+            })),
           ],
         },
       },
