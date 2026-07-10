@@ -16,7 +16,7 @@ jobs:
       matrix:
         node: ['22.22', '24']
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
@@ -30,3 +30,22 @@ jobs:
       - run: pnpm --filter @yapyak/docs build
       - run: pnpm -r --filter "./examples/*" build
       - run: pnpm knip
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm --filter @yapyak/e2e exec playwright install --with-deps chromium
+      - run: pnpm e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: e2e-test-results
+          path: e2e/test-results

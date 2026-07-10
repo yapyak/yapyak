@@ -7,3 +7,4 @@ coverage
 dist
 docs/content/reference/manifest.json
 node_modules
+test-results

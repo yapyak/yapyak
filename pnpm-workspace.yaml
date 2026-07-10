@@ -1,5 +1,6 @@
 packages:
   - docs
+  - e2e
   - examples/*
   - packages/*
 
@@ -12,6 +13,7 @@ catalog:
   '@changesets/cli': 2.31.0
   '@fast-check/vitest': 0.4.1
   '@markdoc/markdoc': 0.5.7
+  '@playwright/test': 1.61.1
   '@react-router/dev': 8.2.0
   '@react-router/node': 8.2.0
   '@react-router/serve': 8.2.0
