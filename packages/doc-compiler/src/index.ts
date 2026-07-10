@@ -1,5 +1,5 @@
 /**
- * Doc extractor for yapyak.
+ * Doc compiler for yapyak.
  *
  * ## Installation
  *

@@ -2,4 +2,4 @@
 
 > Internal · Node-only
 
-Doc extractor for yapyak.
+Doc compiler for yapyak.
