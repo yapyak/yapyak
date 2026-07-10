@@ -12,7 +12,7 @@
 - `packages/doc-compiler/` — `@yapyak/doc-compiler`, doc-compilation tooling
 - `docs/` — `@yapyak/docs`, Vite + TanStack Start app
 - `examples/*` — minimal demos named by their stack
-- `e2e/` — `@yapyak/e2e`, Playwright end-to-end tests for the example apps (`pnpm e2e:dev`, `pnpm e2e:prod`)
+- `e2e/` — `@yapyak/e2e`, Playwright end-to-end tests for the example apps and the save loop (`pnpm e2e:dev`, `pnpm e2e:prod`); `e2e/sandbox/` is the mutable fixture app the save-loop tests write to
 
 ## Architecture invariants
 

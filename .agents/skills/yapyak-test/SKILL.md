@@ -46,6 +46,12 @@ Files that do **NOT** get unit tests:
 | Constants files | No behavior |
 | Pure adapter wrappers | Tested through target |
 
+### Browser e2e — `*.spec.ts`
+
+- Playwright specs live in `e2e/src` and use the `*.spec.ts` suffix — never `*.test.ts` → the suffix marks which rule set applies.
+- `test` names draw from the Yap List; fixtures draw from the Yak Pool.
+- The unit rules — symbol selection, source-file mirroring, `describe` structure, category formulas — do not apply to e2e specs.
+
 ### Counting code paths
 
 Code paths = 1 + count of branching keywords in the function body.
@@ -308,6 +314,7 @@ Closed set of fixture data. No invented strings.
 'Cancel'
 'Settings'
 'Loading...'
+'Open'
 'Switch account'
 'Unnamed account'
 ```
@@ -325,6 +332,13 @@ Closed set of fixture data. No invented strings.
 | `Loading...` | `Laddar...` |
 | `Switch account` | `Byt konto` |
 | `Unnamed account` | `Namnlöst konto` |
+
+**Homonym contexts** (`t.as` fixtures):
+
+| Source | Context | Translation |
+|---|---|---|
+| `Open` | `button` | `Öppna` |
+| `Open` | `badge` | `Öppen` |
 
 **ICU patterns:**
 

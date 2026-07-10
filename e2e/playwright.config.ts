@@ -18,6 +18,8 @@ const MODE: Mode = process.env.YAPYAK_E2E_MODE === 'prod' ? 'prod' : 'dev';
 
 const PROD_PORT_OFFSET = 100;
 
+const SANDBOX_PORT = 5320;
+
 const EXAMPLES: Example[] = [
   {
     name: 'astro-cookie',
@@ -157,27 +159,55 @@ function resolveCommand(example: Example): string {
 
 export default defineConfig<ExampleOptions>({
   forbidOnly: IS_CI,
-  projects: EXAMPLES.map((example) => ({
-    name: example.name,
-    use: {
-      ...devices['Desktop Chrome'],
-      baseURL: `http://localhost:${resolvePort(example)}`,
-      persistence: example.persistence,
-      serverSwitch: example.serverSwitch,
-    },
-  })),
+  projects: [
+    ...EXAMPLES.map((example) => ({
+      name: example.name,
+      testMatch: 'example.spec.ts',
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: `http://localhost:${resolvePort(example)}`,
+        persistence: example.persistence,
+        serverSwitch: example.serverSwitch,
+      },
+    })),
+    ...(MODE === 'dev'
+      ? [
+          {
+            name: 'sandbox',
+            testMatch: 'save-loop.spec.ts',
+            use: {
+              ...devices['Desktop Chrome'],
+              baseURL: `http://localhost:${SANDBOX_PORT}`,
+            },
+          },
+        ]
+      : []),
+  ],
   retries: IS_CI ? 2 : 0,
   testDir: './src',
   use: {
     timezoneId: 'Europe/Stockholm',
     trace: 'on-first-retry',
   },
-  webServer: EXAMPLES.map((example) => ({
-    command: resolveCommand(example),
-    env: {
-      ASTRO_DEV_BACKGROUND: '1',
-      TZ: 'Europe/Stockholm',
-    },
-    port: resolvePort(example),
-  })),
+  webServer: [
+    ...EXAMPLES.map((example) => ({
+      command: resolveCommand(example),
+      env: {
+        ASTRO_DEV_BACKGROUND: '1',
+        TZ: 'Europe/Stockholm',
+      },
+      port: resolvePort(example),
+    })),
+    ...(MODE === 'dev'
+      ? [
+          {
+            command: `pnpm --filter @yapyak/sandbox reset && pnpm --filter @yapyak/sandbox dev --port ${SANDBOX_PORT}`,
+            env: {
+              TZ: 'Europe/Stockholm',
+            },
+            port: SANDBOX_PORT,
+          },
+        ]
+      : []),
+  ],
 });

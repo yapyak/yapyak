@@ -1,0 +1,7 @@
+.yapyak/
+dist
+locales/
+node_modules
+src/app.tsx
+src/cart.tsx
+src/checkout/

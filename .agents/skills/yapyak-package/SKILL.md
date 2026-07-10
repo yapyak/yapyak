@@ -96,7 +96,8 @@ Adding a new external dep: pin in `pnpm-workspace.yaml` under `catalog:` first, 
 
 ### Build — universal
 
-- Source uses `.ts`/`.tsx` extensions in imports. The bundler rewrites to `.js` on emit.
+- Relative imports are extensionless: `./storage`, never `./storage.js` or `./storage.ts`.
+- Framework single-file components keep their mandatory extension: `.vue`, `.svelte`, `.astro`.
 - `package.json` `exports` points to `./dist/**`.
 - 1:1 mapping between published subpaths and built outputs.
 - ESM-only — no dual ESM/CJS emit.
