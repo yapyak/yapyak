@@ -17,7 +17,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'Write t(\'Edit\'). Save. Your browser shows "Redigera" in Swedish and "Bearbeiten" in German via HMR. When "Bearbeiten" overflows your button, you see it while the layout is still yours to change.',
+        'Write t(\'Edit\'). Save. Your browser shows "Editar" in Portuguese and "Bearbeiten" in German via HMR. When "Bearbeiten" overflows your button, you catch it while the layout is still yours to change.',
       ),
       number: '02',
       title: t('AI translation on save'),
