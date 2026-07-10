@@ -8,7 +8,7 @@ const date = new Date('2024-01-01T08:30:00Z');
 const switchLocale = createServerFn({
   method: 'POST',
 })
-  .inputValidator((locale: string) => locale)
+  .validator((locale: string) => locale)
   .handler(({ data }) => {
     if (isLocale(data)) {
       setLocale(data);

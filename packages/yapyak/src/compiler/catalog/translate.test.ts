@@ -307,7 +307,8 @@ describe('autoTranslate', () => {
       locale: 'sv',
       source: 'Hi {name}',
     });
-    expect((result.errors[0]?.error as Error).message).toMatch(
+    const error = result.errors[0]?.error;
+    expect(error instanceof Error ? error.message : String(error)).toMatch(
       /Translation placeholder mismatch.+missing \{name\}/,
     );
     expect(existsSync(localePath)).toBe(false);
@@ -382,7 +383,10 @@ describe('autoTranslate', () => {
       locale: 'sv',
       source: 'Hello',
     });
-    expect((result.errors[0]?.error as Error).message).toBe('chunk failed');
+    const error = result.errors[0]?.error;
+    expect(error instanceof Error ? error.message : String(error)).toBe(
+      'chunk failed',
+    );
   });
 
   it('falls back to single-call translation when the translator lacks `batch`', async () => {

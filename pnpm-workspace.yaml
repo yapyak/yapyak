@@ -4,50 +4,50 @@ packages:
   - packages/*
 
 catalog:
-  '@arethetypeswrong/core': 0.18.4
-  '@astrojs/compiler-rs': 0.2.3
-  '@astrojs/node': 11.0.0
-  '@biomejs/biome': 2.5.0
+  '@arethetypeswrong/core': 0.18.5
+  '@astrojs/compiler-rs': 0.3.0
+  '@astrojs/node': 11.0.2
+  '@biomejs/biome': 2.5.3
   '@changesets/changelog-github': 0.7.0
   '@changesets/cli': 2.31.0
   '@fast-check/vitest': 0.4.1
   '@markdoc/markdoc': 0.5.7
-  '@react-router/dev': 8.0.1
-  '@react-router/node': 8.0.1
-  '@react-router/serve': 8.0.1
-  '@sveltejs/adapter-node': 5.5.5
-  '@sveltejs/kit': 2.66.0
-  '@sveltejs/vite-plugin-svelte': 7.1.2
-  '@tanstack/react-router': 1.170.16
-  '@tanstack/react-start': 1.168.26
+  '@react-router/dev': 8.2.0
+  '@react-router/node': 8.2.0
+  '@react-router/serve': 8.2.0
+  '@sveltejs/adapter-node': 5.5.7
+  '@sveltejs/kit': 2.69.2
+  '@sveltejs/vite-plugin-svelte': 7.2.0
+  '@tanstack/react-router': 1.170.17
+  '@tanstack/react-start': 1.168.27
   '@testing-library/react': 16.3.2
-  '@testing-library/svelte': 5.3.1
+  '@testing-library/svelte': 5.4.2
   '@testing-library/vue': 8.1.0
   '@types/estree': 1.0.9
   '@types/estree-jsx': 1.0.5
-  '@types/node': 25.9.3
+  '@types/node': 26.1.1
   '@types/picomatch': 4.0.3
   '@types/react': 19.2.17
   '@types/react-dom': 19.2.3
-  '@vitejs/plugin-react': 6.0.2
+  '@vitejs/plugin-react': 6.0.3
   '@vitejs/plugin-vue': 6.0.7
-  '@vue/compiler-core': 3.5.38
-  '@vue/compiler-sfc': 3.5.38
-  astro: 7.0.3
+  '@vue/compiler-core': 3.5.39
+  '@vue/compiler-sfc': 3.5.39
+  astro: 7.0.7
   'happy-dom': 20.10.6
-  isbot: 5.1.43
+  isbot: 5.2.0
   jiti: 2.7.0
-  knip: 6.17.1
+  knip: 6.25.0
   'magic-string': 0.30.21
-  picomatch: 4.0.4
+  picomatch: 4.0.5
   publint: 0.3.21
   react: 19.2.7
   react-dom: 19.2.7
-  react-router: 8.0.1
-  svelte: 5.56.3
-  tsdown: 0.22.3
+  react-router: 8.2.0
+  svelte: 5.56.4
+  tsdown: 0.22.4
   typescript: 6.0.3
-  vite: 8.0.16
-  vitest: 4.1.9
-  vue: 3.5.38
-  wrangler: 4.107.1
+  vite: 8.1.4
+  vitest: 4.1.10
+  vue: 3.5.39
+  wrangler: 4.110.0
