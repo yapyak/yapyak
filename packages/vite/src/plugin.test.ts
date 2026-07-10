@@ -873,7 +873,7 @@ describe('yapyak', () => {
       const filePath = join(root, 'src', 'a.tsx');
       const map = await invokeTransformMap(plugin, filePath);
       expect(map?.sources).toEqual([
-        filePath,
+        filePath.replaceAll('\\', '/'),
       ]);
     });
   });
