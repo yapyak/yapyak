@@ -60,6 +60,7 @@ export function svelte(): Processor {
     },
     runtime: {
       module: '@yapyak/svelte/internal',
+      register: 'registerLocale',
     },
   });
 }

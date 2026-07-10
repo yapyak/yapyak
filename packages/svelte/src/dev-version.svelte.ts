@@ -6,7 +6,7 @@ import {
 
 let active = $state(getDevVersion());
 
-if (typeof window !== 'undefined') {
+if (import.meta.env?.DEV && typeof window !== 'undefined') {
   autoSubscribeDev(import.meta, () => {
     active = getDevVersion();
   });

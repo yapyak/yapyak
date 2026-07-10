@@ -23,6 +23,27 @@ const reactProcessor: Processor = createProcessor({
   },
 });
 
+const vueProcessor: Processor = createProcessor({
+  extensions: [
+    '.vue',
+  ],
+  id: 'vue',
+  runtime: {
+    module: '@yapyak/vue/internal',
+    register: 'registerLocale',
+  },
+});
+
+const moduleOnlyProcessor: Processor = createProcessor({
+  extensions: [
+    '.astro',
+  ],
+  id: 'module-only',
+  runtime: {
+    module: '@yapyak/module-only/internal',
+  },
+});
+
 function runTransform(input: {
   source: string;
   locales: string[];
@@ -1452,6 +1473,94 @@ describe('transformFile', () => {
       expect(code).toMatch(/function Header\(\) \{_useYapyak\(\)/);
       expect(code).not.toMatch(/_registerCatalog/);
       expect(code).not.toMatch(/_invalidateFile/);
+    });
+  });
+
+  describe('with a runtime `register`', () => {
+    it('writes a `registerLocale()` call in production builds', () => {
+      const code = runTransform({
+        fileId: 'src/a.vue',
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          vueProcessor,
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const greeting = t('Hello');\n",
+      });
+      expect(code).toMatch(
+        /import \{ registerLocale as _registerLocale \} from '@yapyak\/vue\/internal';/,
+      );
+      expect(code).toMatch(/_registerLocale\(\);/);
+    });
+
+    it('writes a `registerLocale()` call when dev is on', () => {
+      const code = runTransform({
+        dev: true,
+        fileId: 'src/a.vue',
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          vueProcessor,
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const greeting = t('Hello');\n",
+      });
+      expect(code).toMatch(
+        /import \{ registerLocale as _registerLocale \} from '@yapyak\/vue\/internal';/,
+      );
+      expect(code).toMatch(/_registerLocale\(\);/);
+    });
+
+    it('emits no runtime import when a single locale is configured', () => {
+      const code = runTransform({
+        fileId: 'src/a.vue',
+        locales: [
+          'en',
+        ],
+        processors: [
+          vueProcessor,
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const greeting = t('Hello');\n",
+      });
+      expect(code).not.toContain('@yapyak/vue/internal');
+    });
+
+    it('emits no runtime import when the source file has no `t()` calls', () => {
+      const code = runTransform({
+        fileId: 'src/a.vue',
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          vueProcessor,
+        ],
+        source: "export const greeting = 'Hello';\n",
+      });
+      expect(code).not.toContain('@yapyak/vue/internal');
+    });
+
+    it('emits a bare runtime import when the processor declares no `register`', () => {
+      const code = runTransform({
+        dev: true,
+        fileId: 'src/a.astro',
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          moduleOnlyProcessor,
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport const greeting = t('Hello');\n",
+      });
+      expect(code).toContain("import '@yapyak/module-only/internal';");
     });
   });
 });

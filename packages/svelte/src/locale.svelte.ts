@@ -1,18 +1,11 @@
 import type { Locale } from 'yapyak';
 
-import { getLocale, setLocale } from 'yapyak';
+import { defaultLocale, getLocale, setLocale } from 'yapyak';
 import { autoRegisterTracker, autoSubscribeLocale } from 'yapyak/internal';
 
-let active = $state(getLocale());
-
-if (typeof window !== 'undefined') {
-  autoSubscribeLocale(import.meta, (next) => {
-    active = next;
-  });
-  autoRegisterTracker(import.meta, () => {
-    void active;
-  });
-}
+let active = $state(
+  typeof window === 'undefined' ? defaultLocale : getLocale(),
+);
 
 /**
  * Reactive locale store.
@@ -46,3 +39,20 @@ export const locale: {
     setLocale(value);
   },
 };
+
+let hasRegistered = false;
+
+export function registerLocale(): void {
+  if (hasRegistered || typeof window === 'undefined') {
+    return;
+  }
+  hasRegistered = true;
+  autoSubscribeLocale(import.meta, (next) => {
+    active = next;
+  });
+  autoRegisterTracker(import.meta, () => {
+    void active;
+  });
+}
+
+registerLocale();

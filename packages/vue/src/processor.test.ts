@@ -42,6 +42,10 @@ describe('vue processor — shape', () => {
     expect(vue().runtime?.module).toBe('@yapyak/vue/internal');
   });
 
+  it('returns a processor that declares `registerLocale` as the runtime register', () => {
+    expect(vue().runtime?.register).toBe('registerLocale');
+  });
+
   it('refuses to declare a component-hook', () => {
     expect(vue().runtime?.componentHook).toBeUndefined();
   });

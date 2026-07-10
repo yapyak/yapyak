@@ -84,6 +84,7 @@ export function vue(): Processor {
     },
     runtime: {
       module: '@yapyak/vue/internal',
+      register: 'registerLocale',
     },
   });
 }

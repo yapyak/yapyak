@@ -5,6 +5,8 @@ import { customRef } from 'vue';
 import { getLocale, setLocale } from 'yapyak';
 import { autoRegisterTracker, autoSubscribeLocale } from 'yapyak/internal';
 
+let triggerLocaleChange: (() => void) | undefined;
+
 /**
  * Reactive locale ref.
  *
@@ -25,12 +27,7 @@ import { autoRegisterTracker, autoSubscribeLocale } from 'yapyak/internal';
  * ```
  */
 export const locale: Ref<Locale> = customRef<Locale>((track, trigger) => {
-  if (typeof window !== 'undefined') {
-    autoSubscribeLocale(import.meta, trigger);
-    autoRegisterTracker(import.meta, () => {
-      void locale.value;
-    });
-  }
+  triggerLocaleChange = trigger;
   return {
     get(): Locale {
       track();
@@ -41,3 +38,18 @@ export const locale: Ref<Locale> = customRef<Locale>((track, trigger) => {
     },
   };
 });
+
+let hasRegistered = false;
+
+export function registerLocale(): void {
+  if (hasRegistered || typeof window === 'undefined') {
+    return;
+  }
+  hasRegistered = true;
+  autoSubscribeLocale(import.meta, () => triggerLocaleChange?.());
+  autoRegisterTracker(import.meta, () => {
+    void locale.value;
+  });
+}
+
+registerLocale();

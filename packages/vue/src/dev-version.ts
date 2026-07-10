@@ -8,7 +8,7 @@ import {
 } from 'yapyak/internal';
 
 const devVersion: Ref<number> = customRef<number>((track, trigger) => {
-  if (typeof window !== 'undefined') {
+  if (import.meta.env?.DEV && typeof window !== 'undefined') {
     autoSubscribeDev(import.meta, trigger);
     autoRegisterTracker(import.meta, () => {
       void devVersion.value;

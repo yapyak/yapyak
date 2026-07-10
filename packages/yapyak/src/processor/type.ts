@@ -79,6 +79,8 @@ export type Runtime = {
   componentHook?: ComponentHook;
   /** The framework runtime module. */
   module: string;
+  /** The function name imported and invoked once at the top of each transformed source file. */
+  register?: string;
 };
 
 /**

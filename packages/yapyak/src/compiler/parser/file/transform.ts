@@ -119,6 +119,9 @@ export function transformFile(
   const componentHookLocal = componentHook
     ? findFreeIdentifier(request.source, USE_YAPYAK_LOCAL)
     : '';
+  const runtimeRegisterLocal = runtime?.register
+    ? findFreeIdentifier(request.source, `_${runtime.register}`)
+    : '';
 
   let hasUsedPick = false;
   const usedFactories = new Set<string>();
@@ -243,6 +246,11 @@ export function transformFile(
   if (runtime?.componentHook !== undefined) {
     injectionLines.push(
       `import { ${runtime.componentHook.invoke} as ${componentHookLocal} } from '${runtime.module}';`,
+    );
+  } else if (runtime?.register !== undefined && (isDev || hasUsedPick)) {
+    injectionLines.push(
+      `import { ${runtime.register} as ${runtimeRegisterLocal} } from '${runtime.module}';`,
+      `${runtimeRegisterLocal}();`,
     );
   } else if (runtime !== undefined && isDev) {
     injectionLines.push(`import '${runtime.module}';`);

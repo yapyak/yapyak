@@ -43,6 +43,10 @@ describe('svelte processor — shape', () => {
     expect(svelte().runtime?.module).toBe('@yapyak/svelte/internal');
   });
 
+  it('returns a processor that declares `registerLocale` as the runtime register', () => {
+    expect(svelte().runtime?.register).toBe('registerLocale');
+  });
+
   it('refuses to declare a component-hook', () => {
     expect(svelte().runtime?.componentHook).toBeUndefined();
   });
