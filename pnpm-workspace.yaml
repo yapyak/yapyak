@@ -7,6 +7,7 @@ packages:
 
 catalog:
   '@arethetypeswrong/core': 0.18.5
+  '@astrojs/check': 0.9.9
   '@astrojs/compiler-rs': 0.3.0
   '@astrojs/node': 11.0.2
   '@biomejs/biome': 2.5.3
@@ -49,9 +50,11 @@ catalog:
   react-dom: 19.2.7
   react-router: 8.2.0
   svelte: 5.56.4
+  svelte-check: 4.7.2
   tsdown: 0.22.4
   typescript: 6.0.3
   vite: 8.1.4
   vitest: 4.1.10
   vue: 3.5.39
+  vue-tsc: 3.3.7
   wrangler: 4.110.0

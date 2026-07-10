@@ -175,6 +175,7 @@ export const t: TFn = Object.assign(() => throwNotCompiled('t'), {
 function throwNotCompiled(method: 't' | 't.as' | 't.in'): never {
   throw new Error(
     `[yapyak] ${method}() was not rewritten at build time. ` +
-      'Install and register a yapyak build-tool plugin (e.g. @yapyak/vite) in your bundler config.',
+      'Install and register a yapyak build-tool plugin (e.g. @yapyak/vite) in your bundler config. ' +
+      "If the plugin is registered, check that the file is covered by the config's include patterns (default: src).",
   );
 }

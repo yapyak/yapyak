@@ -1058,7 +1058,7 @@ pnpm yapyak add sv
 {% /when %}
 {% when value="npm" %}
 ```bash
-npm run yapyak add sv
+npx yapyak add sv
 ```
 {% /when %}
 {% when value="bun" %}

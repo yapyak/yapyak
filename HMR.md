@@ -28,5 +28,5 @@ Open questions:
 
 ## Verification when fixed
 
-- Finding 1: switch the sandbox template input to uncontrolled — the input test must still pass.
+- Finding 1 is pinned executably: `test.fail('preserves an uncontrolled input value when the source is saved')` in [save-loop.spec.ts](e2e/src/save-loop.spec.ts). When the bug is fixed the suite fails with "passed unexpectedly" — remove the `.fail` marker and this finding.
 - Finding 2: move the input test after the move test in [save-loop.spec.ts](e2e/src/save-loop.spec.ts) — it must still pass. Both orderings green = fixed.

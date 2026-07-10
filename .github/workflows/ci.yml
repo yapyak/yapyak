@@ -12,6 +12,7 @@ concurrency:
 jobs:
   ci:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
     strategy:
       fail-fast: false
       matrix:
@@ -43,6 +44,7 @@ jobs:
 
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     strategy:
       matrix:
         mode: [dev, prod]
@@ -55,6 +57,10 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
+      - uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
       - run: pnpm --filter @yapyak/e2e exec playwright install --with-deps chromium
       - run: pnpm e2e:${{ matrix.mode }}
       - uses: actions/upload-artifact@v7
@@ -62,3 +68,11 @@ jobs:
         with:
           name: e2e-${{ matrix.mode }}-test-results
           path: e2e/test-results
+
+  all-green:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    needs: [ci, e2e]
+    if: always()
+    steps:
+      - run: test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "false"

@@ -5,7 +5,8 @@
   "scripts": {
     "build": "astro build",
     "dev": "astro dev",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "typecheck": "astro check"
   },
   "dependencies": {
     "@astrojs/node": "catalog:",
@@ -14,6 +15,7 @@
     "yapyak": "workspace:*"
   },
   "devDependencies": {
+    "@astrojs/check": "catalog:",
     "typescript": "catalog:"
   }
 }

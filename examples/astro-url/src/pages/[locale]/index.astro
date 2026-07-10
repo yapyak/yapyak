@@ -4,7 +4,8 @@ import { format, getLocale, isLocale, locales, t } from 'yapyak';
 
 import Layout from '../../layouts/Layout.astro';
 
-if (!isLocale(Astro.params.locale)) {
+const { locale } = Astro.params;
+if (locale === undefined || !isLocale(locale)) {
   return Astro.redirect('/');
 }
 

@@ -66,14 +66,15 @@ Include only conditions needed. Keep relative order regardless of subset. Decisi
 
 ### Dependencies
 
-- `^` and `~` in version specifiers are forbidden. All versions are exact. The one exception is `workspace:^` in `peerDependencies` (§ In a pnpm monorepo).
+- `^` and `~` in version specifiers are forbidden. All versions are exact.
 - External `peerDependencies` use `>=X` (library minimum-version contract).
+- A vendor compiler is a `peerDependency` iff the host framework guarantees it in the consumer's project (`@vue/compiler-sfc`); otherwise it is a regular dependency (`@astrojs/compiler-rs`).
 - `engines` uses `>=X`.
 
 #### In a pnpm monorepo
 
 - External dependencies in `dependencies`/`devDependencies` use `catalog:` — never inline version strings. Versions live exactly once in `pnpm-workspace.yaml` under `catalog:`.
-- Internal workspace packages use `workspace:*` in `dependencies`/`devDependencies` and `workspace:^` in `peerDependencies` — publish rewrites `workspace:*` to an exact pin; a peer contract needs the caret range.
+- Internal workspace packages use `workspace:*` — in `dependencies`, `devDependencies`, and `peerDependencies`. Publish rewrites it to an exact pin → the `/internal` coupling carries no cross-version guarantee, so a caret peer range promises combinations the packages do not keep.
 
 Adding a new external dep: pin in `pnpm-workspace.yaml` under `catalog:` first, then reference with `"catalog:"`.
 
@@ -86,7 +87,7 @@ Adding a new external dep: pin in `pnpm-workspace.yaml` under `catalog:` first, 
   },
   "peerDependencies": {
     "react": ">=19",
-    "yapyak": "workspace:^"
+    "yapyak": "workspace:*"
   },
   "engines": {
     "node": ">=22.12"

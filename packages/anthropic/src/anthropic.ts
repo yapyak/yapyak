@@ -184,7 +184,9 @@ export function anthropic(options: AnthropicOptions): Translator {
         'anthropic',
       );
       validateResponse(responseBody);
-      const text = responseBody.content?.[0]?.text;
+      const text = responseBody.content?.find(
+        (block) => block.type === 'text',
+      )?.text;
       if (typeof text !== 'string') {
         throw new TranslatorInvalidResponseError(
           'yapyak anthropic: response did not contain a text block.',

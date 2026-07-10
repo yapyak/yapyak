@@ -24,7 +24,7 @@ pnpm --filter @yapyak/e2e exec playwright install chromium
 | Documented promise | Source | Test |
 | --- | --- | --- |
 | "empty stubs are filled on save" and the module hot-replaces without a reload | [hmr.md](../docs/content/guide/advanced/hmr.md) | `writes the translation when a new t() call is saved` |
-| "Component state — open dialogs, form inputs, scroll position — stays put" | [hmr.md](../docs/content/guide/advanced/hmr.md) | `preserves the input value when the source is saved` |
+| "Component state — open dialogs, controlled form inputs, scroll position — stays put" | [hmr.md](../docs/content/guide/advanced/hmr.md) | `preserves the input value when the source is saved` |
 | "The string renders in your source language immediately … the model translates it" a moment later | [hmr.md](../docs/content/guide/advanced/hmr.md) | `falls back to the source string until the translation arrives` |
 | `t.as()` homonyms get per-context catalog entries | [homonyms.md](../docs/content/guide/writing/homonyms.md) | `writes both context translations when t.as() homonyms are saved` |
 | "Same path, edited source string" keeps the translation with `preserveTranslationsOnRename` | [renames.md](../docs/content/guide/translating/renames.md) | `preserves the translation when a source string is renamed` |

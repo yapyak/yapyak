@@ -5,7 +5,8 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite dev",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@tanstack/react-router": "catalog:",

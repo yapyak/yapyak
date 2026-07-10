@@ -6,7 +6,8 @@
     "build": "vite build",
     "dev": "vite dev",
     "prepare": "svelte-kit sync || echo ''",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
   },
   "dependencies": {
     "@yapyak/svelte": "workspace:*",
@@ -20,6 +21,7 @@
     "@types/node": "catalog:",
     "@yapyak/vite": "workspace:*",
     "svelte": "catalog:",
+    "svelte-check": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:"
   }

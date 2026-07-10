@@ -53,6 +53,7 @@ export async function fetchWithRetry(
         attempt + 1,
       );
       lastError = new Error(`HTTP ${response.status}`);
+      await response.body?.cancel();
     } catch (error) {
       lastError = error;
       if (

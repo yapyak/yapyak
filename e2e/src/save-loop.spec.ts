@@ -107,6 +107,31 @@ test('preserves the input value when the source is saved', async ({ page }) => {
   expect(loadCount).toBe(0);
 });
 
+test.fail(
+  'preserves an uncontrolled input value when the source is saved',
+  async ({ page }) => {
+    await writeApp((template) =>
+      template
+        .replace(/<input[\s\S]*?\/>/, '<input />')
+        .replace('<input />', "<input />\n      <p>{t('Cancel')}</p>"),
+    );
+    await expect(page.getByText('Cancel')).toBeVisible();
+
+    await page.getByRole('textbox').fill('World');
+    await writeApp((template) =>
+      template
+        .replace(/<input[\s\S]*?\/>/, '<input />')
+        .replace(
+          '<input />',
+          "<input />\n      <p>{t('Cancel')}</p>\n      <p>{t('Save changes')}</p>",
+        ),
+    );
+
+    await expect(page.getByText('Save changes')).toBeVisible();
+    await expect(page.getByRole('textbox')).toHaveValue('World');
+  },
+);
+
 test('falls back to the source string until the translation arrives', async ({
   page,
 }) => {

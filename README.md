@@ -50,7 +50,7 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 npm install yapyak
 ```
 
-Add the Vite plugin and you're set. See the [installation guide](https://yapyak.dev/guide/installation).
+Add the Vite plugin and you're set. See the [installation guide](https://yapyak.dev/guide/getting-started/installation).
 
 Full documentation at [yapyak.dev](https://yapyak.dev).
 

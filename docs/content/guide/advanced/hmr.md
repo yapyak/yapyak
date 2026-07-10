@@ -16,7 +16,7 @@ The default path: you write a new `t()` call (or edit an existing one), save the
 5. The compiled module is rewritten with the new `_pick()` lookups inline.
 6. Vite hot-replaces the module. The component re-renders.
 
-The whole loop takes milliseconds for the source-only steps and a few seconds for the translator step. Component state — open dialogs, form inputs, scroll position — stays put because Vite swaps the module without re-mounting.
+The whole loop takes milliseconds for the source-only steps and a few seconds for the translator step. Component state — open dialogs, controlled form inputs, scroll position — stays put because Vite swaps the module without re-mounting.
 
 {% callout variant="info" %}
 For `.astro` files, step 6 differs. Astro doesn't run yapyak's runtime in the browser, so the page reloads instead of doing a module swap. State doesn't survive — but it wouldn't on the server side either, so the effect matches normal Astro HMR.

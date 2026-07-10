@@ -13,6 +13,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -20,7 +21,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-      - run: npm install -g npm@latest
+      - run: npm install -g npm@12.0.0
       - run: pnpm install --frozen-lockfile
       - uses: changesets/action@v1
         with:
