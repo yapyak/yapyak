@@ -11,6 +11,9 @@ const execFileAsync = promisify(execFile);
 
 const SANDBOX_URL = new URL('../sandbox/', import.meta.url);
 const SANDBOX_PATH = fileURLToPath(SANDBOX_URL);
+const YAPYAK_BIN_PATH = fileURLToPath(
+  new URL('../../packages/yapyak/dist/cli/bin.js', import.meta.url),
+);
 const APP_PATH = fileURLToPath(new URL('src/app.tsx', SANDBOX_URL));
 const CART_PATH = fileURLToPath(new URL('src/cart.tsx', SANDBOX_URL));
 const MOVED_CART_PATH = fileURLToPath(
@@ -300,12 +303,9 @@ test('writes the skipped translations when `yapyak translate` runs', async () =>
   }).toPass();
 
   await execFileAsync(
-    'pnpm',
+    'node',
     [
-      '--filter',
-      '@yapyak/sandbox',
-      'exec',
-      'yapyak',
+      YAPYAK_BIN_PATH,
       'translate',
     ],
     {
@@ -417,12 +417,9 @@ test('renders the translation when a broken catalog save is fixed', async ({
 
 test('writes every translation when `yapyak add` runs', async () => {
   await execFileAsync(
-    'pnpm',
+    'node',
     [
-      '--filter',
-      '@yapyak/sandbox',
-      'exec',
-      'yapyak',
+      YAPYAK_BIN_PATH,
       'add',
       'de',
     ],
