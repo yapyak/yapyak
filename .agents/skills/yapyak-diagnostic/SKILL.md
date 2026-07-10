@@ -19,7 +19,7 @@ YAP0001
 
 ### Source of truth — a single typed constants file
 
-Every diagnostic code lives in **one file** as a typed constant. The library exports this file from a stable internal path (e.g. `src/diagnostics/codes.ts`).
+Every diagnostic code lives in **one file** as a typed constant: `src/diagnostic/catalog.ts`.
 
 ```ts
 const DOCS_BASE = 'https://yapyak.dev/reference/diagnostics';
@@ -51,7 +51,7 @@ export function docsUrl(code: YapCode): string {
 
 Sequential. Append-only. Never reused.
 
-1. **Allocating a new code:** find the highest existing number in `codes.ts`, add one, append a new constant. Never insert between existing entries.
+1. **Allocating a new code:** find the highest existing number in `catalog.ts`, add one, append a new constant. Never insert between existing entries.
 2. **Retiring a code:** mark the constant with a line comment `// YAPnnnn [RETIRED vX.Y]: superseded by <codes>` and keep it in the file. **Never delete. Never reuse the number.**
 3. **Re-purposing an existing code is forbidden.** If meaning changes, retire the old one and allocate a new one.
 4. **A code describes exactly one state.** If two situations need different diagnostic context, allocate two codes. A compile-time diagnostic and a runtime `warn()` are never the same state — always separate codes. Otherwise two situations are the same state iff they share an identical fix sentence AND an identical observation template (placeholders aside). If either differs, allocate separate codes.
@@ -220,36 +220,15 @@ warn('setLocale ignored. Value "de" is not in the configured locales.', {
 | `We couldn't load the locale file — sorry!` | `Locale file failed to load. Verify the path is correct and readable.` |
 | `t.as() — consider providing a source.` | `t.as() called without source string. Provide the English source as the first argument.` |
 
-### Catalog structure — `diagnostics.md` in the library
-
-The library mirrors this rule file with its own concrete catalog. The catalog groups entries by subsystem **for readability**, but the numeric identifiers are sequential and respect the allocation order shown in `codes.ts`. Sections do not own number ranges.
-
-```md
-## YAP diagnostic catalog
-
-### Parser (compile-time)
-- `YAP0001` (`PARSER_NO_SOURCE`) — t() called without source string.
-- `YAP0002` (`PARSER_TEMPLATE_LITERAL`) — Template literal not allowed in t().
-- `YAP0004` (`PARSER_SPREAD_PARAMS`) — Spread params not allowed in t().
-
-### Catalog validation (compile-time)
-- `YAP0003` (`CATALOG_INVALID_SHAPE`) — Entries are not a valid object shape.
-
-### Runtime: locale state
-- `YAP0031` (`LOCALE_SET_IGNORED`) — setLocale call ignored.
-```
-
-Non-contiguous numbering inside a section is **expected and correct** — it reflects allocation history.
-
 ### Authoring discipline — what every diagnostic-touching commit verifies
 
 Adding or changing a diagnostic touches **three artifacts in one commit**:
 
-1. `codes.ts` — new constant or `[RETIRED]` marker.
-2. `diagnostics.md` (in the library) — new catalog entry under the right subsystem section.
-3. The emit site — references `YAP.<NAME>` and respects the tone rules.
+1. `catalog.ts` — new constant or `[RETIRED]` marker.
+2. The emit site — references `YAP.<NAME>` and respects the tone rules.
+3. `docs/content/diagnostics/YAPxxxx.md` — the per-code documentation page.
 
-Code review checks all three are in sync. There is no diagnostic in source without an entry in `codes.ts` and a row in the catalog.
+Code review checks all three are in sync. There is no diagnostic in source without a constant in `catalog.ts` and a per-code docs page.
 
 ### Per-code documentation pages
 
