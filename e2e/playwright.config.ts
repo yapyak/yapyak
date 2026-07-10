@@ -150,7 +150,7 @@ function resolveCommand(example: Example): string {
     return `${run} dev --port ${resolvePort(example)}`;
   }
   if (example.serve === 'start') {
-    return `${run} start`;
+    return `PORT=${resolvePort(example)} ${run} start`;
   }
   return `${run} preview --port ${resolvePort(example)}`;
 }
@@ -176,7 +176,6 @@ export default defineConfig<ExampleOptions>({
     command: resolveCommand(example),
     env: {
       ASTRO_DEV_BACKGROUND: '1',
-      PORT: String(resolvePort(example)),
       TZ: 'Europe/Stockholm',
     },
     port: resolvePort(example),

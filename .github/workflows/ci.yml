@@ -11,10 +11,17 @@ concurrency:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest]
         node: ['22.22', '24']
+        include:
+          - os: windows-latest
+            node: '24'
+          - os: macos-latest
+            node: '24'
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -27,12 +34,18 @@ jobs:
       - run: pnpm build
       - run: pnpm -r --parallel typecheck
       - run: pnpm test
-      - run: pnpm --filter @yapyak/docs build
-      - run: pnpm -r --filter "./examples/*" build
-      - run: pnpm knip
+      - if: runner.os == 'Linux'
+        run: pnpm --filter @yapyak/docs build
+      - if: runner.os == 'Linux'
+        run: pnpm -r --filter "./examples/*" build
+      - if: runner.os == 'Linux' && matrix.node == '24'
+        run: pnpm knip
 
-  e2e-dev:
+  e2e:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mode: [dev, prod]
     steps:
       - uses: actions/checkout@v7
       - uses: pnpm/action-setup@v6
@@ -43,28 +56,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm --filter @yapyak/e2e exec playwright install --with-deps chromium
-      - run: pnpm e2e:dev
+      - run: pnpm e2e:${{ matrix.mode }}
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: e2e-dev-test-results
-          path: e2e/test-results
-
-  e2e-prod:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - run: pnpm --filter @yapyak/e2e exec playwright install --with-deps chromium
-      - run: pnpm e2e:prod
-      - uses: actions/upload-artifact@v7
-        if: failure()
-        with:
-          name: e2e-prod-test-results
+          name: e2e-${{ matrix.mode }}-test-results
           path: e2e/test-results

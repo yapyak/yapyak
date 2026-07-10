@@ -19,4 +19,4 @@ pnpm --filter @yapyak/e2e exec playwright install chromium
 
 ## Adding an example
 
-Add one entry to `EXAMPLES` in [playwright.config.ts](playwright.config.ts): the example's directory name, the next free port, its `persistence` kind, and whether it has a second server-driven switch group. The shared spec derives everything else — the app must render the same content as the existing examples.
+Add one entry to `EXAMPLES` in [playwright.config.ts](playwright.config.ts): the example's directory name, the next free port, its `persistence` kind, its prod serve script (`preview` or `start`), and whether it has a second server-driven switch group. The shared spec derives everything else — the app must render the same content as the existing examples.
