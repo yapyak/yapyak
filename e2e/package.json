@@ -6,7 +6,8 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "test": "pnpm --filter @yapyak-examples/astro-cookie exec astro dev stop && playwright test",
+    "test:dev": "pnpm --filter @yapyak-examples/astro-cookie exec astro dev stop && playwright test",
+    "test:prod": "YAPYAK_E2E_MODE=prod playwright test",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {

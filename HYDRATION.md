@@ -81,7 +81,7 @@ Constraints to respect:
 ## Verification when fixed
 
 - The probe above stops printing hydration errors while the page still ends up Swedish.
-- The e2e suite's console-error guard ([e2e/src/test.ts](e2e/src/test.ts)) fails any test on `pageerror`/`console.error`, so a regression in any example is caught by `pnpm e2e`. Consider adding a dedicated pre-hydration-click test once fixed (click at `waitUntil: 'commit'` instead of after `networkidle`).
+- The e2e suite's console-error guard ([e2e/src/test.ts](e2e/src/test.ts)) fails any test on `pageerror`/`console.error`, so a regression in any example is caught by `pnpm e2e:dev` / `pnpm e2e:prod`. Consider adding a dedicated pre-hydration-click test once fixed (click at `waitUntil: 'commit'` instead of after `networkidle`).
 
 ## Open questions
 

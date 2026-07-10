@@ -31,7 +31,7 @@ jobs:
       - run: pnpm -r --filter "./examples/*" build
       - run: pnpm knip
 
-  e2e:
+  e2e-dev:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -43,9 +43,28 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       - run: pnpm --filter @yapyak/e2e exec playwright install --with-deps chromium
-      - run: pnpm e2e
+      - run: pnpm e2e:dev
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: e2e-test-results
+          name: e2e-dev-test-results
+          path: e2e/test-results
+
+  e2e-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm --filter @yapyak/e2e exec playwright install --with-deps chromium
+      - run: pnpm e2e:prod
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: e2e-prod-test-results
           path: e2e/test-results

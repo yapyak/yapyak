@@ -2,119 +2,158 @@ import type { ExampleOptions } from './src/test';
 
 import { defineConfig, devices } from '@playwright/test';
 
+type Mode = 'dev' | 'prod';
+
 type Example = {
   name: string;
   persistence: ExampleOptions['persistence'];
   port: number;
+  serve: 'preview' | 'start';
   serverSwitch: boolean;
 };
 
 const IS_CI = process.env.CI !== undefined;
+
+const MODE: Mode = process.env.YAPYAK_E2E_MODE === 'prod' ? 'prod' : 'dev';
+
+const PROD_PORT_OFFSET = 100;
 
 const EXAMPLES: Example[] = [
   {
     name: 'astro-cookie',
     persistence: 'cookie',
     port: 5301,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'astro-url',
     persistence: 'url',
     port: 5311,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'react-react-router-cookie',
     persistence: 'cookie',
     port: 5302,
+    serve: 'start',
     serverSwitch: true,
   },
   {
     name: 'react-react-router-url',
     persistence: 'url',
     port: 5303,
+    serve: 'start',
     serverSwitch: false,
   },
   {
     name: 'react-tanstack-start-cookie',
     persistence: 'cookie',
     port: 5304,
+    serve: 'preview',
     serverSwitch: true,
   },
   {
     name: 'react-tanstack-start-url',
     persistence: 'url',
     port: 5305,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'react-vanilla-cookie',
     persistence: 'cookie',
     port: 5312,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'react-vanilla-local-storage',
     persistence: 'local-storage',
     port: 5306,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'react-vanilla-url',
     persistence: 'url',
     port: 5313,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'svelte-sveltekit-cookie',
     persistence: 'cookie',
     port: 5307,
+    serve: 'preview',
     serverSwitch: true,
   },
   {
     name: 'svelte-sveltekit-url',
     persistence: 'url',
     port: 5308,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'svelte-vanilla-cookie',
     persistence: 'cookie',
     port: 5314,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'svelte-vanilla-local-storage',
     persistence: 'local-storage',
     port: 5309,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'svelte-vanilla-url',
     persistence: 'url',
     port: 5315,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'vue-vanilla-cookie',
     persistence: 'cookie',
     port: 5316,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'vue-vanilla-local-storage',
     persistence: 'local-storage',
     port: 5310,
+    serve: 'preview',
     serverSwitch: false,
   },
   {
     name: 'vue-vanilla-url',
     persistence: 'url',
     port: 5317,
+    serve: 'preview',
     serverSwitch: false,
   },
 ];
+
+function resolvePort(example: Example): number {
+  return MODE === 'prod' ? example.port + PROD_PORT_OFFSET : example.port;
+}
+
+function resolveCommand(example: Example): string {
+  const run = `pnpm --filter @yapyak-examples/${example.name}`;
+  if (MODE === 'dev') {
+    return `${run} dev --port ${resolvePort(example)}`;
+  }
+  if (example.serve === 'start') {
+    return `${run} start`;
+  }
+  return `${run} preview --port ${resolvePort(example)}`;
+}
 
 export default defineConfig<ExampleOptions>({
   forbidOnly: IS_CI,
@@ -122,7 +161,7 @@ export default defineConfig<ExampleOptions>({
     name: example.name,
     use: {
       ...devices['Desktop Chrome'],
-      baseURL: `http://localhost:${example.port}`,
+      baseURL: `http://localhost:${resolvePort(example)}`,
       persistence: example.persistence,
       serverSwitch: example.serverSwitch,
     },
@@ -134,11 +173,12 @@ export default defineConfig<ExampleOptions>({
     trace: 'on-first-retry',
   },
   webServer: EXAMPLES.map((example) => ({
-    command: `pnpm --filter @yapyak-examples/${example.name} dev --port ${example.port}`,
+    command: resolveCommand(example),
     env: {
       ASTRO_DEV_BACKGROUND: '1',
+      PORT: String(resolvePort(example)),
       TZ: 'Europe/Stockholm',
     },
-    port: example.port,
+    port: resolvePort(example),
   })),
 });

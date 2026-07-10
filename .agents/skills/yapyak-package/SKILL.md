@@ -66,14 +66,14 @@ Include only conditions needed. Keep relative order regardless of subset. Decisi
 
 ### Dependencies
 
-- `^` and `~` in version specifiers are forbidden. All versions are exact.
-- `peerDependencies` use `>=X` (library minimum-version contract).
+- `^` and `~` in version specifiers are forbidden. All versions are exact. The one exception is `workspace:^` in `peerDependencies` (§ In a pnpm monorepo).
+- External `peerDependencies` use `>=X` (library minimum-version contract).
 - `engines` uses `>=X`.
 
 #### In a pnpm monorepo
 
 - External dependencies in `dependencies`/`devDependencies` use `catalog:` — never inline version strings. Versions live exactly once in `pnpm-workspace.yaml` under `catalog:`.
-- Internal workspace packages use `workspace:*`.
+- Internal workspace packages use `workspace:*` in `dependencies`/`devDependencies` and `workspace:^` in `peerDependencies` — publish rewrites `workspace:*` to an exact pin; a peer contract needs the caret range.
 
 Adding a new external dep: pin in `pnpm-workspace.yaml` under `catalog:` first, then reference with `"catalog:"`.
 
@@ -85,7 +85,8 @@ Adding a new external dep: pin in `pnpm-workspace.yaml` under `catalog:` first, 
     "@yapyak/typescript-config": "workspace:*"
   },
   "peerDependencies": {
-    "react": ">=19"
+    "react": ">=19",
+    "yapyak": "workspace:^"
   },
   "engines": {
     "node": ">=22.12"

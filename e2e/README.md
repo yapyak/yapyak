@@ -2,12 +2,13 @@
 
 > Internal
 
-End-to-end tests for the `examples/*` apps. Playwright boots every example's dev server and verifies rendering, locale switching, and persistence in a real browser.
+End-to-end tests for the `examples/*` apps. Playwright boots every example and verifies rendering, locale switching, and persistence in a real browser. The same spec runs in two modes: `dev` exercises the dev servers and the on-the-fly transform; `prod` builds every example and exercises the compiled output on its production server.
 
 ## Run
 
 ```sh
-pnpm e2e
+pnpm e2e:dev
+pnpm e2e:prod
 ```
 
 First run on a machine needs the browser binary:
