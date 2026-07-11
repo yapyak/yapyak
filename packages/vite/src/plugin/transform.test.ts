@@ -96,7 +96,7 @@ describe('createTransformPlugin', () => {
       expect(result).toBeNull();
     });
 
-    it('returns `null` when the source has no `t()` calls', () => {
+    it('returns `null` when the source has no `yapyak` import', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
       const transform = plugin.transform as TransformHook;
@@ -104,6 +104,20 @@ describe('createTransformPlugin', () => {
       const result = transform.call(
         {} as ThisParameterType<TransformHook>,
         'const value = 1;\n',
+        '/project/src/a.tsx',
+      );
+
+      expect(result).toBeNull();
+    });
+
+    it('returns `null` when the source has no `t()` calls', () => {
+      const state = buildState('/project');
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+
+      const result = transform.call(
+        {} as ThisParameterType<TransformHook>,
+        `import { locales } from 'yapyak';\nconst value = locales;\n`,
         '/project/src/a.tsx',
       );
 

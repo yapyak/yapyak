@@ -42,6 +42,9 @@ export function createTransformPlugin(state: State): Plugin {
       if (!isCandidateId(filePath, state.filter, state.projectRoot)) {
         return null;
       }
+      if (!code.includes('yapyak')) {
+        return null;
+      }
       const fileId = toFileId(state.projectRoot, filePath);
       const { locales } = getResolver(state).getEmittedLocales();
       const processors = getNormalized(state).processors;

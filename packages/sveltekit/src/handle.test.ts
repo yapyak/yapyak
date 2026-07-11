@@ -45,6 +45,22 @@ describe('handle', () => {
     expect(await response.text()).toBe('<html lang="en">');
   });
 
+  it('replaces every `%yapyak.lang%` occurrence in the page chunk', async () => {
+    const event = makeEvent(new Request('http://example.com/'));
+    const response = await handle({
+      event,
+      resolve: async (_event, options) => {
+        const html = options?.transformPageChunk?.({
+          done: true,
+          html: '<html lang="%yapyak.lang%"><meta content="%yapyak.lang%">',
+        });
+        return new Response(typeof html === 'string' ? html : '');
+      },
+    } as Parameters<typeof handle>[0]);
+
+    expect(await response.text()).toBe('<html lang="en"><meta content="en">');
+  });
+
   it('writes Set-Cookie onto the response when `setLocale()` is called server-side', async () => {
     const event = makeEvent(new Request('http://example.com/'));
     const response = await handle({

@@ -30,6 +30,7 @@ const PLACEHOLDER = '%yapyak.lang%';
 export const handle: Handle = ({ event, resolve }) =>
   withResponse(event.request, () =>
     resolve(event, {
-      transformPageChunk: ({ html }) => html.replace(PLACEHOLDER, getLocale()),
+      transformPageChunk: ({ html }) =>
+        html.replaceAll(PLACEHOLDER, getLocale()),
     }),
   );
