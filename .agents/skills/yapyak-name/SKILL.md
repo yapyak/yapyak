@@ -270,7 +270,9 @@ Closed list. Extend before coining.
 | `*Request` | Input data for an operation | `TranslateBatchRequest` |
 | `*Error` | Custom error class | `DomainError` |
 | `*Conflict` | A collision between concurrent or candidate operations | `RenameConflict` |
+| `*Component` | Framework component callable | `RichTextComponent` |
 | `*Props` | React component props | `IntlProviderProps` |
+| `*Slots` | Vue component slots | `RichTextSlots` |
 | `*Return` | Hook return type | `UseLocaleReturn` |
 | `*Fn` | Callable / function type | `TFn` |
 | `*Params` | A function's parameters type | `TParams` |
@@ -288,11 +290,13 @@ Apply top-down. First match wins. No two questions can both apply.
 | Q4 | Is the type a custom error class (extends `Error`)? | `*Error` |
 | Q5 | Is the type the return of a computation — an object with 2+ fields or a `changed`/status flag (not a single scalar or domain object)? | `*Result` |
 | Q6 | Is the type the return value of a React hook? | `*Return` |
-| Q7 | Is the type a callable/function type? | `*Fn` |
-| Q8 | Is the type a function's parameters tuple? | `*Params` |
-| Q9 | Is the type React component props? | `*Props` |
-| Q10 | Is the type a pure object bundle, used as input to an internal helper with `input` parameter? | `*Input` |
-| Q11 | Is the type a pure object bundle (any other input/options use)? | `*Options` |
+| Q7 | Is the type the callable type of a framework component? | `*Component` |
+| Q8 | Is the type a callable/function type? | `*Fn` |
+| Q9 | Is the type a function's parameters tuple? | `*Params` |
+| Q10 | Is the type React component props? | `*Props` |
+| Q11 | Is the type a Vue component's slots? | `*Slots` |
+| Q12 | Is the type a pure object bundle, used as input to an internal helper with `input` parameter? | `*Input` |
+| Q13 | Is the type a pure object bundle (any other input/options use)? | `*Options` |
 
 **Intuition:**
 
@@ -303,14 +307,14 @@ Apply top-down. First match wins. No two questions can both apply.
 **Field optionality is NOT part of the test.** A `*Options` type may have required fields, optional fields, or both. The suffix is decided by call-site role, not by counting `?` markers.
 
 ```ts
-// ✓ — public factory with required field. Q11 → *Options.
+// ✓ — public factory with required field. Q13 → *Options.
 type AnthropicOptions = {
   apiKey: string;
   model?: string;
 };
 export function anthropic(options: AnthropicOptions): Translator { ... }
 
-// ✓ — internal helper. Q10 → *Input.
+// ✓ — internal helper. Q12 → *Input.
 type ExtractFileInput = {
   fileId: string;
   source: string;
@@ -321,7 +325,7 @@ function extractFile(input: ExtractFileInput): ExtractFileResult { ... }
 
 **Forbidden reasoning:**
 
-- ✗ "This `*Options` type has a required field → must be `*Input`." Wrong — Q11 does not ask about optionality.
+- ✗ "This `*Options` type has a required field → must be `*Input`." Wrong — Q13 does not ask about optionality.
 - ✗ "All-optional bundles must be `*Options`, anything else `*Input`." Wrong — same reason.
 
 **Inside a `*Config` union, each pure-object variant gets `*Options`:**

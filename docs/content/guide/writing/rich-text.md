@@ -166,9 +166,27 @@ Malformed tag markup is flagged at both compile time (as a `$yapyakTypeError` in
 
 ## Type safety
 
-The set of tags `<RichText>` expects is inferred from the source string at compile time. Add `<discount>` to the source and `<RichText>` requires a `discount` handler; rename `<link>` to `<a>` and the prop name updates accordingly. Removing a handler whose tag is still in the string is a TypeScript error. You can't ship a missing renderer.
+The set of tags `<RichText>` expects is inferred from the source string at compile time: add `<discount>` to the source and the expected handler set gains `discount`; rename `<link>` to `<a>` and it updates accordingly.
 
-The reverse direction is checked too: if your handler list has a key the source doesn't declare, TypeScript flags it as unexpected.
+{% switch group="framework" %}
+
+{% when value="react" %}
+The handlers are props. Removing a prop whose tag is still in the string is a TypeScript error. Adding a prop for a tag the source doesn't declare is a TypeScript error. You can't ship a missing renderer.
+{% /when %}
+
+{% when value="vue" %}
+The handlers are slots. Removing a slot whose tag is still in the string is not a compile error: Vue's template tooling has no completeness check for slots, and the tag renders as literal text at runtime. Adding a slot for a tag the source doesn't declare is a TypeScript error.
+{% /when %}
+
+{% when value="svelte" %}
+The handlers are snippets. Removing a snippet whose tag is still in the string is a TypeScript error. Adding a snippet for a tag the source doesn't declare is a TypeScript error. You can't ship a missing renderer.
+{% /when %}
+
+{% when value="astro" %}
+The handlers are untyped slots. Removing a slot whose tag is still in the string is not a compile error: the tag renders as literal text at runtime. Adding a slot for a tag the source doesn't declare is ignored.
+{% /when %}
+
+{% /switch %}
 
 ## Working with the parsed nodes directly
 

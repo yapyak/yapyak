@@ -213,6 +213,7 @@ Suffix-driven. Listed suffixes use the formula below; any named suffix not liste
 | `*Error` | "Error thrown when [condition]." |
 | `*Tag` / `*Kind` | "Discriminator for [union type]." |
 | `*Props` | "Props for {@link Component}." |
+| `*Slots` | "Slots for {@link Component}." |
 
 For inline-union types (no name), put the JSDoc on the field that holds the union per [[yapyak-type]] § Union types — inline vs named. When 2+ fields hold the same inline union, each field holding the inline union carries its own field-level JSDoc; there is no shared union doc.
 
@@ -429,6 +430,7 @@ The rendered reference page already links every type in the Type column, every p
 **Formula slots with an inline `{@link}`** — closed set:
 
 - `Props for {@link Component}.`
+- `Slots for {@link Component}.`
 - `Options for {@link function}.`
 - `Input for {@link function}.`
 - `Result of {@link function}.`
@@ -612,7 +614,7 @@ A primary symbol (function, component, hook, factory, class) and its secondary t
 | Symbol role | Description | `@remarks` | `@example` |
 |---|---|---|---|
 | **Primary** | Category formula | If triple-test passes | Required-or-optional per category |
-| **Secondary** (`*Options`, `*Props`, `*Result`, `*Request`, `*Response`, `*Config`, `*Event`, `*Context`) | Suffix formula, with formula-slot `{@link Primary}` | Never | Never |
+| **Secondary** (`*Options`, `*Props`, `*Slots`, `*Result`, `*Request`, `*Response`, `*Config`, `*Event`, `*Context`) | Suffix formula, with formula-slot `{@link Primary}` | Never | Never |
 
 ```ts
 // ✓ — primary owns the example, secondary is one line
@@ -968,7 +970,7 @@ Grouped by category. Each row points back to the section that defines the rule.
 | **`@deprecated`** | Migration path always included. |
 | **`@remarks`** | Triple test passes. No forbidden implementation-detail patterns. No code blocks. |
 | **Defaults** | `@defaultValue` only. Never inline in prose. |
-| **Secondary types** | `*Options`/`*Props`/`*Result`/`*Request`/`*Response`/`*Config`/`*Event`/`*Context` carry no `@remarks`, no `@example`. Formula sentence + `{@link Primary}`. |
+| **Secondary types** | `*Options`/`*Props`/`*Slots`/`*Result`/`*Request`/`*Response`/`*Config`/`*Event`/`*Context` carry no `@remarks`, no `@example`. Formula sentence + `{@link Primary}`. |
 | **Sibling families** | Byte-identical summaries except the binding slot. Identical `@example` shape and count. |
 | **Prose hygiene** | No second-person pronouns. Sibling descriptions parallel. Standard phrasings used. No em-dash in descriptions. |
 | **Whitespace** | Empty line between tag groups, none within groups. |

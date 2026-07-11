@@ -1,11 +1,14 @@
-import type { FunctionalComponent, VNodeChild } from 'vue';
-import type { RichTextNode } from 'yapyak';
+import type { PublicProps, VNodeChild } from 'vue';
+import type { RichTextNode, TReturn } from 'yapyak';
 
 import { parseRichText } from 'yapyak';
 
-type SlotFn = (props: { children: () => VNodeChild[] }) => VNodeChild[];
+type PairsOf<T> =
+  T extends TReturn<infer Pair extends string, string> ? Pair : never;
+type VoidsOf<T> =
+  T extends TReturn<string, infer Void extends string> ? Void : never;
 
-type RichTextSlots = Record<string, SlotFn>;
+type SlotFn = (props: { children: () => VNodeChild[] }) => VNodeChild[];
 
 /**
  * Props for {@link RichText}.
@@ -15,6 +18,36 @@ type RichTextSlots = Record<string, SlotFn>;
 export type RichTextProps<T extends string> = {
   /** The source string. */
   value: T;
+};
+
+/**
+ * Slots for {@link RichText}.
+ *
+ * @shape RichTextSlots<T extends string> = \{
+ *   [pairTag]: (props: \{ children: () => VNodeChild[] \}) => unknown,
+ *   [voidTag]: (props: \{\}) => unknown,
+ * \}
+ *
+ * @typeParam T - The source string literal.
+ */
+export type RichTextSlots<T extends string> = {
+  [Pair in PairsOf<T>]: (props: { children: () => VNodeChild[] }) => unknown;
+} & {
+  [Void in VoidsOf<T>]: (props: {}) => unknown;
+};
+
+type RichTextContext<T extends string> = {
+  attrs: Record<string, unknown>;
+  emit: Record<string, never>;
+  props: PublicProps & RichTextProps<T>;
+  slots: RichTextSlots<T>;
+};
+
+type RichTextComponent = <T extends string>(
+  props: RichTextContext<T>['props'],
+  context?: Pick<RichTextContext<T>, 'attrs' | 'emit' | 'slots'>,
+) => VNodeChild[] & {
+  __ctx?: RichTextContext<T>;
 };
 
 /**
@@ -36,11 +69,11 @@ export type RichTextProps<T extends string> = {
  * </template>
  * ```
  */
-export const RichText: FunctionalComponent<
-  RichTextProps<string>,
-  Record<string, never>,
-  RichTextSlots
-> = (props, context) => renderNodes(parseRichText(props.value), context.slots);
+export const RichText: RichTextComponent = (props, context) =>
+  renderNodes(
+    parseRichText(props.value),
+    (context?.slots ?? {}) as Readonly<Record<string, SlotFn | undefined>>,
+  );
 
 function renderNodes(
   nodes: RichTextNode[],
