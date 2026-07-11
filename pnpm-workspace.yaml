@@ -5,11 +5,22 @@ packages:
   - examples/*
   - packages/*
 
+allowBuilds:
+  esbuild: false
+  sharp: false
+  workerd: false
+
 catalogMode: strict
 
 minimumReleaseAge: 10080
 
 savePrefix: ''
+
+trustLockfile: true
+
+updateConfig:
+  ignoreDependencies:
+    - typescript
 
 catalog:
   '@arethetypeswrong/core': 0.18.5

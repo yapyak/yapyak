@@ -18,7 +18,7 @@ Bump catalog versions with `pnpm update --latest -r <pkg…>` — never by hand-
 
 ### Holds
 
-- Every hold has a row below AND its name in root `package.json` `pnpm.updateConfig.ignoreDependencies` — add or remove both in the same commit.
+- Every hold has a row below AND its name in `pnpm-workspace.yaml` `updateConfig.ignoreDependencies` — add or remove both in the same commit.
 - Held packages vanish from `pnpm outdated` → re-test every "Re-test when" condition during each bump round.
 - Never encode a hold as a catalog comment → pnpm re-sorts the catalog and the comment drifts onto the wrong entry.
 
@@ -29,7 +29,12 @@ Bump catalog versions with `pnpm update --latest -r <pkg…>` — never by hand-
 ### Release-age gate
 
 - Keep `minimumReleaseAge: 10080` (minutes) in `pnpm-workspace.yaml` — versions younger than 7 days resolve to the newest older release.
+- Keep `trustLockfile: true` — without it pnpm re-verifies every lockfile entry against the gate and CI fails on entries younger than the cutoff.
 - Exempt a package that must land sooner via `minimumReleaseAgeExclude` → remove the exemption in the next bump round.
+
+### Build scripts
+
+A dependency demanding a build script fails install with `ERR_PNPM_IGNORED_BUILDS` → add it under `allowBuilds` in `pnpm-workspace.yaml`, `false` unless the package is broken without its script.
 
 ### Tool floors
 
