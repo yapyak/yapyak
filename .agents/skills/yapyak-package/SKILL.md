@@ -51,7 +51,7 @@ The npm name communicates stability commitment.
 - External dependencies in `dependencies`/`devDependencies` use `catalog:` — never inline version strings. Versions live exactly once in `pnpm-workspace.yaml` under `catalog:`.
 - Internal workspace packages use `workspace:*` — in `dependencies`, `devDependencies`, and `peerDependencies` alike. Publish rewrites it to an exact pin; `/internal` carries no cross-version guarantee, so a caret peer promises combinations the packages do not keep.
 
-Adding a new external dep: pin in `pnpm-workspace.yaml` under `catalog:` first, then reference with `"catalog:"`.
+Add a new external dep with `pnpm add <pkg>` in the consuming package — `catalogMode: strict` + `savePrefix: ''` write the exact version to the catalog and reference `"catalog:"`.
 
 ```jsonc
 // ✓

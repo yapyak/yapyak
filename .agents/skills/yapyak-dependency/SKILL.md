@@ -14,7 +14,7 @@ Never add dependabot or renovate configuration → run this routine. Action SHAs
 5. Verify per [[yapyak-workflow]] § Verify after changes, then `pnpm e2e:dev` and `pnpm e2e:prod`.
 6. Commit `pnpm-workspace.yaml` and `pnpm-lock.yaml` together — CI's frozen install rejects a catalog that doesn't match the lockfile.
 
-Bump catalog versions with `pnpm update --latest -r <pkg…>` — never by hand-editing `pnpm-workspace.yaml`. Adding a new dependency is hand-edited per [[yapyak-package]] § In a pnpm monorepo.
+Bump catalog versions with `pnpm update --latest -r <pkg…>` — never by hand-editing `pnpm-workspace.yaml`. Adding a new dependency uses `pnpm add` per [[yapyak-package]] § In a pnpm monorepo.
 
 ### Holds
 

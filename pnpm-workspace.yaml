@@ -5,7 +5,11 @@ packages:
   - examples/*
   - packages/*
 
+catalogMode: strict
+
 minimumReleaseAge: 10080
+
+savePrefix: ''
 
 catalog:
   '@arethetypeswrong/core': 0.18.5
