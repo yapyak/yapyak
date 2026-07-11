@@ -106,12 +106,14 @@ export function ollama(options: OllamaOptions = {}): Translator {
     concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
+    glossary,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
     maxTokens,
     model = DEFAULT_MODEL,
     temperature = DEFAULT_TEMPERATURE,
     timeout = DEFAULT_TIMEOUT,
+    voice,
   } = options;
 
   return createTranslator({
@@ -139,7 +141,10 @@ export function ollama(options: OllamaOptions = {}): Translator {
           },
           prompt: JSON.stringify(items),
           stream: false,
-          system: buildSystem(sourceLocale, targetLocales, options),
+          system: buildSystem(sourceLocale, targetLocales, {
+            glossary,
+            voice,
+          }),
         }),
         headers: {
           'content-type': 'application/json',

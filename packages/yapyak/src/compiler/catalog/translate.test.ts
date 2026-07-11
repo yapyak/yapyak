@@ -189,6 +189,113 @@ describe('autoTranslate', () => {
     ]);
   });
 
+  it('captures the call-site context for each `t.as` variant', async () => {
+    let receivedRequests: TranslateRequest[] | undefined;
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (requests: TranslateRequest[]): Promise<string[]> => {
+          receivedRequests = requests;
+          return Promise.resolve([
+            'Öppna',
+            'Öppen',
+          ]);
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        context: 'button',
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {
+              enclosingElement: 'button',
+              snippet: "t.as('button', 'Open')",
+            },
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 10,
+                line: 1,
+                offset: 10,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Open',
+      },
+      {
+        context: 'badge',
+        id: 'm2',
+        locations: [
+          {
+            callSiteContext: {
+              enclosingElement: 'span',
+              snippet: "t.as('badge', 'Open')",
+            },
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 10,
+                line: 2,
+                offset: 20,
+              },
+              start: {
+                column: 1,
+                line: 2,
+                offset: 11,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Open',
+      },
+    ];
+
+    await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    const buttonRequest = receivedRequests?.find(
+      (request) => request.disambiguation === 'button',
+    );
+    const badgeRequest = receivedRequests?.find(
+      (request) => request.disambiguation === 'badge',
+    );
+    expect(buttonRequest?.context).toEqual({
+      enclosingComponent: '',
+      enclosingElement: 'button',
+      snippet: "t.as('button', 'Open')",
+    });
+    expect(badgeRequest?.context).toEqual({
+      enclosingComponent: '',
+      enclosingElement: 'span',
+      snippet: "t.as('badge', 'Open')",
+    });
+  });
+
   it('returns `translated: 0` with no errors when no target locales remain', async () => {
     const translator: Translator = Object.assign(
       () => Promise.reject(new Error('should not be called')),

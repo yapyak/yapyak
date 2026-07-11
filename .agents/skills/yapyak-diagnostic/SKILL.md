@@ -25,27 +25,40 @@ Every diagnostic code lives in **one file** as a typed constant: `src/diagnostic
 const DOCS_BASE = 'https://yapyak.dev/reference/diagnostics';
 
 export const YAP = {
-  PARSER_NO_SOURCE: 'YAP0001',
-  PARSER_TEMPLATE_LITERAL: 'YAP0002',
-  CATALOG_INVALID_SHAPE: 'YAP0003',
+  PARSER_NO_SOURCE: {
+    code: 'YAP0001',
+    hint: (): string =>
+      'Pass the English source as the first (or, for `t.as()`, second) argument.',
+    message: ({ method }: { method: 't' | 't.as' }): string =>
+      method === 't.as'
+        ? '`t.as()` called without a source string.'
+        : '`t()` called without arguments.',
+  },
   // ...
-  LOCALE_SET_IGNORED: 'YAP0031',
+  LOCALE_SET_IGNORED: {
+    code: 'YAP0028',
+    message: ({ value }: { value: string }): string =>
+      `setLocale call ignored. Value "${value}" is not in the configured locales.`,
+  },
 } as const;
 
-export type YapCode = (typeof YAP)[keyof typeof YAP];
+export type YapKey = keyof typeof YAP;
+export type YapCode = (typeof YAP)[YapKey]['code'];
 
-export function docsUrl(code: YapCode): string {
+export function getDocsUrl(code: YapCode): string {
   return `${DOCS_BASE}/${code}`;
 }
 ```
 
-**Three exports from one file:**
+**One file exports the whole surface:**
 
-1. `YAP` — frozen object of named code constants.
-2. `YapCode` — type derived from `YAP`. Use this everywhere a diagnostic code is referenced in a type signature.
-3. `docsUrl(code)` — pure function that builds the documentation URL.
+1. `YAP` — frozen object of catalog entries. Each entry carries `code`, a typed `message` function, and (for diagnostics with a separate fix) a typed `hint` function.
+2. `YapKey` / `YapCode` — types derived from `YAP`. Use `YapCode` everywhere a diagnostic code is referenced in a type signature.
+3. `getDocsUrl(code)` — pure function that builds the documentation URL.
+4. `buildDiagnostic(key, params, context)` — builds a compile-time `Diagnostic` from a catalog entry.
+5. `warnDiagnostic(key, params, meta?)` — renders and emits a runtime warning with the docs URL appended.
 
-**No diagnostic code may exist outside this file.** No string-literal `'YAP0042'` anywhere in source code — every reference goes through `YAP.<NAME>`. The TypeScript compiler enforces uniqueness, refactor-safety, and typo-immunity.
+**No diagnostic code may exist outside this file.** No string-literal `'YAP0042'` anywhere in source code — every reference goes through `buildDiagnostic`/`warnDiagnostic` with the catalog key, or `YAP.<NAME>.code`. The TypeScript compiler enforces uniqueness, refactor-safety, and typo-immunity.
 
 ### Allocation policy
 
@@ -59,25 +72,25 @@ Sequential. Append-only. Never reused.
 ```ts
 // ✓ Right — sequential allocation, single-purpose
 export const YAP = {
-  PARSER_NO_SOURCE: 'YAP0001',
-  PARSER_TEMPLATE_LITERAL: 'YAP0002',
-  CATALOG_INVALID_SHAPE: 'YAP0003',
-  PARSER_SPREAD_PARAMS: 'YAP0004',  // allocated later, not inserted between 0001 and 0002
+  PARSER_NO_SOURCE: { code: 'YAP0001' /* hint, message */ },
+  PARSER_TEMPLATE_LITERAL: { code: 'YAP0002' /* hint, message */ },
+  PARSER_EMPTY_SOURCE: { code: 'YAP0003' /* hint, message */ },
+  PARSER_MISSING_PARAM: { code: 'YAP0004' /* hint, message */ },  // allocated later, not inserted between 0001 and 0002
 } as const;
 
 // ✓ Right — retired code stays, never reused
 export const YAP = {
-  PARSER_NO_SOURCE: 'YAP0001',
-  PARSER_TEMPLATE_LITERAL: 'YAP0002',
+  PARSER_NO_SOURCE: { code: 'YAP0001' /* hint, message */ },
+  PARSER_TEMPLATE_LITERAL: { code: 'YAP0002' /* hint, message */ },
   // YAP0003 [RETIRED v2.0]: superseded by YAP0042, YAP0043
-  PARSER_SPREAD_PARAMS: 'YAP0004',
+  PARSER_MISSING_PARAM: { code: 'YAP0004' /* hint, message */ },
 } as const;
 
 // ✗ Wrong — inserting between
 export const YAP = {
-  PARSER_NO_SOURCE: 'YAP0001',
-  PARSER_NEW_VARIANT: 'YAP0001a',  // never. allocate a new sequential number.
-  PARSER_TEMPLATE_LITERAL: 'YAP0002',
+  PARSER_NO_SOURCE: { code: 'YAP0001' /* hint, message */ },
+  PARSER_NEW_VARIANT: { code: 'YAP0001a' },  // never. allocate a new sequential number.
+  PARSER_TEMPLATE_LITERAL: { code: 'YAP0002' /* hint, message */ },
 } as const;
 ```
 
@@ -111,13 +124,13 @@ URLs are computed from one constant and one function. No other surface.
 ```ts
 const DOCS_BASE = 'https://yapyak.dev/reference/diagnostics';
 
-export function docsUrl(code: YapCode): string {
+export function getDocsUrl(code: YapCode): string {
   return `${DOCS_BASE}/${code}`;
 }
 ```
 
 - **`DOCS_BASE`** is the single base URL constant. To move the docs (e.g. to `docs.yapyak.com/diagnostics`), change this one line.
-- **`docsUrl(code)`** is the only way to produce a docs URL. URL format (code as path segment) is controlled here.
+- **`getDocsUrl(code)`** is the only way to produce a docs URL. URL format (code as path segment) is controlled here.
 - **No URL string literal may appear anywhere else in source code.** Every link is computed.
 
 #### URL placement in messages — render-time, not emit-time
@@ -125,37 +138,34 @@ export function docsUrl(code: YapCode): string {
 The URL is appended by **the renderer** that prints the diagnostic, not by the code that emits the diagnostic. This keeps messages clean for testing/snapshotting and lets each renderer choose the best format (terminal hyperlinks, plain text, JSON, etc.).
 
 ```ts
-// ✓ Right — emit site references the code only
-diagnostics.push({
-  code: YAP.PARSER_NO_SOURCE,
-  message: 't() called without source string.',
-  ...
-});
+// ✓ Right — emit site references the catalog key only
+diagnostics.push(
+  buildDiagnostic('CONTEXT_MIXED_USAGE', { fileId, source }, context),
+);
 
 // ✓ Right — renderer appends the URL
-function renderDiagnostic(d: Diagnostic): string {
-  return `[yapyak] ${d.code} ${d.fileId}:${d.range.start.line}: ${d.message}\nSee ${docsUrl(d.code)}`;
+export function formatDiagnostic(diagnostic: Diagnostic): string {
+  const location = `${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}`;
+  return `[yapyak] ${diagnostic.code} ${location}: ${diagnostic.message}\nSee ${getDocsUrl(diagnostic.code)}`;
 }
 
-// ✗ Wrong — URL hardcoded in the message
-diagnostics.push({
-  code: YAP.PARSER_NO_SOURCE,
-  message: 't() called without source string. See https://yapyak.dev/reference/diagnostics/YAP0001',
-});
+// ✗ Wrong — URL hardcoded in the catalog message
+CONTEXT_MIXED_USAGE: {
+  code: 'YAP0018',
+  message: ({ fileId, source }: { fileId: string; source: string }): string =>
+    `Source "${source}" is used with both \`t()\` and \`t.as()\` in ${fileId}. See https://yapyak.dev/reference/diagnostics/YAP0018`,
+},
 ```
 
-For runtime `warn()` calls the warn function itself is the renderer and appends the URL automatically:
+For runtime warnings `warnDiagnostic` is the renderer and appends the URL automatically:
 
 ```ts
 // emit site:
-warn('setLocale ignored. Value is not in the configured locales.', {
-  code: YAP.LOCALE_SET_IGNORED,
-  requested: value,
-});
+warnDiagnostic('LOCALE_SET_IGNORED', { value });
 
 // what the user sees:
-// [yapyak] YAP0031 setLocale ignored. Value is not in the configured locales.
-// See https://yapyak.dev/reference/diagnostics/YAP0031
+// [yapyak] YAP0028 setLocale call ignored. Value "de" is not in the configured locales.
+// See https://yapyak.dev/reference/diagnostics/YAP0028
 ```
 
 ### Message tone — strict rules
@@ -181,40 +191,42 @@ Every diagnostic message follows the same tone. No team-discretion.
 
 #### Diagnostic-object semantics
 
-When the diagnostic object carries `hint`, the **`message` field carries the observation only** and **`hint` carries the fix**. Never put hint phrases in the message.
+When the catalog entry carries `hint`, the **`message` function carries the observation only** and **`hint` carries the fix**. Never put hint phrases in the message.
 
 ```ts
 // ✓ Right
-diagnostics.push({
-  code: YAP.PARSER_TEMPLATE_LITERAL,
-  message: 'Template literal not allowed in t().',
-  hint: "Replace `t(`Hi ${name}`)` with `t('Hi {name}', { name })`.",
-});
+PARSER_TEMPLATE_LITERAL: {
+  code: 'YAP0002',
+  hint: (): string =>
+    "Replace `t(`Hi ${name}`)` with `t('Hi {name}', { name })`.",
+  message: (): string => 'Source argument is a dynamic template literal.',
+},
 
 // ✗ Wrong — fix inside message, hint duplicates
-diagnostics.push({
-  code: YAP.PARSER_TEMPLATE_LITERAL,
-  message: "Template literal not allowed in t(). Replace with t('Hi {name}', { name }).",
-  hint: 'Use placeholders instead.',
-});
+PARSER_TEMPLATE_LITERAL: {
+  code: 'YAP0002',
+  hint: (): string => 'Use placeholders instead.',
+  message: (): string =>
+    "Source argument is a dynamic template literal. Replace with `t('Hi {name}', { name })`.",
+},
 ```
 
-For runtime `warn()` calls (no separate `hint` field), the message itself is two sentences: observation + action.
+For runtime-warning entries (no `hint` field), the message itself is two sentences: observation + action.
 
 ```ts
 // ✓ Right — observation, then action
-warn('setLocale ignored. Value "de" is not in the configured locales.', {
-  code: YAP.LOCALE_SET_IGNORED,
-  configured: LOCALES,
-  requested: value,
-});
+LOCALE_SET_IGNORED: {
+  code: 'YAP0028',
+  message: ({ value }: { value: string }): string =>
+    `setLocale call ignored. Value "${value}" is not in the configured locales.`,
+},
 ```
 
 #### Tone examples — before and after
 
 | Before | After |
 | --- | --- |
-| `setLocale ignored — value not in configured locales.` | `setLocale ignored. Value "de" is not in the configured locales.` |
+| `setLocale call ignored — value not in configured locales.` | `setLocale call ignored. Value "de" is not in the configured locales.` |
 | `getLocale() fell back to the shared module-global locale on the server — register the host-integration middleware so each request binds its own locale.` | `getLocale() fell back to the shared module-global locale on the server. Register the host-integration middleware so each request binds its own locale.` |
 | `Unsafe file-path key "${pathKey}" — must be relative, use forward slashes, and contain no ".." segments.` | `Unsafe file-path key "${pathKey}". Paths must be relative, use forward slashes, and contain no ".." segments.` |
 | `We couldn't load the locale file — sorry!` | `Locale file failed to load. Verify the path is correct and readable.` |
@@ -225,7 +237,7 @@ warn('setLocale ignored. Value "de" is not in the configured locales.', {
 Adding or changing a diagnostic touches **three artifacts in one commit**:
 
 1. `catalog.ts` — new constant or `[RETIRED]` marker.
-2. The emit site — references `YAP.<NAME>` and respects the tone rules.
+2. The emit site — calls `buildDiagnostic`/`warnDiagnostic` with the catalog key; message and hint text live in `catalog.ts` and respect the tone rules.
 3. `docs/content/diagnostics/YAPxxxx.md` — the per-code documentation page.
 
 Code review checks all three are in sync. There is no diagnostic in source without a constant in `catalog.ts` and a per-code docs page.

@@ -194,6 +194,49 @@ describe('run', () => {
     );
   });
 
+  it('blocks the `--locale` value from parsing as the `retranslate` source', async () => {
+    await run([
+      'retranslate',
+      '--locale',
+      'sv',
+      'Save',
+    ]);
+    expect(retranslate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.any(String),
+      'Save',
+      expect.objectContaining({
+        locale: 'sv',
+      }),
+    );
+  });
+
+  it('refuses `--locale` without a value on the `retranslate` command', async () => {
+    const code = await run([
+      'retranslate',
+      'Save',
+      '--locale',
+    ]);
+    expect(code).toBe(1);
+    expect(retranslate).not.toHaveBeenCalled();
+    expect(errorWrites.join('')).toContain('Missing value for flag');
+    expect(errorWrites.join('')).toContain('--locale');
+  });
+
+  it('refuses a value flag followed by another flag on the `retranslate` command', async () => {
+    const code = await run([
+      'retranslate',
+      'Save',
+      '--file',
+      '--locale',
+      'sv',
+    ]);
+    expect(code).toBe(1);
+    expect(retranslate).not.toHaveBeenCalled();
+    expect(errorWrites.join('')).toContain('Missing value for flag');
+    expect(errorWrites.join('')).toContain('--file');
+  });
+
   it('picks the `export` command', async () => {
     await run([
       'export',

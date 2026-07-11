@@ -119,12 +119,14 @@ export function gemini(options: GeminiOptions): Translator {
     concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
+    glossary,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
     maxTokens,
     model = DEFAULT_MODEL,
     temperature = DEFAULT_TEMPERATURE,
     timeout = DEFAULT_TIMEOUT,
+    voice,
   } = options;
 
   return createTranslator({
@@ -163,7 +165,10 @@ export function gemini(options: GeminiOptions): Translator {
           systemInstruction: {
             parts: [
               {
-                text: buildSystem(sourceLocale, targetLocales, options),
+                text: buildSystem(sourceLocale, targetLocales, {
+                  glossary,
+                  voice,
+                }),
               },
             ],
           },

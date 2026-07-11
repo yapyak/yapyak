@@ -125,6 +125,7 @@ export function openai(options: OpenAIOptions): Translator {
     concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
+    glossary,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
     maxTokens,
@@ -134,6 +135,7 @@ export function openai(options: OpenAIOptions): Translator {
     temperature = DEFAULT_TEMPERATURE,
     timeout = DEFAULT_TIMEOUT,
     user,
+    voice,
   } = options;
 
   return createTranslator({
@@ -146,7 +148,10 @@ export function openai(options: OpenAIOptions): Translator {
       const body: Record<string, unknown> = {
         messages: [
           {
-            content: buildSystem(sourceLocale, targetLocales, options),
+            content: buildSystem(sourceLocale, targetLocales, {
+              glossary,
+              voice,
+            }),
             role: 'system',
           },
           {

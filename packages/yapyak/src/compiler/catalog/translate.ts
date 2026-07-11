@@ -25,7 +25,6 @@ import {
   validateTranslationParity,
   writeLocaleFile,
 } from './locale';
-import { toLocationKey } from './location-key';
 import { join } from 'node:path';
 
 export type AutoTranslateInput = {
@@ -51,7 +50,7 @@ export type AutoTranslateResult = {
 };
 
 type TranslationStub = {
-  context: MessageContext | undefined;
+  context: MessageContext;
   disambiguation: string | undefined;
   fileId: string;
   locale: string;
@@ -70,10 +69,8 @@ export async function autoTranslate(
 ): Promise<AutoTranslateResult> {
   const force = options?.force ?? false;
   const examplesMax = options?.examples ?? 0;
-  const contextBySource = extractContexts(input.messages);
   const stubs = extractStubs(
     {
-      contexts: contextBySource,
       force,
       messages: input.messages,
     },
@@ -327,14 +324,12 @@ function buildRequest(
   examplesMax: number,
 ): TranslateRequest {
   const request: TranslateRequest = {
+    context: stub.context,
     fileId: stub.fileId,
     source: stub.source,
     sourceLocale: defaultLocale,
     targetLocale: stub.locale,
   };
-  if (stub.context !== undefined) {
-    request.context = stub.context;
-  }
   if (stub.disambiguation !== undefined) {
     request.disambiguation = stub.disambiguation;
   }
@@ -363,22 +358,7 @@ function toExtractedKeys(
   return result;
 }
 
-function extractContexts(
-  messages: ExtractedMessage[],
-): Map<string, MessageContext> {
-  const contexts = new Map<string, MessageContext>();
-  for (const message of messages) {
-    for (const location of message.locations) {
-      contexts.set(
-        toLocationKey(location.fileId, message.source),
-        toLegacyContext(location),
-      );
-    }
-  }
-  return contexts;
-}
-
-function toLegacyContext(location: Location): MessageContext {
+function toMessageContext(location: Location): MessageContext {
   return {
     enclosingComponent: location.callSiteContext.enclosingComponent ?? '',
     enclosingElement: location.callSiteContext.enclosingElement,
@@ -387,7 +367,6 @@ function toLegacyContext(location: Location): MessageContext {
 }
 
 type ExtractStubsInput = {
-  contexts: Map<string, MessageContext>;
   force: boolean;
   messages: ExtractedMessage[];
 };
@@ -419,9 +398,7 @@ function extractStubs(
           }
         }
         stubs.push({
-          context: input.contexts.get(
-            toLocationKey(location.fileId, message.source),
-          ),
+          context: toMessageContext(location),
           disambiguation: message.context,
           fileId: location.fileId,
           locale,

@@ -12,6 +12,12 @@ import { color, symbol } from './tui';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+const RETRANSLATE_VALUE_FLAGS = new Set([
+  '--as',
+  '--file',
+  '--locale',
+]);
+
 const FLAGS_BY_COMMAND: Record<string, Set<string>> = {
   add: new Set<string>(),
   check: new Set<string>(),
@@ -22,11 +28,7 @@ const FLAGS_BY_COMMAND: Record<string, Set<string>> = {
     '--out',
     '--split',
   ]),
-  retranslate: new Set([
-    '--as',
-    '--file',
-    '--locale',
-  ]),
+  retranslate: RETRANSLATE_VALUE_FLAGS,
   status: new Set([
     '--json',
   ]),
@@ -92,7 +94,18 @@ export async function run(argv: string[]): Promise<number> {
         });
       }
       if (command === 'retranslate') {
-        const source = rest.find((entry) => !entry.startsWith('-')) ?? '';
+        const missingValueFlags = findMissingValueFlags(
+          rest,
+          RETRANSLATE_VALUE_FLAGS,
+        );
+        if (missingValueFlags.length > 0) {
+          process.stderr.write(
+            `\n  ${symbol.cross} ${color.red(`Missing value for flag${missingValueFlags.length === 1 ? '' : 's'}: ${missingValueFlags.join(', ')}`)}\n`,
+          );
+          printHelp();
+          return 1;
+        }
+        const source = findPositional(rest, RETRANSLATE_VALUE_FLAGS) ?? '';
         const asValue = findFlagValue(rest, '--as');
         const fileValue = findFlagValue(rest, '--file');
         const localeValue = findFlagValue(rest, '--locale');
@@ -166,6 +179,44 @@ function parseExportArgs(args: string[]): ParseExportArgsResult {
     out,
     split: isSplit,
   };
+}
+
+function findMissingValueFlags(
+  entries: string[],
+  valueFlags: Set<string>,
+): string[] {
+  const missing: string[] = [];
+  for (let index = 0; index < entries.length; index++) {
+    const entry = entries[index];
+    if (entry === undefined || !valueFlags.has(entry)) {
+      continue;
+    }
+    const next = entries[index + 1];
+    if (next === undefined || next.startsWith('-')) {
+      missing.push(entry);
+    }
+  }
+  return missing;
+}
+
+function findPositional(
+  entries: string[],
+  valueFlags: Set<string>,
+): string | undefined {
+  for (let index = 0; index < entries.length; index++) {
+    const entry = entries[index];
+    if (entry === undefined) {
+      continue;
+    }
+    if (valueFlags.has(entry)) {
+      index++;
+      continue;
+    }
+    if (!entry.startsWith('-')) {
+      return entry;
+    }
+  }
+  return undefined;
 }
 
 const FALSE_FLAG_VALUES = new Set([
