@@ -90,7 +90,7 @@ Adding a new external dep: pin in `pnpm-workspace.yaml` under `catalog:` first, 
     "yapyak": "workspace:*"
   },
   "engines": {
-    "node": ">=22.12"
+    "node": ">=22.22"
   }
 }
 ```
