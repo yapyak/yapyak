@@ -33,5 +33,5 @@ Detailed conventions live as portable **Agent Skills** in `.agents/skills/` — 
 - **Testing:** `yapyak-test`
 - **Yapyak-specific:** `yapyak-diagnostic` · `yapyak-terminology`
 - **App (`docs/`):** `yapyak-react` · `yapyak-box` · `yapyak-css` · `yapyak-element-type` · `yapyak-tanstack-start` · `yapyak-app` · `yapyak-documentation`
-- **Infra:** `yapyak-ci`
+- **Infra:** `yapyak-ci` · `yapyak-dependency`
 - **Process:** `yapyak-workflow` · `yapyak-style`

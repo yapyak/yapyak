@@ -22,26 +22,11 @@ The npm name communicates stability commitment.
 - Sub-packages of a real-OSS product share the product's scope (`@yapyak/doc-compiler`).
 - The scope determines policy: source-shipping, deprecation, contribution guidelines, README tone.
 
-### `package.json` field order
+### `exports` conditions
 
-Biome's `useSortedKeys` is disabled for `package.json`. Alphabetical breaks `exports` resolution (conditions check in key order, first match wins).
-
-Subset of `sort-package-json` canonical:
-
-```
-name, version, private, description, keywords, homepage, bugs,
-repository, license, author, type, imports, exports, main, types,
-sideEffects, files, bin, scripts, dependencies, devDependencies,
-peerDependencies, peerDependenciesMeta, optionalDependencies,
-engines, packageManager, publishConfig, pnpm, workspaces
-```
-
-### `exports` condition order — hard rules
-
-- `"types"` MUST be first (TypeScript stops at first match).
-- `"default"` MUST be last (Node fallback).
-- `"source"` / `"development"` BEFORE `"import"` / `"require"`.
-- Canonical: `types, source, development, browser, node, import, require, default`.
+- Include only conditions needed: `types` and `default` always.
+- Add `browser`/`node` only when the package ships environment-divergent builds (separate `dist/browser` + `dist/node` outputs exist).
+- Add `source`/`development` only when a `src` export is wired for the dev bundler.
 
 ```jsonc
 {
@@ -53,16 +38,6 @@ engines, packageManager, publishConfig, pnpm, workspaces
   }
 }
 ```
-
-Include only conditions needed. Keep relative order regardless of subset. Decision rule: `types` and `default` always. Add `browser`/`node` only when the package ships environment-divergent builds (separate `dist/browser` + `dist/node` outputs exist). Add `source`/`development` only when a `src` export is wired for the dev bundler.
-
-### Sub-path export keys
-
-`"."` first, rest alphabetical.
-
-### Nested objects — alphabetical
-
-`scripts`, `dependencies`, `devDependencies`, `peerDependencies`, `files`, `keywords`, `engines`, `pnpm.overrides`.
 
 ### Dependencies
 
