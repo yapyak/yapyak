@@ -111,7 +111,10 @@ export function createDevServerPlugin(state: State): Plugin {
           return;
         }
         const allPatches: Patch[] = [];
-        const astroFilesToReload = new Set<string>();
+        const filesToReload = new Set<string>();
+        const skipHmrExtensions = getNormalized(state)
+          .processors.filter((processor) => processor.skipHmrCallback === true)
+          .flatMap((processor) => processor.extensions);
         for (const localePath of pendingLocalePaths) {
           const locale = localeFromPath(localePath);
           const before = previousLocaleData.get(locale) ?? {};
@@ -130,20 +133,23 @@ export function createDevServerPlugin(state: State): Plugin {
           previousLocaleData.set(locale, after);
           const localePatches = derivePatches(before, after, locale);
           for (const patch of localePatches) {
-            if (patch.fileId.endsWith('.astro')) {
-              const absolutePath = join(state.projectRoot, patch.fileId);
-              astroFilesToReload.add(absolutePath);
+            if (
+              skipHmrExtensions.some((extension) =>
+                patch.fileId.endsWith(extension),
+              )
+            ) {
+              filesToReload.add(join(state.projectRoot, patch.fileId));
             } else {
               allPatches.push(patch);
             }
           }
         }
         pendingLocalePaths.clear();
-        if (allPatches.length === 0 && astroFilesToReload.size === 0) {
+        if (allPatches.length === 0 && filesToReload.size === 0) {
           return;
         }
         getResolver(state).invalidateData();
-        for (const file of astroFilesToReload) {
+        for (const file of filesToReload) {
           server.ws.send({
             path: file,
             type: 'full-reload',

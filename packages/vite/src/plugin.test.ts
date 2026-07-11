@@ -310,8 +310,12 @@ describe('yapyak', () => {
       );
     });
 
-    it('emits a `full-reload` for an Astro file id and refuses to emit a patch', async () => {
+    it('emits a `full-reload` for a `skipHmrCallback` processor file and refuses to emit a patch', async () => {
       writeFileSync(localePath, '{}');
+      writeFileSync(
+        join(root, 'yapyak.config.ts'),
+        `export default { processors: [{ extensions: ['.astro'], id: 'astro', skipHmrCallback: true }] };\n`,
+      );
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
       invokeBuildStart(plugin);
