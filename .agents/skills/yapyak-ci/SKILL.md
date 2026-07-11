@@ -37,4 +37,4 @@ Declare a `permissions:` block in every workflow.
 
 - Install with `pnpm install --frozen-lockfile`.
 - Set `timeout-minutes` on every job.
-- Add every new job to `all-green`'s `needs` list.
+- Add every new `ci.yml` job to `all-green`'s `needs` list.

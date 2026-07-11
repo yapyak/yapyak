@@ -5,7 +5,7 @@ import { isLocaleFile } from './locale-file';
 import { createState } from './state';
 
 describe('isLocaleFile', () => {
-  it('returns true for a JSON file in the locales directory', () => {
+  it('returns true when the path is a JSON file in the locales directory', () => {
     const state = createState();
     state.normalized = normalizeYapyakConfig({});
     state.projectRoot = '/project';
@@ -13,7 +13,7 @@ describe('isLocaleFile', () => {
     expect(isLocaleFile(state, '/project/locales/sv.json')).toBe(true);
   });
 
-  it('returns false for a JSON file outside the locales directory', () => {
+  it('returns false when the path is outside the locales directory', () => {
     const state = createState();
     state.normalized = normalizeYapyakConfig({});
     state.projectRoot = '/project';

@@ -167,7 +167,7 @@ describe('createTransformPlugin', () => {
   });
 
   describe('watchChange', () => {
-    it('invalidates the locale data when a locale file changes', () => {
+    it('clears the locale data when a locale file changes', () => {
       const state = buildState('/project');
       state.command = 'build';
       const invalidateData = vi.fn();
@@ -188,7 +188,7 @@ describe('createTransformPlugin', () => {
       expect(invalidateStructure).not.toHaveBeenCalled();
     });
 
-    it('invalidates the locale structure when a locale file is added', () => {
+    it('clears the locale structure when a locale file is added', () => {
       const state = buildState('/project');
       state.command = 'build';
       const invalidateData = vi.fn();

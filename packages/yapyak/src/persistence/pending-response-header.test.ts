@@ -6,12 +6,22 @@ import {
   setResponseHeaderWriter,
 } from './pending-response-header';
 
-describe('pending-response-header', () => {
-  afterEach(() => {
-    resetResponseHeaderWriter();
+afterEach(() => {
+  resetResponseHeaderWriter();
+});
+
+describe('appendPendingResponseHeader', () => {
+  it('returns `true` when the writer writes the header', () => {
+    setResponseHeaderWriter(() => true);
+    expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(true);
   });
 
-  it('returns `false` from `appendPendingResponseHeader` when no writer is registered', () => {
+  it('returns `false` when the writer does not write the header', () => {
+    setResponseHeaderWriter(() => false);
+    expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
+  });
+
+  it('returns `false` when no writer is registered', () => {
     expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
   });
 
@@ -35,23 +45,17 @@ describe('pending-response-header', () => {
       ],
     ]);
   });
+});
 
-  it('returns `true` from `appendPendingResponseHeader` when the writer writes the header', () => {
-    setResponseHeaderWriter(() => true);
-    expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(true);
-  });
-
-  it('returns `false` from `appendPendingResponseHeader` when the writer does not write the header', () => {
-    setResponseHeaderWriter(() => false);
-    expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
-  });
-
-  it('clears the writer when `resetResponseHeaderWriter` is called', () => {
+describe('resetResponseHeaderWriter', () => {
+  it('clears the writer', () => {
     setResponseHeaderWriter(() => true);
     resetResponseHeaderWriter();
     expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
   });
+});
 
+describe('setResponseHeaderWriter', () => {
   it('writes through only the latest writer when called twice', () => {
     const firstWriterCalls: string[] = [];
     const secondWriterCalls: string[] = [];
