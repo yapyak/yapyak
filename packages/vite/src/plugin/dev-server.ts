@@ -1,4 +1,9 @@
-import type { HotUpdateOptions, Plugin, ViteDevServer } from 'vite';
+import type {
+  EnvironmentModuleNode,
+  HotUpdateOptions,
+  Plugin,
+  ViteDevServer,
+} from 'vite';
 import type {
   CatalogEntry,
   ExtractedMessage,
@@ -280,12 +285,20 @@ export function createDevServerPlugin(state: State): Plugin {
         }
       });
     },
-    async hotUpdate(context: HotUpdateOptions): Promise<void> {
-      if (!isCandidateId(context.file, state.filter, state.projectRoot)) {
-        return;
+    async hotUpdate(
+      options: HotUpdateOptions,
+    ): Promise<EnvironmentModuleNode[] | undefined> {
+      if (!isCandidateId(options.file, state.filter, state.projectRoot)) {
+        return undefined;
       }
-      const fileId = toFileId(state.projectRoot, context.file);
-      const code = await context.read();
+      if (options.type === 'delete') {
+        return [];
+      }
+      if (options.type === 'create') {
+        return undefined;
+      }
+      const fileId = toFileId(state.projectRoot, options.file);
+      const code = await options.read();
       const { defaultLocale, locales } = getResolver(state).getEmittedLocales();
       const result = extractFile(fileId, code, {
         processors: getNormalized(state).processors,
@@ -294,7 +307,7 @@ export function createDevServerPlugin(state: State): Plugin {
       const before = state.messagesByFile.get(fileId) ?? [];
       const after = result.messages;
       if (areMessagesEqual(before, after)) {
-        return;
+        return undefined;
       }
       const renames = detectRenames(
         before.flatMap(toCallSitePositions),
@@ -334,6 +347,7 @@ export function createDevServerPlugin(state: State): Plugin {
       }
       syncAll(state);
       fillStubs(state);
+      return undefined;
     },
     name: 'yapyak:dev-server',
   };

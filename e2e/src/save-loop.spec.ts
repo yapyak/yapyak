@@ -280,6 +280,10 @@ test('preserves the translation when the source file moves', async ({
 test('skips auto-translate when a save exceeds `autoTranslateThreshold`', async ({
   page,
 }) => {
+  let loadCount = 0;
+  page.on('load', () => {
+    loadCount += 1;
+  });
   await writeApp((template) =>
     template.replace(
       "<p>{t('Save')}</p>",
@@ -307,6 +311,7 @@ test('skips auto-translate when a save exceeds `autoTranslateThreshold`', async 
     'Unnamed account': '',
     World: '',
   });
+  expect(loadCount).toBe(0);
 });
 
 test('writes the skipped translations when `yapyak translate` runs', async () => {
