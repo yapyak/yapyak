@@ -6,7 +6,6 @@ import { url } from './url';
 
 export function buildPersistence(
   config: NormalizedPersistenceConfig,
-  locales: string[],
 ): Persistence | undefined {
   if (config.type === 'none') {
     return undefined;
@@ -23,7 +22,6 @@ export function buildPersistence(
     });
   }
   return url({
-    locales,
     match: config.match,
   });
 }

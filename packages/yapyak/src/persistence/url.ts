@@ -1,26 +1,24 @@
 import type { Persistence } from './type';
 
-import { findCanonicalLocale } from '../canonical-locale';
 import { warnDiagnostic } from '../diagnostic';
 import { subscribeHistory } from './history';
 
 type UrlOptions = {
-  locales: string[];
   match?: RegExp;
 };
 
 export function url(options: UrlOptions): Persistence {
-  const { locales, match } = options;
+  const { match } = options;
   const pattern = match ? stripGlobalFlag(match) : undefined;
   return {
     get() {
       if (typeof window === 'undefined') {
         return undefined;
       }
-      return getLocaleFromUrl(window.location, locales, pattern);
+      return getCandidateFromUrl(window.location, pattern);
     },
     getFromRequest(request) {
-      return getLocaleFromUrl(new URL(request.url), locales, pattern);
+      return getCandidateFromUrl(new URL(request.url), pattern);
     },
     set() {
       warnDiagnostic('PERSISTENCE_URL_SKIPPED', undefined);
@@ -35,30 +33,23 @@ export function url(options: UrlOptions): Persistence {
   };
 }
 
-function getLocaleFromUrl(
+function stripGlobalFlag(regex: RegExp): RegExp {
+  if (!regex.global) {
+    return regex;
+  }
+  return new RegExp(regex.source, regex.flags.replace('g', ''));
+}
+
+function getCandidateFromUrl(
   url: URL | Location,
-  locales: string[],
   match?: RegExp,
 ): string | undefined {
   if (match) {
     const target = url.pathname + url.search + url.hash;
     const matched = match.exec(target);
     const captured = matched?.groups?.locale ?? matched?.[1];
-    if (captured) {
-      return findCanonicalLocale(captured, locales);
-    }
-    return undefined;
+    return captured || undefined;
   }
   const segment = url.pathname.split('/')[1];
-  if (segment) {
-    return findCanonicalLocale(segment, locales);
-  }
-  return undefined;
-}
-
-function stripGlobalFlag(regex: RegExp): RegExp {
-  if (!regex.global) {
-    return regex;
-  }
-  return new RegExp(regex.source, regex.flags.replace('g', ''));
+  return segment || undefined;
 }

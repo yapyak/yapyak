@@ -8,16 +8,16 @@ import {
   SYNC_HTML_LANG,
 } from 'yapyak/runtime';
 
-import { findCanonicalLocale } from '../canonical-locale';
 import { warnDiagnostic } from '../diagnostic';
 import { registerHotDispose } from '../hot-dispose';
 import { buildPersistence, readRequest } from '../persistence';
+import { findCanonicalLocale } from './canonical';
 import { resolveLocale } from './resolve';
 
 let hasWarnedUninitialized = false;
 let hasWarnedSsrFallback = false;
 
-const persistence = buildPersistence(PERSISTENCE_CONFIG, LOCALES);
+const persistence = buildPersistence(PERSISTENCE_CONFIG);
 
 /**
  * Type guard for {@link Locale}.
@@ -55,16 +55,7 @@ export function isLocale(value: string): value is Locale {
  * @see [BCP 47](https://datatracker.ietf.org/doc/html/bcp47)
  */
 export function parseLocale(value: string): Locale | undefined {
-  if (isLocale(value)) {
-    return value;
-  }
-  try {
-    const canonical = new Intl.Locale(value).toString();
-    if (isLocale(canonical)) {
-      return canonical;
-    }
-  } catch {}
-  return undefined;
+  return findCanonicalLocale(value, LOCALES);
 }
 
 function getInitialLocale(): Locale {

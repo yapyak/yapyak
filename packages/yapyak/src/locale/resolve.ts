@@ -1,5 +1,5 @@
-import { findCanonicalLocale } from '../canonical-locale';
 import { parseAcceptLanguage } from './accept-language';
+import { findCanonicalLocale } from './canonical';
 import { getLocaleFallbackChain } from './fallback-chain';
 
 export type ResolveLocaleOptions = {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { findCanonicalLocale } from './canonical-locale';
+import { findCanonicalLocale } from './canonical';
 
 describe('findCanonicalLocale', () => {
   it('returns the configured locale when the candidate matches exactly', () => {

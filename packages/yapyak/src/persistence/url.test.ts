@@ -3,43 +3,35 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { resetWarn, setWarn } from '../warn';
 import { url } from './url';
 
-const LOCALES = [
-  'en',
-  'sv',
-  'de',
-  'sv-SE',
-];
-
 function getFromUrl(href: string, match?: RegExp): string | undefined {
   return url({
-    locales: LOCALES,
     match,
   }).getFromRequest?.(new Request(href));
 }
 
 describe('url', () => {
   describe('with default path-first-segment matcher', () => {
-    it('returns the locale from the first path segment', () => {
+    it('returns the first path segment', () => {
       expect(getFromUrl('https://app.test/sv/home')).toBe('sv');
     });
 
-    it('returns the locale from a bare locale path without trailing slash', () => {
+    it('returns the segment from a bare path without trailing slash', () => {
       expect(getFromUrl('https://app.test/sv')).toBe('sv');
     });
 
-    it('returns the locale when the path has a trailing slash', () => {
+    it('returns the segment when the path has a trailing slash', () => {
       expect(getFromUrl('https://app.test/sv/')).toBe('sv');
     });
 
-    it('returns the locale from the first segment of a deep path', () => {
+    it('returns the first segment of a deep path', () => {
       expect(getFromUrl('https://app.test/de/a/b/c')).toBe('de');
     });
 
-    it('returns the locale ignoring the query string', () => {
+    it('returns the segment ignoring the query string', () => {
       expect(getFromUrl('https://app.test/en/home?foo=bar')).toBe('en');
     });
 
-    it('returns the locale for hyphenated locales', () => {
+    it('returns the full segment for a hyphenated tag', () => {
       expect(getFromUrl('https://app.test/sv-SE/home')).toBe('sv-SE');
     });
 
@@ -47,25 +39,21 @@ describe('url', () => {
       expect(getFromUrl('https://app.test/')).toBeUndefined();
     });
 
-    it('returns `undefined` when the first segment is not a known locale', () => {
-      expect(getFromUrl('https://app.test/about')).toBeUndefined();
-    });
-
-    it('returns the configured locale when only the case differs', () => {
-      expect(getFromUrl('https://app.test/SV/home')).toBe('sv');
+    it('preserves the segment casing', () => {
+      expect(getFromUrl('https://app.test/SV/home')).toBe('SV');
     });
   });
 
   describe('with query-string regex matcher', () => {
     const patternRx = /[?&]lang=(?<locale>[a-z]{2})/;
 
-    it('returns the locale from the query param', () => {
+    it('returns the captured group from the query param', () => {
       expect(getFromUrl('https://app.test/about?lang=sv', patternRx)).toBe(
         'sv',
       );
     });
 
-    it('returns the locale when query has multiple params', () => {
+    it('returns the captured group when query has multiple params', () => {
       expect(
         getFromUrl('https://app.test/about?foo=bar&lang=de', patternRx),
       ).toBe('de');
@@ -74,27 +62,20 @@ describe('url', () => {
     it('returns `undefined` when the query is missing', () => {
       expect(getFromUrl('https://app.test/about', patternRx)).toBeUndefined();
     });
-
-    it('returns `undefined` when captured value is not a known locale', () => {
-      expect(
-        getFromUrl('https://app.test/about?lang=fr', patternRx),
-      ).toBeUndefined();
-    });
   });
 
   describe('with capture-group regex matcher', () => {
     const patternRx = /^\/app\/([a-z]{2})/;
 
-    it('returns the locale from group 1 when no named group', () => {
+    it('falls back to group 1 when no named group exists', () => {
       expect(getFromUrl('https://app.test/app/sv/home', patternRx)).toBe('sv');
     });
   });
 
   describe('with a `/g`-flagged regex matcher', () => {
-    it('returns the locale deterministically across consecutive navigations', () => {
+    it('returns the captured group deterministically across consecutive navigations', () => {
       const patternRx = /\/(?<locale>en|sv)\//g;
       const persistence = url({
-        locales: LOCALES,
         match: patternRx,
       });
       expect(
@@ -111,7 +92,6 @@ describe('url', () => {
     it('preserves the original regex `lastIndex` across calls', () => {
       const patternRx = /\/(?<locale>en|sv)\//g;
       url({
-        locales: LOCALES,
         match: patternRx,
       }).getFromRequest?.(new Request('https://app.test/sv/home'));
       expect(patternRx.lastIndex).toBe(0);
@@ -120,17 +100,11 @@ describe('url', () => {
 
   describe('in non-browser environment', () => {
     it('returns `undefined` from `get` when `window` is missing', () => {
-      expect(
-        url({
-          locales: LOCALES,
-        }).get(),
-      ).toBeUndefined();
+      expect(url({}).get()).toBeUndefined();
     });
 
     it('returns a no-op unsubscribe from `subscribe` when `window` is missing', () => {
-      const unsubscribe = url({
-        locales: LOCALES,
-      }).subscribe?.(vi.fn());
+      const unsubscribe = url({}).subscribe?.(vi.fn());
       expect(unsubscribe).toBeTypeOf('function');
       expect(() => unsubscribe?.()).not.toThrow();
     });
@@ -141,15 +115,11 @@ describe('url', () => {
       vi.unstubAllGlobals();
     });
 
-    it('returns the locale from `window.location`', () => {
+    it('returns the first path segment from `window.location`', () => {
       vi.stubGlobal('window', {
         location: new URL('https://app.test/sv/home'),
       });
-      expect(
-        url({
-          locales: LOCALES,
-        }).get(),
-      ).toBe('sv');
+      expect(url({}).get()).toBe('sv');
     });
   });
 
@@ -162,9 +132,7 @@ describe('url', () => {
       const warnSpy =
         vi.fn<(message: string, meta?: Record<string, unknown>) => void>();
       setWarn(warnSpy);
-      const result = url({
-        locales: LOCALES,
-      }).set('sv');
+      const result = url({}).set('sv');
       expect(result).toBe(false);
       expect(warnSpy).toHaveBeenCalledWith(
         expect.stringContaining('setLocale() skipped'),
