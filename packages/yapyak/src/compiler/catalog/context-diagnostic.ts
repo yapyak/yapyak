@@ -1,7 +1,6 @@
 import type { Diagnostic, ExtractedMessage, Location } from '../parser';
 
 import { buildDiagnostic } from '../../diagnostic';
-import { toLocationKey } from './location-key';
 
 export function findContextDiagnostics(
   messages: ExtractedMessage[],
@@ -82,4 +81,10 @@ export function findContextDiagnostics(
   }
 
   return diagnostics;
+}
+
+const LOCATION_KEY_SEPARATOR = ' ';
+
+function toLocationKey(fileId: string, source: string): string {
+  return `${fileId}${LOCATION_KEY_SEPARATOR}${source}`;
 }
