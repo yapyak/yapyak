@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { appendPendingResponseHeader } from '../locale';
+import { appendPendingResponseHeader } from '../persistence';
 import { createStorage } from './storage';
 import { AsyncLocalStorage } from 'node:async_hooks';
 

@@ -22,7 +22,6 @@ import {
   migrateLocales,
   parseTemplate,
   readLocaleFile,
-  syncLocaleFiles,
   toMessageKey,
   validateLocaleCode,
   writeRegister,
@@ -32,13 +31,14 @@ import { RUNTIME_RESOLVED } from '../virtual-runtime';
 import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
+import { isLocaleFile } from './locale-file';
 import { renderLocaleWarning } from './locale-warning';
 import { getNormalized, getResolver } from './state';
 import { fillStubs } from './stub';
 import { syncAll } from './sync';
 import { runYapyakCommand } from './yapyak-command';
 import { readFileSync } from 'node:fs';
-import { basename, extname, join, relative, sep } from 'node:path';
+import { basename, extname, join } from 'node:path';
 
 type CallSitePosition = {
   column: number;
@@ -161,44 +161,14 @@ export function createDevServerPlugin(state: State): Plugin {
       }, 50);
       state.teardownCallbacks.push(sendLocalePatches.cancel);
 
-      const announceLocaleStructure = debounce(() => {
-        const { defaultLocale, locales } =
-          getResolver(state).getProjectLocales();
-        const allMessages: ExtractedMessage[] = [];
-        for (const list of state.messagesByFile.values()) {
-          allMessages.push(...list);
-        }
-        const result = syncLocaleFiles(
-          {
-            filter: state.filter,
-            messages: allMessages,
-          },
-          {
-            defaultLocale,
-            locales,
-            localesDir: getNormalized(state).localesDir,
-          },
-          state.projectRoot,
-          {
-            yapyakDir: state.yapyakDir,
-          },
-        );
-        for (const entry of result.orphaned) {
-          state.logger.warn(
-            `[yapyak] preserved '${entry.source}' (${entry.locale}) — call site removed from ${entry.fileId}, translation saved in case it returns.`,
-          );
-        }
-        for (const entry of result.restored) {
-          state.logger.info(
-            `[yapyak] restored '${entry.source}' (${entry.locale}) in ${entry.fileId} — translation kept from when the call site was removed earlier.`,
-          );
-        }
+      const syncLocaleStructure = debounce(() => {
+        syncAll(state);
         writeRegister(
           getResolver(state).getEmittedLocales().locales,
           state.yapyakDir,
         );
       }, 50);
-      state.teardownCallbacks.push(announceLocaleStructure.cancel);
+      state.teardownCallbacks.push(syncLocaleStructure.cancel);
 
       server.watcher.on('change', (path: string) => {
         if (state.configFile !== undefined && path === state.configFile) {
@@ -236,7 +206,7 @@ export function createDevServerPlugin(state: State): Plugin {
           const hint = `Run \`${runYapyakCommand(`translate ${locale}`)}\` to fill the stubs.`;
           getResolver(state).invalidateStructure();
           reloadRuntimeModule(server);
-          announceLocaleStructure();
+          syncLocaleStructure();
           state.logger.info(
             `[yapyak] New locale '${locale}' detected. ${hint}`,
           );
@@ -280,7 +250,7 @@ export function createDevServerPlugin(state: State): Plugin {
           previousLocaleData.delete(locale);
           getResolver(state).invalidateStructure();
           reloadRuntimeModule(server);
-          announceLocaleStructure();
+          syncLocaleStructure();
           state.logger.info(`[yapyak] Locale '${locale}' removed.`);
         }
       });
@@ -361,19 +331,6 @@ function reloadRuntimeModule(server: ViteDevServer): void {
   server.ws.send({
     type: 'full-reload',
   });
-}
-
-function isLocaleFile(state: State, path: string): boolean {
-  const directory = join(state.projectRoot, getNormalized(state).localesDir);
-  const relativePath = relative(directory, path);
-  if (
-    relativePath === '' ||
-    relativePath.startsWith('..') ||
-    relativePath.includes(sep)
-  ) {
-    return false;
-  }
-  return extname(relativePath) === '.json';
 }
 
 function localeFromPath(path: string): string {

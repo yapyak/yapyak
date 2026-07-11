@@ -16,7 +16,9 @@ import {
 import { isCandidateId } from './candidate-id';
 import { formatDiagnostic, renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
+import { isLocaleFile } from './locale-file';
 import { getNormalized, getResolver } from './state';
+import { join } from 'node:path';
 
 export function createTransformPlugin(state: State): Plugin {
   return {
@@ -89,10 +91,37 @@ export function createTransformPlugin(state: State): Plugin {
       if (result.code === code) {
         return null;
       }
+      if (state.command === 'build') {
+        const localesDir = join(
+          state.projectRoot,
+          getNormalized(state).localesDir,
+        );
+        for (const locale of getResolver(state).getProjectLocales().locales) {
+          this.addWatchFile(join(localesDir, `${locale}.json`));
+        }
+      }
       return {
         code: result.code,
         map: result.map,
       };
+    },
+    watchChange(
+      id: string,
+      change: {
+        event: 'create' | 'delete' | 'update';
+      },
+    ): void {
+      if (state.command !== 'build') {
+        return;
+      }
+      if (!isLocaleFile(state, id)) {
+        return;
+      }
+      if (change.event === 'update') {
+        getResolver(state).invalidateData();
+        return;
+      }
+      getResolver(state).invalidateStructure();
     },
   };
 }

@@ -8,11 +8,10 @@ import {
   SYNC_HTML_LANG,
 } from 'yapyak/runtime';
 
+import { findCanonicalLocale } from '../canonical-locale';
 import { warnDiagnostic } from '../diagnostic';
 import { registerHotDispose } from '../hot-dispose';
-import { buildPersistence } from '../persistence';
-import { findCanonicalLocale } from './canonical';
-import { readRequest } from './request';
+import { buildPersistence, readRequest } from '../persistence';
 import { resolveLocale } from './resolve';
 
 let hasWarnedUninitialized = false;

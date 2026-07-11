@@ -1,8 +1,8 @@
 import type { Persistence } from './type';
 
 import { warnDiagnostic } from '../diagnostic';
-import { appendPendingResponseHeader } from '../locale';
 import { subscribeHistory } from './history';
+import { appendPendingResponseHeader } from './pending-response-header';
 
 type CookieOptions = {
   name: string;

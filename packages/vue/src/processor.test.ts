@@ -199,6 +199,36 @@ describe('vue processor — extract', () => {
     expect(result.messages[0]?.source).toBe('Hello');
   });
 
+  it('extracts `t()` from a mustache holding a regex literal with `}`', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('Hello').replace(/}/g, '') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
+
+  it('extracts `t()` from a mustache holding an ICU plural', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <p>{{ t('You have {count, plural, one {# item} other {# items}}', { count: 3 }) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe(
+      'You have {count, plural, one {# item} other {# items}}',
+    );
+  });
+
   it('extracts `t()` from a mustache holding a template literal', () => {
     const source = [
       '<script setup lang="ts">',

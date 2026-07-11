@@ -1304,6 +1304,7 @@ function findTransformHook(plugin: YapyakPlugin): TransformHookFn {
 }
 
 const TRANSFORM_HOOK_CONTEXT = {
+  addWatchFile: (): void => {},
   error: (message: string): never => {
     throw new Error(message);
   },

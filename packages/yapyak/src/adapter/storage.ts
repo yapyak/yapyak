@@ -1,4 +1,4 @@
-import { setRequestReader, setResponseHeaderWriter } from '../locale';
+import { setRequestReader, setResponseHeaderWriter } from '../persistence';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 type Storage = {

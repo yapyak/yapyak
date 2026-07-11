@@ -295,16 +295,21 @@ function readMustache(
   };
 }
 
+const WHITESPACE_RX = /\s/;
+
 function findMustacheClose(source: string, from: number): number {
   let index = from;
+  let previousCharacter: string | undefined;
   while (index < source.length) {
     const character = source[index];
     if (character === '"' || character === "'") {
       index = skipString(source, index, character);
+      previousCharacter = character;
       continue;
     }
     if (character === '`') {
       index = skipTemplateLiteral(source, index);
+      previousCharacter = character;
       continue;
     }
     if (character === '/' && source[index + 1] === '/') {
@@ -315,8 +320,14 @@ function findMustacheClose(source: string, from: number): number {
       index = skipBlockComment(source, index);
       continue;
     }
+    if (character === '/' && isRegexStart(previousCharacter)) {
+      index = skipRegex(source, index);
+      previousCharacter = '/';
+      continue;
+    }
     if (character === '{') {
       index = skipBalancedBraces(source, index);
+      previousCharacter = '}';
       continue;
     }
     if (character === '}' && source[index + 1] === '}') {
@@ -324,6 +335,9 @@ function findMustacheClose(source: string, from: number): number {
     }
     if (character === '}') {
       return -1;
+    }
+    if (character !== undefined && !WHITESPACE_RX.test(character)) {
+      previousCharacter = character;
     }
     index += 1;
   }
@@ -385,17 +399,59 @@ function skipBlockComment(source: string, from: number): number {
   return index;
 }
 
+const DIVISION_OPERAND_END_RX = /[A-Za-z0-9_$)\]}'"`/]/;
+
+function isRegexStart(previousCharacter: string | undefined): boolean {
+  if (previousCharacter === undefined) {
+    return true;
+  }
+  return !DIVISION_OPERAND_END_RX.test(previousCharacter);
+}
+
+function skipRegex(source: string, from: number): number {
+  let index = from + 1;
+  let isInCharacterClass = false;
+  while (index < source.length) {
+    const character = source[index];
+    if (character === '\\') {
+      index += 2;
+      continue;
+    }
+    if (character === '[') {
+      isInCharacterClass = true;
+      index += 1;
+      continue;
+    }
+    if (character === ']') {
+      isInCharacterClass = false;
+      index += 1;
+      continue;
+    }
+    if (character === '/' && !isInCharacterClass) {
+      return index + 1;
+    }
+    if (character === '\n') {
+      return index;
+    }
+    index += 1;
+  }
+  return index;
+}
+
 function skipBalancedBraces(source: string, from: number): number {
   let depth = 1;
   let index = from + 1;
+  let previousCharacter: string | undefined;
   while (index < source.length && depth > 0) {
     const character = source[index];
     if (character === '"' || character === "'") {
       index = skipString(source, index, character);
+      previousCharacter = character;
       continue;
     }
     if (character === '`') {
       index = skipTemplateLiteral(source, index);
+      previousCharacter = character;
       continue;
     }
     if (character === '/' && source[index + 1] === '/') {
@@ -406,10 +462,18 @@ function skipBalancedBraces(source: string, from: number): number {
       index = skipBlockComment(source, index);
       continue;
     }
+    if (character === '/' && isRegexStart(previousCharacter)) {
+      index = skipRegex(source, index);
+      previousCharacter = '/';
+      continue;
+    }
     if (character === '{') {
       depth += 1;
     } else if (character === '}') {
       depth -= 1;
+    }
+    if (character !== undefined && !WHITESPACE_RX.test(character)) {
+      previousCharacter = character;
     }
     index += 1;
   }

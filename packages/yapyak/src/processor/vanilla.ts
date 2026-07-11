@@ -1,6 +1,6 @@
-import type { Processor } from '../../../processor';
+import type { Processor } from './type';
 
-import { createProcessor } from '../../../processor';
+import { createProcessor } from './create';
 
 export const vanillaProcessor: Processor = createProcessor({
   extensions: [

@@ -1,8 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { resetResponseHeaderWriter, setResponseHeaderWriter } from '../locale';
 import { resetWarn, setWarn } from '../warn';
 import { cookie, parseCookie } from './cookie';
+import {
+  resetResponseHeaderWriter,
+  setResponseHeaderWriter,
+} from './pending-response-header';
 
 describe('cookie', () => {
   describe('in browser', () => {

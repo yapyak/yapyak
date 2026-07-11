@@ -8,3 +8,8 @@ export type {
 } from './type';
 
 export { buildPersistence } from './build';
+export {
+  appendPendingResponseHeader,
+  setResponseHeaderWriter,
+} from './pending-response-header';
+export { readRequest, setRequestReader } from './request';

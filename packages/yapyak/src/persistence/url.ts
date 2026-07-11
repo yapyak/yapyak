@@ -1,7 +1,7 @@
 import type { Persistence } from './type';
 
+import { findCanonicalLocale } from '../canonical-locale';
 import { warnDiagnostic } from '../diagnostic';
-import { findCanonicalLocale } from '../locale';
 import { subscribeHistory } from './history';
 
 type UrlOptions = {

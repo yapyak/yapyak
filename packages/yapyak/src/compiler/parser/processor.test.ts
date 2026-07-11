@@ -1,9 +1,9 @@
-import type { Processor } from '../../../processor';
+import type { Processor } from '../../processor';
 
 import { describe, expect, it } from 'vitest';
 
-import { resolveProcessor } from './resolve';
-import { vanillaProcessor } from './vanilla';
+import { vanillaProcessor } from '../../processor/internal';
+import { resolveProcessor } from './processor';
 
 function makeProcessor(id: string, extensions: string[]): Processor {
   return {

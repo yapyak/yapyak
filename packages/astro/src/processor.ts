@@ -13,14 +13,6 @@ import type { ElisionContext, Fragment, Processor } from 'yapyak/processor';
 import { parse } from '@astrojs/compiler-rs';
 import { createProcessor, rangeFromOffsets } from 'yapyak/processor';
 
-declare module 'estree' {
-  // biome-ignore lint/style/useConsistentTypeDefinitions: yap yap yap
-  interface BaseNode {
-    end: number;
-    start: number;
-  }
-}
-
 const FRONTMATTER_OPEN_RX = /^---\r?\n/;
 const FRONTMATTER_DELIMITER_LENGTH = 3;
 
@@ -129,13 +121,36 @@ function getEnclosingContext(
   source: string,
 ): EnclosingContext | undefined {
   const name = node.openingElement.name;
-  if (name.type === 'JSXIdentifier') {
-    return {
-      element: name.name,
-      snippet: source.slice(node.start, node.end),
-    };
+  if (name.type !== 'JSXIdentifier') {
+    return undefined;
   }
-  return undefined;
+  const range = findOffsetRange(node);
+  if (range === undefined) {
+    return undefined;
+  }
+  return {
+    element: name.name,
+    snippet: source.slice(range.start, range.end),
+  };
+}
+
+type OffsetRange = {
+  end: number;
+  start: number;
+};
+
+function findOffsetRange(node: unknown): OffsetRange | undefined {
+  const { end, start } = node as {
+    end?: unknown;
+    start?: unknown;
+  };
+  if (typeof start !== 'number' || typeof end !== 'number') {
+    return undefined;
+  }
+  return {
+    end,
+    start,
+  };
 }
 
 function fragmentsFromBodyNode(
@@ -152,13 +167,16 @@ function fragmentsFromBodyNode(
     );
   }
   if (node.type === 'JSXExpressionContainer') {
+    const range = findOffsetRange(node);
     return fragmentsFromExpression(
       node.expression,
       source,
-      {
-        mode: 'text',
-        range: rangeFromOffsets(source, node.start, node.end),
-      },
+      range === undefined
+        ? undefined
+        : {
+            mode: 'text',
+            range: rangeFromOffsets(source, range.start, range.end),
+          },
       enclosingContext,
     );
   }
@@ -210,14 +228,17 @@ function fragmentsFromAttribute(
       fragmentsFromBodyNode(child, source, enclosingContext),
     );
   }
+  const range = findOffsetRange(attribute);
   return fragmentsFromExpression(
     value.expression,
     source,
-    {
-      attributeName: attributeNameString(attribute.name),
-      mode: 'attribute',
-      range: rangeFromOffsets(source, attribute.start, attribute.end),
-    },
+    range === undefined
+      ? undefined
+      : {
+          attributeName: attributeNameString(attribute.name),
+          mode: 'attribute',
+          range: rangeFromOffsets(source, range.start, range.end),
+        },
     enclosingContext,
   );
 }
@@ -245,14 +266,18 @@ function fragmentsFromExpression(
       fragmentsFromBodyNode(child, source, enclosingContext),
     );
   }
+  const range = findOffsetRange(expression);
+  if (range === undefined) {
+    return [];
+  }
   const embedded: (JSXElement | JSXFragment)[] = [];
   collectJsx(expression, embedded);
   const fragment: Fragment = {
-    code: source.slice(expression.start, expression.end),
+    code: source.slice(range.start, range.end),
     elisionContext:
       elisionContext && embedded.length === 0 ? elisionContext : undefined,
     language: 'ts',
-    originalOffset: expression.start,
+    originalOffset: range.start,
     type: 'template-expression',
   };
   if (enclosingContext) {

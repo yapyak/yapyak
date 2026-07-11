@@ -1,6 +1,6 @@
-import type { Processor } from '../../../processor';
+import type { Processor } from '../../processor';
 
-import { vanillaProcessor } from './vanilla';
+import { vanillaProcessor } from '../../processor/internal';
 
 export function resolveProcessor(
   fileId: string,

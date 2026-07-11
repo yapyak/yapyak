@@ -11,4 +11,3 @@ export { extractFile } from './file/extract';
 export { transformFile } from './file/transform';
 export { fromMessageKey, toMessageKey } from './message-key';
 export { parsePlaceholders } from './placeholder';
-export { vanillaProcessor } from './processor';

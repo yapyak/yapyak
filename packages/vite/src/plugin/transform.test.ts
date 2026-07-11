@@ -1,10 +1,11 @@
 import type { LocaleResolver } from '../locale-resolver';
 
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { normalizeYapyakConfig } from 'yapyak/config/internal';
 
 import { createState } from './state';
 import { createTransformPlugin } from './transform';
+import { join } from 'node:path';
 
 function buildResolver(): LocaleResolver {
   return {
@@ -48,6 +49,13 @@ type TransformHookResult = {
 } | null;
 
 type TransformHook = (code: string, id: string) => TransformHookResult;
+
+type WatchChangeHook = (
+  id: string,
+  change: {
+    event: 'create' | 'delete' | 'update';
+  },
+) => void;
 
 function buildState(projectRoot: string) {
   const state = createState();
@@ -115,6 +123,131 @@ describe('createTransformPlugin', () => {
 
       expect(result).not.toBeNull();
       expect(result?.code).toContain('Hello');
+    });
+
+    it('registers every locale file as a watch file when building', () => {
+      const state = buildState('/project');
+      state.command = 'build';
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+      const addWatchFile = vi.fn();
+
+      transform.call(
+        {
+          addWatchFile,
+        } as ThisParameterType<TransformHook>,
+        `import { t } from 'yapyak';\nt('Hello');\n`,
+        '/project/src/a.tsx',
+      );
+
+      expect(addWatchFile).toHaveBeenCalledWith(
+        join('/project', 'locales', 'en.json'),
+      );
+      expect(addWatchFile).toHaveBeenCalledWith(
+        join('/project', 'locales', 'sv.json'),
+      );
+    });
+
+    it('registers no watch file when serving', () => {
+      const state = buildState('/project');
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+      const addWatchFile = vi.fn();
+
+      transform.call(
+        {
+          addWatchFile,
+        } as ThisParameterType<TransformHook>,
+        `import { t } from 'yapyak';\nt('Hello');\n`,
+        '/project/src/a.tsx',
+      );
+
+      expect(addWatchFile).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('watchChange', () => {
+    it('invalidates the locale data when a locale file changes', () => {
+      const state = buildState('/project');
+      state.command = 'build';
+      const invalidateData = vi.fn();
+      const invalidateStructure = vi.fn();
+      state.resolver = {
+        ...buildResolver(),
+        invalidateData,
+        invalidateStructure,
+      };
+      const plugin = createTransformPlugin(state);
+      const watchChange = plugin.watchChange as WatchChangeHook;
+
+      watchChange('/project/locales/sv.json', {
+        event: 'update',
+      });
+
+      expect(invalidateData).toHaveBeenCalledOnce();
+      expect(invalidateStructure).not.toHaveBeenCalled();
+    });
+
+    it('invalidates the locale structure when a locale file is added', () => {
+      const state = buildState('/project');
+      state.command = 'build';
+      const invalidateData = vi.fn();
+      const invalidateStructure = vi.fn();
+      state.resolver = {
+        ...buildResolver(),
+        invalidateData,
+        invalidateStructure,
+      };
+      const plugin = createTransformPlugin(state);
+      const watchChange = plugin.watchChange as WatchChangeHook;
+
+      watchChange('/project/locales/de.json', {
+        event: 'create',
+      });
+
+      expect(invalidateStructure).toHaveBeenCalledOnce();
+      expect(invalidateData).not.toHaveBeenCalled();
+    });
+
+    it('skips invalidation when serving', () => {
+      const state = buildState('/project');
+      const invalidateData = vi.fn();
+      const invalidateStructure = vi.fn();
+      state.resolver = {
+        ...buildResolver(),
+        invalidateData,
+        invalidateStructure,
+      };
+      const plugin = createTransformPlugin(state);
+      const watchChange = plugin.watchChange as WatchChangeHook;
+
+      watchChange('/project/locales/sv.json', {
+        event: 'update',
+      });
+
+      expect(invalidateData).not.toHaveBeenCalled();
+      expect(invalidateStructure).not.toHaveBeenCalled();
+    });
+
+    it('skips invalidation for a file outside the locales directory', () => {
+      const state = buildState('/project');
+      state.command = 'build';
+      const invalidateData = vi.fn();
+      const invalidateStructure = vi.fn();
+      state.resolver = {
+        ...buildResolver(),
+        invalidateData,
+        invalidateStructure,
+      };
+      const plugin = createTransformPlugin(state);
+      const watchChange = plugin.watchChange as WatchChangeHook;
+
+      watchChange('/project/src/a.tsx', {
+        event: 'update',
+      });
+
+      expect(invalidateData).not.toHaveBeenCalled();
+      expect(invalidateStructure).not.toHaveBeenCalled();
     });
   });
 });

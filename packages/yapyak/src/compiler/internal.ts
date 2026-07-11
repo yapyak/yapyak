@@ -48,5 +48,4 @@ export {
   fromMessageKey,
   toMessageKey,
   transformFile,
-  vanillaProcessor,
 } from './parser';
