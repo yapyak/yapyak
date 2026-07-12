@@ -7,7 +7,6 @@ import type {
 import type { State } from './state';
 
 import {
-  extractFile,
   findTranslation,
   getDocsUrl,
   transformFile,
@@ -15,6 +14,7 @@ import {
 
 import { isCandidateId } from './candidate-id';
 import { formatDiagnostic, renderErrorDiagnostics } from './error-diagnostic';
+import { resolveExtraction } from './extraction';
 import { toFileId } from './file-id';
 import { isLocaleFile } from './locale-file';
 import { getNormalized, getResolver } from './state';
@@ -42,15 +42,9 @@ export function createTransformPlugin(state: State): Plugin {
       if (!isCandidateId(filePath, state.filter, state.projectRoot)) {
         return null;
       }
-      if (!code.includes('yapyak')) {
-        return null;
-      }
       const fileId = toFileId(state.projectRoot, filePath);
       const { locales } = getResolver(state).getEmittedLocales();
-      const processors = getNormalized(state).processors;
-      const extracted = extractFile(fileId, code, {
-        processors,
-      });
+      const extracted = resolveExtraction(state, fileId, code);
       const errorDiagnostics = renderErrorDiagnostics(state.logger, extracted);
       const firstError = errorDiagnostics[0];
       if (firstError !== undefined) {
@@ -86,7 +80,7 @@ export function createTransformPlugin(state: State): Plugin {
         extracted,
         fileId,
         locales,
-        processors,
+        processors: getNormalized(state).processors,
         source: code,
         sourcePath: filePath,
         translations,

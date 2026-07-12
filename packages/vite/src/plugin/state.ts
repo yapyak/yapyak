@@ -1,5 +1,8 @@
 import type { Logger } from 'vite';
-import type { ExtractedMessage } from 'yapyak/compiler/internal';
+import type {
+  ExtractFileResult,
+  ExtractedMessage,
+} from 'yapyak/compiler/internal';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { LocaleResolver } from '../locale-resolver';
 
@@ -7,6 +10,13 @@ export type State = {
   autoTranslateController?: AbortController;
   command: 'build' | 'serve';
   configFile?: string;
+  extractionCache: Map<
+    string,
+    {
+      result: ExtractFileResult;
+      source: string;
+    }
+  >;
   filter: (path: string) => boolean;
   fixedLocale?: string;
   logger: Logger;
@@ -25,6 +35,7 @@ export type CreateStateOptions = {
 export function createState(options: CreateStateOptions = {}): State {
   return {
     command: 'serve',
+    extractionCache: new Map(),
     filter: () => false,
     ...(options.fixedLocale !== undefined && {
       fixedLocale: options.fixedLocale,

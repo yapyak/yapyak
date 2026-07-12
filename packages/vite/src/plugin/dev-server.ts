@@ -17,7 +17,6 @@ import {
   CorruptLocaleFileError,
   YAP,
   detectRenames,
-  extractFile,
   getDocsUrl,
   migrateLocales,
   parseTemplate,
@@ -29,6 +28,7 @@ import {
 
 import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';
+import { resolveExtraction } from './extraction';
 import { toFileId } from './file-id';
 import { isLocaleFile } from './locale-file';
 import { renderLocaleWarning } from './locale-warning';
@@ -77,6 +77,7 @@ export function createDevServerPlugin(state: State): Plugin {
         }
         for (const [fileId, kind] of pendingActionByFileId) {
           if (kind === 'unlink') {
+            state.extractionCache.delete(fileId);
             state.messagesByFile.delete(fileId);
             continue;
           }
@@ -84,12 +85,11 @@ export function createDevServerPlugin(state: State): Plugin {
           try {
             code = readFileSync(join(state.projectRoot, fileId), 'utf8');
           } catch {
+            state.extractionCache.delete(fileId);
             state.messagesByFile.delete(fileId);
             continue;
           }
-          const result = extractFile(fileId, code, {
-            processors: getNormalized(state).processors,
-          });
+          const result = resolveExtraction(state, fileId, code);
           renderErrorDiagnostics(state.logger, result);
           if (result.messages.length > 0) {
             state.messagesByFile.set(fileId, result.messages);
@@ -265,9 +265,7 @@ export function createDevServerPlugin(state: State): Plugin {
       const fileId = toFileId(state.projectRoot, options.file);
       const code = await options.read();
       const { defaultLocale, locales } = getResolver(state).getEmittedLocales();
-      const result = extractFile(fileId, code, {
-        processors: getNormalized(state).processors,
-      });
+      const result = resolveExtraction(state, fileId, code);
       renderErrorDiagnostics(state.logger, result);
       const before = state.messagesByFile.get(fileId) ?? [];
       const after = result.messages;
