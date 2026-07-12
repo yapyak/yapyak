@@ -78,6 +78,12 @@ export function Animate(props: AnimateProps) {
       setState('unmounted');
       return;
     }
+    if (
+      document.activeElement instanceof HTMLElement &&
+      $element.contains(document.activeElement)
+    ) {
+      document.activeElement.blur();
+    }
     const duration = getTransitionDuration($element);
     if (duration === 0) {
       setState('unmounted');
