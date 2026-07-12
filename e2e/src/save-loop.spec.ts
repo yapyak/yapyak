@@ -461,14 +461,39 @@ test('writes every translation when `yapyak add` runs', async () => {
   await expect(async () => {
     expect(await readCatalog('de')).toEqual({
       'src/app.tsx': {
-        Hello: 'Hej',
-        Save: 'Spara',
+        Hello: 'Hallo',
+        Save: 'Speichern',
       },
       'src/cart.tsx': {
-        Settings: 'Inställningar',
+        Settings: 'Einstellungen',
       },
     });
   }).toPass();
+});
+
+test('renders the translation when a locale is added while the server runs', async ({
+  page,
+}) => {
+  await writeCatalog('de', {
+    'src/app.tsx': {
+      Hello: 'Hallo',
+      Save: 'Speichern',
+    },
+    'src/cart.tsx': {
+      Settings: 'Einstellungen',
+    },
+  });
+
+  await page
+    .getByRole('button', {
+      name: 'de',
+    })
+    .click();
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+    }),
+  ).toHaveText('Hallo');
 });
 
 async function resetSandbox(): Promise<void> {

@@ -222,6 +222,82 @@ describe('yapyak', () => {
       });
     });
 
+    it('invalidates every module when adding a locale file', async () => {
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const invalidateAll = vi.fn();
+      const server = createMockServer(createMockWatcher());
+      server.moduleGraph.invalidateAll = invalidateAll;
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const newLocale = join(root, 'locales', 'fr.json');
+      writeFileSync(newLocale, '{}');
+      watcher.emit('add', newLocale);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(invalidateAll).toHaveBeenCalled();
+    });
+
+    it('invalidates every module when removing a locale file', async () => {
+      writeFileSync(join(root, 'locales', 'fr.json'), '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const invalidateAll = vi.fn();
+      const server = createMockServer(createMockWatcher());
+      server.moduleGraph.invalidateAll = invalidateAll;
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const removed = join(root, 'locales', 'fr.json');
+      rmSync(removed);
+      watcher.emit('unlink', removed);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(invalidateAll).toHaveBeenCalled();
+    });
+
+    it('emits no `yapyak:patch` event when adding a locale file', async () => {
+      writeFileSync(
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const x = () => t('Hello');\n",
+      );
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const send = vi.fn();
+      const server = createMockServer(createMockWatcher());
+      server.ws.send = send;
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      writeFileSync(
+        localePath,
+        JSON.stringify({
+          'src/a.tsx': {
+            Hello: 'Hej',
+          },
+        }),
+      );
+      watcher.emit('add', localePath);
+      await vi.advanceTimersByTimeAsync(60);
+
+      for (const call of send.mock.calls) {
+        const payload = call[0];
+        if (payload && typeof payload === 'object' && 'event' in payload) {
+          expect(payload.event).not.toBe('yapyak:patch');
+        }
+      }
+    });
+
     it('blocks notification for non-`.json` files in the locales directory', async () => {
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
@@ -1427,6 +1503,7 @@ type MockServer = {
     getModuleById: (id: string) => MockModule | undefined;
     getModulesByFile: (file: string) => Set<MockModule> | undefined;
     idToModuleMap: Map<unknown, MockModule>;
+    invalidateAll: () => void;
     invalidateModule: (mod: MockModule) => void;
   };
   reloadModule: (mod: unknown) => Promise<void>;
@@ -1458,6 +1535,7 @@ function createMockServer(watcher: MockWatcher): MockServer {
         return matching.size === 0 ? undefined : matching;
       },
       idToModuleMap,
+      invalidateAll: () => {},
       invalidateModule: () => {},
     },
     reloadModule: () => Promise.resolve(),

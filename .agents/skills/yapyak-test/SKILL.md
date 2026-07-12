@@ -250,6 +250,7 @@ Closed set of verbs allowed in `it` names. Alphabetical.
 | `groups` | buckets items by key |
 | `holds` | value-storing assertion |
 | `interpolates` | string templating with placeholders |
+| `invalidates` | marks cached/derived state stale |
 | `isolates` | per-request/per-scope separation |
 | `lists` | collects/returns an array |
 | `loads` | IO read with parsing |
@@ -332,6 +333,20 @@ Closed set of fixture data. No invented strings.
 | `Loading...` | `Laddar...` |
 | `Switch account` | `Byt konto` |
 | `Unnamed account` | `Namnlöst konto` |
+
+**German translations:**
+
+| Source | Translation |
+|---|---|
+| `Hello` | `Hallo` |
+| `World` | `Welt` |
+| `Save` | `Speichern` |
+| `Save changes` | `Änderungen speichern` |
+| `Cancel` | `Abbrechen` |
+| `Settings` | `Einstellungen` |
+| `Loading...` | `Lädt...` |
+| `Switch account` | `Konto wechseln` |
+| `Unnamed account` | `Unbenanntes Konto` |
 
 **Homonym contexts** (`t.as` fixtures):
 

@@ -27,7 +27,6 @@ import {
   writeRegister,
 } from 'yapyak/compiler/internal';
 
-import { RUNTIME_RESOLVED } from '../virtual-runtime';
 import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';
 import { toFileId } from './file-id';
@@ -211,7 +210,7 @@ export function createDevServerPlugin(state: State): Plugin {
           }
           const hint = `Run \`${runYapyakCommand(`translate ${locale}`)}\` to fill the stubs.`;
           getResolver(state).invalidateStructure();
-          reloadRuntimeModule(server);
+          reloadAllModules(server);
           syncLocaleStructure();
           state.logger.info(
             `[yapyak] New locale '${locale}' detected. ${hint}`,
@@ -229,16 +228,6 @@ export function createDevServerPlugin(state: State): Plugin {
             throw error;
           }
           previousLocaleData.set(locale, initial);
-          const initialPatches = derivePatches({}, initial, locale);
-          if (initialPatches.length > 0) {
-            server.ws.send({
-              data: {
-                patches: initialPatches,
-              },
-              event: 'yapyak:patch',
-              type: 'custom',
-            });
-          }
         }
       });
 
@@ -255,7 +244,7 @@ export function createDevServerPlugin(state: State): Plugin {
           const locale = localeFromPath(path);
           previousLocaleData.delete(locale);
           getResolver(state).invalidateStructure();
-          reloadRuntimeModule(server);
+          reloadAllModules(server);
           syncLocaleStructure();
           state.logger.info(`[yapyak] Locale '${locale}' removed.`);
         }
@@ -329,11 +318,8 @@ export function createDevServerPlugin(state: State): Plugin {
   };
 }
 
-function reloadRuntimeModule(server: ViteDevServer): void {
-  const runtimeModule = server.moduleGraph.getModuleById(RUNTIME_RESOLVED);
-  if (runtimeModule) {
-    server.moduleGraph.invalidateModule(runtimeModule);
-  }
+function reloadAllModules(server: ViteDevServer): void {
+  server.moduleGraph.invalidateAll();
   server.ws.send({
     type: 'full-reload',
   });
