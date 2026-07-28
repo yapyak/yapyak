@@ -197,6 +197,16 @@ describe('parseTemplate', () => {
         reason: 'unsupported',
       });
     });
+
+    it('emits no malformed diagnostic for the plural offset prelude', () => {
+      const { diagnostics } = parseTemplate(
+        '{count, plural, offset:1 one {#} other {# more}}',
+      );
+
+      expect(
+        diagnostics.filter((diagnostic) => diagnostic.reason === 'malformed'),
+      ).toHaveLength(0);
+    });
   });
 
   describe('select', () => {
@@ -512,6 +522,35 @@ describe('parseTemplate', () => {
     it('emits malformed for an unknown argument type', () => {
       const { diagnostics } = parseTemplate('{x, mystery, body}');
       expect(diagnostics[0]?.reason).toBe('malformed');
+    });
+
+    it('emits malformed for a branch name without a body', () => {
+      const source =
+        'You have {count, plural, one two {# item} other {# items}}';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('one');
+      expect(diagnostics).toContainEqual({
+        message: `branch "one" at index ${start}: missing '{' after branch name`,
+        range: {
+          end: start + 'one'.length,
+          start,
+        },
+        reason: 'malformed',
+      });
+    });
+
+    it('emits malformed for a branch body without a name', () => {
+      const source = 'You have {count, plural, {# item} other {# items}}';
+      const { diagnostics } = parseTemplate(source);
+      const start = source.indexOf('{# item}');
+      expect(diagnostics).toContainEqual({
+        message: `branch at index ${start}: missing name before '{'`,
+        range: {
+          end: start + 1,
+          start,
+        },
+        reason: 'malformed',
+      });
     });
 
     it('emits unsupported for apostrophe escaping', () => {

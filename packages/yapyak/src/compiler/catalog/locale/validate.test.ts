@@ -242,7 +242,9 @@ describe('validateIcuPairs', () => {
         'Hi {name}': 'Hej {name}',
       },
     };
-    expect(validateIcuPairs('sv.json', localeFile, messages)).toHaveLength(0);
+    expect(
+      validateIcuPairs('sv.json', 'sv', localeFile, messages),
+    ).toHaveLength(0);
   });
 
   it('returns no diagnostics when target is empty', () => {
@@ -256,7 +258,44 @@ describe('validateIcuPairs', () => {
         'Hi {name}': '',
       },
     };
-    expect(validateIcuPairs('sv.json', localeFile, messages)).toHaveLength(0);
+    expect(
+      validateIcuPairs('sv.json', 'sv', localeFile, messages),
+    ).toHaveLength(0);
+  });
+
+  it('returns no diagnostics when the target plural uses an exact match branch', () => {
+    const source = 'You have {count, plural, one {# item} other {# items}}';
+    const messages = [
+      makeMessage(source, [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        [source]: 'Du har {count, plural, =1 {# objekt} other {# objekt}}',
+      },
+    };
+    expect(
+      validateIcuPairs('sv.json', 'sv', localeFile, messages),
+    ).toHaveLength(0);
+  });
+
+  it('returns no diagnostics when the target plural uses locale-required branches', () => {
+    const source = 'You have {count, plural, one {# item} other {# items}}';
+    const messages = [
+      makeMessage(source, [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        [source]:
+          '{count, plural, one {# objekt} few {# objekt} many {# objekt} other {# objekt}}',
+      },
+    };
+    expect(
+      validateIcuPairs('pl.json', 'pl', localeFile, messages),
+    ).toHaveLength(0);
   });
 
   it('emits YAP0011 when a placeholder is missing from the translation', () => {
@@ -270,7 +309,7 @@ describe('validateIcuPairs', () => {
         'Hi {name}': 'Hej där',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', localeFile, messages);
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0011'),
     ).toBe(true);
@@ -287,7 +326,7 @@ describe('validateIcuPairs', () => {
         Hello: 'Hej {name}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', localeFile, messages);
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0012'),
     ).toBe(true);
@@ -305,7 +344,7 @@ describe('validateIcuPairs', () => {
           '{count, select, one {# sak} other {# saker}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', localeFile, messages);
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0010'),
     ).toBe(true);
@@ -323,7 +362,7 @@ describe('validateIcuPairs', () => {
           'Du har {count, plural, one {# objekt}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', localeFile, messages);
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0008'),
     ).toBe(true);
@@ -342,10 +381,85 @@ describe('validateIcuPairs', () => {
         [source]: '{theme, select, dark {Mörkt} other {System}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', localeFile, messages);
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0038'),
     ).toBe(true);
+  });
+
+  it('emits YAP0045 when the target plural uses an unknown branch name', () => {
+    const source = 'You have {count, plural, one {# item} other {# items}}';
+    const messages = [
+      makeMessage(source, [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        [source]: 'Du har {count, plural, en {# objekt} other {# objekt}}',
+      },
+    };
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
+    ).toBe(true);
+  });
+
+  it('emits YAP0045 when the target plural uses a category of another locale', () => {
+    const source = 'You have {count, plural, one {# item} other {# items}}';
+    const messages = [
+      makeMessage(source, [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        [source]:
+          'Du har {count, plural, one {# objekt} few {# objekt} other {# objekt}}',
+      },
+    };
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
+    ).toBe(true);
+  });
+
+  it('emits YAP0045 when the target selectordinal uses an unknown branch name', () => {
+    const source =
+      '{count, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}';
+    const messages = [
+      makeMessage(source, [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        [source]: '{count, selectordinal, two {#nd} other {#th}}',
+      },
+    };
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
+    ).toBe(true);
+  });
+
+  it('emits no YAP0045 when the target select uses domain branches', () => {
+    const source =
+      '{theme, select, dark {Dark mode} light {Light mode} other {System}}';
+    const messages = [
+      makeMessage(source, [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        [source]: '{theme, select, dark {Mörkt} other {System}}',
+      },
+    };
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
+    ).toBe(false);
   });
 });
 

@@ -50,7 +50,7 @@ export function check(config: Config, projectRoot: string): number {
     }
     const localeFile = readLocaleFile(localeFilePath);
     allDiagnostics.push(
-      ...validateIcuPairs(fileId, localeFile, report.messages),
+      ...validateIcuPairs(fileId, locale, localeFile, report.messages),
     );
   }
 

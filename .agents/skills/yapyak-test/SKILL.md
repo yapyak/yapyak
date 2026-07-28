@@ -377,6 +377,13 @@ Closed set of fixture data. No invented strings.
 '{count, plural, one {# objekt}}'                                   M1 regression — plural target with `other` dropped
 '{count, plural, one {# objekt} few {# objekt} many {# objekt} other {# objekt}}' locale-extra plural categories
 '{theme, select, dark {Mörkt} other {System}}'                       M1 select regression — domain branch dropped
+'{count, plural, en {# objekt} other {# objekt}}'                    YAP0045 regression — unknown plural branch name
+'{count, plural, one {# objekt} few {# objekt} other {# objekt}}'    YAP0045 regression — category of another locale
+'{count, plural, =1 {# objekt} other {# objekt}}'                    exact-match branch accepted by YAP0045
+'{count, plural, one two {# item} other {# items}}'                  parse regression — branch name without a body
+'{count, plural, {# item} other {# items}}'                          parse regression — branch body without a name
+'{count, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}'  selectordinal source for ordinal-category tests
+'{count, selectordinal, two {#nd} other {#th}}'                      YAP0045 regression — ordinal category invalid in target locale
 ```
 
 If a test does not exercise one of these edge cases, use the regular pool strings.

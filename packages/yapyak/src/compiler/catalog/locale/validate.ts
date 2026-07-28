@@ -20,6 +20,8 @@ type BranchEntry = {
 
 type BranchesByName = Map<string, BranchEntry>;
 
+const EXACT_MATCH_RX = /^=\d+$/;
+
 const STUB_RANGE = {
   end: {
     column: 0,
@@ -250,10 +252,26 @@ export function validateTranslationParity(
 
 export function validateIcuPairs(
   fileId: string,
+  locale: string,
   localeFile: LocaleFile,
   messages: ExtractedMessage[],
 ): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
+  const categoriesByType = new Map<Intl.PluralRulesOptions['type'], string[]>();
+  const resolveCategories = (
+    type: Intl.PluralRulesOptions['type'],
+  ): string[] => {
+    let categories = categoriesByType.get(type);
+    if (!categories) {
+      categories = [
+        ...new Intl.PluralRules(locale, {
+          type,
+        }).resolvedOptions().pluralCategories,
+      ];
+      categoriesByType.set(type, categories);
+    }
+    return categories;
+  };
   for (const message of messages) {
     const sourcePlaceholders = parsePlaceholders(message.source).placeholders;
     const sourceByName = buildPlaceholderIndex(sourcePlaceholders);
@@ -347,6 +365,33 @@ export function validateIcuPairs(
               );
             }
           }
+        }
+      }
+      for (const [name, targetEntry] of targetBranchesByName) {
+        if (targetEntry.kind === 'select') {
+          continue;
+        }
+        const isOrdinal = targetEntry.kind === 'selectordinal';
+        const categories = resolveCategories(
+          isOrdinal ? 'ordinal' : 'cardinal',
+        );
+        for (const branch of targetEntry.branches) {
+          if (EXACT_MATCH_RX.test(branch) || categories.includes(branch)) {
+            continue;
+          }
+          diagnostics.push(
+            buildDiagnostic(
+              'PLACEHOLDER_BRANCH_UNKNOWN',
+              {
+                branch,
+                categories,
+                kind: isOrdinal ? 'ordinal' : 'plural',
+                locale,
+                name,
+              },
+              diagnosticContext,
+            ),
+          );
         }
       }
     }

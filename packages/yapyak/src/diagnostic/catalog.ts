@@ -312,6 +312,34 @@ export const YAP = {
     hint: (): string => 'Provide a name like `<link>` or remove the brackets.',
     message: (): string => 'Tag has no name.',
   },
+  PLACEHOLDER_BRANCH_UNKNOWN: {
+    code: 'YAP0045',
+    hint: ({
+      categories,
+    }: {
+      branch: string;
+      categories: string[];
+      kind: 'ordinal' | 'plural';
+      locale: string;
+      name: string;
+    }): string =>
+      `Use one of ${categories
+        .map((category) => `\`${category}\``)
+        .join(', ')}, or an exact match like \`=1\`.`,
+    message: ({
+      branch,
+      kind,
+      locale,
+      name,
+    }: {
+      branch: string;
+      categories: string[];
+      kind: 'ordinal' | 'plural';
+      locale: string;
+      name: string;
+    }): string =>
+      `Branch "${branch}" in \`{${name}}\` is not ${kind === 'ordinal' ? 'an' : 'a'} ${kind} category of locale "${locale}".`,
+  },
 } as const;
 
 export type YapKey = keyof typeof YAP;

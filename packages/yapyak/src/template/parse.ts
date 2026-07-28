@@ -383,7 +383,10 @@ function buildPluralNode(
       reason: 'unsupported',
     });
   }
-  const branches = parseBranches(context, input.bodyStart, input.bodyEnd, true);
+  const branchesStart = offsetMatch
+    ? input.bodyStart + offsetMatch.index + offsetMatch[0].length
+    : input.bodyStart;
+  const branches = parseBranches(context, branchesStart, input.bodyEnd, true);
   if (!('other' in branches)) {
     context.diagnostics.push({
       name: input.name,
@@ -484,6 +487,7 @@ function parseBranches(
     if (position >= end) {
       break;
     }
+    const nameStart = position;
     let nameEnd = position;
     while (
       nameEnd < end &&
@@ -492,13 +496,31 @@ function parseBranches(
     ) {
       nameEnd++;
     }
-    const branchName = context.source.slice(position, nameEnd);
+    const branchName = context.source.slice(nameStart, nameEnd);
     position = nameEnd;
     while (position < end && isWhitespace(context.source[position])) {
       position++;
     }
     if (context.source[position] !== '{') {
+      context.diagnostics.push({
+        message: `branch "${branchName}" at index ${nameStart}: missing '{' after branch name`,
+        range: {
+          end: nameEnd,
+          start: nameStart,
+        },
+        reason: 'malformed',
+      });
       continue;
+    }
+    if (branchName === '') {
+      context.diagnostics.push({
+        message: `branch at index ${position}: missing name before '{'`,
+        range: {
+          end: position + 1,
+          start: position,
+        },
+        reason: 'malformed',
+      });
     }
     const closeIndex = findMatchingBrace(context.source, position);
     if (closeIndex === undefined) {
@@ -513,7 +535,9 @@ function parseBranches(
       break;
     }
     const inner = parseNodes(context, position + 1, isInPluralBranch, '}');
-    branches[branchName] = inner.value;
+    if (branchName !== '') {
+      branches[branchName] = inner.value;
+    }
     position = closeIndex + 1;
   }
   return branches;
