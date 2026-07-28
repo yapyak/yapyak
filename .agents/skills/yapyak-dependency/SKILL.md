@@ -14,7 +14,12 @@ Never add dependabot or renovate configuration → run this routine. Action SHAs
 5. Verify per [[yapyak-workflow]] § Verify after changes, then `pnpm e2e:dev` and `pnpm e2e:prod`.
 6. Commit `pnpm-workspace.yaml` and `pnpm-lock.yaml` together — CI's frozen install rejects a catalog that doesn't match the lockfile.
 
-Bump catalog versions with `pnpm update --latest -r <pkg…>` — never by hand-editing `pnpm-workspace.yaml`. Adding a new dependency uses `pnpm add` per [[yapyak-package]] § In a pnpm monorepo.
+Bump catalog versions with `pnpm update --latest -r <pkg…>` — hand-editing `pnpm-workspace.yaml` is forbidden outside mismatch step 2 below. Adding a new dependency uses `pnpm add` per [[yapyak-package]] § In a pnpm monorepo.
+
+`ERR_PNPM_CATALOG_VERSION_MISMATCH` on a bump means the package is declared both as `catalog:` and as a non-catalog peer range in the same workspace package ([pnpm#9900](https://github.com/pnpm/pnpm/issues/9900)) → escalate in order:
+
+1. Bump through a peer-free consumer: `pnpm --filter <project> update --latest <pkg>`, where `<project>` references the package only via `catalog:`.
+2. No peer-free consumer exists → hand-edit the catalog entry and run `pnpm install` in the same change. Delete this step when pnpm#9900 closes.
 
 ### Holds
 
