@@ -21,6 +21,8 @@ Bump catalog versions with `pnpm update --latest -r <pkg…>` — hand-editing `
 1. Bump through a peer-free consumer: `pnpm --filter <project> update --latest <pkg>`, where `<project>` references the package only via `catalog:`.
 2. No peer-free consumer exists → hand-edit the catalog entry and run `pnpm install` in the same change. Delete this step when pnpm#9900 closes.
 
+A `@biomejs/biome` bump leaves the `biome.json` `$schema` on the old version → run `pnpm exec biome migrate --write` in the same change.
+
 ### Holds
 
 - Every hold has a row below AND its name in `pnpm-workspace.yaml` `updateConfig.ignoreDependencies` — add or remove both in the same commit.
