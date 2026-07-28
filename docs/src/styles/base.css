@@ -13,12 +13,11 @@ body {
   overflow-x: clip;
   font-family: system-ui;
   font-size: var(--font-size-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   line-height: var(--line-height-relaxed);
   color: var(--foreground-soft);
   background-color: var(--canvas);
-  hanging-punctuation: first last;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 ::selection {
