@@ -198,7 +198,7 @@ describe('parseTemplate', () => {
       });
     });
 
-    it('emits no malformed diagnostic for the plural offset prelude', () => {
+    it('emits no malformed when the plural body has `offset:N`', () => {
       const { diagnostics } = parseTemplate(
         '{count, plural, offset:1 one {#} other {# more}}',
       );
@@ -212,6 +212,7 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate(
         '{count, plural, oen {# item} other {# items}}',
       );
+
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
           branch: 'oen',
@@ -226,6 +227,7 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate(
         '{count, selectordinal, oen {#st} other {#th}}',
       );
+
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
           branch: 'oen',
@@ -236,26 +238,29 @@ describe('parseTemplate', () => {
       );
     });
 
-    it('emits no unknown-keyword for every CLDR plural keyword', () => {
+    it('emits no unknown-keyword when every branch is a CLDR keyword', () => {
       const { diagnostics } = parseTemplate(
         '{count, plural, zero {# items} one {# item} two {# items} few {# items} many {# items} other {# items}}',
       );
+
       expect(diagnostics).toHaveLength(0);
     });
 
-    it('emits no unknown-keyword for an exact match branch', () => {
+    it('emits no unknown-keyword when a branch is an exact match', () => {
       const { diagnostics } = parseTemplate(
         '{count, plural, =1 {# objekt} other {# objekt}}',
       );
+
       expect(diagnostics).toHaveLength(0);
     });
   });
 
   describe('select', () => {
-    it('emits no unknown-keyword for domain select branches', () => {
+    it('emits no unknown-keyword when a select uses domain branches', () => {
       const { diagnostics } = parseTemplate(
         '{theme, select, dark {Dark mode} other {Light mode}}',
       );
+
       expect(diagnostics).toHaveLength(0);
     });
 
@@ -574,10 +579,10 @@ describe('parseTemplate', () => {
     });
 
     it('emits malformed for a branch name without a body', () => {
-      const source =
-        'You have {count, plural, one two {# item} other {# items}}';
+      const source = '{count, plural, one two {# item} other {# items}}';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('one');
+
       expect(diagnostics).toContainEqual({
         message: `branch "one" at index ${start}: missing '{' after branch name`,
         range: {
@@ -589,9 +594,10 @@ describe('parseTemplate', () => {
     });
 
     it('emits malformed for a branch body without a name', () => {
-      const source = 'You have {count, plural, {# item} other {# items}}';
+      const source = '{count, plural, {# item} other {# items}}';
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('{# item}');
+
       expect(diagnostics).toContainEqual({
         message: `branch at index ${start}: missing name before '{'`,
         range: {

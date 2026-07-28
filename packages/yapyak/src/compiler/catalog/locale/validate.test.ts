@@ -275,6 +275,7 @@ describe('validateIcuPairs', () => {
         [source]: 'Du har {count, plural, =1 {# objekt} other {# objekt}}',
       },
     };
+
     expect(
       validateIcuPairs('sv.json', 'sv', localeFile, messages),
     ).toHaveLength(0);
@@ -293,6 +294,7 @@ describe('validateIcuPairs', () => {
           '{count, plural, one {# objekt} few {# objekt} many {# objekt} other {# objekt}}',
       },
     };
+
     expect(
       validateIcuPairs('pl.json', 'pl', localeFile, messages),
     ).toHaveLength(0);
@@ -400,6 +402,7 @@ describe('validateIcuPairs', () => {
       },
     };
     const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
     ).toBe(true);
@@ -419,6 +422,7 @@ describe('validateIcuPairs', () => {
       },
     };
     const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
     ).toBe(true);
@@ -438,6 +442,7 @@ describe('validateIcuPairs', () => {
       },
     };
     const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
     ).toBe(true);
@@ -457,6 +462,7 @@ describe('validateIcuPairs', () => {
       },
     };
     const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
     ).toBe(false);

@@ -202,6 +202,7 @@ describe('parseArguments', () => {
       const yap0046 = parsed.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0046',
       );
+
       expect(yap0046).toHaveLength(1);
       expect(yap0046[0]?.severity).toBe('error');
       expect(yap0046[0]?.message).toContain('oen');

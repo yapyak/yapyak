@@ -257,18 +257,18 @@ export function validateIcuPairs(
   messages: ExtractedMessage[],
 ): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
-  const categoriesByType = new Map<Intl.PluralRulesOptions['type'], string[]>();
+  const categoriesCache = new Map<Intl.PluralRulesOptions['type'], string[]>();
   const resolveCategories = (
     type: Intl.PluralRulesOptions['type'],
   ): string[] => {
-    let categories = categoriesByType.get(type);
+    let categories = categoriesCache.get(type);
     if (!categories) {
       categories = [
         ...new Intl.PluralRules(locale, {
           type,
         }).resolvedOptions().pluralCategories,
       ];
-      categoriesByType.set(type, categories);
+      categoriesCache.set(type, categories);
     }
     return categories;
   };
