@@ -88,6 +88,7 @@
     "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vitest-config": "workspace:*",
+    "happy-dom": "catalog:",
     "tsdown": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
