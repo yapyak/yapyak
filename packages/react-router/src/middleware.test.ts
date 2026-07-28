@@ -28,7 +28,6 @@ describe('middleware', () => {
     const expected = new Response('body', {
       status: 200,
     });
-    // biome-ignore lint/nursery/useAwaitThenable: yap yap yap
     const result = await middleware(
       {
         request,
@@ -41,7 +40,6 @@ describe('middleware', () => {
   it('writes Set-Cookie onto the response when `setLocale()` is called server-side', async () => {
     const request = new Request('http://example.com/');
     const response = new Response('body');
-    // biome-ignore lint/nursery/useAwaitThenable: yap yap yap
     await middleware(
       {
         request,
@@ -65,7 +63,6 @@ describe('middleware', () => {
       targets.map(async (target) => {
         const request = new Request('http://example.com/');
         const response = new Response('body');
-        // biome-ignore lint/nursery/useAwaitThenable: yap yap yap
         await middleware(
           {
             request,
