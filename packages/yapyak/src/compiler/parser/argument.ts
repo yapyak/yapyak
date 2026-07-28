@@ -190,6 +190,17 @@ function toIcuDiagnostic(
       diagnosticContext,
     );
   }
+  if (issue.reason === 'unknown-keyword') {
+    return buildDiagnostic(
+      'PLACEHOLDER_KEYWORD_UNKNOWN',
+      {
+        branch: issue.branch,
+        kind: issue.pluralKind === 'ordinal' ? 'selectordinal' : 'plural',
+        name: issue.name,
+      },
+      diagnosticContext,
+    );
+  }
   return buildDiagnostic(
     'PLACEHOLDER_UNSUPPORTED',
     {

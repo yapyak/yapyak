@@ -384,6 +384,9 @@ Closed set of fixture data. No invented strings.
 '{count, plural, {# item} other {# items}}'                          parse regression — branch body without a name
 '{count, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}'  selectordinal source for ordinal-category tests
 '{count, selectordinal, two {#nd} other {#th}}'                      YAP0045 regression — ordinal category invalid in target locale
+'{count, plural, oen {# item} other {# items}}'                      YAP0046 regression — unknown plural keyword
+'{count, selectordinal, oen {#st} other {#th}}'                      YAP0046 regression — unknown selectordinal keyword
+'{count, plural, zero {# items} one {# item} two {# items} few {# items} many {# items} other {# items}}' every CLDR keyword accepted
 ```
 
 If a test does not exercise one of these edge cases, use the regular pool strings.

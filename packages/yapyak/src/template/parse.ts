@@ -16,6 +16,16 @@ import { isCurrency } from '../formatting';
 
 const APOSTROPHE_ESCAPE_RX = /'[#'<>{}]/;
 const PLURAL_OFFSET_RX = /\boffset:\d+/;
+const EXACT_MATCH_RX = /^=\d+$/;
+
+const KNOWN_PLURAL_KEYWORDS = new Set([
+  'few',
+  'many',
+  'one',
+  'other',
+  'two',
+  'zero',
+]);
 
 export type ParseTemplateResult = {
   diagnostics: TemplateDiagnostic[];
@@ -392,6 +402,18 @@ function buildPluralNode(
       name: input.name,
       range: input.tokenRange,
       reason: 'missing-other',
+    });
+  }
+  for (const branch of Object.keys(branches)) {
+    if (KNOWN_PLURAL_KEYWORDS.has(branch) || EXACT_MATCH_RX.test(branch)) {
+      continue;
+    }
+    context.diagnostics.push({
+      branch,
+      name: input.name,
+      pluralKind: input.pluralKind,
+      range: input.tokenRange,
+      reason: 'unknown-keyword',
     });
   }
   return {

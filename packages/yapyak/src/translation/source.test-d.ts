@@ -135,6 +135,12 @@ describe('ValidateSource', () => {
     >().toEqualTypeOf<'You have {count, plural, one {# msg} other {# msgs}}'>();
   });
 
+  it('preserves a plural using every CLDR keyword', () => {
+    expectTypeOf<
+      ValidateSource<'{c, plural, zero {# msgs} one {# msg} two {# msgs} few {# msgs} many {# msgs} other {# msgs}}'>
+    >().toEqualTypeOf<'{c, plural, zero {# msgs} one {# msg} two {# msgs} few {# msgs} many {# msgs} other {# msgs}}'>();
+  });
+
   it('refuses a plural placeholder missing the `other` branch', () => {
     expectTypeOf<
       ValidateSource<'{count, plural, one {# msg} two {# msgs}}'>

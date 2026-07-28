@@ -195,6 +195,18 @@ describe('parseArguments', () => {
       expect(ypk202?.[0]?.message).toContain('count');
     });
 
+    it('emits YAP0046 for an unknown plural keyword', () => {
+      const parsed = parseInline(
+        "export const x = t('{count, plural, oen {# item} other {# items}}', { count: 1 });",
+      );
+      const yap0046 = parsed.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YAP0046',
+      );
+      expect(yap0046).toHaveLength(1);
+      expect(yap0046[0]?.severity).toBe('error');
+      expect(yap0046[0]?.message).toContain('oen');
+    });
+
     it('emits YAP0008 for select without other branch', () => {
       const parsed = parseInline(
         "export const x = t('{g, select, male {he}}', { g: 'male' });",

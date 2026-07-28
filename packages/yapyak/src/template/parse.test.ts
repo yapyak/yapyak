@@ -207,9 +207,58 @@ describe('parseTemplate', () => {
         diagnostics.filter((diagnostic) => diagnostic.reason === 'malformed'),
       ).toHaveLength(0);
     });
+
+    it('emits unknown-keyword for a plural branch outside the CLDR set', () => {
+      const { diagnostics } = parseTemplate(
+        '{count, plural, oen {# item} other {# items}}',
+      );
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          branch: 'oen',
+          name: 'count',
+          pluralKind: 'cardinal',
+          reason: 'unknown-keyword',
+        }),
+      );
+    });
+
+    it('emits unknown-keyword for a selectordinal branch outside the CLDR set', () => {
+      const { diagnostics } = parseTemplate(
+        '{count, selectordinal, oen {#st} other {#th}}',
+      );
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          branch: 'oen',
+          name: 'count',
+          pluralKind: 'ordinal',
+          reason: 'unknown-keyword',
+        }),
+      );
+    });
+
+    it('emits no unknown-keyword for every CLDR plural keyword', () => {
+      const { diagnostics } = parseTemplate(
+        '{count, plural, zero {# items} one {# item} two {# items} few {# items} many {# items} other {# items}}',
+      );
+      expect(diagnostics).toHaveLength(0);
+    });
+
+    it('emits no unknown-keyword for an exact match branch', () => {
+      const { diagnostics } = parseTemplate(
+        '{count, plural, =1 {# objekt} other {# objekt}}',
+      );
+      expect(diagnostics).toHaveLength(0);
+    });
   });
 
   describe('select', () => {
+    it('emits no unknown-keyword for domain select branches', () => {
+      const { diagnostics } = parseTemplate(
+        '{theme, select, dark {Dark mode} other {Light mode}}',
+      );
+      expect(diagnostics).toHaveLength(0);
+    });
+
     it('parses a select node with branches', () => {
       const { template } = parseTemplate(
         '{gender, select, male {he} female {she} other {they}}',

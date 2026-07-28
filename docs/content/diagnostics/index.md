@@ -43,6 +43,7 @@ Things the compiler caught inside an ICU placeholder (`{name}`, `{count, plural,
 - [`YAP0012`](/reference/diagnostics/YAP0012): Missing in source
 - [`YAP0038`](/reference/diagnostics/YAP0038): Missing branch in target
 - [`YAP0045`](/reference/diagnostics/YAP0045): Branch unknown
+- [`YAP0046`](/reference/diagnostics/YAP0046): Keyword unknown
 
 ### Catalog: locale file integrity
 

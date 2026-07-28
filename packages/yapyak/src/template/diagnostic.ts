@@ -15,6 +15,13 @@ export type TemplateDiagnostic =
       reason: 'missing-other';
     }
   | {
+      branch: string;
+      name: string;
+      pluralKind: 'cardinal' | 'ordinal';
+      range: TemplateRange;
+      reason: 'unknown-keyword';
+    }
+  | {
       feature: string;
       name: string;
       range: TemplateRange;

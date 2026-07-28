@@ -340,6 +340,21 @@ export const YAP = {
     }): string =>
       `Branch "${branch}" in \`{${name}}\` is not ${kind === 'ordinal' ? 'an' : 'a'} ${kind} category of locale "${locale}".`,
   },
+  PLACEHOLDER_KEYWORD_UNKNOWN: {
+    code: 'YAP0046',
+    hint: (): string =>
+      'Use one of `zero`, `one`, `two`, `few`, `many`, `other`, or an exact match like `=1`.',
+    message: ({
+      branch,
+      kind,
+      name,
+    }: {
+      branch: string;
+      kind: 'plural' | 'selectordinal';
+      name: string;
+    }): string =>
+      `Branch "${branch}" in \`{${name}}\` is not a ${kind} keyword.`,
+  },
 } as const;
 
 export type YapKey = keyof typeof YAP;
