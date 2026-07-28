@@ -121,7 +121,7 @@ t('{count, plural, oen {#} other {#}}', { count: 3 }); // error: unknown plural 
 
 yapyak runs the second on save, validating every locale and failing the build on a broken one. The third runs at runtime: in development, it warns about problems that only surface in the browser.
 
-Each has a number, like `YAP0042`, and a page that explains it. 44 in all, from the editor to the runtime. The same check runs in CI, through the `yapyak` CLI.
+Each has a number, like `YAP0042`, and a page that explains it. 46 in all, from the editor to the runtime. The same check runs in CI, through the `yapyak` CLI.
 
 ## Formatting outside messages
 

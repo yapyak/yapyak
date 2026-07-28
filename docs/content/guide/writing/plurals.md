@@ -44,7 +44,7 @@ Polish needs four branches:
 }
 ```
 
-The `other` branch is required by ICU and by yapyak's compiler. Omitting it raises [`YAP0008`](/reference/diagnostics/YAP0008).
+The `other` branch is required by ICU and by yapyak's compiler. Omitting it raises [`YAP0008`](/reference/diagnostics/YAP0008). A branch name that isn't one of the six categories or an [exact match](#exact-matches) raises [`YAP0046`](/reference/diagnostics/YAP0046). In a translation, a branch outside the target locale's own categories raises [`YAP0045`](/reference/diagnostics/YAP0045).
 
 ## The `#` substitution
 

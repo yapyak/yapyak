@@ -78,10 +78,12 @@ t('You have {count, plural, one {# message} other {# messages}}', { count })
 
 `check` flags it because the structure no longer matches. Usually a hand-edit slip; sometimes a translator mistake. Either way, it's caught before the build ships.
 
+A plural branch that the target locale's rules never select raises [`YAP0045`](/reference/diagnostics/YAP0045): a typo like `oen`, or a `few` branch in a language without one.
+
 ## What `check` doesn't catch
 
 - **Translation quality.** A correct-but-bad translation passes.
-- **Pluralization correctness in target locales.** If your Swedish translation declares only `one` and `other`, that passes. yapyak trusts the translator's judgment about which plural categories the language uses.
+- **Plural completeness in target locales.** If your Polish translation declares only `one` and `other`, that passes. Which categories a translation declares is the translator's call; `check` rejects only branches the locale never selects.
 - **Stale translations.** If your source string changed and the translation is now outdated, `check` doesn't notice unless the structure (placeholders, tags) changed too. See [Renames](/guide/translating/renames).
 
 ## Exit codes
