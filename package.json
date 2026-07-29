@@ -17,6 +17,7 @@
     "e2e:prod": "pnpm -r --filter \"./examples/*\" build && pnpm --filter @yapyak/e2e test:prod",
     "knip": "knip -W './packages/*' -W '!./packages/*-config' -W './e2e'",
     "test": "vitest --run",
+    "test:coverage": "vitest --run --coverage",
     "test:watch": "vitest",
     "typecheck": "pnpm -r --parallel typecheck"
   },
@@ -24,6 +25,7 @@
     "@biomejs/biome": "catalog:",
     "@changesets/changelog-github": "catalog:",
     "@changesets/cli": "catalog:",
+    "@vitest/coverage-v8": "catalog:",
     "knip": "catalog:",
     "vitest": "catalog:",
     "wrangler": "catalog:"

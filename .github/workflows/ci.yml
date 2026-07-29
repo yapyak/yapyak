@@ -22,6 +22,9 @@ jobs:
         os: [ubuntu-latest]
         node: ['22.22', '24']
         include:
+          - os: ubuntu-latest
+            node: '24'
+            coverage: true
           - os: windows-latest
             node: '24'
           - os: macos-latest
@@ -37,7 +40,28 @@ jobs:
       - run: pnpm check
       - run: pnpm build
       - run: pnpm -r --parallel typecheck
-      - run: pnpm test
+      - if: ${{ !matrix.coverage }}
+        run: pnpm test
+      - if: matrix.coverage
+        run: pnpm test:coverage
+      - if: matrix.coverage
+        run: |
+          jq -r '
+            .total |
+            "### Coverage",
+            "",
+            "| Metric | Covered | % |",
+            "| --- | --- | --- |",
+            "| Statements | \(.statements.covered)/\(.statements.total) | \(.statements.pct) |",
+            "| Branches | \(.branches.covered)/\(.branches.total) | \(.branches.pct) |",
+            "| Functions | \(.functions.covered)/\(.functions.total) | \(.functions.pct) |",
+            "| Lines | \(.lines.covered)/\(.lines.total) | \(.lines.pct) |"
+          ' coverage/coverage-summary.json >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: matrix.coverage
+        with:
+          name: coverage-report
+          path: coverage
       - if: runner.os == 'Linux'
         run: pnpm --filter @yapyak/docs build
       - if: runner.os == 'Linux'
