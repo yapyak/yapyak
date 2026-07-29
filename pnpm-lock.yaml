@@ -205,7 +205,7 @@ importers:
         version: 6.0.3(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
       '@yapyak/doc-compiler':
         specifier: workspace:*
-        version: link:../packages/doc-compiler
+        version: link:doc-compiler
       '@yapyak/react':
         specifier: workspace:*
         version: link:../packages/react
@@ -246,6 +246,37 @@ importers:
       vite:
         specifier: 'catalog:'
         version: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.1.10(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
+
+  docs/doc-compiler:
+    dependencies:
+      '@markdoc/markdoc':
+        specifier: 'catalog:'
+        version: 0.5.8(@types/react@19.2.17)(react@19.2.7)
+      '@typescript/typescript6':
+        specifier: 'catalog:'
+        version: 6.0.2
+      vite:
+        specifier: '>=5'
+        version: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
+    devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 26.1.1
+      '@yapyak/tsdown-config':
+        specifier: workspace:*
+        version: link:../../packages/tsdown-config
+      '@yapyak/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      tsdown:
+        specifier: 'catalog:'
+        version: 0.22.12(@arethetypeswrong/core@0.18.5)(@volar/typescript@2.4.28)(oxc-resolver@11.21.3)(publint@0.3.21)(typescript@6.0.3)(vue-tsc@3.3.7(typescript@6.0.3))
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.3
       vitest:
         specifier: 'catalog:'
         version: 4.1.10(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
@@ -303,13 +334,13 @@ importers:
     dependencies:
       '@astrojs/node':
         specifier: 'catalog:'
-        version: 11.0.2(astro@7.1.3(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0))
+        version: 11.0.2(astro@7.1.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0))
       '@yapyak/astro':
         specifier: workspace:*
         version: link:../../packages/astro
       astro:
         specifier: 'catalog:'
-        version: 7.1.3(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0)
+        version: 7.1.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0)
       yapyak:
         specifier: workspace:*
         version: link:../../packages/yapyak
@@ -941,37 +972,6 @@ importers:
       astro:
         specifier: 'catalog:'
         version: 7.1.3(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0)
-      tsdown:
-        specifier: 'catalog:'
-        version: 0.22.12(@arethetypeswrong/core@0.18.5)(@volar/typescript@2.4.28)(oxc-resolver@11.21.3)(publint@0.3.21)(typescript@6.0.3)(vue-tsc@3.3.7(typescript@6.0.3))
-      typescript:
-        specifier: 'catalog:'
-        version: 6.0.3
-      vitest:
-        specifier: 'catalog:'
-        version: 4.1.10(@types/node@26.1.1)(@vitest/coverage-v8@4.1.10)(happy-dom@20.11.0)(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
-
-  packages/doc-compiler:
-    dependencies:
-      '@markdoc/markdoc':
-        specifier: 'catalog:'
-        version: 0.5.8(@types/react@19.2.17)(react@19.2.7)
-      '@typescript/typescript6':
-        specifier: 'catalog:'
-        version: 6.0.2
-      vite:
-        specifier: '>=5'
-        version: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
-    devDependencies:
-      '@types/node':
-        specifier: 'catalog:'
-        version: 26.1.1
-      '@yapyak/tsdown-config':
-        specifier: workspace:*
-        version: link:../tsdown-config
-      '@yapyak/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       tsdown:
         specifier: 'catalog:'
         version: 0.22.12(@arethetypeswrong/core@0.18.5)(@volar/typescript@2.4.28)(oxc-resolver@11.21.3)(publint@0.3.21)(typescript@6.0.3)(vue-tsc@3.3.7(typescript@6.0.3))
@@ -6350,6 +6350,14 @@ snapshots:
       - '@emnapi/runtime'
     optional: true
 
+  '@astrojs/compiler-binding-wasm32-wasi@0.3.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
+    dependencies:
+      '@napi-rs/wasm-runtime': 1.1.6(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+    optional: true
+
   '@astrojs/compiler-binding-wasm32-wasi@0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)':
     dependencies:
       '@napi-rs/wasm-runtime': 1.1.6(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)
@@ -6379,6 +6387,21 @@ snapshots:
       - '@emnapi/core'
       - '@emnapi/runtime'
 
+  '@astrojs/compiler-binding@0.3.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
+    optionalDependencies:
+      '@astrojs/compiler-binding-darwin-arm64': 0.3.1
+      '@astrojs/compiler-binding-darwin-x64': 0.3.1
+      '@astrojs/compiler-binding-linux-arm64-gnu': 0.3.1
+      '@astrojs/compiler-binding-linux-arm64-musl': 0.3.1
+      '@astrojs/compiler-binding-linux-x64-gnu': 0.3.1
+      '@astrojs/compiler-binding-linux-x64-musl': 0.3.1
+      '@astrojs/compiler-binding-wasm32-wasi': 0.3.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
+      '@astrojs/compiler-binding-win32-arm64-msvc': 0.3.1
+      '@astrojs/compiler-binding-win32-x64-msvc': 0.3.1
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+
   '@astrojs/compiler-binding@0.3.1(@emnapi/core@1.11.2)(@emnapi/runtime@1.11.2)':
     optionalDependencies:
       '@astrojs/compiler-binding-darwin-arm64': 0.3.1
@@ -6397,6 +6420,13 @@ snapshots:
   '@astrojs/compiler-rs@0.3.1(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)':
     dependencies:
       '@astrojs/compiler-binding': 0.3.1(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+
+  '@astrojs/compiler-rs@0.3.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)':
+    dependencies:
+      '@astrojs/compiler-binding': 0.3.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
     transitivePeerDependencies:
       - '@emnapi/core'
       - '@emnapi/runtime'
@@ -6483,6 +6513,15 @@ snapshots:
     dependencies:
       '@astrojs/internal-helpers': 0.10.1
       astro: 7.1.3(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0)
+      send: 1.2.1
+      server-destroy: 1.0.1
+    transitivePeerDependencies:
+      - supports-color
+
+  '@astrojs/node@11.0.2(astro@7.1.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0))':
+    dependencies:
+      '@astrojs/internal-helpers': 0.10.1
+      astro: 7.1.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0)
       send: 1.2.1
       server-destroy: 1.0.1
     transitivePeerDependencies:
@@ -7672,10 +7711,10 @@ snapshots:
       '@rollup/pluginutils': 5.3.0(rollup@4.60.3)
       commondir: 1.0.1
       estree-walker: 2.0.2
-      fdir: 6.5.0(picomatch@4.0.4)
+      fdir: 6.5.0(picomatch@4.0.5)
       is-reference: 1.2.1
       magic-string: 0.30.21
-      picomatch: 4.0.4
+      picomatch: 4.0.5
     optionalDependencies:
       rollup: 4.60.3
 
@@ -8584,6 +8623,98 @@ snapshots:
   astro@7.1.3(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0):
     dependencies:
       '@astrojs/compiler-rs': 0.3.1(@emnapi/core@1.11.0)(@emnapi/runtime@1.11.0)
+      '@astrojs/internal-helpers': 0.10.1
+      '@astrojs/markdown-satteri': 0.3.4
+      '@astrojs/telemetry': 3.3.3
+      '@capsizecss/unpack': 4.0.0
+      '@clack/prompts': 1.4.0
+      '@oslojs/encoding': 1.1.0
+      '@rollup/pluginutils': 5.3.0(rollup@4.60.3)
+      am-i-vibing: 0.4.0
+      aria-query: 5.3.2
+      axobject-query: 4.1.0
+      ci-info: 4.4.0
+      clsx: 2.1.1
+      common-ancestor-path: 2.0.0
+      cookie: 2.0.1
+      devalue: 5.8.1
+      diff: 8.0.4
+      dset: 3.1.4
+      es-module-lexer: 2.1.0
+      esbuild: 0.28.1
+      flattie: 1.1.1
+      fontace: 0.4.1
+      get-tsconfig: 5.0.0-beta.4
+      github-slugger: 2.0.0
+      html-escaper: 3.0.3
+      http-cache-semantics: 4.2.0
+      js-yaml: 4.1.1
+      jsonc-parser: 3.3.1
+      magic-string: 0.30.21
+      magicast: 0.5.3
+      mrmime: 2.0.1
+      neotraverse: 1.0.1
+      obug: 2.1.3
+      p-limit: 7.3.0
+      p-queue: 9.2.0
+      package-manager-detector: 1.6.0
+      piccolore: 0.1.3
+      picomatch: 4.0.4
+      semver: 7.8.4
+      shiki: 4.0.2
+      smol-toml: 1.6.1
+      svgo: 4.0.1
+      tinyclip: 0.1.12
+      tinyexec: 1.2.4
+      tinyglobby: 0.2.17
+      ultrahtml: 1.6.0
+      unifont: 0.7.4
+      unstorage: 1.17.5(db0@0.3.4)(ioredis@5.10.1)
+      vite: 8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0)
+      vitefu: 1.1.3(vite@8.1.5(@types/node@26.1.1)(esbuild@0.28.1)(jiti@2.7.0)(terser@5.47.1)(yaml@2.9.0))
+      xxhash-wasm: 1.1.0
+      yargs-parser: 22.0.0
+      zod: 4.4.3
+    optionalDependencies:
+      sharp: 0.34.5
+    transitivePeerDependencies:
+      - '@azure/app-configuration'
+      - '@azure/cosmos'
+      - '@azure/data-tables'
+      - '@azure/identity'
+      - '@azure/keyvault-secrets'
+      - '@azure/storage-blob'
+      - '@capacitor/preferences'
+      - '@deno/kv'
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+      - '@netlify/blobs'
+      - '@planetscale/database'
+      - '@types/node'
+      - '@upstash/redis'
+      - '@vercel/blob'
+      - '@vercel/functions'
+      - '@vercel/kv'
+      - '@vitejs/devtools'
+      - aws4fetch
+      - db0
+      - idb-keyval
+      - ioredis
+      - jiti
+      - less
+      - rollup
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - tsx
+      - uploadthing
+      - yaml
+
+  astro@7.1.3(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)(@types/node@26.1.1)(db0@0.3.4)(ioredis@5.10.1)(jiti@2.7.0)(rollup@4.60.3)(terser@5.47.1)(yaml@2.9.0):
+    dependencies:
+      '@astrojs/compiler-rs': 0.3.1(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.1)
       '@astrojs/internal-helpers': 0.10.1
       '@astrojs/markdown-satteri': 0.3.4
       '@astrojs/telemetry': 3.3.3

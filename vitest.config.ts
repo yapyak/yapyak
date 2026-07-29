@@ -7,7 +7,7 @@ export default defineConfig({
         '**/*.{d,test-d}.ts',
         '**/fixture/**',
         '**/{index,internal,type}.ts',
-        'packages/{*-config,doc-compiler}/**',
+        'packages/*-config/**',
       ],
       include: [
         'packages/*/src/**/*.{ts,tsx}',
@@ -23,6 +23,7 @@ export default defineConfig({
     projects: [
       'packages/*',
       'docs',
+      'docs/doc-compiler',
     ],
   },
 });

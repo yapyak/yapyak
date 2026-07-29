@@ -16,7 +16,7 @@ The npm name communicates stability commitment.
 | Tier | Naming | What it signals | Examples |
 |---|---|---|---|
 | **Semi-OSS** | A non-product `@scope/*` (not `@yapyak/*`) | Source-shipped. No stability promises. Breaking changes without deprecation cycles. | — |
-| **Real OSS** | Unscoped (`yapyak`) or dedicated scope (`@yapyak/*`) | Semver discipline. Deprecation cycles. Stable public API. | `yapyak`, `@yapyak/doc-compiler` |
+| **Real OSS** | Unscoped (`yapyak`) or dedicated scope (`@yapyak/*`) | Semver discipline. Deprecation cycles. Stable public API. | `yapyak`, `@yapyak/react` |
 
 - Never mix tiers under one scope.
 - Sub-packages of a real-OSS product share the product's scope (`@yapyak/doc-compiler`).

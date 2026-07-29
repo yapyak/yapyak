@@ -1,5 +1,6 @@
 packages:
   - docs
+  - docs/doc-compiler
   - e2e
   - e2e/sandbox
   - examples/*
