@@ -43,6 +43,8 @@ Scope each root script by workspace class. Apps: `docs`, `examples/*`, `e2e/sand
 | `build` | every workspace another workspace resolves through `dist` |
 | `test:coverage` | published packages only |
 
+Name a shared config package `<tool>-config` — the `*-config` suffix is what scopes it out of `knip` and coverage.
+
 ### `exports` conditions
 
 - Include only conditions needed: `types` and `default` always.
