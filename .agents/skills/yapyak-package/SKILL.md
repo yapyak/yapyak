@@ -32,6 +32,17 @@ The npm name communicates stability commitment.
 | `docs/compiler` | `@yapyak/docs-compiler` |
 | `e2e/sandbox` | `@yapyak/e2e-sandbox` |
 
+### Root tool scope
+
+Scope each root script by workspace class. Apps: `docs`, `examples/*`, `e2e/sandbox`.
+
+| Tool | Scope |
+|---|---|
+| `check` / `typecheck` / `test` | every workspace |
+| `knip` | every workspace except apps and `packages/*-config` |
+| `build` | every workspace another workspace resolves through `dist` |
+| `test:coverage` | published packages only |
+
 ### `exports` conditions
 
 - Include only conditions needed: `types` and `default` always.

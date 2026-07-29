@@ -9,17 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ReferenceRouteImport } from './routes/reference'
-import { Route as GuideRouteImport } from './routes/guide'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ReferenceIndexRouteImport } from './routes/reference.index'
+import { Route as GuideRouteImport } from './routes/guide'
+import { Route as ReferenceRouteImport } from './routes/reference'
 import { Route as GuideIndexRouteImport } from './routes/guide.index'
-import { Route as ReferenceSplatRouteImport } from './routes/reference.$'
 import { Route as GuideSplatRouteImport } from './routes/guide.$'
+import { Route as ReferenceIndexRouteImport } from './routes/reference.index'
+import { Route as ReferenceSplatRouteImport } from './routes/reference.$'
 
-const ReferenceRoute = ReferenceRouteImport.update({
-  id: '/reference',
-  path: '/reference',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuideRoute = GuideRouteImport.update({
@@ -27,30 +27,30 @@ const GuideRoute = GuideRouteImport.update({
   path: '/guide',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const ReferenceRoute = ReferenceRouteImport.update({
+  id: '/reference',
+  path: '/reference',
   getParentRoute: () => rootRouteImport,
-} as any)
-const ReferenceIndexRoute = ReferenceIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => ReferenceRoute,
 } as any)
 const GuideIndexRoute = GuideIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => GuideRoute,
 } as any)
-const ReferenceSplatRoute = ReferenceSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => ReferenceRoute,
-} as any)
 const GuideSplatRoute = GuideSplatRouteImport.update({
   id: '/$',
   path: '/$',
   getParentRoute: () => GuideRoute,
+} as any)
+const ReferenceIndexRoute = ReferenceIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ReferenceRoute,
+} as any)
+const ReferenceSplatRoute = ReferenceSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => ReferenceRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -110,11 +110,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/reference': {
-      id: '/reference'
-      path: '/reference'
-      fullPath: '/reference'
-      preLoaderRoute: typeof ReferenceRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guide': {
@@ -124,19 +124,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuideRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/reference': {
+      id: '/reference'
+      path: '/reference'
+      fullPath: '/reference'
+      preLoaderRoute: typeof ReferenceRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/reference/': {
-      id: '/reference/'
-      path: '/'
-      fullPath: '/reference/'
-      preLoaderRoute: typeof ReferenceIndexRouteImport
-      parentRoute: typeof ReferenceRoute
     }
     '/guide/': {
       id: '/guide/'
@@ -145,19 +138,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GuideIndexRouteImport
       parentRoute: typeof GuideRoute
     }
-    '/reference/$': {
-      id: '/reference/$'
-      path: '/$'
-      fullPath: '/reference/$'
-      preLoaderRoute: typeof ReferenceSplatRouteImport
-      parentRoute: typeof ReferenceRoute
-    }
     '/guide/$': {
       id: '/guide/$'
       path: '/$'
       fullPath: '/guide/$'
       preLoaderRoute: typeof GuideSplatRouteImport
       parentRoute: typeof GuideRoute
+    }
+    '/reference/': {
+      id: '/reference/'
+      path: '/'
+      fullPath: '/reference/'
+      preLoaderRoute: typeof ReferenceIndexRouteImport
+      parentRoute: typeof ReferenceRoute
+    }
+    '/reference/$': {
+      id: '/reference/$'
+      path: '/$'
+      fullPath: '/reference/$'
+      preLoaderRoute: typeof ReferenceSplatRouteImport
+      parentRoute: typeof ReferenceRoute
     }
   }
 }
