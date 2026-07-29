@@ -250,13 +250,18 @@ export async function autoTranslate(
         : await runOneByOne(stubs, requests, input.translator, errors, signal);
   } catch (error) {
     flushTouchedLocales();
-    for (const stub of stubs) {
-      errors.push({
-        error,
-        fileId: stub.fileId,
-        locale: stub.locale,
-        source: stub.source,
-      });
+    if (!signal?.aborted) {
+      for (const stub of stubs) {
+        if (persistedStubs.has(stub)) {
+          continue;
+        }
+        errors.push({
+          error,
+          fileId: stub.fileId,
+          locale: stub.locale,
+          source: stub.source,
+        });
+      }
     }
     return {
       errors,

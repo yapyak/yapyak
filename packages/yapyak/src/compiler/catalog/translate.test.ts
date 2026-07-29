@@ -703,4 +703,210 @@ describe('autoTranslate', () => {
     expect(result.translated).toBe(0);
     expect(existsSync(localePath)).toBe(false);
   });
+
+  it('reports no errors when the batch throws after the signal aborts', async () => {
+    const controller = new AbortController();
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkComplete?: (
+              chunk: TranslateRequest[],
+              result: {
+                sv: string;
+              }[],
+            ) => void;
+          },
+        ): Promise<string[]> => {
+          options?.onChunkComplete?.(requests.slice(0, 1), [
+            {
+              sv: 'Hej',
+            },
+          ]);
+          controller.abort();
+          return Promise.reject(new Error('Translate batch aborted.'));
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+      {
+        id: 'm2',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 2,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 2,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'World',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+      {
+        signal: controller.signal,
+      },
+    );
+
+    expect(result.translated).toBe(1);
+    expect(result.errors).toHaveLength(0);
+    expect(JSON.parse(readFileSync(localePath, 'utf-8'))).toEqual({
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
+    });
+  });
+
+  it('reports errors for every unpersisted stub when the batch throws', async () => {
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkComplete?: (
+              chunk: TranslateRequest[],
+              result: {
+                sv: string;
+              }[],
+            ) => void;
+          },
+        ): Promise<string[]> => {
+          options?.onChunkComplete?.(requests.slice(0, 1), [
+            {
+              sv: 'Hej',
+            },
+          ]);
+          return Promise.reject(new Error('batch failed'));
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+      {
+        id: 'm2',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 2,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 2,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'World',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(result.translated).toBe(1);
+    expect(result.errors).toHaveLength(1);
+    expect(result.errors[0]?.source).toBe('World');
+    expect(JSON.parse(readFileSync(localePath, 'utf-8'))).toEqual({
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
+    });
+  });
 });
