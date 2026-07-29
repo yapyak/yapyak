@@ -26,6 +26,24 @@ describe('fromMessageKey', () => {
       source: 'Save',
     });
   });
+
+  it('falls back to the raw key when the key is not JSON', () => {
+    expect(fromMessageKey('Save')).toEqual({
+      source: 'Save',
+    });
+  });
+
+  it('falls back to the raw key when the key is not an array', () => {
+    expect(fromMessageKey('"Save"')).toEqual({
+      source: '"Save"',
+    });
+  });
+
+  it('falls back to the raw key when the first element is not a string', () => {
+    expect(fromMessageKey('[1,null]')).toEqual({
+      source: '[1,null]',
+    });
+  });
 });
 
 describe('properties', () => {

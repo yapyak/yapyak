@@ -42,6 +42,15 @@ describe('validateLocaleCode', () => {
     });
   });
 
+  it('returns valid for a three-letter language code', () => {
+    expect(validateLocaleCode('fil')).toEqual({
+      valid: true,
+    });
+    expect(validateLocaleCode('haw')).toEqual({
+      valid: true,
+    });
+  });
+
   it('returns an unknown-language issue with a suggestion for a typo', () => {
     const result = validateLocaleCode('ic');
 

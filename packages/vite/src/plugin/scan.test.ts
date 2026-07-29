@@ -96,5 +96,20 @@ describe('createScanPlugin', () => {
 
       expect(state.messagesByFile.size).toBeGreaterThan(0);
     });
+
+    it('skips a source file without `t()` calls', () => {
+      writeFileSync(join(projectRoot, 'src', 'a.tsx'), 'export const x = 1;\n');
+      const state = createState();
+      state.command = 'serve';
+      state.normalized = normalizeYapyakConfig({});
+      state.resolver = buildResolver();
+      state.projectRoot = projectRoot;
+      state.filter = () => true;
+      const plugin = createScanPlugin(state);
+
+      (plugin.buildStart as () => void).call({});
+
+      expect(state.messagesByFile.size).toBe(0);
+    });
   });
 });

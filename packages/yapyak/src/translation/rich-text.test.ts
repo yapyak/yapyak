@@ -163,6 +163,100 @@ describe('parseRichText', () => {
     ]);
   });
 
+  it('parses a same-name void tag nested inside a pair tag', () => {
+    expect(parseRichText('<a><a/>x</a>')).toEqual([
+      {
+        children: [
+          {
+            name: 'a',
+            type: 'void',
+          },
+          {
+            type: 'text',
+            value: 'x',
+          },
+        ],
+        name: 'a',
+        type: 'pair',
+      },
+    ]);
+  });
+
+  it('parses a nested tag whose name extends the outer tag name', () => {
+    expect(parseRichText('<a><ab>x</ab></a>')).toEqual([
+      {
+        children: [
+          {
+            children: [
+              {
+                type: 'text',
+                value: 'x',
+              },
+            ],
+            name: 'ab',
+            type: 'pair',
+          },
+        ],
+        name: 'a',
+        type: 'pair',
+      },
+    ]);
+  });
+
+  it('preserves a same-name inner tag with an attribute space as literal text inside the pair', () => {
+    expect(parseRichText('<a><a >x</a></a>')).toEqual([
+      {
+        children: [
+          {
+            type: 'text',
+            value: '<a >x</a>',
+          },
+        ],
+        name: 'a',
+        type: 'pair',
+      },
+    ]);
+  });
+
+  it('preserves a same-name inner tag with a tab as literal text inside the pair', () => {
+    expect(parseRichText('<a><a\t>x</a></a>')).toEqual([
+      {
+        children: [
+          {
+            type: 'text',
+            value: '<a\t>x</a>',
+          },
+        ],
+        name: 'a',
+        type: 'pair',
+      },
+    ]);
+  });
+
+  it('preserves a same-name inner tag with a newline as literal text inside the pair', () => {
+    expect(parseRichText('<a><a\n>x</a></a>')).toEqual([
+      {
+        children: [
+          {
+            type: 'text',
+            value: '<a\n>x</a>',
+          },
+        ],
+        name: 'a',
+        type: 'pair',
+      },
+    ]);
+  });
+
+  it('preserves an unclosed attributed same-name tag as literal text', () => {
+    expect(parseRichText('<a><a x')).toEqual([
+      {
+        type: 'text',
+        value: '<a><a x',
+      },
+    ]);
+  });
+
   it('refuses a tag name containing characters outside `[A-Za-z][A-Za-z0-9]*`', () => {
     expect(parseRichText('<my-link>x</my-link>')).toEqual([
       {
@@ -291,6 +385,19 @@ describe('properties', () => {
       node = node.children[0];
     }
     expect(node?.type).toBe('text');
+  });
+
+  it('returns an empty children array at the deepest pair when the over-limit source is empty', () => {
+    const source = `${'<b>'.repeat(1001)}${'</b>'.repeat(1001)}`;
+    const result = parseRichText(source);
+    let node: RichTextNode | undefined = result[0];
+    let depth = 0;
+    while (node?.type === 'pair') {
+      node = node.children[0];
+      depth += 1;
+    }
+    expect(node).toBeUndefined();
+    expect(depth).toBe(1001);
   });
 
   it('parses nesting up to a thousand levels without falling back', () => {

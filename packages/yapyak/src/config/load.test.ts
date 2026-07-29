@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { loadYapyakConfig } from './load';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -36,6 +36,15 @@ describe('loadYapyakConfig', () => {
     expect(result.config.localesDir).toBe('lang');
   });
 
+  it('loads a config from named exports when no `default` export exists', async () => {
+    writeFileSync(
+      join(cwd, 'yapyak.config.mjs'),
+      `export const defaultLocale = 'sv';\n`,
+    );
+    const result = await loadYapyakConfig(cwd);
+    expect(result.config.defaultLocale).toBe('sv');
+  });
+
   it('throws when the config file fails to parse', async () => {
     writeFileSync(join(cwd, 'yapyak.config.ts'), 'this is not valid ts');
     await expect(loadYapyakConfig(cwd)).rejects.toThrow(
@@ -49,6 +58,27 @@ describe('loadYapyakConfig', () => {
       'export default "not an object";\n',
     );
     await expect(loadYapyakConfig(cwd)).rejects.toThrow(/expected an object/);
+  });
+
+  it('throws when the config module throws a non-Error value', async () => {
+    writeFileSync(join(cwd, 'yapyak.config.ts'), `throw 'kaboom';\n`);
+    await expect(loadYapyakConfig(cwd)).rejects.toThrow(
+      /Failed to load yapyak config from .*: kaboom/,
+    );
+  });
+
+  it('throws when the loaded module is `null`', async () => {
+    writeFileSync(join(cwd, 'yapyak.config.js'), 'module.exports = null;\n');
+    await expect(loadYapyakConfig(cwd)).rejects.toThrow(
+      /expected an object, got null/,
+    );
+  });
+
+  it('throws when the env file cannot be read', async () => {
+    mkdirSync(join(cwd, '.env'));
+    await expect(loadYapyakConfig(cwd)).rejects.toThrow(
+      /Failed to load env file/,
+    );
   });
 
   it('loads environment variables from `.env` when present', async () => {

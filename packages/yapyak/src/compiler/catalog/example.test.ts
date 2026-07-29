@@ -172,6 +172,86 @@ describe('extractExamples', () => {
     ]);
   });
 
+  it('blocks orphan entries that have no translation for the target locale', () => {
+    const orphans: OrphanCache = {
+      'src/a.tsx': {
+        [toMessageKey('Save')]: {
+          deletedAt: '2026-01-01T00:00:00.000Z',
+          translations: {
+            de: 'Speichern',
+          },
+        },
+      },
+    };
+
+    const examples = extractExamples({
+      currentFileId: 'src/b.tsx',
+      excludeKey: toMessageKey('Hello'),
+      locale: 'sv',
+      localeData: {},
+      max: 5,
+      orphans,
+      source: 'Hello',
+    });
+
+    expect(examples).toEqual([]);
+  });
+
+  it('picks no orphan entry matching the excluded key', () => {
+    const orphans: OrphanCache = {
+      'src/a.tsx': {
+        [toMessageKey('Save')]: {
+          deletedAt: '2026-01-01T00:00:00.000Z',
+          translations: {
+            sv: 'Spara',
+          },
+        },
+      },
+    };
+
+    const examples = extractExamples({
+      currentFileId: 'src/a.tsx',
+      excludeKey: toMessageKey('Save'),
+      locale: 'sv',
+      localeData: {},
+      max: 5,
+      orphans,
+      source: 'Save',
+    });
+
+    expect(examples).toEqual([]);
+  });
+
+  it('picks same-file orphan entries under a different key', () => {
+    const orphans: OrphanCache = {
+      'src/a.tsx': {
+        [toMessageKey('Cancel')]: {
+          deletedAt: '2026-01-01T00:00:00.000Z',
+          translations: {
+            sv: 'Avbryt',
+          },
+        },
+      },
+    };
+
+    const examples = extractExamples({
+      currentFileId: 'src/a.tsx',
+      excludeKey: toMessageKey('Save'),
+      locale: 'sv',
+      localeData: {},
+      max: 5,
+      orphans,
+      source: 'Save',
+    });
+
+    expect(examples).toEqual([
+      {
+        source: 'Cancel',
+        translation: 'Avbryt',
+      },
+    ]);
+  });
+
   it('folds duplicate sources across files into a single entry', () => {
     const localeData: LocaleData = {
       sv: {
@@ -220,6 +300,34 @@ describe('extractExamples', () => {
     expect(examples[0]).toMatchObject({
       source: 'Save',
     });
+  });
+
+  it('prefers an exact source match over other candidates', () => {
+    const localeData: LocaleData = {
+      sv: {
+        'src/a.tsx': {
+          Hello: 'Hej',
+          Save: 'Spara',
+        },
+      },
+    };
+
+    const examples = extractExamples({
+      currentFileId: 'src/b.tsx',
+      excludeKey: toMessageKey('Hello'),
+      locale: 'sv',
+      localeData,
+      max: 1,
+      orphans: emptyOrphans,
+      source: 'Hello',
+    });
+
+    expect(examples).toEqual([
+      {
+        source: 'Hello',
+        translation: 'Hej',
+      },
+    ]);
   });
 
   it('blocks entries that have no translation for the target locale', () => {

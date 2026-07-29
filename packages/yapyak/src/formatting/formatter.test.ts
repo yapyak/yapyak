@@ -14,6 +14,18 @@ describe('resolveFormatter', () => {
     expect(first).toBe(second);
   });
 
+  it('returns the same formatter when the option keys are given in a different order', () => {
+    const options = {
+      maximumFractionDigits: 2,
+      minimumFractionDigits: 1,
+    };
+    const reversed = Object.fromEntries(Object.entries(options).reverse());
+
+    const first = resolveFormatter(Intl.NumberFormat, 'en', options);
+    const second = resolveFormatter(Intl.NumberFormat, 'en', reversed);
+    expect(first).toBe(second);
+  });
+
   it('returns a fresh formatter for a different locale', () => {
     const english = resolveFormatter(Intl.NumberFormat, 'en', undefined);
     const swedish = resolveFormatter(Intl.NumberFormat, 'sv', undefined);
@@ -79,6 +91,20 @@ describe('resolveFormatter', () => {
       expect(warnSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('warns once when the same code is rebuilt under a different option shape', () => {
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        currency: 'DDD',
+        style: 'currency',
+        useGrouping: true,
+      });
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        currency: 'DDD',
+        style: 'currency',
+        useGrouping: false,
+      });
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('warns again when the same code is used in a different locale', () => {
       resolveFormatter(Intl.NumberFormat, 'en', {
         currency: 'BBB',
@@ -131,6 +157,20 @@ describe('resolveFormatter', () => {
       resolveFormatter(Intl.NumberFormat, 'en', {
         style: 'unit',
         unit: 'bogus-once',
+      });
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('warns once when the same unit is rebuilt under a different option shape', () => {
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        style: 'unit',
+        unit: 'bogus-shape',
+        useGrouping: true,
+      });
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        style: 'unit',
+        unit: 'bogus-shape',
+        useGrouping: false,
       });
       expect(warnSpy).toHaveBeenCalledTimes(1);
     });
@@ -191,6 +231,17 @@ describe('resolveFormatter', () => {
       expect(warnSpy).toHaveBeenCalledTimes(1);
     });
 
+    it('warns once when the same zone is rebuilt under a different option shape', () => {
+      resolveFormatter(Intl.DateTimeFormat, 'en', {
+        timeZone: 'Not/Shape',
+      });
+      resolveFormatter(Intl.DateTimeFormat, 'en', {
+        hour12: false,
+        timeZone: 'Not/Shape',
+      });
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    });
+
     it('warns again when the same zone is used in a different locale', () => {
       resolveFormatter(Intl.DateTimeFormat, 'en', {
         timeZone: 'Not/CrossLocale',
@@ -227,6 +278,22 @@ describe('resolveFormatter', () => {
       resolveFormatter(Intl.NumberFormat, 'xx_YY', undefined);
       expect(warnSpy).toHaveBeenCalledTimes(1);
     });
+
+    it('warns once when a malformed locale is re-resolved after cache eviction', () => {
+      resolveFormatter(Intl.NumberFormat, 'xx_AA', undefined);
+      for (let index = 0; index < 128; index++) {
+        resolveFormatter(Intl.NumberFormat, `en-x-c${index}`, undefined);
+      }
+      resolveFormatter(Intl.NumberFormat, 'xx_AA', undefined);
+      expect(warnSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('warns for every malformed locale past the warned-set capacity', () => {
+      for (let index = 0; index < 65; index++) {
+        resolveFormatter(Intl.NumberFormat, `!!${index}`, undefined);
+      }
+      expect(warnSpy).toHaveBeenCalledTimes(65);
+    });
   });
 
   it('falls back when the currency code is valid but a sibling option is not', () => {
@@ -243,6 +310,14 @@ describe('resolveFormatter', () => {
       resolveFormatter(Intl.DateTimeFormat, 'en', {
         dateStyle:
           'definitely-not-valid' as Intl.DateTimeFormatOptions['dateStyle'],
+      }),
+    ).toThrow(RangeError);
+  });
+
+  it('throws the underlying Intl error when `NumberFormat` rejects a non-currency option', () => {
+    expect(() =>
+      resolveFormatter(Intl.NumberFormat, 'en', {
+        style: 'definitely-not-valid' as Intl.NumberFormatOptions['style'],
       }),
     ).toThrow(RangeError);
   });

@@ -116,6 +116,122 @@ describe('derivePatches', () => {
     expect(Array.isArray(patches[0]?.value)).toBe(true);
   });
 
+  it('emits a context-keyed patch when a context map is new', () => {
+    const patches = derivePatches(
+      {},
+      {
+        'src/a.tsx': {
+          Open: {
+            button: 'Öppna',
+          },
+        },
+      },
+      'sv',
+    );
+    expect(patches).toEqual([
+      {
+        fileId: 'src/a.tsx',
+        id: JSON.stringify([
+          'Open',
+          'button',
+        ]),
+        locale: 'sv',
+        value: 'Öppna',
+      },
+    ]);
+  });
+
+  it('returns no patches when a context-variant value is unchanged', () => {
+    const file = {
+      'src/a.tsx': {
+        Open: {
+          button: 'Öppna',
+        },
+      },
+    };
+    expect(derivePatches(file, file, 'sv')).toEqual([]);
+  });
+
+  it('emits an empty-string patch when a context variant is removed', () => {
+    const patches = derivePatches(
+      {
+        'src/a.tsx': {
+          Open: {
+            badge: 'Öppen',
+            button: 'Öppna',
+          },
+        },
+      },
+      {
+        'src/a.tsx': {
+          Open: {
+            button: 'Öppna',
+          },
+        },
+      },
+      'sv',
+    );
+    expect(patches).toEqual([
+      {
+        fileId: 'src/a.tsx',
+        id: JSON.stringify([
+          'Open',
+          'badge',
+        ]),
+        locale: 'sv',
+        value: '',
+      },
+    ]);
+  });
+
+  it('emits an empty-string patch when a context map is removed', () => {
+    const patches = derivePatches(
+      {
+        'src/a.tsx': {
+          Open: {
+            button: 'Öppna',
+          },
+        },
+      },
+      {},
+      'sv',
+    );
+    expect(patches).toEqual([
+      {
+        fileId: 'src/a.tsx',
+        id: JSON.stringify([
+          'Open',
+          'button',
+        ]),
+        locale: 'sv',
+        value: '',
+      },
+    ]);
+  });
+
+  it('emits an empty-string patch when the value is an empty stub', () => {
+    const patches = derivePatches(
+      {},
+      {
+        'src/a.tsx': {
+          Hello: '',
+        },
+      },
+      'sv',
+    );
+    expect(patches).toEqual([
+      {
+        fileId: 'src/a.tsx',
+        id: JSON.stringify([
+          'Hello',
+          null,
+        ]),
+        locale: 'sv',
+        value: '',
+      },
+    ]);
+  });
+
   it('emits an empty-string patch when a source key is removed', () => {
     const patches = derivePatches(
       {

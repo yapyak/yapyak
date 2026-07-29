@@ -1,9 +1,11 @@
 import type { LocaleContext } from './context';
+import type { CatalogEntry } from './file';
 import type { MigrateLocalesInput, MigrateLocalesOptions } from './migrate';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetWarn, setWarn } from '../../../warn';
+import { toMessageKey } from '../../parser';
 import { detectRenames, migrateLocales } from './migrate';
 import {
   mkdirSync,
@@ -114,6 +116,72 @@ describe('detectRenames', () => {
     expect(detectRenames(old, next)).toEqual([]);
   });
 
+  it('lists a rename when only one of two sources changes', () => {
+    const old = [
+      {
+        column: 1,
+        line: 1,
+        source: 'Save',
+      },
+      {
+        column: 1,
+        line: 2,
+        source: 'Cancel',
+      },
+    ];
+    const next = [
+      {
+        column: 1,
+        line: 1,
+        source: 'Save',
+      },
+      {
+        column: 1,
+        line: 2,
+        source: 'Loading...',
+      },
+    ];
+    expect(detectRenames(old, next)).toEqual([
+      {
+        from: 'Cancel',
+        to: 'Loading...',
+      },
+    ]);
+  });
+
+  it('drops the second rename when the added source is already claimed', () => {
+    const old = [
+      {
+        column: 1,
+        line: 1,
+        source: 'Save',
+      },
+      {
+        column: 1,
+        line: 2,
+        source: 'Cancel',
+      },
+    ];
+    const next = [
+      {
+        column: 1,
+        line: 1,
+        source: 'Save changes',
+      },
+      {
+        column: 1,
+        line: 2,
+        source: 'Save changes',
+      },
+    ];
+    expect(detectRenames(old, next)).toEqual([
+      {
+        from: 'Save',
+        to: 'Save changes',
+      },
+    ]);
+  });
+
   it('lists every rename pair when each position matches', () => {
     const old = [
       {
@@ -171,7 +239,7 @@ describe('migrateLocales', () => {
 
   function writeLocale(
     locale: string,
-    content: Record<string, Record<string, string>>,
+    content: Record<string, Record<string, CatalogEntry>>,
   ): void {
     writeFileSync(
       join(root, 'locales', `${locale}.json`),
@@ -179,7 +247,9 @@ describe('migrateLocales', () => {
     );
   }
 
-  function readLocale(locale: string): Record<string, Record<string, string>> {
+  function readLocale(
+    locale: string,
+  ): Record<string, Record<string, CatalogEntry>> {
     return JSON.parse(
       readFileSync(join(root, 'locales', `${locale}.json`), 'utf-8'),
     );
@@ -344,6 +414,50 @@ describe('migrateLocales', () => {
     });
   });
 
+  it('clears the translation when `options` is omitted', () => {
+    writeLocale('sv', {
+      'src/a.ts': {
+        Save: 'Spara',
+      },
+    });
+    const result = migrateLocales(
+      {
+        extractedKeys: {
+          'src/a.ts': new Set([
+            'Save changes',
+          ]),
+        },
+        fileId: 'src/a.ts',
+        renames: [
+          {
+            from: 'Save',
+            to: 'Save changes',
+          },
+        ],
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      root,
+    );
+    expect(result.staleEntries).toEqual([
+      {
+        locale: 'sv',
+        source: 'Save changes',
+      },
+    ]);
+    expect(readLocale('sv')).toEqual({
+      'src/a.ts': {
+        'Save changes': '',
+      },
+    });
+  });
+
   it('lists every migration in `staleEntries`', () => {
     writeLocale('sv', {
       'src/a.ts': {
@@ -424,6 +538,82 @@ describe('migrateLocales', () => {
     ]);
   });
 
+  it('reports a conflict when the rename target has a non-empty context translation', () => {
+    writeLocale('sv', {
+      'src/a.ts': {
+        Open: {
+          button: 'Öppna',
+        },
+        Save: 'Spara',
+      },
+    });
+    const result = runMigrate({
+      input: {
+        renames: [
+          {
+            from: 'Save',
+            to: 'Open',
+          },
+        ],
+      },
+    });
+    expect(result.conflicts).toEqual([
+      {
+        fileId: 'src/a.ts',
+        from: 'Save',
+        locale: 'sv',
+        to: 'Open',
+      },
+    ]);
+    expect(result.staleEntries).toEqual([]);
+    expect(readLocale('sv')).toEqual({
+      'src/a.ts': {
+        Open: {
+          button: 'Öppna',
+        },
+      },
+    });
+  });
+
+  it('reports no conflict when the rename target has only empty context translations', () => {
+    writeLocale('sv', {
+      'src/a.ts': {
+        Open: {
+          button: '',
+        },
+        Save: 'Spara',
+      },
+    });
+    const result = runMigrate({
+      input: {
+        renames: [
+          {
+            from: 'Save',
+            to: 'Open',
+          },
+        ],
+      },
+    });
+    expect(result.conflicts).toEqual([]);
+    expect(result.staleEntries).toEqual([
+      {
+        locale: 'sv',
+        source: 'Open',
+      },
+    ]);
+    expect(readLocale('sv')).toEqual({
+      'src/a.ts': {
+        Open: 'Spara',
+      },
+    });
+  });
+
+  it('throws when the locale file is a directory', () => {
+    mkdirSync(join(root, 'locales', 'sv.json'));
+
+    expect(() => runMigrate()).toThrow(/EISDIR/);
+  });
+
   describe('catch-and-warn', () => {
     let warnSpy: ReturnType<
       typeof vi.fn<(message: string, meta?: Record<string, unknown>) => void>
@@ -479,6 +669,51 @@ describe('migrateLocales', () => {
           source: 'Save changes',
         },
       ]);
+    });
+
+    it('warns with YAP0039 when the write would clear an in-use translation', () => {
+      writeLocale('sv', {
+        'src/a.ts': {
+          Save: 'Spara',
+        },
+      });
+      runMigrate({
+        input: {
+          extractedKeys: {
+            'src/a.ts': new Set([
+              toMessageKey('Save'),
+            ]),
+          },
+        },
+      });
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringMatching(/^YAP0039 /),
+        expect.objectContaining({
+          code: 'YAP0039',
+        }),
+      );
+    });
+
+    it('writes no file when the invariant fails', () => {
+      writeLocale('sv', {
+        'src/a.ts': {
+          Save: 'Spara',
+        },
+      });
+      runMigrate({
+        input: {
+          extractedKeys: {
+            'src/a.ts': new Set([
+              toMessageKey('Save'),
+            ]),
+          },
+        },
+      });
+      expect(readLocale('sv')).toEqual({
+        'src/a.ts': {
+          Save: 'Spara',
+        },
+      });
     });
 
     it('warns once per corrupt locale', () => {

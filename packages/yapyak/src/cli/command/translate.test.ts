@@ -61,6 +61,22 @@ describe('translate', () => {
     vi.restoreAllMocks();
   });
 
+  it('returns `1` when the target locale code is invalid', async () => {
+    const code = await translate(makeConfig(), root, {
+      locale: '!!!',
+    });
+    expect(code).toBe(1);
+    expect(errorWrites.join('')).toContain('Invalid locale code');
+  });
+
+  it('returns `1` with a suggestion when the locale code resembles a known code', async () => {
+    const code = await translate(makeConfig(), root, {
+      locale: 'en_US',
+    });
+    expect(code).toBe(1);
+    expect(errorWrites.join('')).toContain('did you mean');
+  });
+
   it('returns `1` when no translator is configured', async () => {
     const code = await translate(makeConfig(), root);
     expect(code).toBe(1);
@@ -160,6 +176,53 @@ describe('translate', () => {
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
     );
     expect(written['src/a.ts'].Save).toBe('Spara');
+  });
+
+  it('writes no translation outside the targeted locale', async () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: '',
+        },
+      }),
+    );
+    writeFileSync(
+      join(root, 'locales', 'fr.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: '',
+        },
+      }),
+    );
+    const translator = Object.assign(
+      vi.fn(async () => 'Spara'),
+      {
+        id: 'fake',
+      },
+    );
+    const code = await translate(
+      makeConfig({
+        translator,
+      }),
+      root,
+      {
+        locale: 'sv',
+      },
+    );
+    expect(code).toBe(0);
+    const swedish = JSON.parse(
+      readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
+    );
+    const french = JSON.parse(
+      readFileSync(join(root, 'locales', 'fr.json'), 'utf-8'),
+    );
+    expect(swedish['src/a.ts'].Save).toBe('Spara');
+    expect(french['src/a.ts'].Save).toBe('');
   });
 
   it('folds every target locale into a single batch call', async () => {

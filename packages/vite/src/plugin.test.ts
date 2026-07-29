@@ -598,6 +598,150 @@ describe('yapyak', () => {
       const after = readFileSync(localePath, 'utf8');
       expect(after).toBe(before);
     });
+
+    it('writes no locale entry when adding a file without `t()` calls', async () => {
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const newFile = join(root, 'src', 'b.tsx');
+      writeFileSync(newFile, 'export const x = 1;\n');
+      watcher.emit('add', newFile);
+      await vi.advanceTimersByTimeAsync(60);
+
+      const after = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(after['src/b.tsx']).toBeUndefined();
+    });
+
+    it('warns when a changed locale file is corrupt', async () => {
+      writeFileSync(localePath, '{}');
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = findHook(plugin, 'configResolved');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+      } as ResolvedConfig);
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      writeFileSync(localePath, '{');
+      watcher.emit('change', localePath);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(
+        warnings.some((message) =>
+          message.includes('Failed to parse locale file'),
+        ),
+      ).toBe(true);
+    });
+
+    it('warns when an added locale file is corrupt', async () => {
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = findHook(plugin, 'configResolved');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+      } as ResolvedConfig);
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const newLocale = join(root, 'locales', 'fr.json');
+      writeFileSync(newLocale, '{');
+      watcher.emit('add', newLocale);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(
+        warnings.some((message) =>
+          message.includes('Failed to parse locale file'),
+        ),
+      ).toBe(true);
+    });
+
+    it('warns with a suggestion when an added locale file uses a near-miss code', async () => {
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = findHook(plugin, 'configResolved');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+      } as ResolvedConfig);
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const server = createMockServer(createMockWatcher());
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      const invalidLocale = join(root, 'locales', 'sv_SE.json');
+      writeFileSync(invalidLocale, '{}');
+      watcher.emit('add', invalidLocale);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(
+        warnings.some((message) => message.includes("Did you mean 'sv'?")),
+      ).toBe(true);
+    });
+
+    it('blocks reload when removing a non-candidate file', async () => {
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const send = vi.fn();
+      const invalidateAll = vi.fn();
+      const server = createMockServer(createMockWatcher());
+      server.ws.send = send;
+      server.moduleGraph.invalidateAll = invalidateAll;
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      watcher.emit('unlink', join(root, 'src', 'styles.css'));
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(send).not.toHaveBeenCalled();
+      expect(invalidateAll).not.toHaveBeenCalled();
+    });
   });
 
   describe('auto-translate threshold', () => {
@@ -1406,6 +1550,153 @@ describe('yapyak', () => {
       const sv = JSON.parse(readFileSync(localePath, 'utf8'));
       expect(sv['src/a.tsx']).toEqual({
         'Save changes': 'Spara',
+      });
+    });
+
+    it('returns an empty module list when a candidate file is deleted', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+      );
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      const hook = findHook(plugin, 'hotUpdate');
+      const result = await (
+        hook as (ctx: {
+          file: string;
+          read: () => Promise<string>;
+          type: string;
+        }) => Promise<unknown>
+      ).call(plugin, {
+        file: filePath,
+        read: () => Promise.resolve(''),
+        type: 'delete',
+      });
+
+      expect(result).toEqual([]);
+    });
+
+    it('returns `undefined` when a candidate file is created', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+      );
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      const hook = findHook(plugin, 'hotUpdate');
+      const result = await (
+        hook as (ctx: {
+          file: string;
+          read: () => Promise<string>;
+          type: string;
+        }) => Promise<unknown>
+      ).call(plugin, {
+        file: filePath,
+        read: () => Promise.resolve(''),
+        type: 'create',
+      });
+
+      expect(result).toBeUndefined();
+    });
+
+    it('writes the file entry for a file missing from the scan', async () => {
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      await invokeHandleHotUpdate(
+        plugin,
+        join(root, 'src', 'a.tsx'),
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+      );
+      const sv = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(sv['src/a.tsx']).toEqual({
+        Hello: '',
+      });
+    });
+
+    it('warns when a rename target already holds a translation', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Save');\n",
+      );
+      writeFileSync(
+        localePath,
+        JSON.stringify({
+          'src/a.tsx': {
+            Save: 'Spara',
+          },
+        }),
+      );
+      const warnings: string[] = [];
+      const logger = createSilentLogger();
+      logger.warn = (message: string) => {
+        warnings.push(message);
+      };
+      const plugin = yapyak();
+      const hook = findHook(plugin, 'configResolved');
+      if (typeof hook !== 'function') {
+        throw new Error('missing');
+      }
+      await (hook as (config: ResolvedConfig) => unknown).call(plugin, {
+        command: 'serve',
+        logger,
+        root,
+      } as ResolvedConfig);
+      invokeBuildStart(plugin);
+      writeFileSync(
+        localePath,
+        JSON.stringify({
+          'src/a.tsx': {
+            Save: 'Spara',
+            'Save changes': 'Spara ändringar',
+          },
+        }),
+      );
+      await invokeHandleHotUpdate(
+        plugin,
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Save changes');\n",
+      );
+      expect(
+        warnings.some((message) =>
+          message.includes("rename 'Save' → 'Save changes' skipped for 'sv'"),
+        ),
+      ).toBe(true);
+      const sv = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(sv['src/a.tsx']).toEqual({
+        'Save changes': 'Spara ändringar',
+      });
+    });
+
+    it('writes the file entry when a `t()` call moves to a new line', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Hello');\n",
+      );
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      writeFileSync(localePath, '{}');
+      await invokeHandleHotUpdate(
+        plugin,
+        filePath,
+        "import { t } from 'yapyak';\n\nexport const x = t('Hello');\n",
+      );
+      const sv = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(sv['src/a.tsx']).toEqual({
+        Hello: '',
       });
     });
   });

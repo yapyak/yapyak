@@ -31,10 +31,12 @@ function makeConfig(overrides: Partial<Config> = {}): Config {
 describe('clean', () => {
   let root: string;
   let writes: string[];
+  let errorWrites: string[];
 
   beforeEach(() => {
     root = mkdtempSync(join(tmpdir(), 'yapyak-clean-'));
     writes = [];
+    errorWrites = [];
     mkdirSync(join(root, 'src'), {
       recursive: true,
     });
@@ -43,6 +45,10 @@ describe('clean', () => {
     });
     vi.spyOn(process.stdout, 'write').mockImplementation((chunk) => {
       writes.push(String(chunk));
+      return true;
+    });
+    vi.spyOn(process.stderr, 'write').mockImplementation((chunk) => {
+      errorWrites.push(String(chunk));
       return true;
     });
   });
@@ -73,6 +79,44 @@ describe('clean', () => {
     });
     expect(code).toBe(0);
     expect(writes.join('')).toContain('No orphan entries');
+  });
+
+  it('returns `0` when the locales directory does not exist', () => {
+    const code = clean(
+      makeConfig({
+        localesDir: 'missing-locales',
+      }),
+      root,
+      {
+        write: false,
+      },
+    );
+    expect(code).toBe(0);
+    expect(writes.join('')).toContain('No orphan entries');
+  });
+
+  it('preserves every in-use context variant', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const a = t.as('button', 'Open');\nexport const b = t.as('badge', 'Open');\n`,
+    );
+    const before = JSON.stringify({
+      'src/a.ts': {
+        Open: {
+          badge: 'Öppen',
+          button: 'Öppna',
+        },
+      },
+    });
+    writeFileSync(join(root, 'locales', 'sv.json'), before);
+    const code = clean(makeConfig(), root, {
+      write: true,
+    });
+    expect(code).toBe(0);
+    expect(writes.join('')).toContain('No orphan entries');
+    expect(readFileSync(join(root, 'locales', 'sv.json'), 'utf-8')).toBe(
+      before,
+    );
   });
 
   it('lists orphan entries without writing when `write` is `false`', () => {
@@ -111,5 +155,54 @@ describe('clean', () => {
       readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
     );
     expect(after).toEqual({});
+  });
+
+  it('preserves entries outside the include scope when clearing orphans', () => {
+    writeFileSync(join(root, 'src', 'a.ts'), '');
+    writeFileSync(
+      join(root, 'locales', 'sv.json'),
+      JSON.stringify({
+        'src/a.ts': {
+          Save: 'Spara',
+        },
+        'src/b.tsx': {
+          Cancel: 'Avbryt',
+        },
+      }),
+    );
+    const code = clean(makeConfig(), root, {
+      write: true,
+    });
+    expect(code).toBe(0);
+    const after = JSON.parse(
+      readFileSync(join(root, 'locales', 'sv.json'), 'utf-8'),
+    );
+    expect(after).toEqual({
+      'src/b.tsx': {
+        Cancel: 'Avbryt',
+      },
+    });
+  });
+
+  it('returns `1` when a locale file is corrupt', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+    );
+    writeFileSync(join(root, 'locales', 'sv.json'), '{ not json');
+    const code = clean(makeConfig(), root, {
+      write: false,
+    });
+    expect(code).toBe(1);
+    expect(errorWrites.join('')).toContain('Refusing to clean');
+  });
+
+  it('throws when a locale file cannot be read', () => {
+    mkdirSync(join(root, 'locales', 'sv.json'));
+    expect(() =>
+      clean(makeConfig(), root, {
+        write: false,
+      }),
+    ).toThrow(/EISDIR/);
   });
 });

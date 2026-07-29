@@ -132,4 +132,42 @@ describe('resolveDirectivePrologueEnd', () => {
     const expected = source.indexOf('\n') + 1;
     expect(resolveDirectivePrologueEnd(source)).toBe(expected);
   });
+
+  it('returns the offset of trailing code on the directive line', () => {
+    const source = "'use client'; export const a = 1;\n";
+    expect(resolveDirectivePrologueEnd(source)).toBe(source.indexOf('export'));
+  });
+
+  it('returns the offset past a CRLF line ending', () => {
+    const source = "'use client';\r\nexport const a = 1;\n";
+    expect(resolveDirectivePrologueEnd(source)).toBe(
+      "'use client';\r\n".length,
+    );
+  });
+
+  it('returns the offset past a lone carriage return', () => {
+    const source = "'use client';\rexport const a = 1;\n";
+    expect(resolveDirectivePrologueEnd(source)).toBe("'use client';\r".length);
+  });
+
+  it('returns the offset past the newline when a block comment shares the directive line', () => {
+    const source = "'use client'; /* comment */\nexport const a = 1;\n";
+    const expected = source.indexOf('\n') + 1;
+    expect(resolveDirectivePrologueEnd(source)).toBe(expected);
+  });
+
+  it('returns the source length when a block comment is unterminated', () => {
+    const source = "'use client'; /* comment";
+    expect(resolveDirectivePrologueEnd(source)).toBe(source.length);
+  });
+
+  it('returns the source length when a trailing line comment has no newline', () => {
+    const source = "'use client'; // comment";
+    expect(resolveDirectivePrologueEnd(source)).toBe(source.length);
+  });
+
+  it('returns the source length when only whitespace follows the directive', () => {
+    const source = "'use client';  ";
+    expect(resolveDirectivePrologueEnd(source)).toBe(source.length);
+  });
 });

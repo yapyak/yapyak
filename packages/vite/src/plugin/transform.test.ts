@@ -96,6 +96,21 @@ describe('createTransformPlugin', () => {
       expect(result).toBeNull();
     });
 
+    it('returns `null` when the filter rejects the file', () => {
+      const state = buildState('/project');
+      state.filter = () => false;
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+
+      const result = transform.call(
+        {} as ThisParameterType<TransformHook>,
+        `import { t } from 'yapyak';\nt('Hello');\n`,
+        '/project/src/a.tsx',
+      );
+
+      expect(result).toBeNull();
+    });
+
     it('returns `null` when the source has no `yapyak` import', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
@@ -139,6 +154,47 @@ describe('createTransformPlugin', () => {
       expect(result?.code).toContain('Hello');
     });
 
+    it('strips the query from the id before transforming', () => {
+      const state = buildState('/project');
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+
+      const result = transform.call(
+        {} as ThisParameterType<TransformHook>,
+        `import { t } from 'yapyak';\nt('Hello');\n`,
+        '/project/src/a.tsx?v=1',
+      );
+
+      expect(result).not.toBeNull();
+      expect(result?.code).toContain('Hej');
+    });
+
+    it('emits every translation when the source has two `t()` calls', () => {
+      const state = buildState('/project');
+      state.resolver = {
+        ...buildResolver(),
+        getLocaleData: () => ({
+          sv: {
+            'src/a.tsx': {
+              Hello: 'Hej',
+              World: 'Världen',
+            },
+          },
+        }),
+      };
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+
+      const result = transform.call(
+        {} as ThisParameterType<TransformHook>,
+        `import { t } from 'yapyak';\nexport const a = () => t('Hello');\nexport const b = () => t('World');\n`,
+        '/project/src/a.tsx',
+      );
+
+      expect(result?.code).toContain('Hej');
+      expect(result?.code).toContain('Världen');
+    });
+
     it('registers every locale file as a watch file when building', () => {
       const state = buildState('/project');
       state.command = 'build';
@@ -177,6 +233,49 @@ describe('createTransformPlugin', () => {
       );
 
       expect(addWatchFile).not.toHaveBeenCalled();
+    });
+
+    it('throws when extraction reports an error diagnostic', () => {
+      const state = buildState('/project');
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+
+      expect(() =>
+        transform.call(
+          {
+            error: (input: { message: string }): never => {
+              throw new Error(input.message);
+            },
+          } as ThisParameterType<TransformHook>,
+          `import { t } from 'yapyak';\nconst dynamic = 'Hello';\nexport const x = t(dynamic);\n`,
+          '/project/src/a.tsx',
+        ),
+      ).toThrow(/dynamic template literal/);
+    });
+
+    it('records every subsequent error diagnostic', () => {
+      const state = buildState('/project');
+      const error = vi.fn();
+      state.logger = {
+        ...state.logger,
+        error,
+      };
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+
+      expect(() =>
+        transform.call(
+          {
+            error: (input: { message: string }): never => {
+              throw new Error(input.message);
+            },
+          } as ThisParameterType<TransformHook>,
+          `import { t } from 'yapyak';\nconst dynamic = 'Hello';\nexport const a = t(dynamic);\nexport const b = t(dynamic);\n`,
+          '/project/src/a.tsx',
+        ),
+      ).toThrow(/dynamic template literal/);
+      expect(error).toHaveBeenCalledOnce();
+      expect(error).toHaveBeenCalledWith(expect.stringContaining('YAP0002'));
     });
   });
 

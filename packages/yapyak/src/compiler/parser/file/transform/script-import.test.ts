@@ -1,7 +1,9 @@
+import MagicString from 'magic-string';
 import { describe, expect, it } from 'vitest';
 
 import { extractFile } from '../extract';
 import { transformFile } from '../transform';
+import { transformScriptImports } from './script-import';
 
 function runTransform(input: { source: string; locales: string[] }): string {
   const fileId = 'src/a.tsx';
@@ -13,6 +15,23 @@ function runTransform(input: { source: string; locales: string[] }): string {
     source: input.source,
     translations: {},
   }).code;
+}
+
+function runScriptImports(source: string): string {
+  const magicString = new MagicString(source);
+  transformScriptImports({
+    fileId: 'src/a.tsx',
+    fragments: [
+      {
+        code: source,
+        language: 'ts',
+        originalOffset: 0,
+        type: 'script',
+      },
+    ],
+    magicString,
+  });
+  return magicString.toString();
 }
 
 describe('transformScriptImports', () => {
@@ -81,5 +100,113 @@ describe('transformScriptImports', () => {
       ].join('\n'),
     });
     expect(code).toMatch(/import type \{ TFn \} from ['"]yapyak['"]/);
+  });
+
+  it('preserves a default import declaration', () => {
+    const source = "import y from 'yapyak';\nexport const x = y;";
+    expect(runScriptImports(source)).toBe(source);
+  });
+
+  it('preserves an aliased named import when the local is still referenced', () => {
+    const source =
+      "import { t as translate } from 'yapyak';\nexport const x = translate;";
+    expect(runScriptImports(source)).toBe(source);
+  });
+
+  it('preserves a named import when the local is an object literal value', () => {
+    const source =
+      "import { t } from 'yapyak';\nexport const x = { label: t };";
+    expect(runScriptImports(source)).toBe(source);
+  });
+
+  it('elides a named import when the local appears only in a property access', () => {
+    const source = "import { t } from 'yapyak';\nexport const x = window.t;";
+    expect(runScriptImports(source)).toBe('\nexport const x = window.t;');
+  });
+
+  it('elides a named import when the local appears only as an object literal key', () => {
+    const source = "import { t } from 'yapyak';\nexport const x = { t: 1 };";
+    expect(runScriptImports(source)).toBe('\nexport const x = { t: 1 };');
+  });
+
+  it('elides a named import when the local appears only as a JSX attribute name', () => {
+    const source =
+      'import { t } from \'yapyak\';\nexport const x = <div t="1" />;';
+    expect(runScriptImports(source)).toBe('\nexport const x = <div t="1" />;');
+  });
+
+  it('skips an import whose module specifier is not a string literal', () => {
+    const source = 'import { t } from yapyak;';
+    expect(runScriptImports(source)).toBe(source);
+  });
+
+  it('skips a `template-expression` fragment', () => {
+    const source = "import { t } from 'yapyak';";
+    const magicString = new MagicString(source);
+    transformScriptImports({
+      fileId: 'src/a.tsx',
+      fragments: [
+        {
+          code: source,
+          language: 'ts',
+          originalOffset: 0,
+          type: 'template-expression',
+        },
+      ],
+      magicString,
+    });
+    expect(magicString.toString()).toBe(source);
+  });
+
+  it('elides a named import when another fragment only default-imports the same name', () => {
+    const first = "import { t } from 'yapyak';\n";
+    const second = "import t from './helper';\n";
+    const magicString = new MagicString(first + second);
+    transformScriptImports({
+      fileId: 'src/a.tsx',
+      fragments: [
+        {
+          code: first,
+          language: 'ts',
+          originalOffset: 0,
+          type: 'script',
+        },
+        {
+          code: second,
+          language: 'ts',
+          originalOffset: first.length,
+          type: 'script',
+        },
+      ],
+      magicString,
+    });
+    expect(magicString.toString()).toBe(`\n${second}`);
+  });
+
+  it('elides a named import when the referencing region was already removed', () => {
+    const importLine = "import { t } from 'yapyak';\n";
+    const usage = 'export const x = t;';
+    const source = importLine + usage;
+    const magicString = new MagicString(source);
+    magicString.remove(importLine.length - 1, source.length);
+    transformScriptImports({
+      fileId: 'src/a.tsx',
+      fragments: [
+        {
+          code: importLine,
+          language: 'ts',
+          originalOffset: 0,
+          type: 'script',
+        },
+        {
+          code: usage,
+          language: 'ts',
+          originalOffset: importLine.length,
+          type: 'script',
+        },
+      ],
+      magicString,
+    });
+    expect(magicString.toString()).toBe('');
   });
 });

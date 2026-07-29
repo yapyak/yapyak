@@ -165,6 +165,75 @@ describe('astro processor — extract', () => {
     expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
+  it('extracts `t()` from inside a member-expression element', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      "import Button from './Button.astro';",
+      '---',
+      "<Button.Label>{t('Save')}</Button.Label>",
+    ].join('\n');
+    const result = extractAstro(source);
+    expect(result.messages.map((message) => message.source)).toContain('Save');
+  });
+
+  it('extracts `t()` from inside a `<>` fragment shorthand', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      "<>{t('Hello')}</>",
+    ].join('\n');
+    const result = extractAstro(source);
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
+  });
+
+  it('extracts `t()` from a spread child expression', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      "<div>{...[t('Hello')]}</div>",
+    ].join('\n');
+    const result = extractAstro(source);
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
+  });
+
+  it('extracts `t()` from an element-valued attribute', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      "import Button from './Button.astro';",
+      '---',
+      "<Button icon=<span>{t('Save')}</span> />",
+    ].join('\n');
+    const result = extractAstro(source);
+    expect(result.messages.map((message) => message.source)).toContain('Save');
+  });
+
+  it('extracts `t()` from a fragment-valued attribute', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      "import Button from './Button.astro';",
+      '---',
+      "<Button icon=<>{t('Save')}</> />",
+    ].join('\n');
+    const result = extractAstro(source);
+    expect(result.messages.map((message) => message.source)).toContain('Save');
+  });
+
+  it('extracts `t()` from a mustache whose only child is a fragment', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      "<p>{<>{t('Hello')}</>}</p>",
+    ].join('\n');
+    const result = extractAstro(source);
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
+  });
+
   it('extracts `t()` from inside a `<custom-element>`', () => {
     const source = [
       '---',
@@ -358,6 +427,22 @@ describe('astro processor — already-compiled input fallback', () => {
     ].join('\n');
     const code = runAstroTransform(compiled);
     expect(code).not.toContain("t('Hello')");
+  });
+
+  it('writes the multi-locale import at the top when the source has no frontmatter', () => {
+    const compiled = [
+      "import { render as $$render, createComponent } from 'astro/runtime';",
+      "import { t } from 'yapyak';",
+      '',
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+      "const $$Page = createComponent(($$result) => render`<p>${t('Hello')}</p>`);",
+      'export default $$Page;',
+    ].join('\n');
+    const code = runAstroTransform(compiled, [
+      'en',
+      'sv',
+    ]);
+    expect(code).toMatch(/^import \{ pick as _pick \} from 'yapyak\/internal'/);
   });
 });
 

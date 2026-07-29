@@ -128,4 +128,18 @@ describe('parseResponseBody', () => {
       /yapyak anthropic: response body could not be read \(connection reset\)/,
     );
   });
+
+  it('throws a vendor-tagged Error when the body stream errors with a non-Error value', async () => {
+    const stream = new ReadableStream({
+      start(controller) {
+        controller.error('connection reset');
+      },
+    });
+    const response = new Response(stream, {
+      status: 200,
+    });
+    await expect(parseResponseBody(response, 'gemini')).rejects.toThrow(
+      /yapyak gemini: response body could not be read \(connection reset\)/,
+    );
+  });
 });
