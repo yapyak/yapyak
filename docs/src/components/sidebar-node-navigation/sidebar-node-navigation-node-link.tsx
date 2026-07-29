@@ -1,4 +1,4 @@
-import type { SidebarLinkNode } from '@yapyak/doc-compiler';
+import type { SidebarLinkNode } from '@yapyak/docs-compiler';
 import type { LinkBaseProps } from '#primitives/link';
 
 import { useLocation } from '@tanstack/react-router';

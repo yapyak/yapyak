@@ -1,4 +1,4 @@
-import type { PickerBlock } from '@yapyak/doc-compiler';
+import type { PickerBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { useOptionContext } from '#components/option-provider';
@@ -7,7 +7,7 @@ import { Box } from '#primitives/box';
 
 import styles from './block-renderer-node-picker.module.css';
 import { BlockRendererNodePickerOption } from './block-renderer-node-picker-option';
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 export type BlockRendererNodePickerProps = BoxProps<'section'> & {
   block: PickerBlock;

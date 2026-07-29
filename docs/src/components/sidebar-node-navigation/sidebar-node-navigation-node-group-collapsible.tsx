@@ -1,4 +1,4 @@
-import type { SidebarNode } from '@yapyak/doc-compiler';
+import type { SidebarNode } from '@yapyak/docs-compiler';
 import type { SidebarNodeNavigationNodeGroupProps } from './sidebar-node-navigation-node-group';
 
 import { useLocation } from '@tanstack/react-router';

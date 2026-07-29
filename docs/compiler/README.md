@@ -1,4 +1,4 @@
-# @yapyak/doc-compiler
+# @yapyak/docs-compiler
 
 > Internal · Node-only
 

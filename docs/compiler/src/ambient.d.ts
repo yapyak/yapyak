@@ -1,4 +1,4 @@
-declare module 'virtual:doc-compiler' {
+declare module 'virtual:docs-compiler' {
   import type {
     Anchor,
     Block,
@@ -10,7 +10,7 @@ declare module 'virtual:doc-compiler' {
     Page,
     Pagination,
     SidebarNode,
-  } from '@yapyak/doc-compiler';
+  } from '@yapyak/docs-compiler';
 
   export const doc: {
     getEntry(collection: string, path?: string): Promise<Entry>;

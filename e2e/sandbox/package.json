@@ -1,5 +1,5 @@
 {
-  "name": "@yapyak/sandbox",
+  "name": "@yapyak/e2e-sandbox",
   "private": true,
   "type": "module",
   "scripts": {

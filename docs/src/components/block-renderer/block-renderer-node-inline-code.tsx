@@ -1,4 +1,4 @@
-import type { InlineCodeBlock } from '@yapyak/doc-compiler';
+import type { InlineCodeBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';

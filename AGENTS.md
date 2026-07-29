@@ -1,6 +1,6 @@
 # yapyak
 
-`yapyak` is a Vite-first i18n library. The runtime translation function is `t()`. The core package publishes **unscoped** as `yapyak`. Framework adapters, translator providers, and the Vite plugin publish as **public** scoped packages under `@yapyak/*` (e.g. `@yapyak/react`, `@yapyak/vite`, `@yapyak/anthropic`). Internal-only workspace packages are also `@yapyak/*` but marked `private` — `@yapyak/typescript-config`, `@yapyak/tsdown-config`, `@yapyak/vitest-config`, `@yapyak/doc-compiler`, `@yapyak/docs`, `@yapyak/e2e`.
+`yapyak` is a Vite-first i18n library. The runtime translation function is `t()`. The core package publishes **unscoped** as `yapyak`. Framework adapters, translator providers, and the Vite plugin publish as **public** scoped packages under `@yapyak/*` (e.g. `@yapyak/react`, `@yapyak/vite`, `@yapyak/anthropic`). Internal-only workspace packages are also `@yapyak/*` but marked `private` — `@yapyak/typescript-config`, `@yapyak/tsdown-config`, `@yapyak/vitest-config`, `@yapyak/docs-compiler`, `@yapyak/docs`, `@yapyak/e2e`.
 
 ## Project layout
 
@@ -9,7 +9,7 @@
 - `packages/{react,react-router,vue,svelte,sveltekit,tanstack-start,astro}/` — framework adapters (`@yapyak/<framework>`)
 - `packages/{anthropic,gemini,ollama,openai}/` — LLM translator providers (`@yapyak/<provider>`)
 - `packages/{typescript-config,tsdown-config,vitest-config}/` — shared build/test config
-- `docs/` — `@yapyak/docs`, Vite + TanStack Start app; `docs/doc-compiler/` is `@yapyak/doc-compiler`, its doc-compilation tooling
+- `docs/` — `@yapyak/docs`, Vite + TanStack Start app; `docs/compiler/` is `@yapyak/docs-compiler`, its doc-compilation tooling
 - `examples/*` — minimal demos named by their stack
 - `e2e/` — `@yapyak/e2e`, Playwright end-to-end tests for the example apps and the save loop (`pnpm e2e:dev`, `pnpm e2e:prod`); `e2e/sandbox/` is the mutable fixture app the save-loop tests write to
 

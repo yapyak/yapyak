@@ -793,7 +793,7 @@ A public export is any `exports` entry except an `/internal` subpath (`./interna
 | `PersistenceConfig` | `yapyak` (published) | yes — `./config` | `type` |
 | `ProcessorFragment` | `yapyak` (published) | yes — `./processor` | `type` |
 | `TemplateNode` | `yapyak` (published) | no — only `./compiler/internal` | `kind` |
-| anything in `@yapyak/doc-compiler` | private | — | `kind` |
+| anything in `@yapyak/docs-compiler` | private | — | `kind` |
 | anything in `@yapyak/docs` | private | — | `kind` |
 
 The discriminator **type name** (when named) matches the field: field `type` ↔ `*Type` (per the § Forbidden suffixes exception); field `kind` ↔ `*Kind`. The discriminator **values** are kebab-case regardless (next section).

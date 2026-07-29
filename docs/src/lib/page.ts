@@ -1,8 +1,8 @@
-import type { Page } from '@yapyak/doc-compiler';
+import type { Page } from '@yapyak/docs-compiler';
 
 import { notFound, redirect } from '@tanstack/react-router';
 
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 const BRAND = 'yapyak';
 

@@ -1,4 +1,4 @@
-import type { Anchor, Page } from '@yapyak/doc-compiler';
+import type { Anchor, Page } from '@yapyak/docs-compiler';
 
 import { useEffect, useState } from 'react';
 import { t } from 'yapyak';

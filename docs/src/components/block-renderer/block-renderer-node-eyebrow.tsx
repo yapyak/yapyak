@@ -1,4 +1,4 @@
-import type { EyebrowBlock } from '@yapyak/doc-compiler';
+import type { EyebrowBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { ExternalLink } from '#components/external-link';

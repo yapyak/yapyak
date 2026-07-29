@@ -1,4 +1,4 @@
-import type { SearchData } from '@yapyak/doc-compiler';
+import type { SearchData } from '@yapyak/docs-compiler';
 
 import { useEffect, useState } from 'react';
 

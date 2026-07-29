@@ -1,4 +1,4 @@
-import type { HeadingBlock } from '@yapyak/doc-compiler';
+import type { HeadingBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { Icon } from '#components/icon';

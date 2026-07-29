@@ -1,4 +1,4 @@
-import type { Anchor } from '@yapyak/doc-compiler';
+import type { Anchor } from '@yapyak/docs-compiler';
 import type { MouseEvent } from 'react';
 import type { LinkBaseProps } from '#primitives/link';
 

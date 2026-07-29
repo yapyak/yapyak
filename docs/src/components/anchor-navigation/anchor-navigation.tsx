@@ -1,4 +1,4 @@
-import type { Anchor } from '@yapyak/doc-compiler';
+import type { Anchor } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';

@@ -1,6 +1,6 @@
 import { notFound, redirect } from '@tanstack/react-router';
 
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 export async function loadEntry(collection: string, path: string) {
   const entry = await doc.getEntry(collection, path);

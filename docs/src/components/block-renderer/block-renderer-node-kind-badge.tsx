@@ -1,4 +1,4 @@
-import type { KindBadgeBlock } from '@yapyak/doc-compiler';
+import type { KindBadgeBlock } from '@yapyak/docs-compiler';
 
 import { KindBadge } from '#components/kind-badge';
 

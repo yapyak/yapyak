@@ -1,4 +1,4 @@
-import type { SearchData } from '@yapyak/doc-compiler';
+import type { SearchData } from '@yapyak/docs-compiler';
 import type { KeyboardEvent } from 'react';
 import type { SearchResult } from '#lib/search-result';
 

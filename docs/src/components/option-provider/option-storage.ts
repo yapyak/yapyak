@@ -1,4 +1,4 @@
-import type { OptionsRegistry } from '@yapyak/doc-compiler';
+import type { OptionsRegistry } from '@yapyak/docs-compiler';
 
 export const OPTION_STORAGE_PREFIX = 'yapyak.option.';
 export const OPTION_PREPAINT_STYLE_ID = 'yapyak-options-prepaint';

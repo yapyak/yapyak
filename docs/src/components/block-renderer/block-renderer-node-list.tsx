@@ -1,4 +1,4 @@
-import type { ListBlock } from '@yapyak/doc-compiler';
+import type { ListBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';

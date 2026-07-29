@@ -201,7 +201,7 @@ export default defineConfig<ExampleOptions>({
     ...(MODE === 'dev'
       ? [
           {
-            command: `pnpm --filter @yapyak/sandbox reset && pnpm --filter @yapyak/sandbox dev --port ${SANDBOX_PORT}`,
+            command: `pnpm --filter @yapyak/e2e-sandbox reset && pnpm --filter @yapyak/e2e-sandbox dev --port ${SANDBOX_PORT}`,
             env: {
               TZ: 'Europe/Stockholm',
             },

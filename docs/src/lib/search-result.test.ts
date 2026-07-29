@@ -1,4 +1,4 @@
-import type { SearchData, SearchEntry } from '@yapyak/doc-compiler';
+import type { SearchData, SearchEntry } from '@yapyak/docs-compiler';
 
 import { describe, expect, it } from 'vitest';
 

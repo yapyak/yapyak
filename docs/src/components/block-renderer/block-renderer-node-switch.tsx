@@ -1,11 +1,11 @@
-import type { SwitchBlock } from '@yapyak/doc-compiler';
+import type { SwitchBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { useOptionContext } from '#components/option-provider';
 import { Box } from '#primitives/box';
 
 import { BlockRendererNodeSwitchBranch } from './block-renderer-node-switch-branch';
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 export type BlockRendererNodeSwitchProps = BoxProps & {
   block: SwitchBlock;

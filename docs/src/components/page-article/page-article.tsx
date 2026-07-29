@@ -1,11 +1,11 @@
-import type { Page } from '@yapyak/doc-compiler';
+import type { Page } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { PaginationNavigation } from '#components/pagination-navigation';
 import { Box } from '#primitives/box';
 
 import styles from './page-article.module.css';
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 export type PageArticleProps = BoxProps<'article'> & {
   page: Page;

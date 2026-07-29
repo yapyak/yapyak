@@ -1,4 +1,4 @@
-import type { OptionsRegistry } from '@yapyak/doc-compiler';
+import type { OptionsRegistry } from '@yapyak/docs-compiler';
 import type { PropsWithChildren } from 'react';
 
 import { useEffect, useState } from 'react';
@@ -10,7 +10,7 @@ import {
   OPTION_PREPAINT_STYLE_ID,
   OPTION_STORAGE_PREFIX,
 } from './option-storage';
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 function getDefaults(registry: OptionsRegistry) {
   const defaults: Record<string, string> = {};

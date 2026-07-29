@@ -1,4 +1,4 @@
-import type { Pagination } from '@yapyak/doc-compiler';
+import type { Pagination } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { Box } from '#primitives/box';

@@ -31,7 +31,7 @@ import { SearchDialogTrigger } from '#components/search-dialog-trigger';
 import { StatusView } from '#components/status-view';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
 
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 export const Route = createRootRoute({
   head() {

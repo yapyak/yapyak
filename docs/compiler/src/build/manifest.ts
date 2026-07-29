@@ -697,7 +697,7 @@ async function readPackageName(packageDir: string): Promise<string> {
 function validateSlug(slug: string): void {
   if (!/^[A-Za-z0-9@/_-]+$/.test(slug)) {
     throw new Error(
-      `[doc-compiler] Invalid package name "${slug}". Use letters, digits, "@", "/", "_", or "-".`,
+      `[docs-compiler] Invalid package name "${slug}". Use letters, digits, "@", "/", "_", or "-".`,
     );
   }
 }

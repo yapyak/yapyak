@@ -5,7 +5,7 @@ export default mergeConfig(defineConfig(), {
   test: {
     exclude: [
       ...configDefaults.exclude,
-      'doc-compiler/**',
+      'compiler/**',
     ],
   },
 });

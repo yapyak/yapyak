@@ -1,6 +1,6 @@
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react from '@vitejs/plugin-react';
-import { docCompiler } from '@yapyak/doc-compiler/vite';
+import { docCompiler } from '@yapyak/docs-compiler/vite';
 import { yapyak } from '@yapyak/vite';
 import { defineConfig } from 'vite';
 

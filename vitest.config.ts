@@ -23,7 +23,7 @@ export default defineConfig({
     projects: [
       'packages/*',
       'docs',
-      'docs/doc-compiler',
+      'docs/compiler',
     ],
   },
 });

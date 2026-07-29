@@ -10,12 +10,12 @@ import type { Config } from './config';
 import { buildAgentArtifact, buildManifest, buildSearchData } from './build';
 import { resolve, sep } from 'node:path';
 
-const VIRTUAL_ID = 'virtual:doc-compiler';
-const MANIFEST_ID = 'virtual:doc-compiler/manifest';
-const CONTENT_ID_PREFIX = 'virtual:doc-compiler/content/';
-const RESOLVED_ID = '\0virtual:doc-compiler';
-const RESOLVED_MANIFEST_ID = '\0virtual:doc-compiler/manifest';
-const RESOLVED_CONTENT_PREFIX = '\0virtual:doc-compiler/content/';
+const VIRTUAL_ID = 'virtual:docs-compiler';
+const MANIFEST_ID = 'virtual:docs-compiler/manifest';
+const CONTENT_ID_PREFIX = 'virtual:docs-compiler/content/';
+const RESOLVED_ID = '\0virtual:docs-compiler';
+const RESOLVED_MANIFEST_ID = '\0virtual:docs-compiler/manifest';
+const RESOLVED_CONTENT_PREFIX = '\0virtual:docs-compiler/content/';
 const REBUILD_DEBOUNCE_MS = 200;
 
 export function docCompiler(config: Config): Plugin {
@@ -99,7 +99,7 @@ export function docCompiler(config: Config): Plugin {
               res.end(content);
             } catch (error) {
               server.config.logger.error(
-                `[doc-compiler] agent artifact request failed: ${String(error)}`,
+                `[docs-compiler] agent artifact request failed: ${String(error)}`,
               );
               next();
             }
@@ -123,7 +123,7 @@ export function docCompiler(config: Config): Plugin {
               res.end(JSON.stringify(buildSearchData(manifest)));
             } catch (error) {
               server.config.logger.error(
-                `[doc-compiler] search request failed: ${String(error)}`,
+                `[docs-compiler] search request failed: ${String(error)}`,
               );
               next();
             }
@@ -138,7 +138,7 @@ export function docCompiler(config: Config): Plugin {
           invalidateVirtualModules(server);
         } catch (error) {
           server.config.logger.error(
-            `[doc-compiler] rebuild failed: ${String(error)}`,
+            `[docs-compiler] rebuild failed: ${String(error)}`,
           );
         }
       }, REBUILD_DEBOUNCE_MS);
@@ -191,7 +191,7 @@ import {
   getOptionsGroup as _getOptionsGroup,
   getPagination as _getPagination,
   getSidebarNodes as _getSidebarNodes,
-} from '@yapyak/doc-compiler';
+} from '@yapyak/docs-compiler';
 
 const content = {
 ${contentMap}
@@ -221,7 +221,7 @@ export const doc = {
 `;
     },
 
-    name: '@yapyak/doc-compiler',
+    name: '@yapyak/docs-compiler',
 
     resolveId(id) {
       if (id === VIRTUAL_ID) {

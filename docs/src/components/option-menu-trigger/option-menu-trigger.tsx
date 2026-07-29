@@ -6,7 +6,7 @@ import { OptionMenuButton } from '#components/option-menu-button';
 import { useOptionContext } from '#components/option-provider';
 import { visibleOptionsForGroup } from '#lib/adapter';
 
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 export type OptionMenuTriggerProps = {
   group: string;

@@ -1,5 +1,5 @@
 import { Outlet, createFileRoute, getRouteApi } from '@tanstack/react-router';
-import { getAnchors } from '@yapyak/doc-compiler';
+import { getAnchors } from '@yapyak/docs-compiler';
 import { t } from 'yapyak';
 
 import { AnchorNavigation } from '#components/anchor-navigation';
@@ -9,7 +9,7 @@ import { PageAction } from '#components/page-action';
 import { SidebarDrawerTrigger } from '#components/sidebar-drawer-trigger';
 import { SidebarNodeNavigation } from '#components/sidebar-node-navigation';
 
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 const splatRoute = getRouteApi('/guide/$');
 

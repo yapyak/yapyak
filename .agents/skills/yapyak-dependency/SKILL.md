@@ -31,7 +31,7 @@ A `@biomejs/biome` bump leaves the `biome.json` `$schema` on the old version →
 
 | Package | Hold | Why | Re-test when |
 | --- | --- | --- | --- |
-| `typescript` | 6.x | TS 7's native compiler drops the JS compiler API `@yapyak/doc-compiler` calls | TS 7 ships a JS compiler API, or doc-compiler stops needing one |
+| `typescript` | 6.x | TS 7's native compiler drops the JS compiler API `@yapyak/docs-compiler` calls | TS 7 ships a JS compiler API, or doc-compiler stops needing one |
 
 ### Release-age gate
 

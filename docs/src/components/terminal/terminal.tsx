@@ -1,4 +1,4 @@
-import type { TerminalLine } from '@yapyak/doc-compiler';
+import type { TerminalLine } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { PreformattedText } from '#components/preformatted-text';

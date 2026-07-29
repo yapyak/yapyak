@@ -1,4 +1,4 @@
-import type { Page } from '@yapyak/doc-compiler';
+import type { Page } from '@yapyak/docs-compiler';
 import type { SwatchAccent } from '#components/swatch';
 import type { BoxProps } from '#primitives/box';
 

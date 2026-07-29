@@ -19,8 +19,18 @@ The npm name communicates stability commitment.
 | **Real OSS** | Unscoped (`yapyak`) or dedicated scope (`@yapyak/*`) | Semver discipline. Deprecation cycles. Stable public API. | `yapyak`, `@yapyak/react` |
 
 - Never mix tiers under one scope.
-- Sub-packages of a real-OSS product share the product's scope (`@yapyak/doc-compiler`).
+- Sub-packages of a real-OSS product share the product's scope (`@yapyak/docs-compiler`).
 - The scope determines policy: source-shipping, deprecation, contribution guidelines, README tone.
+
+### Nested workspace packages
+
+- Name a nested workspace package after its full path: `@yapyak/` + path segments joined with `-`.
+- The directory carries only its own noun — the parent segment supplies the prefix.
+
+| Path | Package name |
+|---|---|
+| `docs/compiler` | `@yapyak/docs-compiler` |
+| `e2e/sandbox` | `@yapyak/e2e-sandbox` |
 
 ### `exports` conditions
 

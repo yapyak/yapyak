@@ -1,4 +1,4 @@
-import type { TerminalSegment } from '@yapyak/doc-compiler';
+import type { TerminalSegment } from '@yapyak/docs-compiler';
 
 import { Box } from '#primitives/box';
 

@@ -93,7 +93,7 @@ describe('docCompiler', () => {
   let markdownRoot: string;
 
   beforeEach(() => {
-    root = mkdtempSync(join(tmpdir(), 'doc-compiler-'));
+    root = mkdtempSync(join(tmpdir(), 'docs-compiler-'));
     markdownRoot = join(root, 'content');
     mkdirSync(markdownRoot, {
       recursive: true,
@@ -259,7 +259,7 @@ describe('docCompiler', () => {
     it('returns the module source when given the resolved virtual id', () => {
       const plugin = docCompiler(configFor());
       const result = (plugin.load as (id: string) => string | undefined)(
-        '\0virtual:doc-compiler',
+        '\0virtual:docs-compiler',
       );
       expect(result).toContain('export const doc');
     });
@@ -268,7 +268,7 @@ describe('docCompiler', () => {
       const plugin = docCompiler(configFor());
       await startPlugin(plugin);
       const result = (plugin.load as (id: string) => string | undefined)(
-        '\0virtual:doc-compiler/manifest',
+        '\0virtual:docs-compiler/manifest',
       );
       expect(result).toContain('export default');
       expect(result).toContain('collections');
@@ -278,7 +278,7 @@ describe('docCompiler', () => {
       const plugin = docCompiler(configFor());
       await startPlugin(plugin);
       const result = (plugin.load as (id: string) => string | undefined)(
-        '\0virtual:doc-compiler/content/0',
+        '\0virtual:docs-compiler/content/0',
       );
       expect(result).toContain('export default');
     });
@@ -293,28 +293,28 @@ describe('docCompiler', () => {
   });
 
   describe('resolveId', () => {
-    it('returns the resolved virtual id when given `virtual:doc-compiler`', () => {
+    it('returns the resolved virtual id when given `virtual:docs-compiler`', () => {
       const plugin = docCompiler(configFor());
       const result = (plugin.resolveId as (id: string) => string | undefined)(
-        'virtual:doc-compiler',
+        'virtual:docs-compiler',
       );
-      expect(result).toBe('\0virtual:doc-compiler');
+      expect(result).toBe('\0virtual:docs-compiler');
     });
 
     it('returns the resolved manifest id when given the manifest id', () => {
       const plugin = docCompiler(configFor());
       const result = (plugin.resolveId as (id: string) => string | undefined)(
-        'virtual:doc-compiler/manifest',
+        'virtual:docs-compiler/manifest',
       );
-      expect(result).toBe('\0virtual:doc-compiler/manifest');
+      expect(result).toBe('\0virtual:docs-compiler/manifest');
     });
 
     it('returns the resolved content id when given a content id', () => {
       const plugin = docCompiler(configFor());
       const result = (plugin.resolveId as (id: string) => string | undefined)(
-        'virtual:doc-compiler/content/5',
+        'virtual:docs-compiler/content/5',
       );
-      expect(result).toBe('\0virtual:doc-compiler/content/5');
+      expect(result).toBe('\0virtual:docs-compiler/content/5');
     });
 
     it('returns `undefined` for any other id', () => {

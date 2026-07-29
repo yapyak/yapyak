@@ -37,7 +37,7 @@
     "types": [
       "node",
       "vite/client",
-      "@yapyak/doc-compiler/ambient"
+      "@yapyak/docs-compiler/ambient"
     ]
   },
   "extends": "@yapyak/typescript-config/react",

@@ -1,4 +1,4 @@
-import type { TerminalBlock } from '@yapyak/doc-compiler';
+import type { TerminalBlock } from '@yapyak/docs-compiler';
 
 import { Terminal } from '#components/terminal';
 

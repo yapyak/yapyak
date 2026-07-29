@@ -4,7 +4,7 @@
  * ## Installation
  *
  * ```bash
- * npm install @yapyak/doc-compiler
+ * npm install @yapyak/docs-compiler
  * ```
  *
  * @packageDocumentation

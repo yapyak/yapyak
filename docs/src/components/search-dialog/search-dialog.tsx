@@ -1,4 +1,4 @@
-import type { SearchData } from '@yapyak/doc-compiler';
+import type { SearchData } from '@yapyak/docs-compiler';
 import type { ChangeEvent, PointerEvent } from 'react';
 import type { DialogProps } from '#components/dialog';
 

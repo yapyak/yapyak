@@ -12,7 +12,7 @@ import { RadioGroupBase } from '#primitives/radio';
 
 import styles from './installation-wizard-group.module.css';
 import { InstallationWizardOption } from './installation-wizard-option';
-import { doc } from 'virtual:doc-compiler';
+import { doc } from 'virtual:docs-compiler';
 
 type IndicatorState = {
   height: number;

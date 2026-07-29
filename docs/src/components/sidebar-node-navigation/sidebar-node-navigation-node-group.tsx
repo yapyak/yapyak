@@ -1,4 +1,4 @@
-import type { SidebarGroupNode } from '@yapyak/doc-compiler';
+import type { SidebarGroupNode } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
 import { SidebarNodeNavigationNodeGroupCollapsible } from './sidebar-node-navigation-node-group-collapsible';

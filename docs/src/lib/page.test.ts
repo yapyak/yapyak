@@ -1,10 +1,10 @@
-import type { Page } from '@yapyak/doc-compiler';
+import type { Page } from '@yapyak/docs-compiler';
 
 import { describe, expect, it, vi } from 'vitest';
 
 import { getPageTitle } from './page';
 
-vi.mock('virtual:doc-compiler', () => ({
+vi.mock('virtual:docs-compiler', () => ({
   doc: {},
 }));
 

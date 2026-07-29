@@ -1,4 +1,4 @@
-import type { SidebarNode } from '@yapyak/doc-compiler';
+import type { SidebarNode } from '@yapyak/docs-compiler';
 
 import { SidebarNodeNavigationNodeGroup } from './sidebar-node-navigation-node-group';
 import { SidebarNodeNavigationNodeLink } from './sidebar-node-navigation-node-link';

@@ -1,4 +1,4 @@
-import type { TerminalLine } from '@yapyak/doc-compiler';
+import type { TerminalLine } from '@yapyak/docs-compiler';
 
 import { Box } from '#primitives/box';
 

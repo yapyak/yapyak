@@ -1,4 +1,4 @@
-import type { OnlyBlock } from '@yapyak/doc-compiler';
+import type { OnlyBlock } from '@yapyak/docs-compiler';
 
 import { useOptionContext } from '#components/option-provider';
 
