@@ -1306,6 +1306,108 @@ describe('yapyak', () => {
         World: '',
       });
     });
+
+    it('migrates the translation when the source string is renamed', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Save');\n",
+      );
+      writeFileSync(
+        localePath,
+        JSON.stringify({
+          'src/a.tsx': {
+            Save: 'Spara',
+          },
+        }),
+      );
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      await invokeHandleHotUpdate(
+        plugin,
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Save changes');\n",
+      );
+      const sv = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(sv['src/a.tsx']).toEqual({
+        'Save changes': 'Spara',
+      });
+    });
+
+    it('migrates every project locale when `fixedLocale` is set', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Save');\n",
+      );
+      writeFileSync(
+        localePath,
+        JSON.stringify({
+          'src/a.tsx': {
+            Save: 'Spara',
+          },
+        }),
+      );
+      writeFileSync(
+        join(root, 'locales', 'de.json'),
+        JSON.stringify({
+          'src/a.tsx': {
+            Save: 'Speichern',
+          },
+        }),
+      );
+      const plugin = yapyak({
+        fixedLocale: 'sv',
+      });
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      await invokeHandleHotUpdate(
+        plugin,
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Save changes');\n",
+      );
+      const sv = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(sv['src/a.tsx']).toEqual({
+        'Save changes': 'Spara',
+      });
+      const de = JSON.parse(
+        readFileSync(join(root, 'locales', 'de.json'), 'utf8'),
+      );
+      expect(de['src/a.tsx']).toEqual({
+        'Save changes': 'Speichern',
+      });
+    });
+
+    it('migrates every project locale when `fixedLocale` is the default locale', async () => {
+      const filePath = join(root, 'src', 'a.tsx');
+      writeFileSync(
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Save');\n",
+      );
+      writeFileSync(
+        localePath,
+        JSON.stringify({
+          'src/a.tsx': {
+            Save: 'Spara',
+          },
+        }),
+      );
+      const plugin = yapyak({
+        fixedLocale: 'en',
+      });
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+      await invokeHandleHotUpdate(
+        plugin,
+        filePath,
+        "import { t } from 'yapyak';\nexport const x = t('Save changes');\n",
+      );
+      const sv = JSON.parse(readFileSync(localePath, 'utf8'));
+      expect(sv['src/a.tsx']).toEqual({
+        'Save changes': 'Spara',
+      });
+    });
   });
 });
 
