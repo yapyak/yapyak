@@ -165,10 +165,8 @@ export function migrateLocales(
       if (!Object.hasOwn(next, rename.from)) {
         continue;
       }
-      const previousValue = next[rename.from];
       const targetHasValue =
         Object.hasOwn(next, rename.to) && !isEmptyEntry(next[rename.to]);
-      delete next[rename.from];
       if (targetHasValue) {
         conflicts.push({
           fileId: input.fileId,
@@ -176,9 +174,10 @@ export function migrateLocales(
           locale,
           to: rename.to,
         });
-        hasChanged = true;
         continue;
       }
+      const previousValue = next[rename.from];
+      delete next[rename.from];
       next[rename.to] = shouldPreserveTranslations ? (previousValue ?? '') : '';
       staleEntries.push({
         locale,

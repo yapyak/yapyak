@@ -174,8 +174,9 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     }
 
     const source = parsed.source.normalize();
+    const context = parsed.context?.normalize();
     const { placeholders } = parsePlaceholders(source);
-    const id = source === '' ? '' : toMessageKey(source, parsed.context);
+    const id = source === '' ? '' : toMessageKey(source, context);
 
     const callSite: ParsedCallSite = {
       binding: fragmentCall.binding,
@@ -187,8 +188,8 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
       source,
       sourceExpression: fragmentCall.sourceExpression,
     };
-    if (parsed.context !== undefined) {
-      callSite.context = parsed.context;
+    if (context !== undefined) {
+      callSite.context = context;
     }
     if (fragmentCall.contextExpression) {
       callSite.contextExpression = fragmentCall.contextExpression;
@@ -220,8 +221,8 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
       fileId,
       range: remapRange(parsed.sourceRange, fragment, originalSource),
     };
-    if (parsed.context !== undefined) {
-      location.context = parsed.context;
+    if (context !== undefined) {
+      location.context = context;
     }
 
     const existing = messagesById.get(id);
@@ -238,8 +239,8 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
       placeholders,
       source,
     };
-    if (parsed.context !== undefined) {
-      message.context = parsed.context;
+    if (context !== undefined) {
+      message.context = context;
     }
     messagesById.set(id, message);
   }

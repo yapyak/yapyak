@@ -1,6 +1,7 @@
 import type {
   EnvironmentModuleNode,
   HotUpdateOptions,
+  Logger,
   Plugin,
   ViteDevServer,
 } from 'vite';
@@ -104,6 +105,17 @@ export function createDevServerPlugin(state: State): Plugin {
       state.teardownCallbacks.push(flush.cancel);
 
       const previousLocaleData = new Map<string, LocaleFile>();
+      const { localesDir } = getNormalized(state);
+      for (const locale of getResolver(state).getProjectLocales().locales) {
+        const initial = tryReadLocaleFile(
+          join(state.projectRoot, localesDir, `${locale}.json`),
+          state.logger,
+        );
+        if (initial === undefined) {
+          continue;
+        }
+        previousLocaleData.set(locale, initial);
+      }
       const pendingLocalePaths = new Set<string>();
       const sendLocalePatches = debounce(() => {
         if (pendingLocalePaths.size === 0) {
@@ -117,17 +129,9 @@ export function createDevServerPlugin(state: State): Plugin {
         for (const localePath of pendingLocalePaths) {
           const locale = localeFromPath(localePath);
           const before = previousLocaleData.get(locale) ?? {};
-          let after: LocaleFile;
-          try {
-            after = readLocaleFile(localePath);
-          } catch (error) {
-            if (error instanceof CorruptLocaleFileError) {
-              state.logger.warn(
-                `${error.message}\nSee ${getDocsUrl(YAP_RUNTIME.CATALOG_LOCALE_FILE_CORRUPT.code)}`,
-              );
-              continue;
-            }
-            throw error;
+          const after = tryReadLocaleFile(localePath, state.logger);
+          if (after === undefined) {
+            continue;
           }
           previousLocaleData.set(locale, after);
           const localePatches = derivePatches(before, after, locale);
@@ -215,17 +219,9 @@ export function createDevServerPlugin(state: State): Plugin {
           state.logger.info(
             `[yapyak] New locale '${locale}' detected. ${hint}`,
           );
-          let initial: LocaleFile;
-          try {
-            initial = readLocaleFile(path);
-          } catch (error) {
-            if (error instanceof CorruptLocaleFileError) {
-              state.logger.warn(
-                `${error.message}\nSee ${getDocsUrl(YAP_RUNTIME.CATALOG_LOCALE_FILE_CORRUPT.code)}`,
-              );
-              return;
-            }
-            throw error;
+          const initial = tryReadLocaleFile(path, state.logger);
+          if (initial === undefined) {
+            return;
           }
           previousLocaleData.set(locale, initial);
         }
@@ -323,6 +319,23 @@ function reloadAllModules(server: ViteDevServer): void {
   });
 }
 
+function tryReadLocaleFile(
+  path: string,
+  logger: Logger,
+): LocaleFile | undefined {
+  try {
+    return readLocaleFile(path);
+  } catch (error) {
+    if (error instanceof CorruptLocaleFileError) {
+      logger.warn(
+        `${error.message}\nSee ${getDocsUrl(YAP_RUNTIME.CATALOG_LOCALE_FILE_CORRUPT.code)}`,
+      );
+      return undefined;
+    }
+    throw error;
+  }
+}
+
 function localeFromPath(path: string): string {
   const base = basename(path);
   return base.slice(0, -extname(base).length);
@@ -363,6 +376,16 @@ function walkEntry(
   afterEntry: CatalogEntry | undefined,
 ): void {
   if (typeof afterEntry === 'string') {
+    if (beforeEntry && typeof beforeEntry === 'object') {
+      for (const context of Object.keys(beforeEntry)) {
+        patches.push({
+          fileId,
+          id: toMessageKey(source, context),
+          locale,
+          value: '',
+        });
+      }
+    }
     if (typeof beforeEntry !== 'string' || beforeEntry !== afterEntry) {
       patches.push({
         fileId,
@@ -374,6 +397,14 @@ function walkEntry(
     return;
   }
   if (afterEntry && typeof afterEntry === 'object') {
+    if (typeof beforeEntry === 'string') {
+      patches.push({
+        fileId,
+        id: toMessageKey(source),
+        locale,
+        value: '',
+      });
+    }
     const beforeMap =
       beforeEntry && typeof beforeEntry === 'object' ? beforeEntry : {};
     const contexts = new Set<string>([

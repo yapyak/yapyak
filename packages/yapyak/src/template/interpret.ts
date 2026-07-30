@@ -179,7 +179,7 @@ function interpretNumber(
   locale: string,
 ): string {
   const raw = readParam(params, node.name);
-  if (raw === undefined || raw === null) {
+  if (raw === undefined || raw === null || raw === '') {
     return '';
   }
   const numericValue = Number(raw);

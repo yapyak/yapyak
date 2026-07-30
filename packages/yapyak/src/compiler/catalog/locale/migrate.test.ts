@@ -516,6 +516,7 @@ describe('migrateLocales', () => {
     expect(result.staleEntries).toEqual([]);
     expect(readLocale('sv')).toEqual({
       'src/a.ts': {
+        Save: 'Spara',
         'Save changes': 'Spara ändringar',
       },
     });
@@ -571,6 +572,7 @@ describe('migrateLocales', () => {
         Open: {
           button: 'Öppna',
         },
+        Save: 'Spara',
       },
     });
   });

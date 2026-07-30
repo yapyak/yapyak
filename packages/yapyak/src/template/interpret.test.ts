@@ -673,6 +673,24 @@ describe('interpret', () => {
       ).toBe('');
     });
 
+    it('interpolates an empty string for an empty-string value', () => {
+      expect(
+        interpret(
+          [
+            {
+              kind: 'number',
+              name: 'value',
+              options: {},
+            },
+          ],
+          {
+            value: '',
+          },
+          'en',
+        ),
+      ).toBe('');
+    });
+
     it('interpolates the raw `String()` when the value is not numeric', () => {
       expect(
         interpret(

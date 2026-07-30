@@ -97,6 +97,9 @@ function extractImports(sourceFile: ts.SourceFile): ImportData {
     if (!clause) {
       continue;
     }
+    if (clause.isTypeOnly) {
+      continue;
+    }
     const namedBindings = clause.namedBindings;
     if (!namedBindings) {
       continue;
@@ -107,6 +110,9 @@ function extractImports(sourceFile: ts.SourceFile): ImportData {
     }
     if (ts.isNamedImports(namedBindings)) {
       for (const element of namedBindings.elements) {
+        if (element.isTypeOnly) {
+          continue;
+        }
         const importedName = (element.propertyName ?? element.name).text;
         const localName = element.name.text;
         if (importedName === RUNTIME_NAME) {

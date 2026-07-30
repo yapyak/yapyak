@@ -161,6 +161,18 @@ describe('resolveBindings', () => {
     expect(table.root.bindings.size).toBe(0);
   });
 
+  it('returns no binding for a type-only import of `yapyak`', () => {
+    const sourceFile = parseSource("import type { t } from 'yapyak';");
+    const table = resolveBindings(sourceFile);
+    expect(table.root.bindings.size).toBe(0);
+  });
+
+  it('returns no binding for a `type`-qualified named import of `yapyak`', () => {
+    const sourceFile = parseSource("import { type t } from 'yapyak';");
+    const table = resolveBindings(sourceFile);
+    expect(table.root.bindings.size).toBe(0);
+  });
+
   it('returns no wrapper binding for a variable assigned an unknown identifier', () => {
     const sourceFile = parseSource(
       "import { t } from 'yapyak';\nconst translate = somethingUnknown;",

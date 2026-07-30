@@ -132,6 +132,14 @@ describe('extractFile', () => {
     expect(result.messages[0]?.source).toBe(nfc);
   });
 
+  it('normalizes every context string to Unicode NFC', () => {
+    const nonNfc = 'café';
+    const nfc = 'café';
+    const code = `import { t } from 'yapyak';\nt.as('${nonNfc}', 'Open');\n`;
+    const result = extractFile('src/a.ts', code);
+    expect(result.messages[0]?.context).toBe(nfc);
+  });
+
   describe('diagnostic', () => {
     it('returns no diagnostics for clean fixtures', () => {
       const result = extractFixture('call', 'simple.ts');

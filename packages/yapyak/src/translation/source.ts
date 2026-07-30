@@ -3,6 +3,7 @@ import type {
   Digit,
   NonIdentifierCharacter,
   Trim,
+  WhitespaceCharacter,
 } from './t-param';
 
 type OrElse<TValue, TFallback> = [
@@ -132,7 +133,7 @@ type ValidatePluralBranches<TBody extends string, TFormat extends string> =
     : never;
 
 type HasOtherBranch<T extends string> = T extends
-  | `${string}other ${string}{${string}`
+  | `${string}other${WhitespaceCharacter}${string}{${string}`
   | `${string}other{${string}`
   ? true
   : false;

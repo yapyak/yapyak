@@ -374,6 +374,7 @@ Closed set of fixture data. No invented strings.
 'Closing braces inside: }}'   transform-output escape test
 "It's"                         apostrophe escape inside single-quoted string
 'K'                            messageId-hash collision tests
+'café'                         Unicode NFC-normalization tests — typed in NFD in the test, asserted in NFC
 '{count, plural, one {# objekt}}'                                   M1 regression — plural target with `other` dropped
 '{count, plural, one {# objekt} few {# objekt} many {# objekt} other {# objekt}}' locale-extra plural categories
 '{theme, select, dark {Mörkt} other {System}}'                       M1 select regression — domain branch dropped
@@ -387,6 +388,9 @@ Closed set of fixture data. No invented strings.
 '{count, plural, oen {# item} other {# items}}'                      YAP0046 regression — unknown plural keyword
 '{count, selectordinal, oen {#st} other {#th}}'                      YAP0046 regression — unknown selectordinal keyword
 '{count, plural, zero {# items} one {# item} two {# items} few {# items} many {# items} other {# items}}' every CLDR keyword accepted
+'You have {count, plural, one {# msg} other\t{# msgs}}'              type-level whitespace regression — tab before the `other` body
+'You have {count, plural, one {# msg} other\n{# msgs}}'              type-level whitespace regression — newline before the `other` body
+'You have {count,\n plural, one {# msg} other {# msgs}}'             type-level whitespace regression — newline after the placeholder name
 ```
 
 If a test does not exercise one of these edge cases, use the regular pool strings.

@@ -141,6 +141,24 @@ describe('ValidateSource', () => {
     >().toEqualTypeOf<'{c, plural, zero {# msgs} one {# msg} two {# msgs} few {# msgs} many {# msgs} other {# msgs}}'>();
   });
 
+  it('preserves a plural with a tab between `other` and its branch body', () => {
+    expectTypeOf<
+      ValidateSource<'You have {count, plural, one {# msg} other\t{# msgs}}'>
+    >().toEqualTypeOf<'You have {count, plural, one {# msg} other\t{# msgs}}'>();
+  });
+
+  it('preserves a plural with a newline between `other` and its branch body', () => {
+    expectTypeOf<
+      ValidateSource<'You have {count, plural, one {# msg} other\n{# msgs}}'>
+    >().toEqualTypeOf<'You have {count, plural, one {# msg} other\n{# msgs}}'>();
+  });
+
+  it('preserves a plural with a newline after the placeholder name', () => {
+    expectTypeOf<
+      ValidateSource<'You have {count,\n plural, one {# msg} other {# msgs}}'>
+    >().toEqualTypeOf<'You have {count,\n plural, one {# msg} other {# msgs}}'>();
+  });
+
   it('refuses a plural placeholder missing the `other` branch', () => {
     expectTypeOf<
       ValidateSource<'{count, plural, one {# msg} two {# msgs}}'>

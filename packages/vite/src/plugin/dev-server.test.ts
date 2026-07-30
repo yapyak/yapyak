@@ -209,6 +209,92 @@ describe('derivePatches', () => {
     ]);
   });
 
+  it('emits an empty-string plain-key patch when an entry becomes a context map', () => {
+    const patches = derivePatches(
+      {
+        'src/a.tsx': {
+          Open: 'Öppna',
+        },
+      },
+      {
+        'src/a.tsx': {
+          Open: {
+            button: 'Öppna',
+          },
+        },
+      },
+      'sv',
+    );
+    expect(patches).toEqual([
+      {
+        fileId: 'src/a.tsx',
+        id: JSON.stringify([
+          'Open',
+          null,
+        ]),
+        locale: 'sv',
+        value: '',
+      },
+      {
+        fileId: 'src/a.tsx',
+        id: JSON.stringify([
+          'Open',
+          'button',
+        ]),
+        locale: 'sv',
+        value: 'Öppna',
+      },
+    ]);
+  });
+
+  it('emits empty-string context patches when an entry becomes a plain string', () => {
+    const patches = derivePatches(
+      {
+        'src/a.tsx': {
+          Open: {
+            badge: 'Öppen',
+            button: 'Öppna',
+          },
+        },
+      },
+      {
+        'src/a.tsx': {
+          Open: 'Öppna',
+        },
+      },
+      'sv',
+    );
+    expect(patches).toEqual([
+      {
+        fileId: 'src/a.tsx',
+        id: JSON.stringify([
+          'Open',
+          'badge',
+        ]),
+        locale: 'sv',
+        value: '',
+      },
+      {
+        fileId: 'src/a.tsx',
+        id: JSON.stringify([
+          'Open',
+          'button',
+        ]),
+        locale: 'sv',
+        value: '',
+      },
+      {
+        fileId: 'src/a.tsx',
+        id: JSON.stringify([
+          'Open',
+          null,
+        ]),
+        locale: 'sv',
+        value: 'Öppna',
+      },
+    ]);
+  });
+
   it('emits an empty-string patch when the value is an empty stub', () => {
     const patches = derivePatches(
       {},

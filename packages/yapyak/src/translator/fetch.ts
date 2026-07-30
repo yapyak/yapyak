@@ -124,12 +124,12 @@ function getBackoffMs(attempt: number): number {
 function delay(ms: number, signal?: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
-      reject(signal.reason);
+      reject(signal.reason ?? new Error('Aborted'));
       return;
     }
     const onAbort = (): void => {
       clearTimeout(timer);
-      reject(signal?.reason);
+      reject(signal?.reason ?? new Error('Aborted'));
     };
     const timer = setTimeout(() => {
       signal?.removeEventListener('abort', onAbort);

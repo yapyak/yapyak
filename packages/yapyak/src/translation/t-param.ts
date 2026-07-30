@@ -1,8 +1,11 @@
-export type Trim<T extends string> = T extends ` ${infer TRest}`
-  ? Trim<TRest>
-  : T extends `${infer TRest} `
+export type WhitespaceCharacter = ' ' | '\t' | '\n' | '\r';
+
+export type Trim<T extends string> =
+  T extends `${WhitespaceCharacter}${infer TRest}`
     ? Trim<TRest>
-    : T;
+    : T extends `${infer TRest}${WhitespaceCharacter}`
+      ? Trim<TRest>
+      : T;
 
 export type NonIdentifierCharacter =
   | ' '
