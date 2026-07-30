@@ -575,6 +575,11 @@ Inline fixtures up to 20 lines. At 21+ lines, move to a `fixtures/` sibling file
 
 For larger fixtures (compiler tests with source-code samples), put them in a `fixtures/` sibling folder, one file per fixture. Reference by path, not by import — the fixture content is treated as raw text.
 
+### Coverage floor
+
+- Keep each root `coverage.thresholds` value ~1 percentage point under the measured level.
+- Raise a floor after a coverage improvement → never lower one; when the gate fails, add the mandated tests instead.
+
 ### Audit before commit
 
 | Group | Check |

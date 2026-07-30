@@ -22,6 +22,12 @@ export default defineConfig({
         'lcov',
         'json-summary',
       ],
+      thresholds: {
+        branches: 88,
+        functions: 97,
+        lines: 94,
+        statements: 94,
+      },
     },
     projects: [
       'packages/*',

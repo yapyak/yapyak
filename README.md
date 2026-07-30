@@ -37,7 +37,7 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 - **Context-aware AI translation.** Because yapyak is a compiler, it sends the model the code around each string, so it translates a button as a button. Set a glossary and a tone, and it learns the rest from your existing translations.
 - **Bring your own AI. Or none.** Anthropic, OpenAI, Gemini, and Ollama are built in. Write your own, or skip AI and fill the JSON by hand.
 - **Refactor freely.** Move or rename files and the translations come with them. yapyak won't drop a translation you still use.
-- **Paranoid by default.** Missing values are caught as you type, every locale is checked on save, and the browser warns you in development. 44 numbered diagnostics, each with a page that explains the fix.
+- **Paranoid by default.** Missing values are caught as you type, every locale is checked on save, and the browser warns you in development. 46 numbered diagnostics, each with a page that explains the fix.
 - **Production-ready i18n.** Plurals, selects, ordinals, dates, numbers, lists, and rich text that renders your own components. There's also a `format` helper for values outside a message.
 - **Compiled in. Choose how much.** Translations ship inside the code that uses them and split along your routes. Build for one locale and there's no runtime at all.
 - **Locale switching, handled.** Instant, with nothing to load. Keep the choice in a cookie or the URL, which work with SSR, or in local storage for a SPA.

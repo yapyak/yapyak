@@ -38,7 +38,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'Forget a param and TypeScript catches it at the call site, before you even save. Save, and yapyak checks every locale, refusing to ship a translation that drifted or lost a plural. In the browser, it warns about the failures that build time never sees. 44 numbered diagnostics, YAP0001 and up, each with a page that spells out the fix.',
+        'Forget a param and TypeScript catches it at the call site, before you even save. Save, and yapyak checks every locale, refusing to ship a translation that drifted or lost a plural. In the browser, it warns about the failures that build time never sees. 46 numbered diagnostics, YAP0001 and up, each with a page that spells out the fix.',
       ),
       number: '05',
       title: t('Paranoid by default'),
