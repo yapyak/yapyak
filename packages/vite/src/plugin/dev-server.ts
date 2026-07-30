@@ -15,7 +15,7 @@ import type { State } from './state';
 
 import {
   CorruptLocaleFileError,
-  YAP,
+  YAP_RUNTIME,
   detectRenames,
   getDocsUrl,
   migrateLocales,
@@ -123,7 +123,7 @@ export function createDevServerPlugin(state: State): Plugin {
           } catch (error) {
             if (error instanceof CorruptLocaleFileError) {
               state.logger.warn(
-                `${error.message}\nSee ${getDocsUrl(YAP.CATALOG_LOCALE_FILE_CORRUPT.code)}`,
+                `${error.message}\nSee ${getDocsUrl(YAP_RUNTIME.CATALOG_LOCALE_FILE_CORRUPT.code)}`,
               );
               continue;
             }
@@ -221,7 +221,7 @@ export function createDevServerPlugin(state: State): Plugin {
           } catch (error) {
             if (error instanceof CorruptLocaleFileError) {
               state.logger.warn(
-                `${error.message}\nSee ${getDocsUrl(YAP.CATALOG_LOCALE_FILE_CORRUPT.code)}`,
+                `${error.message}\nSee ${getDocsUrl(YAP_RUNTIME.CATALOG_LOCALE_FILE_CORRUPT.code)}`,
               );
               return;
             }

@@ -17,7 +17,7 @@ export type {
   TransformFileResult,
 } from './parser';
 
-export { YAP, getDocsUrl } from '../diagnostic';
+export { YAP_COMPILE, YAP_RUNTIME, getDocsUrl } from '../diagnostic';
 export { parseTemplate } from '../template';
 export {
   CorruptLocaleFileError,

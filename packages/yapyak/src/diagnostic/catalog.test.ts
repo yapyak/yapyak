@@ -4,7 +4,13 @@ import type { BuildDiagnosticContext } from './catalog';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetWarn, setWarn } from '../warn';
-import { YAP, buildDiagnostic, getDocsUrl, warnDiagnostic } from './catalog';
+import {
+  YAP_COMPILE,
+  YAP_RUNTIME,
+  buildDiagnostic,
+  getDocsUrl,
+  warnDiagnostic,
+} from './catalog';
 
 const RANGE: Range = {
   end: {
@@ -136,23 +142,27 @@ describe('warnDiagnostic', () => {
   });
 });
 
-describe('YAP', () => {
+describe('YAP_COMPILE', () => {
   it('holds every entry in the `YAP<NNNN>` code format', () => {
     const pattern = /^YAP\d{4}$/;
-    for (const entry of Object.values(YAP)) {
+    for (const entry of Object.values(YAP_COMPILE)) {
       expect(entry.code).toMatch(pattern);
     }
   });
 
-  it('holds every code as unique', () => {
-    const codes = Object.values(YAP).map((entry) => entry.code);
+  it('holds every code as unique across `YAP_COMPILE` and `YAP_RUNTIME`', () => {
+    const codes = [
+      ...Object.values(YAP_COMPILE),
+      ...Object.values(YAP_RUNTIME),
+    ].map((entry) => entry.code);
     expect(new Set(codes).size).toBe(codes.length);
   });
 
-  it('holds all codes sequentially from `YAP0001`', () => {
-    const numbers = Object.values(YAP).map((entry) =>
-      Number.parseInt(entry.code.slice(3), 10),
-    );
+  it('holds all codes sequentially from `YAP0001` across `YAP_COMPILE` and `YAP_RUNTIME`', () => {
+    const numbers = [
+      ...Object.values(YAP_COMPILE),
+      ...Object.values(YAP_RUNTIME),
+    ].map((entry) => Number.parseInt(entry.code.slice(3), 10));
     const sorted = [
       ...numbers,
     ].sort((a, b) => a - b);
@@ -162,7 +172,26 @@ describe('YAP', () => {
   });
 
   it('holds codes in ascending declaration order', () => {
-    const numbers = Object.values(YAP).map((entry) =>
+    const numbers = Object.values(YAP_COMPILE).map((entry) =>
+      Number.parseInt(entry.code.slice(3), 10),
+    );
+    const sorted = [
+      ...numbers,
+    ].sort((a, b) => a - b);
+    expect(numbers).toEqual(sorted);
+  });
+});
+
+describe('YAP_RUNTIME', () => {
+  it('holds every entry in the `YAP<NNNN>` code format', () => {
+    const pattern = /^YAP\d{4}$/;
+    for (const entry of Object.values(YAP_RUNTIME)) {
+      expect(entry.code).toMatch(pattern);
+    }
+  });
+
+  it('holds codes in ascending declaration order', () => {
+    const numbers = Object.values(YAP_RUNTIME).map((entry) =>
       Number.parseInt(entry.code.slice(3), 10),
     );
     const sorted = [

@@ -7,7 +7,7 @@ import type { FilterPattern } from '../config';
 import type { Processor } from '../processor';
 
 import {
-  YAP,
+  YAP_COMPILE,
   extractFile,
   findTranslation,
   fromMessageKey,
@@ -113,7 +113,7 @@ export function buildReport(input: BuildReportInput): Report {
     const structuralDiagnostics = validateLocaleFile(localeFileId, localePath);
     diagnostics.push(...structuralDiagnostics);
     const hasParseFailure = structuralDiagnostics.some(
-      (diagnostic) => diagnostic.code === YAP.CATALOG_INVALID_JSON.code,
+      (diagnostic) => diagnostic.code === YAP_COMPILE.CATALOG_INVALID_JSON.code,
     );
     let localeFile: LocaleFile;
     if (hasParseFailure) {

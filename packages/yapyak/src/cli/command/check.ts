@@ -2,7 +2,7 @@ import type { Diagnostic } from '../../compiler/internal';
 import type { Config } from '../config';
 
 import {
-  YAP,
+  YAP_COMPILE,
   findContextDiagnostics,
   readLocaleFile,
   validateIcuPairs,
@@ -43,7 +43,7 @@ export function check(config: Config, projectRoot: string): number {
     const hasParseFailure = report.diagnostics.some(
       (diagnostic) =>
         diagnostic.fileId === fileId &&
-        diagnostic.code === YAP.CATALOG_INVALID_JSON.code,
+        diagnostic.code === YAP_COMPILE.CATALOG_INVALID_JSON.code,
     );
     if (hasParseFailure) {
       continue;

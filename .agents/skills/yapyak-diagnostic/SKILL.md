@@ -19,12 +19,17 @@ YAP0001
 
 ### Source of truth — a single typed constants file
 
-Every diagnostic code lives in **one file** as a typed constant: `src/diagnostic/catalog.ts`.
+Every diagnostic code lives in **one file**, `src/diagnostic/catalog.ts`, in exactly one of two typed constants split by renderer:
+
+- `YAP_COMPILE` — entries rendered by `buildDiagnostic` (compile-time diagnostics).
+- `YAP_RUNTIME` — entries rendered by `warnDiagnostic` (runtime warnings).
+
+`warnDiagnostic` reads only `YAP_RUNTIME`. Never build a merged object from the two constants — a merged object defeats consumer tree-shaking and ships every compile-time message in browser bundles.
 
 ```ts
 const DOCS_BASE = 'https://yapyak.dev/reference/diagnostics';
 
-export const YAP = {
+export const YAP_COMPILE = {
   PARSER_NO_SOURCE: {
     code: 'YAP0001',
     hint: (): string =>
@@ -35,6 +40,10 @@ export const YAP = {
         : '`t()` called without arguments.',
   },
   // ...
+} as const;
+
+export const YAP_RUNTIME = {
+  // ...
   LOCALE_SET_IGNORED: {
     code: 'YAP0028',
     message: ({ value }: { value: string }): string =>
@@ -42,8 +51,9 @@ export const YAP = {
   },
 } as const;
 
-export type YapKey = keyof typeof YAP;
-export type YapCode = (typeof YAP)[YapKey]['code'];
+export type YapCode =
+  | (typeof YAP_COMPILE)[keyof typeof YAP_COMPILE]['code']
+  | (typeof YAP_RUNTIME)[keyof typeof YAP_RUNTIME]['code'];
 
 export function getDocsUrl(code: YapCode): string {
   return `${DOCS_BASE}/${code}`;
@@ -52,26 +62,26 @@ export function getDocsUrl(code: YapCode): string {
 
 **One file exports the whole surface:**
 
-1. `YAP` — frozen object of catalog entries. Each entry carries `code`, a typed `message` function, and (for diagnostics with a separate fix) a typed `hint` function.
-2. `YapKey` / `YapCode` — types derived from `YAP`. Use `YapCode` everywhere a diagnostic code is referenced in a type signature.
+1. `YAP_COMPILE` / `YAP_RUNTIME` — frozen objects of catalog entries. Each entry carries `code`, a typed `message` function, and (for diagnostics with a separate fix) a typed `hint` function.
+2. `YapCode` — type derived from both constants. Use `YapCode` everywhere a diagnostic code is referenced in a type signature.
 3. `getDocsUrl(code)` — pure function that builds the documentation URL.
-4. `buildDiagnostic(key, params, context)` — builds a compile-time `Diagnostic` from a catalog entry.
-5. `warnDiagnostic(key, params, meta?)` — renders and emits a runtime warning with the docs URL appended.
+4. `buildDiagnostic(key, params, context)` — builds a compile-time `Diagnostic` from a `YAP_COMPILE` entry.
+5. `warnDiagnostic(key, params, meta?)` — renders and emits a runtime warning from a `YAP_RUNTIME` entry with the docs URL appended.
 
-**No diagnostic code may exist outside this file.** No string-literal `'YAP0042'` anywhere in source code — every reference goes through `buildDiagnostic`/`warnDiagnostic` with the catalog key, or `YAP.<NAME>.code`. The TypeScript compiler enforces uniqueness, refactor-safety, and typo-immunity.
+**No diagnostic code may exist outside this file.** No string-literal `'YAP0042'` anywhere in source code — every reference goes through `buildDiagnostic`/`warnDiagnostic` with the catalog key, or `YAP_COMPILE.<NAME>.code` / `YAP_RUNTIME.<NAME>.code`. The TypeScript compiler enforces uniqueness, refactor-safety, and typo-immunity.
 
 ### Allocation policy
 
 Sequential. Append-only. Never reused.
 
-1. **Allocating a new code:** find the highest existing number in `catalog.ts`, add one, append a new constant. Never insert between existing entries.
+1. **Allocating a new code:** find the highest existing number across both constants, add one, append the entry to the constant matching its renderer (`buildDiagnostic` → `YAP_COMPILE`, `warnDiagnostic` → `YAP_RUNTIME`). Never insert between existing entries.
 2. **Retiring a code:** mark the constant with a line comment `// YAPnnnn [RETIRED vX.Y]: superseded by <codes>` and keep it in the file. **Never delete. Never reuse the number.**
 3. **Re-purposing an existing code is forbidden.** If meaning changes, retire the old one and allocate a new one.
 4. **A code describes exactly one state.** If two situations need different diagnostic context, allocate two codes. A compile-time diagnostic and a runtime `warn()` are never the same state — always separate codes. Otherwise two situations are the same state iff they share an identical fix sentence AND an identical observation template (placeholders aside). If either differs, allocate separate codes.
 
 ```ts
 // ✓ Right — sequential allocation, single-purpose
-export const YAP = {
+export const YAP_COMPILE = {
   PARSER_NO_SOURCE: { code: 'YAP0001' /* hint, message */ },
   PARSER_TEMPLATE_LITERAL: { code: 'YAP0002' /* hint, message */ },
   PARSER_EMPTY_SOURCE: { code: 'YAP0003' /* hint, message */ },
@@ -79,7 +89,7 @@ export const YAP = {
 } as const;
 
 // ✓ Right — retired code stays, never reused
-export const YAP = {
+export const YAP_COMPILE = {
   PARSER_NO_SOURCE: { code: 'YAP0001' /* hint, message */ },
   PARSER_TEMPLATE_LITERAL: { code: 'YAP0002' /* hint, message */ },
   // YAP0003 [RETIRED v2.0]: superseded by YAP0042, YAP0043
@@ -87,7 +97,7 @@ export const YAP = {
 } as const;
 
 // ✗ Wrong — inserting between
-export const YAP = {
+export const YAP_COMPILE = {
   PARSER_NO_SOURCE: { code: 'YAP0001' /* hint, message */ },
   PARSER_NEW_VARIANT: { code: 'YAP0001a' },  // never. allocate a new sequential number.
   PARSER_TEMPLATE_LITERAL: { code: 'YAP0002' /* hint, message */ },

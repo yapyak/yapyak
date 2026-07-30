@@ -12,7 +12,7 @@ yapyak is an i18n compiler with a small runtime, built for the way code gets wri
 
 It's a Vite plugin. Works with React, Vue, Svelte, and Astro. SSR is supported on Astro, React Router, SvelteKit, and TanStack Start.
 
-The runtime has no dependencies, built on the platform's Intl API. About 6 KB gzipped for typical use, zero for fixed-locale builds.
+The runtime has no dependencies, built on the platform's Intl API. About 5 KB gzipped for typical use, zero for fixed-locale builds.
 
 ```tsx
 import { t } from 'yapyak';

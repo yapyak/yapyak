@@ -5,7 +5,7 @@ import { warn } from '../warn';
 const DOCS_BASE = 'https://yapyak.dev/reference/diagnostics';
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap
-export const YAP = {
+export const YAP_COMPILE = {
   PARSER_NO_SOURCE: {
     code: 'YAP0001',
     hint: (): string =>
@@ -174,6 +174,92 @@ export const YAP = {
     message: ({ methodName }: { methodName: 'as' | 'in' }): string =>
       `\`t.${methodName}()\` captured into a variable. Modifiers must be used inline.`,
   },
+  PLACEHOLDER_BRANCH_MISSING_IN_TARGET: {
+    code: 'YAP0038',
+    hint: ({ branch, name }: { branch: string; name: string }): string =>
+      `Add the \`${branch}\` branch to \`{${name}}\` in the translation.`,
+    message: ({ branch, name }: { branch: string; name: string }): string =>
+      `Placeholder \`{${name}}\` branch \`${branch}\` is in the source but missing from the translation.`,
+  },
+  RICHTEXT_TAG_UNCLOSED: {
+    code: 'YAP0041',
+    hint: ({ name }: { name: string }): string =>
+      `Close the tag with \`</${name}>\` or rewrite as a void tag \`<${name}/>\`.`,
+    message: ({ name }: { name: string }): string =>
+      `Opening tag \`<${name}>\` has no closing tag.`,
+  },
+  RICHTEXT_TAG_MISMATCHED: {
+    code: 'YAP0042',
+    hint: ({ expected }: { expected: string }): string =>
+      `Close the opening tag first with \`</${expected}>\`.`,
+    message: ({
+      actual,
+      expected,
+    }: {
+      actual: string;
+      expected: string;
+    }): string =>
+      `Closing tag \`</${actual}>\` does not match opening \`<${expected}>\`.`,
+  },
+  RICHTEXT_TAG_UNOPENED: {
+    code: 'YAP0043',
+    hint: ({ name }: { name: string }): string =>
+      `Add an opening \`<${name}>\` or remove the closing tag.`,
+    message: ({ name }: { name: string }): string =>
+      `Closing tag \`</${name}>\` has no matching opening tag.`,
+  },
+  RICHTEXT_TAG_NAME_MISSING: {
+    code: 'YAP0044',
+    hint: (): string => 'Provide a name like `<link>` or remove the brackets.',
+    message: (): string => 'Tag has no name.',
+  },
+  PLACEHOLDER_BRANCH_UNKNOWN: {
+    code: 'YAP0045',
+    hint: ({
+      categories,
+    }: {
+      branch: string;
+      categories: string[];
+      kind: 'ordinal' | 'plural';
+      locale: string;
+      name: string;
+    }): string =>
+      `Use one of ${categories
+        .map((category) => `\`${category}\``)
+        .join(', ')}, or an exact match like \`=1\`.`,
+    message: ({
+      branch,
+      kind,
+      locale,
+      name,
+    }: {
+      branch: string;
+      categories: string[];
+      kind: 'ordinal' | 'plural';
+      locale: string;
+      name: string;
+    }): string =>
+      `Branch "${branch}" in \`{${name}}\` is not ${kind === 'ordinal' ? 'an' : 'a'} ${kind} category of locale "${locale}".`,
+  },
+  PLACEHOLDER_KEYWORD_UNKNOWN: {
+    code: 'YAP0046',
+    hint: (): string =>
+      'Use one of `zero`, `one`, `two`, `few`, `many`, `other`, or an exact match like `=1`.',
+    message: ({
+      branch,
+      kind,
+      name,
+    }: {
+      branch: string;
+      kind: 'plural' | 'selectordinal';
+      name: string;
+    }): string =>
+      `Branch "${branch}" in \`{${name}}\` is not a ${kind} keyword.`,
+  },
+} as const;
+
+// biome-ignore assist/source/useSortedKeys: yap yap yap
+export const YAP_RUNTIME = {
   RUNTIME_NOT_INITIALIZED: {
     code: 'YAP0021',
     message: (): string =>
@@ -263,13 +349,6 @@ export const YAP = {
     message: ({ timeZone }: { timeZone: string }): string =>
       `Unsupported time zone "${timeZone}". Yapyak rendered the date in the system time zone.`,
   },
-  PLACEHOLDER_BRANCH_MISSING_IN_TARGET: {
-    code: 'YAP0038',
-    hint: ({ branch, name }: { branch: string; name: string }): string =>
-      `Add the \`${branch}\` branch to \`{${name}}\` in the translation.`,
-    message: ({ branch, name }: { branch: string; name: string }): string =>
-      `Placeholder \`{${name}}\` branch \`${branch}\` is in the source but missing from the translation.`,
-  },
   CATALOG_MIGRATION_FAILED: {
     code: 'YAP0039',
     message: ({ detail, locale }: { detail: string; locale: string }): string =>
@@ -280,85 +359,11 @@ export const YAP = {
     message: (): string =>
       'Tracker callback threw an exception. Yapyak continued with the remaining trackers.',
   },
-  RICHTEXT_TAG_UNCLOSED: {
-    code: 'YAP0041',
-    hint: ({ name }: { name: string }): string =>
-      `Close the tag with \`</${name}>\` or rewrite as a void tag \`<${name}/>\`.`,
-    message: ({ name }: { name: string }): string =>
-      `Opening tag \`<${name}>\` has no closing tag.`,
-  },
-  RICHTEXT_TAG_MISMATCHED: {
-    code: 'YAP0042',
-    hint: ({ expected }: { expected: string }): string =>
-      `Close the opening tag first with \`</${expected}>\`.`,
-    message: ({
-      actual,
-      expected,
-    }: {
-      actual: string;
-      expected: string;
-    }): string =>
-      `Closing tag \`</${actual}>\` does not match opening \`<${expected}>\`.`,
-  },
-  RICHTEXT_TAG_UNOPENED: {
-    code: 'YAP0043',
-    hint: ({ name }: { name: string }): string =>
-      `Add an opening \`<${name}>\` or remove the closing tag.`,
-    message: ({ name }: { name: string }): string =>
-      `Closing tag \`</${name}>\` has no matching opening tag.`,
-  },
-  RICHTEXT_TAG_NAME_MISSING: {
-    code: 'YAP0044',
-    hint: (): string => 'Provide a name like `<link>` or remove the brackets.',
-    message: (): string => 'Tag has no name.',
-  },
-  PLACEHOLDER_BRANCH_UNKNOWN: {
-    code: 'YAP0045',
-    hint: ({
-      categories,
-    }: {
-      branch: string;
-      categories: string[];
-      kind: 'ordinal' | 'plural';
-      locale: string;
-      name: string;
-    }): string =>
-      `Use one of ${categories
-        .map((category) => `\`${category}\``)
-        .join(', ')}, or an exact match like \`=1\`.`,
-    message: ({
-      branch,
-      kind,
-      locale,
-      name,
-    }: {
-      branch: string;
-      categories: string[];
-      kind: 'ordinal' | 'plural';
-      locale: string;
-      name: string;
-    }): string =>
-      `Branch "${branch}" in \`{${name}}\` is not ${kind === 'ordinal' ? 'an' : 'a'} ${kind} category of locale "${locale}".`,
-  },
-  PLACEHOLDER_KEYWORD_UNKNOWN: {
-    code: 'YAP0046',
-    hint: (): string =>
-      'Use one of `zero`, `one`, `two`, `few`, `many`, `other`, or an exact match like `=1`.',
-    message: ({
-      branch,
-      kind,
-      name,
-    }: {
-      branch: string;
-      kind: 'plural' | 'selectordinal';
-      name: string;
-    }): string =>
-      `Branch "${branch}" in \`{${name}}\` is not a ${kind} keyword.`,
-  },
 } as const;
 
-export type YapKey = keyof typeof YAP;
-export type YapCode = (typeof YAP)[YapKey]['code'];
+export type YapCode =
+  | (typeof YAP_COMPILE)[keyof typeof YAP_COMPILE]['code']
+  | (typeof YAP_RUNTIME)[keyof typeof YAP_RUNTIME]['code'];
 
 export type Diagnostic = {
   code: YapCode;
@@ -379,12 +384,12 @@ export function getDocsUrl(code: YapCode): string {
   return `${DOCS_BASE}/${code}`;
 }
 
-export function warnDiagnostic<T extends YapKey>(
+export function warnDiagnostic<T extends keyof typeof YAP_RUNTIME>(
   key: T,
-  params: Parameters<(typeof YAP)[T]['message']>[0],
+  params: Parameters<(typeof YAP_RUNTIME)[T]['message']>[0],
   meta?: Record<string, unknown>,
 ): void {
-  const entry = YAP[key];
+  const entry = YAP_RUNTIME[key];
   const url = getDocsUrl(entry.code);
   const message = (entry.message as (input: typeof params) => string)(params);
   warn(`${entry.code} ${message}\nSee ${url}`, {
@@ -393,12 +398,12 @@ export function warnDiagnostic<T extends YapKey>(
   });
 }
 
-export function buildDiagnostic<T extends YapKey>(
+export function buildDiagnostic<T extends keyof typeof YAP_COMPILE>(
   key: T,
-  params: Parameters<(typeof YAP)[T]['message']>[0],
+  params: Parameters<(typeof YAP_COMPILE)[T]['message']>[0],
   context: BuildDiagnosticContext,
 ): Diagnostic {
-  const entry = YAP[key];
+  const entry = YAP_COMPILE[key];
   const message = (entry.message as (input: typeof params) => string)(params);
   const hint =
     'hint' in entry
