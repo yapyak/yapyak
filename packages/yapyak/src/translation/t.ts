@@ -92,7 +92,7 @@ export type TFn = {
   as<T extends string>(context: T): TAsChain;
 
   /**
-   * Forces a fixed locale for one translation call, or returns a chain that requires `.as()` to complete.
+   * Forces a locale for one translation call, or returns a chain that requires `.as()` to complete.
    *
    * @shape t.in<T extends string>(locale: Locale, source: T, params?: TParams<T>): string
    *

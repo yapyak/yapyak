@@ -31,7 +31,7 @@ YAPYAK_LOCALE=sv pnpm build
 
 ## Build output
 
-yapyak compiles every `t()` call to the fixed locale's value. With `fixedLocale: 'sv'`:
+yapyak compiles every `t()` call to the fixed-locale value. With `fixedLocale: 'sv'`:
 
 ```tsx
 <button>{t('Save changes')}</button>

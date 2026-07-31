@@ -137,7 +137,7 @@ export type Format = {
   dateTime(value: Date | number, options?: FormatDateTimeOptions): string;
 
   /**
-   * Scopes formatting to a fixed locale.
+   * Scopes formatting to a forced locale.
    *
    * @param locale - The locale code.
    *
