@@ -36,15 +36,15 @@ export type SyncLocaleFilesOptions = {
   yapyakDir?: string;
 };
 
-type SyncEntry = {
+type SyncItem = {
   fileId: string;
   locale: string;
   source: string;
 };
 
 export type SyncLocaleFilesResult = {
-  orphaned: SyncEntry[];
-  restored: SyncEntry[];
+  orphaned: SyncItem[];
+  restored: SyncItem[];
 };
 
 export type WriteLocaleFileInput = {
@@ -553,7 +553,7 @@ function extractInFlightDrops(
 type RestoreContext = {
   inFlightDrops: InFlightDrops;
   orphans: OrphanCache;
-  restored: SyncEntry[];
+  restored: SyncItem[];
   restoredInFlight: Map<string, Set<string>>;
   restoredOrphans: Map<string, Set<string>>;
 };
@@ -703,7 +703,7 @@ function findInFlightDrop(
 
 type CollectDropsResult = {
   droppedTranslations: Map<string, Map<string, Record<string, string>>>;
-  orphaned: SyncEntry[];
+  orphaned: SyncItem[];
 };
 
 function collectDrops(context: RestoreContext): CollectDropsResult {
@@ -711,7 +711,7 @@ function collectDrops(context: RestoreContext): CollectDropsResult {
     string,
     Map<string, Record<string, string>>
   >();
-  const orphaned: SyncEntry[] = [];
+  const orphaned: SyncItem[] = [];
   for (const [fileId, byKey] of context.inFlightDrops) {
     for (const [key, drop] of byKey) {
       if (context.restoredInFlight.get(fileId)?.has(key)) {

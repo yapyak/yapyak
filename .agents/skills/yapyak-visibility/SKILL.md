@@ -138,6 +138,33 @@ Transitive closure applies to types the user names at the API boundary. Helpers 
 | Conditional/mapped type computation | ✗ | `T extends ... ? Helper<T> : ...` → internal |
 | Post-processed internal shape | ✗ | `NormalizedOptions` |
 
+#### `/internal` surfaces
+
+Apply the closure rule to public surfaces only — the `.` entry and every non-`/internal` subpath. On an `/internal` surface, export exactly the types a sibling package annotates.
+
+- Never closure-export a type from `internal.ts` → promote it when its first Annotation example appears (per the four-category test), through every barrel in the same change.
+- Until then, consumers reach sub-shapes via indexed access.
+
+```ts
+// ✓ Sub-shape unexported — consumers write SyncLocaleFilesResult['orphaned'][number]
+type SyncItem = {
+  fileId: string;
+  locale: string;
+  source: string;
+};
+export type SyncLocaleFilesResult = {
+  orphaned: SyncItem[];
+  restored: SyncItem[];
+};
+
+// ✗ Closure-export with no Annotation example — keep the sub-shape unexported
+export type SyncItem = {
+  fileId: string;
+  locale: string;
+  source: string;
+};
+```
+
 ### README API Reference sync
 
 If a package README has `## API Reference`, treat it as public surface. When a public symbol is added, removed, or renamed, update the README in the same commit.
