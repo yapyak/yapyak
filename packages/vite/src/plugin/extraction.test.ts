@@ -25,12 +25,24 @@ describe('resolveExtraction', () => {
     expect(result.messages[0]?.source).toBe('Hello');
   });
 
-  it('returns the cached result when the source is unchanged', () => {
+  it('returns the cached messages when an unchanged source has no call sites', () => {
+    const state = buildState();
+    const source = "import { t } from 'yapyak';\nexport { t };";
+    const first = resolveExtraction(state, 'src/a.ts', source);
+
+    expect(resolveExtraction(state, 'src/a.ts', source).messages).toBe(
+      first.messages,
+    );
+  });
+
+  it('extracts the call sites again when an unchanged source has call sites', () => {
     const state = buildState();
     const source = "import { t } from 'yapyak';\nt('Hello');";
     const first = resolveExtraction(state, 'src/a.ts', source);
+    const second = resolveExtraction(state, 'src/a.ts', source);
 
-    expect(resolveExtraction(state, 'src/a.ts', source)).toBe(first);
+    expect(second.callSites).toHaveLength(1);
+    expect(second.messages).toEqual(first.messages);
   });
 
   it('returns an empty result when the source lacks `yapyak`', () => {

@@ -11,6 +11,7 @@ export type {
 } from './file';
 export type { RenameConflict } from './migrate';
 export type { OrphanCache } from './orphan';
+export type { TranslationParityResult } from './validate';
 
 export { validateLocaleCode } from './code';
 export { readLocaleData } from './data';

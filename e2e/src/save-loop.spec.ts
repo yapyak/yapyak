@@ -2,6 +2,7 @@ import { expect, test } from './test';
 import { execFile } from 'node:child_process';
 import { copyFile, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
+import { setTimeout } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 
@@ -40,13 +41,12 @@ const BASELINE: Catalog = {
   },
 };
 
+const SETTLE_TIMEOUT = 1000;
+const SETTLE_INTERVAL = 100;
+
 test.beforeEach(async ({ page }) => {
   await resetSandbox();
-  await expect(async () => {
-    expect(await readCatalog('sv')).toEqual(BASELINE);
-  }).toPass();
-  await page.waitForTimeout(1000);
-  expect(await readCatalog('sv')).toEqual(BASELINE);
+  await validateSettledCatalog('sv', BASELINE);
 
   await page.goto('/');
   await expect(
@@ -195,17 +195,14 @@ test('preserves the translation when a source string is renamed', async ({
   );
 
   await expect(page.getByText('Save changes')).toBeVisible();
-  await expect(async () => {
-    expect((await readCatalog('sv'))['src/app.tsx']).toEqual({
+  await validateSettledCatalog('sv', {
+    'src/app.tsx': {
       Hello: 'Hej',
       'Save changes': 'Spara',
-    });
-  }).toPass();
-
-  await page.waitForTimeout(1000);
-  expect((await readCatalog('sv'))['src/app.tsx']).toEqual({
-    Hello: 'Hej',
-    'Save changes': 'Spara',
+    },
+    'src/cart.tsx': {
+      Settings: 'Laddar...',
+    },
   });
 });
 
@@ -236,23 +233,18 @@ test('preserves the translation when a removed `t()` call returns', async ({
   }).toPass();
 
   await copyFile(TEMPLATE_APP_PATH, APP_PATH);
-  await expect(async () => {
-    expect((await readCatalog('sv'))['src/app.tsx']).toEqual({
+  await validateSettledCatalog('sv', {
+    'src/app.tsx': {
       Hello: 'Hej',
       Save: 'Byt konto',
-    });
-  }).toPass();
-
-  await page.waitForTimeout(1000);
-  expect((await readCatalog('sv'))['src/app.tsx']).toEqual({
-    Hello: 'Hej',
-    Save: 'Byt konto',
+    },
+    'src/cart.tsx': {
+      Settings: 'Laddar...',
+    },
   });
 });
 
-test('preserves the translation when the source file moves', async ({
-  page,
-}) => {
+test('preserves the translation when the source file moves', async () => {
   const cart = await readFile(TEMPLATE_CART_PATH, 'utf8');
   await mkdir(dirname(MOVED_CART_PATH), {
     recursive: true,
@@ -263,17 +255,14 @@ test('preserves the translation when the source file moves', async ({
     force: true,
   });
 
-  await expect(async () => {
-    const catalog = await readCatalog('sv');
-    expect(catalog['src/checkout/cart.tsx']).toEqual({
+  await validateSettledCatalog('sv', {
+    'src/app.tsx': {
+      Hello: 'Hej',
+      Save: 'Spara',
+    },
+    'src/checkout/cart.tsx': {
       Settings: 'Laddar...',
-    });
-    expect(catalog['src/cart.tsx']).toBeUndefined();
-  }).toPass();
-
-  await page.waitForTimeout(1000);
-  expect((await readCatalog('sv'))['src/checkout/cart.tsx']).toEqual({
-    Settings: 'Laddar...',
+    },
   });
 });
 
@@ -291,25 +280,18 @@ test('skips auto-translate when a save exceeds `autoTranslateThreshold`', async 
     ),
   );
 
-  await expect(async () => {
-    expect((await readCatalog('sv'))['src/app.tsx']).toEqual({
+  await validateSettledCatalog('sv', {
+    'src/app.tsx': {
       Hello: 'Hej',
       'Loading...': '',
       Save: 'Spara',
       'Switch account': '',
       'Unnamed account': '',
       World: '',
-    });
-  }).toPass();
-
-  await page.waitForTimeout(1000);
-  expect((await readCatalog('sv'))['src/app.tsx']).toEqual({
-    Hello: 'Hej',
-    'Loading...': '',
-    Save: 'Spara',
-    'Switch account': '',
-    'Unnamed account': '',
-    World: '',
+    },
+    'src/cart.tsx': {
+      Settings: 'Laddar...',
+    },
   });
   expect(loadCount).toBe(0);
 });
@@ -405,19 +387,15 @@ test('preserves a hand-edited translation when the source is saved again', async
     ),
   );
 
-  await expect(async () => {
-    expect((await readCatalog('sv'))['src/app.tsx']).toEqual({
+  await validateSettledCatalog('sv', {
+    'src/app.tsx': {
       Cancel: 'Avbryt',
       Hello: 'Hej',
       Save: 'Byt konto',
-    });
-  }).toPass();
-
-  await page.waitForTimeout(1000);
-  expect((await readCatalog('sv'))['src/app.tsx']).toEqual({
-    Cancel: 'Avbryt',
-    Hello: 'Hej',
-    Save: 'Byt konto',
+    },
+    'src/cart.tsx': {
+      Settings: 'Laddar...',
+    },
   });
 });
 
@@ -432,8 +410,11 @@ test('renders the translation when a broken catalog save is fixed', async ({
   await expect(page.getByText('Spara')).toBeVisible();
 
   await writeFile(toCatalogPath('sv'), '{ broken');
-  await page.waitForTimeout(1000);
-  await expect(page.getByText('Spara')).toBeVisible();
+  const deadline = Date.now() + SETTLE_TIMEOUT;
+  while (Date.now() < deadline) {
+    await setTimeout(SETTLE_INTERVAL);
+    await expect(page.getByText('Spara')).toBeVisible();
+  }
 
   await writeCatalog('sv', {
     ...BASELINE,
@@ -521,6 +502,20 @@ async function readCatalog(locale: string): Promise<Catalog> {
     await readFile(toCatalogPath(locale), 'utf8'),
   );
   return catalog;
+}
+
+async function validateSettledCatalog(
+  locale: string,
+  expected: Catalog,
+): Promise<void> {
+  await expect(async () => {
+    expect(await readCatalog(locale)).toEqual(expected);
+  }).toPass();
+  const deadline = Date.now() + SETTLE_TIMEOUT;
+  while (Date.now() < deadline) {
+    await setTimeout(SETTLE_INTERVAL);
+    expect(await readCatalog(locale)).toEqual(expected);
+  }
 }
 
 async function writeCatalog(locale: string, catalog: Catalog): Promise<void> {

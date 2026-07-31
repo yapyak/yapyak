@@ -18,14 +18,20 @@ export function resolveExtraction(
     };
   }
   const entry = state.extractionCache.get(fileId);
-  if (entry && entry.source === source) {
-    return entry.result;
+  if (entry && entry.source === source && entry.callSiteCount === 0) {
+    return {
+      callSites: [],
+      diagnostics: entry.diagnostics,
+      messages: entry.messages,
+    };
   }
   const result = extractFile(fileId, source, {
     processors: getNormalized(state).processors,
   });
   state.extractionCache.set(fileId, {
-    result,
+    callSiteCount: result.callSites.length,
+    diagnostics: result.diagnostics,
+    messages: result.messages,
     source,
   });
   return result;

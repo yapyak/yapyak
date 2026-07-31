@@ -117,6 +117,7 @@ describe('parseTemplate', () => {
         '{count, plural, =0 {none} one {# item} other {# items}}',
       );
       const node = template[0];
+      expect(node?.kind).toBe('plural');
       if (node?.kind !== 'plural') {
         return;
       }
@@ -131,6 +132,7 @@ describe('parseTemplate', () => {
     it('parses `#` inside a plural branch as a CountNode', () => {
       const { template } = parseTemplate('{count, plural, other {# items}}');
       const node = template[0];
+      expect(node?.kind).toBe('plural');
       if (node?.kind !== 'plural') {
         return;
       }
@@ -150,6 +152,7 @@ describe('parseTemplate', () => {
         '{count, plural, one {# message from {name}} other {# messages from {name}}}',
       );
       const node = template[0];
+      expect(node?.kind).toBe('plural');
       if (node?.kind !== 'plural') {
         return;
       }
@@ -293,6 +296,7 @@ describe('parseTemplate', () => {
         '{c, plural, one {{g, select, male {he} other {they}} sent #} other {nothing}}',
       );
       const plural = template[0];
+      expect(plural?.kind).toBe('plural');
       if (plural?.kind !== 'plural') {
         return;
       }

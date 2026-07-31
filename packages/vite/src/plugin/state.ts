@@ -1,8 +1,5 @@
 import type { Logger } from 'vite';
-import type {
-  ExtractFileResult,
-  ExtractedMessage,
-} from 'yapyak/compiler/internal';
+import type { Diagnostic, ExtractedMessage } from 'yapyak/compiler/internal';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { LocaleResolver } from '../locale-resolver';
 
@@ -13,7 +10,9 @@ export type State = {
   extractionCache: Map<
     string,
     {
-      result: ExtractFileResult;
+      callSiteCount: number;
+      diagnostics: Diagnostic[];
+      messages: ExtractedMessage[];
       source: string;
     }
   >;

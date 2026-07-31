@@ -61,6 +61,23 @@ export type InvariantViolation = {
   source: string;
 };
 
+export type ParseEntryError =
+  | {
+      kind: 'value-not-string-or-object';
+    }
+  | {
+      context: string;
+      kind: 'context-value-not-string';
+    }
+  | {
+      kind: 'object-has-no-string-values';
+    };
+
+export type ParseEntryResult = {
+  entry: CatalogEntry | undefined;
+  errors: ParseEntryError[];
+};
+
 export class YapyakInvariantError extends Error {
   filePath: string;
   violations: InvariantViolation[];
@@ -99,14 +116,6 @@ export class CorruptLocaleFileError extends Error {
     this.name = 'CorruptLocaleFileError';
     this.filePath = filePath;
   }
-}
-
-function getLocaleFilePath(
-  projectRoot: string,
-  localesDir: string,
-  locale: string,
-): string {
-  return join(projectRoot, localesDir, `${locale}.json`);
 }
 
 export function readLocaleFile(path: string): LocaleFile {
@@ -149,23 +158,6 @@ export function parseLocaleFile(parsed: unknown): LocaleFile {
   }
   return result;
 }
-
-export type ParseEntryError =
-  | {
-      kind: 'value-not-string-or-object';
-    }
-  | {
-      context: string;
-      kind: 'context-value-not-string';
-    }
-  | {
-      kind: 'object-has-no-string-values';
-    };
-
-export type ParseEntryResult = {
-  entry: CatalogEntry | undefined;
-  errors: ParseEntryError[];
-};
 
 export function parseEntry(value: unknown): ParseEntryResult {
   if (typeof value === 'string') {
@@ -213,75 +205,10 @@ export function parseEntry(value: unknown): ParseEntryResult {
   };
 }
 
-function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {
-  for (const write of writes) {
-    const before = readLocaleFile(write.filePath);
-    const violations = findInvariantViolations(
-      before,
-      write.after,
-      write.extractedKeys,
-    );
-    if (violations.length > 0) {
-      throw new YapyakInvariantError(write.filePath, violations);
-    }
-  }
-  for (const write of writes) {
-    mkdirSync(dirname(write.filePath), {
-      recursive: true,
-    });
-  }
-  writeAtomicAll(
-    writes.map((write) => ({
-      content: stringifyCanonical(write.after),
-      path: write.filePath,
-    })),
-  );
-}
-
 export function writeLocaleFile(input: WriteLocaleFileInput): void {
   writeLocaleFiles([
     input,
   ]);
-}
-
-function findInvariantViolations(
-  before: LocaleFile,
-  after: LocaleFile,
-  extractedKeys: Record<string, Set<string>>,
-): InvariantViolation[] {
-  const violations: InvariantViolation[] = [];
-  for (const [fileId, beforeEntries] of Object.entries(before)) {
-    const stillUsed = extractedKeys[fileId];
-    if (!stillUsed) {
-      continue;
-    }
-    const afterEntries = after[fileId];
-    for (const [source, beforeEntry] of Object.entries(beforeEntries)) {
-      for (const { context, value } of toVariants(beforeEntry)) {
-        if (value === '') {
-          continue;
-        }
-        if (!stillUsed.has(toMessageKey(source, context))) {
-          continue;
-        }
-        const afterValue = findTranslation(afterEntries?.[source], context);
-        if (afterValue === undefined || afterValue === '') {
-          violations.push({
-            afterValue,
-            beforeValue: value,
-            fileId,
-            source,
-            ...(context === undefined
-              ? {}
-              : {
-                  context,
-                }),
-          });
-        }
-      }
-    }
-  }
-  return violations;
 }
 
 export function toVariants(entry: CatalogEntry): {
@@ -344,161 +271,49 @@ export function syncLocaleFiles(
     (locale) =>
       locale !== context.defaultLocale && validateLocaleCode(locale).valid,
   );
-
-  const existingByLocale = new Map<string, LocaleFile>();
-  const corruptLocales = new Set<string>();
-  for (const locale of nonDefaultLocales) {
-    const localePath = getLocaleFilePath(
-      projectRoot,
-      context.localesDir,
-      locale,
-    );
-    try {
-      existingByLocale.set(locale, readLocaleFile(localePath));
-    } catch (error) {
-      if (error instanceof CorruptLocaleFileError) {
-        warnDiagnostic('CATALOG_LOCALE_FILE_CORRUPT', {
-          detail: error.message,
-        });
-        corruptLocales.add(locale);
-        continue;
-      }
-      throw error;
-    }
-  }
-  const healthyLocales = nonDefaultLocales.filter(
-    (locale) => !corruptLocales.has(locale),
+  const existingByLocale = readLocaleFiles(
+    projectRoot,
+    context.localesDir,
+    nonDefaultLocales,
   );
 
   const inFlightDrops = extractInFlightDrops(
     existingByLocale,
     extractedKeys,
     input.filter,
-    healthyLocales,
+    [
+      ...existingByLocale.keys(),
+    ],
+  );
+  const restoreContext: RestoreContext = {
+    inFlightDrops,
+    orphans,
+    restored: [],
+    restoredInFlight: new Map(),
+    restoredOrphans: new Map(),
+  };
+  const nextByLocale = buildNextLocaleFiles(
+    existingByLocale,
+    extractedByFile,
+    input.filter,
+    restoreContext,
   );
 
-  const nextByLocale = new Map<string, LocaleFile>();
-  const restoredOrphans = new Map<string, Set<string>>();
-  const restoredInFlight = new Map<string, Set<string>>();
-  const restored: SyncEntry[] = [];
-
-  for (const locale of healthyLocales) {
-    const existing = existingByLocale.get(locale) ?? {};
-    const next: LocaleFile = {};
-
-    for (const [fileId, entries] of Object.entries(existing)) {
-      if (input.filter(fileId)) {
-        continue;
-      }
-      next[fileId] = entries;
-    }
-
-    for (const fileId of Object.keys(extractedByFile).sort(compareKeys)) {
-      const variants = extractedByFile[fileId];
-      if (!variants) {
-        continue;
-      }
-      const existingFile = existing[fileId];
-      const byContextBySource = new Map<
-        string,
-        Map<string | undefined, string>
-      >();
-      for (const { context: variantContext, source } of variants) {
-        const key = toMessageKey(source, variantContext);
-        let value =
-          findTranslation(existingFile?.[source], variantContext) ?? '';
-        if (value === '') {
-          const orphan = findOrphan(orphans, fileId, key);
-          const orphanValue = orphan?.entry.translations[locale];
-          if (orphan && orphanValue) {
-            value = orphanValue;
-            registerPair(restoredOrphans, orphan.fileId, key);
-            if (inFlightDrops.get(orphan.fileId)?.has(key)) {
-              registerPair(restoredInFlight, orphan.fileId, key);
-            }
-            restored.push({
-              fileId,
-              locale,
-              source,
-            });
-          } else {
-            const inFlight = findInFlightDrop(inFlightDrops, fileId, key);
-            const inFlightValue = inFlight?.translations[locale];
-            if (inFlight && inFlightValue) {
-              value = inFlightValue;
-              registerPair(restoredInFlight, inFlight.fileId, key);
-              restored.push({
-                fileId,
-                locale,
-                source,
-              });
-            }
-          }
-        }
-        let byContext = byContextBySource.get(source);
-        if (!byContext) {
-          byContext = new Map();
-          byContextBySource.set(source, byContext);
-        }
-        byContext.set(variantContext, value);
-      }
-      const fileEntries: Record<string, CatalogEntry> = Object.create(null);
-      for (const [source, byContext] of byContextBySource) {
-        fileEntries[source] = toEntry(byContext, source);
-      }
-      next[fileId] = fileEntries;
-    }
-
-    nextByLocale.set(locale, next);
-  }
-
-  const droppedTranslations = new Map<
-    string,
-    Map<string, Record<string, string>>
-  >();
-  const orphaned: SyncEntry[] = [];
-  for (const [fileId, byKey] of inFlightDrops) {
-    for (const [key, drop] of byKey) {
-      if (restoredInFlight.get(fileId)?.has(key)) {
-        continue;
-      }
-      let nextByKey = droppedTranslations.get(fileId);
-      if (!nextByKey) {
-        nextByKey = new Map();
-        droppedTranslations.set(fileId, nextByKey);
-      }
-      nextByKey.set(key, drop.translations);
-      for (const locale of Object.keys(drop.translations)) {
-        orphaned.push({
-          fileId,
-          locale,
-          source: drop.source,
-        });
-      }
-    }
-  }
-
+  const { droppedTranslations, orphaned } = collectDrops(restoreContext);
   const hasOrphansChanged = mergeOrphans(
     droppedTranslations,
     options?.now ?? (() => new Date().toISOString()),
     orphans,
-    restoredOrphans,
+    restoreContext.restoredOrphans,
   );
 
-  const writes: WriteLocaleFileInput[] = [];
-  for (const locale of healthyLocales) {
-    const next = nextByLocale.get(locale) ?? {};
-    const localePath = getLocaleFilePath(
-      projectRoot,
-      context.localesDir,
-      locale,
-    );
-    writes.push({
-      after: next,
-      extractedKeys,
-      filePath: localePath,
-    });
-  }
+  const writes = [
+    ...nextByLocale,
+  ].map(([locale, next]) => ({
+    after: next,
+    extractedKeys,
+    filePath: getLocaleFilePath(projectRoot, context.localesDir, locale),
+  }));
   writeLocaleFiles(writes);
 
   if (hasOrphansChanged) {
@@ -507,21 +322,8 @@ export function syncLocaleFiles(
 
   return {
     orphaned,
-    restored,
+    restored: restoreContext.restored,
   };
-}
-
-function registerPair(
-  pairs: Map<string, Set<string>>,
-  fileId: string,
-  key: string,
-): void {
-  let keys = pairs.get(fileId);
-  if (!keys) {
-    keys = new Set();
-    pairs.set(fileId, keys);
-  }
-  keys.add(key);
 }
 
 export function toEntry(
@@ -546,10 +348,156 @@ export function toEntry(
   return variants;
 }
 
+function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {
+  for (const write of writes) {
+    const before = readLocaleFile(write.filePath);
+    const violations = findInvariantViolations(
+      before,
+      write.after,
+      write.extractedKeys,
+    );
+    if (violations.length > 0) {
+      throw new YapyakInvariantError(write.filePath, violations);
+    }
+  }
+  for (const write of writes) {
+    mkdirSync(dirname(write.filePath), {
+      recursive: true,
+    });
+  }
+  writeAtomicAll(
+    writes.map((write) => ({
+      content: stringifyCanonical(write.after),
+      path: write.filePath,
+    })),
+  );
+}
+
+function findInvariantViolations(
+  before: LocaleFile,
+  after: LocaleFile,
+  extractedKeys: Record<string, Set<string>>,
+): InvariantViolation[] {
+  const violations: InvariantViolation[] = [];
+  for (const [fileId, beforeEntries] of Object.entries(before)) {
+    const stillUsed = extractedKeys[fileId];
+    if (!stillUsed) {
+      continue;
+    }
+    const afterEntries = after[fileId];
+    for (const [source, beforeEntry] of Object.entries(beforeEntries)) {
+      for (const { context, value } of toVariants(beforeEntry)) {
+        if (value === '') {
+          continue;
+        }
+        if (!stillUsed.has(toMessageKey(source, context))) {
+          continue;
+        }
+        const afterValue = findTranslation(afterEntries?.[source], context);
+        if (afterValue === undefined || afterValue === '') {
+          violations.push({
+            afterValue,
+            beforeValue: value,
+            fileId,
+            source,
+            ...(context === undefined
+              ? {}
+              : {
+                  context,
+                }),
+          });
+        }
+      }
+    }
+  }
+  return violations;
+}
+
 type ExtractedVariant = {
   context?: string;
   source: string;
 };
+
+function toExtractedByFile(
+  messages: ExtractedMessage[],
+): Record<string, ExtractedVariant[]> {
+  const byFile = new Map<string, Map<string, ExtractedVariant>>();
+  for (const message of messages) {
+    const key = toMessageKey(message.source, message.context);
+    const variant: ExtractedVariant =
+      message.context === undefined
+        ? {
+            source: message.source,
+          }
+        : {
+            context: message.context,
+            source: message.source,
+          };
+    for (const location of message.locations) {
+      let variants = byFile.get(location.fileId);
+      if (!variants) {
+        variants = new Map();
+        byFile.set(location.fileId, variants);
+      }
+      variants.set(key, variant);
+    }
+  }
+  const result: Record<string, ExtractedVariant[]> = {};
+  for (const [fileId, variants] of byFile) {
+    result[fileId] = [
+      ...variants.values(),
+    ].sort((a, b) =>
+      compareKeys(
+        toMessageKey(a.source, a.context),
+        toMessageKey(b.source, b.context),
+      ),
+    );
+  }
+  return result;
+}
+
+function toExtractedKeySet(
+  extractedByFile: Record<string, ExtractedVariant[]>,
+): Record<string, Set<string>> {
+  const result: Record<string, Set<string>> = {};
+  for (const [fileId, variants] of Object.entries(extractedByFile)) {
+    result[fileId] = new Set(
+      variants.map((variant) => toMessageKey(variant.source, variant.context)),
+    );
+  }
+  return result;
+}
+
+function readLocaleFiles(
+  projectRoot: string,
+  localesDir: string,
+  locales: string[],
+): Map<string, LocaleFile> {
+  const filesByLocale = new Map<string, LocaleFile>();
+  for (const locale of locales) {
+    const localePath = getLocaleFilePath(projectRoot, localesDir, locale);
+    try {
+      filesByLocale.set(locale, readLocaleFile(localePath));
+    } catch (error) {
+      if (error instanceof CorruptLocaleFileError) {
+        warnDiagnostic('CATALOG_LOCALE_FILE_CORRUPT', {
+          detail: error.message,
+        });
+        continue;
+      }
+      throw error;
+    }
+  }
+  return filesByLocale;
+}
+
+function getLocaleFilePath(
+  projectRoot: string,
+  localesDir: string,
+  locale: string,
+): string {
+  return join(projectRoot, localesDir, `${locale}.json`);
+}
 
 type InFlightDrop = {
   source: string;
@@ -557,11 +505,6 @@ type InFlightDrop = {
 };
 
 type InFlightDrops = Map<string, Map<string, InFlightDrop>>;
-
-type InFlightDropLookup = {
-  fileId: string;
-  translations: Record<string, string>;
-};
 
 function extractInFlightDrops(
   existingByLocale: Map<string, LocaleFile>,
@@ -607,6 +550,129 @@ function extractInFlightDrops(
   return drops;
 }
 
+type RestoreContext = {
+  inFlightDrops: InFlightDrops;
+  orphans: OrphanCache;
+  restored: SyncEntry[];
+  restoredInFlight: Map<string, Set<string>>;
+  restoredOrphans: Map<string, Set<string>>;
+};
+
+function buildNextLocaleFiles(
+  existingByLocale: Map<string, LocaleFile>,
+  extractedByFile: Record<string, ExtractedVariant[]>,
+  filter: (fileId: string) => boolean,
+  context: RestoreContext,
+): Map<string, LocaleFile> {
+  const nextByLocale = new Map<string, LocaleFile>();
+  for (const [locale, existing] of existingByLocale) {
+    const next: LocaleFile = {};
+    for (const [fileId, entries] of Object.entries(existing)) {
+      if (filter(fileId)) {
+        continue;
+      }
+      next[fileId] = entries;
+    }
+    for (const fileId of Object.keys(extractedByFile).sort(compareKeys)) {
+      const variants = extractedByFile[fileId];
+      if (!variants) {
+        continue;
+      }
+      next[fileId] = buildFileEntries(
+        {
+          existing,
+          fileId,
+          locale,
+          variants,
+        },
+        context,
+      );
+    }
+    nextByLocale.set(locale, next);
+  }
+  return nextByLocale;
+}
+
+type BuildFileEntriesInput = {
+  existing: LocaleFile;
+  fileId: string;
+  locale: string;
+  variants: ExtractedVariant[];
+};
+
+function buildFileEntries(
+  input: BuildFileEntriesInput,
+  context: RestoreContext,
+): Record<string, CatalogEntry> {
+  const existingFile = input.existing[input.fileId];
+  const byContextBySource = new Map<string, Map<string | undefined, string>>();
+  for (const { context: variantContext, source } of input.variants) {
+    const key = toMessageKey(source, variantContext);
+    let value = findTranslation(existingFile?.[source], variantContext) ?? '';
+    if (value === '') {
+      const orphan = findOrphan(context.orphans, input.fileId, key);
+      const orphanValue = orphan?.entry.translations[input.locale];
+      if (orphan && orphanValue) {
+        value = orphanValue;
+        registerPair(context.restoredOrphans, orphan.fileId, key);
+        if (context.inFlightDrops.get(orphan.fileId)?.has(key)) {
+          registerPair(context.restoredInFlight, orphan.fileId, key);
+        }
+        context.restored.push({
+          fileId: input.fileId,
+          locale: input.locale,
+          source,
+        });
+      } else {
+        const inFlight = findInFlightDrop(
+          context.inFlightDrops,
+          input.fileId,
+          key,
+        );
+        const inFlightValue = inFlight?.translations[input.locale];
+        if (inFlight && inFlightValue) {
+          value = inFlightValue;
+          registerPair(context.restoredInFlight, inFlight.fileId, key);
+          context.restored.push({
+            fileId: input.fileId,
+            locale: input.locale,
+            source,
+          });
+        }
+      }
+    }
+    let byContext = byContextBySource.get(source);
+    if (!byContext) {
+      byContext = new Map();
+      byContextBySource.set(source, byContext);
+    }
+    byContext.set(variantContext, value);
+  }
+  const fileEntries: Record<string, CatalogEntry> = Object.create(null);
+  for (const [source, byContext] of byContextBySource) {
+    fileEntries[source] = toEntry(byContext, source);
+  }
+  return fileEntries;
+}
+
+function registerPair(
+  pairs: Map<string, Set<string>>,
+  fileId: string,
+  key: string,
+): void {
+  let keys = pairs.get(fileId);
+  if (!keys) {
+    keys = new Set();
+    pairs.set(fileId, keys);
+  }
+  keys.add(key);
+}
+
+type InFlightDropLookup = {
+  fileId: string;
+  translations: Record<string, string>;
+};
+
 function findInFlightDrop(
   drops: InFlightDrops,
   fileId: string,
@@ -635,6 +701,43 @@ function findInFlightDrop(
   return best;
 }
 
+type CollectDropsResult = {
+  droppedTranslations: Map<string, Map<string, Record<string, string>>>;
+  orphaned: SyncEntry[];
+};
+
+function collectDrops(context: RestoreContext): CollectDropsResult {
+  const droppedTranslations = new Map<
+    string,
+    Map<string, Record<string, string>>
+  >();
+  const orphaned: SyncEntry[] = [];
+  for (const [fileId, byKey] of context.inFlightDrops) {
+    for (const [key, drop] of byKey) {
+      if (context.restoredInFlight.get(fileId)?.has(key)) {
+        continue;
+      }
+      let nextByKey = droppedTranslations.get(fileId);
+      if (!nextByKey) {
+        nextByKey = new Map();
+        droppedTranslations.set(fileId, nextByKey);
+      }
+      nextByKey.set(key, drop.translations);
+      for (const locale of Object.keys(drop.translations)) {
+        orphaned.push({
+          fileId,
+          locale,
+          source: drop.source,
+        });
+      }
+    }
+  }
+  return {
+    droppedTranslations,
+    orphaned,
+  };
+}
+
 function mergeOrphans(
   droppedTranslations: Map<string, Map<string, Record<string, string>>>,
   now: () => string,
@@ -660,54 +763,4 @@ function mergeOrphans(
     }
   }
   return hasChanged;
-}
-
-function toExtractedKeySet(
-  extractedByFile: Record<string, ExtractedVariant[]>,
-): Record<string, Set<string>> {
-  const result: Record<string, Set<string>> = {};
-  for (const [fileId, variants] of Object.entries(extractedByFile)) {
-    result[fileId] = new Set(
-      variants.map((variant) => toMessageKey(variant.source, variant.context)),
-    );
-  }
-  return result;
-}
-
-function toExtractedByFile(
-  messages: ExtractedMessage[],
-): Record<string, ExtractedVariant[]> {
-  const byFile = new Map<string, Map<string, ExtractedVariant>>();
-  for (const message of messages) {
-    const key = toMessageKey(message.source, message.context);
-    const variant: ExtractedVariant =
-      message.context === undefined
-        ? {
-            source: message.source,
-          }
-        : {
-            context: message.context,
-            source: message.source,
-          };
-    for (const location of message.locations) {
-      let variants = byFile.get(location.fileId);
-      if (!variants) {
-        variants = new Map();
-        byFile.set(location.fileId, variants);
-      }
-      variants.set(key, variant);
-    }
-  }
-  const result: Record<string, ExtractedVariant[]> = {};
-  for (const [fileId, variants] of byFile) {
-    result[fileId] = [
-      ...variants.values(),
-    ].sort((a, b) =>
-      compareKeys(
-        toMessageKey(a.source, a.context),
-        toMessageKey(b.source, b.context),
-      ),
-    );
-  }
-  return result;
 }
