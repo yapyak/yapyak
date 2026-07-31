@@ -143,7 +143,7 @@ Transitive closure applies to types the user names at the API boundary. Helpers 
 Apply the closure rule to public surfaces only — the `.` entry and every non-`/internal` subpath. On an `/internal` surface, export exactly the types a sibling package annotates.
 
 - Never closure-export a type from `internal.ts` → promote it when its first Annotation example appears (per the four-category test), through every barrel in the same change.
-- Until then, consumers reach sub-shapes via indexed access.
+- Until then, reach an unexported sub-shape via indexed access.
 
 ```ts
 // ✓ Sub-shape unexported — consumers write SyncLocaleFilesResult['orphaned'][number]
