@@ -418,6 +418,30 @@ describe('run', () => {
     );
   });
 
+  it('refuses `--out` without a value on the `export` command', async () => {
+    const code = await run([
+      'export',
+      '--out',
+    ]);
+    expect(code).toBe(1);
+    expect(exportCommand).not.toHaveBeenCalled();
+    expect(errorWrites.join('')).toContain('Missing value for flag');
+    expect(errorWrites.join('')).toContain('--out');
+    expect(errorWrites.join('')).toContain('--flag=value');
+  });
+
+  it('refuses `--out` followed by another flag on the `export` command', async () => {
+    const code = await run([
+      'export',
+      '--out',
+      '--split',
+    ]);
+    expect(code).toBe(1);
+    expect(exportCommand).not.toHaveBeenCalled();
+    expect(errorWrites.join('')).toContain('Missing value for flag');
+    expect(errorWrites.join('')).toContain('--out');
+  });
+
   it('extracts `--split` into the `export` options', async () => {
     await run([
       'export',

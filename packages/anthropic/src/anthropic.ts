@@ -187,6 +187,7 @@ export function anthropic(options: AnthropicOptions): Translator {
       const responseBody = await parseResponseBody<AnthropicResponseBody>(
         response,
         'anthropic',
+        signal,
       );
       validateResponse(responseBody);
       const text = responseBody.content?.find(

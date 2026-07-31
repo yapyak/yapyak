@@ -217,6 +217,7 @@ export function openai(options: OpenAIOptions): Translator {
       const responseBody = await parseResponseBody<OpenAIResponseBody>(
         response,
         'openai',
+        signal,
       );
       validateResponse(responseBody);
       const text = responseBody.choices?.[0]?.message?.content;

@@ -34,6 +34,7 @@ export function OutlineDrawerTrigger(props: OutlineDrawerTriggerProps) {
       dialog={(dialogProps) => (
         <Drawer
           {...dialogProps}
+          aria-label={t('Page')}
           direction="end"
         >
           {anchors.length > 0 && (

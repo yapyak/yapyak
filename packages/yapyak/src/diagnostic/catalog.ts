@@ -359,6 +359,11 @@ export const YAP_RUNTIME = {
     message: (): string =>
       'Tracker callback threw an exception. Yapyak continued with the remaining trackers.',
   },
+  CATALOG_LOCALE_FILE_UNREADABLE: {
+    code: 'YAP0047',
+    message: ({ path, reason }: { path: string; reason: string }): string =>
+      `Locale file ${path} is not readable (${reason}). Check the file permissions and the open-file limit, then restart the dev server.`,
+  },
 } as const;
 
 export type YapCode =

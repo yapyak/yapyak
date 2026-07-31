@@ -51,6 +51,7 @@ export function SearchDialog(props: SearchDialogProps) {
   return (
     <Dialog
       {...restProps}
+      aria-label={t('Search...')}
       className={[
         styles.SearchDialog,
         className,

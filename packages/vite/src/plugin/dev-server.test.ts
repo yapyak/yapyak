@@ -105,15 +105,15 @@ describe('createDevServerPlugin', () => {
     });
   });
 
-  it('writes a logger error when a locale file read throws inside a debounced callback', () => {
+  it('warns when a changed locale file cannot be read', () => {
     const state = buildState(projectRoot);
-    const error = vi.spyOn(state.logger, 'error').mockImplementation(() => {});
+    const warn = vi.spyOn(state.logger, 'warn').mockImplementation(() => {});
     const handlersByEvent = buildWatcherHandlers(state);
     mkdirSync(join(projectRoot, 'locales', 'sv.json'));
     handlersByEvent.get('change')?.(join(projectRoot, 'locales', 'sv.json'));
 
     vi.advanceTimersByTime(50);
-    expect(error).toHaveBeenCalledWith(expect.stringContaining('[yapyak]'));
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('YAP0047'));
   });
 
   it('renders no hint when the new locale file is fully translated', () => {
@@ -169,6 +169,16 @@ describe('createDevServerPlugin', () => {
     expect(info).toHaveBeenCalledWith(
       "[yapyak] New locale 'sv' detected. Fill in locales/sv.json.",
     );
+  });
+
+  it('warns when a new locale file cannot be read', () => {
+    const state = buildState(projectRoot);
+    const warn = vi.spyOn(state.logger, 'warn').mockImplementation(() => {});
+    const handlersByEvent = buildWatcherHandlers(state);
+    mkdirSync(join(projectRoot, 'locales', 'sv.json'));
+    handlersByEvent.get('add')?.(join(projectRoot, 'locales', 'sv.json'));
+
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('YAP0047'));
   });
 });
 

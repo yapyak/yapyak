@@ -12,6 +12,10 @@ import { color, symbol } from './tui';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+const EXPORT_VALUE_FLAGS = new Set([
+  '--out',
+]);
+
 const RETRANSLATE_VALUE_FLAGS = new Set([
   '--as',
   '--file',
@@ -121,6 +125,14 @@ export async function run(argv: string[]): Promise<number> {
           }),
         });
       }
+      const missingValueFlags = findMissingValueFlags(rest, EXPORT_VALUE_FLAGS);
+      if (missingValueFlags.length > 0) {
+        process.stderr.write(
+          `\n  ${symbol.cross} ${color.red(`Missing value for flag${missingValueFlags.length === 1 ? '' : 's'}: ${missingValueFlags.join(', ')}. Pass a value starting with "-" as --flag=value.`)}\n`,
+        );
+        printHelp();
+        return 1;
+      }
       const exportArgs = parseExportArgs(rest);
       return exportCommand(config, projectRoot, {
         locales: exportArgs.locales,
@@ -163,11 +175,8 @@ function parseExportArgs(args: string[]): ParseExportArgsResult {
       continue;
     }
     if (entry === '--out') {
-      const next = args[index + 1];
-      if (next !== undefined && !next.startsWith('-')) {
-        out = next;
-        index++;
-      }
+      out = args[index + 1];
+      index++;
       continue;
     }
     if (!entry.startsWith('-')) {

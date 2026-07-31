@@ -341,7 +341,14 @@ function tryReadLocaleFile(
       );
       return undefined;
     }
-    throw error;
+    const reason = error instanceof Error ? error.message : String(error);
+    logger.warn(
+      `${YAP_RUNTIME.CATALOG_LOCALE_FILE_UNREADABLE.message({
+        path,
+        reason,
+      })}\nSee ${getDocsUrl(YAP_RUNTIME.CATALOG_LOCALE_FILE_UNREADABLE.code)}`,
+    );
+    return undefined;
   }
 }
 

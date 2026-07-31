@@ -31,6 +31,7 @@ export function SidebarDrawerTrigger(props: SidebarDrawerTriggerProps) {
       dialog={(dialogProps) => (
         <Drawer
           {...dialogProps}
+          aria-label={t('Menu')}
           direction="start"
         >
           {drawer}

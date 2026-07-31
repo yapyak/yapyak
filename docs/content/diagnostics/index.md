@@ -56,6 +56,7 @@ Things the compiler caught reading or writing your locale files.
 - [`YAP0031`](/reference/diagnostics/YAP0031): Corrupt locale file
 - [`YAP0032`](/reference/diagnostics/YAP0032): Corrupt orphan cache
 - [`YAP0039`](/reference/diagnostics/YAP0039): Migration fails
+- [`YAP0047`](/reference/diagnostics/YAP0047): Unreadable locale file
 
 ### Context: `t.as()` and `t.in()`
 

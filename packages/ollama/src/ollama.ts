@@ -171,6 +171,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
       const responseBody = await parseResponseBody<OllamaResponseBody>(
         response,
         'ollama',
+        signal,
       );
       validateResponse(responseBody);
       const text = responseBody.response;

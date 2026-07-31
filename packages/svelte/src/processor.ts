@@ -261,13 +261,15 @@ function fragmentsFromNode(
   if (isElementLike(node)) {
     return fragmentsFromElement(node, source);
   }
+  node satisfies AST.Comment | AST.DebugTag | AST.SvelteOptionsRaw | AST.Text;
   return [];
 }
 
 function isExpressionTagLike(
   node: FragmentNode,
-): node is AST.ExpressionTag | AST.HtmlTag | AST.RenderTag {
+): node is AST.AttachTag | AST.ExpressionTag | AST.HtmlTag | AST.RenderTag {
   return (
+    node.type === 'AttachTag' ||
     node.type === 'ExpressionTag' ||
     node.type === 'HtmlTag' ||
     node.type === 'RenderTag'

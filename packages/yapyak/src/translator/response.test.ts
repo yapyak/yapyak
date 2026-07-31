@@ -94,7 +94,7 @@ describe('parseResponseBody', () => {
     );
     const result = await parseResponseBody<{
       ok: boolean;
-    }>(response, 'openai');
+    }>(response, 'openai', undefined);
     expect(result.ok).toBe(true);
   });
 
@@ -102,9 +102,9 @@ describe('parseResponseBody', () => {
     const response = new Response('<html><body>nope</body></html>', {
       status: 200,
     });
-    await expect(parseResponseBody(response, 'openai')).rejects.toThrow(
-      /yapyak openai: response is not valid JSON/,
-    );
+    await expect(
+      parseResponseBody(response, 'openai', undefined),
+    ).rejects.toThrow(/yapyak openai: response is not valid JSON/);
   });
 
   it('throws an Error whose preview is truncated past 200 characters with `…`', async () => {
@@ -112,7 +112,9 @@ describe('parseResponseBody', () => {
     const response = new Response(long, {
       status: 200,
     });
-    await expect(parseResponseBody(response, 'gemini')).rejects.toThrow(/…/);
+    await expect(
+      parseResponseBody(response, 'gemini', undefined),
+    ).rejects.toThrow(/…/);
   });
 
   it('throws a vendor-tagged Error when the body stream errors mid-read', async () => {
@@ -124,7 +126,9 @@ describe('parseResponseBody', () => {
     const response = new Response(stream, {
       status: 200,
     });
-    await expect(parseResponseBody(response, 'anthropic')).rejects.toThrow(
+    await expect(
+      parseResponseBody(response, 'anthropic', undefined),
+    ).rejects.toThrow(
       /yapyak anthropic: response body could not be read \(connection reset\)/,
     );
   });
@@ -138,8 +142,45 @@ describe('parseResponseBody', () => {
     const response = new Response(stream, {
       status: 200,
     });
-    await expect(parseResponseBody(response, 'gemini')).rejects.toThrow(
+    await expect(
+      parseResponseBody(response, 'gemini', undefined),
+    ).rejects.toThrow(
       /yapyak gemini: response body could not be read \(connection reset\)/,
     );
+  });
+
+  it('throws the abort reason when the signal is already aborted', async () => {
+    const response = new Response(
+      JSON.stringify({
+        ok: true,
+      }),
+      {
+        status: 200,
+      },
+    );
+
+    await expect(
+      parseResponseBody(
+        response,
+        'openai',
+        AbortSignal.abort(new Error('Stopped')),
+      ),
+    ).rejects.toThrow(/Stopped/);
+  });
+
+  it('throws the abort reason when the signal aborts mid-read', async () => {
+    const controller = new AbortController();
+    const stream = new ReadableStream({
+      start(streamController) {
+        streamController.enqueue(new TextEncoder().encode('{"ok":'));
+      },
+    });
+    const response = new Response(stream, {
+      status: 200,
+    });
+    const pending = parseResponseBody(response, 'anthropic', controller.signal);
+    controller.abort(new Error('Stopped'));
+
+    await expect(pending).rejects.toThrow(/Stopped/);
   });
 });

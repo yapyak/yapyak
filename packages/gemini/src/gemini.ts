@@ -199,6 +199,7 @@ export function gemini(options: GeminiOptions): Translator {
       const responseBody = await parseResponseBody<GeminiResponseBody>(
         response,
         'gemini',
+        signal,
       );
       validateResponse(responseBody);
       const parts = responseBody.candidates?.[0]?.content?.parts ?? [];

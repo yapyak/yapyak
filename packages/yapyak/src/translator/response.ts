@@ -37,11 +37,15 @@ export function parseTranslationsBatch(
 export async function parseResponseBody<T>(
   response: Response,
   vendor: string,
+  signal: AbortSignal | undefined,
 ): Promise<T> {
   let raw: string;
   try {
-    raw = await response.text();
+    raw = await readBody(response, signal);
   } catch (cause) {
+    if (signal?.aborted) {
+      throw cause;
+    }
     const reason = cause instanceof Error ? cause.message : String(cause);
     throw new TranslatorInvalidResponseError(
       `yapyak ${vendor}: response body could not be read (${reason}).`,
@@ -84,4 +88,48 @@ function getShapeDescription(value: unknown): string {
     return 'an object';
   }
   return `a ${typeof value}`;
+}
+
+async function readBody(
+  response: Response,
+  signal: AbortSignal | undefined,
+): Promise<string> {
+  const body = response.body;
+  if (signal === undefined || body === null) {
+    return response.text();
+  }
+  if (signal.aborted) {
+    await body.cancel();
+    throw signal.reason ?? new Error('Aborted');
+  }
+  const reader = body.getReader();
+  const onAbort = (): void => {
+    void reader.cancel();
+  };
+  signal.addEventListener('abort', onAbort, {
+    once: true,
+  });
+  const decoder = new TextDecoder();
+  let raw = '';
+  try {
+    let chunk = await reader.read();
+    while (!chunk.done) {
+      raw += decoder.decode(chunk.value, {
+        stream: true,
+      });
+      chunk = await reader.read();
+    }
+    raw += decoder.decode();
+  } catch (cause) {
+    if (signal.aborted) {
+      throw signal.reason ?? new Error('Aborted');
+    }
+    throw cause;
+  } finally {
+    signal.removeEventListener('abort', onAbort);
+  }
+  if (signal.aborted) {
+    throw signal.reason ?? new Error('Aborted');
+  }
+  return raw;
 }
