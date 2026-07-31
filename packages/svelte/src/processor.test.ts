@@ -336,6 +336,57 @@ describe('svelte processor — extract', () => {
     expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
+  it('extracts `t()` from a `{@const}` tag', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "{#each [1] as item}{@const label = t('Save')}<span>{label}</span>{/each}",
+      ].join('\n'),
+    );
+    expect(result.messages.map((message) => message.source)).toContain('Save');
+  });
+
+  it('extracts `t()` from a `{const}` declaration tag', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "{#each [1] as item}{const label = t('Cancel')}<span>{label}</span>{/each}",
+      ].join('\n'),
+    );
+    expect(result.messages.map((message) => message.source)).toContain(
+      'Cancel',
+    );
+  });
+
+  it('extracts `t()` from every declarator of a `{let}` declaration tag', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "{#each [1] as item}{let first = t('Hello'), second = t('World')}<span>{first}{second}</span>{/each}",
+      ].join('\n'),
+    );
+    expect(result.messages.map((message) => message.source)).toContain('Hello');
+    expect(result.messages.map((message) => message.source)).toContain('World');
+  });
+
+  it('skips a `{let}` declarator without an initializer', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        '{#each [1] as item}{let label}<span>{label}</span>{/each}',
+      ].join('\n'),
+    );
+    expect(result.messages).toEqual([]);
+  });
+
   it('extracts `t()` from children when a `style:` directive is boolean', () => {
     const result = extractSvelte(
       [
@@ -373,6 +424,36 @@ describe('svelte processor — transform', () => {
     );
     expect(code).toContain('aria-label="Save"');
     expect(code).not.toContain('aria-label={');
+  });
+
+  it('elides a `{@const}` initializer to a string literal', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "{#each [1] as item}{@const label = t('Save')}<span>{label}</span>{/each}",
+      ].join('\n'),
+    );
+    expect(code).toContain("{@const label = 'Save'}");
+    expect(code).not.toContain("t('Save')");
+  });
+
+  it('rewrites a `{@const}` initializer to a `_pick` call', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "{#each [1] as item}{@const label = t('Save')}<span>{label}</span>{/each}",
+      ].join('\n'),
+      [
+        'en',
+        'sv',
+      ],
+    );
+    expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
+    expect(code).toContain('{@const label = _pick(');
   });
 
   it('writes a `<script>` block when the source has none', () => {

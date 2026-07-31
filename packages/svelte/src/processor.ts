@@ -167,6 +167,20 @@ function fragmentsFromNode(
       enclosingContext,
     );
   }
+  if (node.type === 'ConstTag' || node.type === 'DeclarationTag') {
+    const fragments: Fragment[] = [];
+    for (const declarator of node.declaration.declarations) {
+      fragments.push(
+        ...fragmentsFromExpression(
+          declarator.init,
+          source,
+          undefined,
+          enclosingContext,
+        ),
+      );
+    }
+    return fragments;
+  }
   if (node.type === 'IfBlock') {
     const fragments = fragmentsFromExpression(
       node.test,
