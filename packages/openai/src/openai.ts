@@ -209,6 +209,7 @@ export function openai(options: OpenAIOptions): Translator {
       try {
         response = await fetchWithRetry(endpoint, init, fetchOptions);
       } catch (cause) {
+        signal?.throwIfAborted();
         throw causeToError(cause, 'openai');
       }
       if (!response.ok) {

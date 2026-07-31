@@ -149,6 +149,52 @@ describe('parseResponseBody', () => {
     );
   });
 
+  it('returns the parsed body when the signal stays unaborted', async () => {
+    const controller = new AbortController();
+    const response = new Response(
+      JSON.stringify({
+        ok: true,
+      }),
+      {
+        status: 200,
+      },
+    );
+    const result = await parseResponseBody<{
+      ok: boolean;
+    }>(response, 'openai', controller.signal);
+
+    expect(result.ok).toBe(true);
+  });
+
+  it('throws a vendor-tagged Error when the response has no body', async () => {
+    const controller = new AbortController();
+    const response = new Response(null, {
+      status: 204,
+    });
+
+    await expect(
+      parseResponseBody(response, 'ollama', controller.signal),
+    ).rejects.toThrow(/yapyak ollama: response is not valid JSON/);
+  });
+
+  it('throws a vendor-tagged Error when the body stream errors with an unaborted signal', async () => {
+    const controller = new AbortController();
+    const stream = new ReadableStream({
+      start(streamController) {
+        streamController.error(new Error('connection reset'));
+      },
+    });
+    const response = new Response(stream, {
+      status: 200,
+    });
+
+    await expect(
+      parseResponseBody(response, 'anthropic', controller.signal),
+    ).rejects.toThrow(
+      /yapyak anthropic: response body could not be read \(connection reset\)/,
+    );
+  });
+
   it('throws the abort reason when the signal is already aborted', async () => {
     const response = new Response(
       JSON.stringify({

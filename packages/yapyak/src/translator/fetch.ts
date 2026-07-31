@@ -29,9 +29,7 @@ export async function fetchWithRetry(
     const controller = new AbortController();
     const onAbort = (): void => controller.abort();
     if (outerSignal) {
-      if (outerSignal.aborted) {
-        throw outerSignal.reason ?? new Error('Aborted');
-      }
+      outerSignal.throwIfAborted();
       outerSignal.addEventListener('abort', onAbort, {
         once: true,
       });
@@ -124,12 +122,12 @@ function getBackoffMs(attempt: number): number {
 function delay(ms: number, signal?: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
-      reject(signal.reason ?? new Error('Aborted'));
+      reject(signal.reason);
       return;
     }
     const onAbort = (): void => {
       clearTimeout(timer);
-      reject(signal?.reason ?? new Error('Aborted'));
+      reject(signal?.reason);
     };
     const timer = setTimeout(() => {
       signal?.removeEventListener('abort', onAbort);

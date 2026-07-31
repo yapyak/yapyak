@@ -761,4 +761,31 @@ describe('anthropic', () => {
       expect(body.system).toContain('disambiguation');
     });
   });
+
+  it('throws the abort reason when the signal aborts during the request', async () => {
+    const controller = new AbortController();
+    vi.stubGlobal('fetch', async () => {
+      controller.abort(new Error('Stopped'));
+      throw new Error('network down');
+    });
+    const translator = anthropic({
+      apiKey: 'k',
+    });
+
+    await expect(
+      translator.batch?.(
+        [
+          {
+            fileId: 'src/a.tsx',
+            source: 'Hello',
+            sourceLocale: 'en',
+            targetLocale: 'sv',
+          },
+        ],
+        {
+          signal: controller.signal,
+        },
+      ),
+    ).rejects.toThrow(/Stopped/);
+  });
 });

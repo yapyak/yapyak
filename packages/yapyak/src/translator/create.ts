@@ -104,9 +104,7 @@ export function createTranslator(input: CreateTranslatorInput): Translator {
         if (!chunk) {
           continue;
         }
-        if (batchOptions?.signal?.aborted) {
-          throw toAbortError(batchOptions.signal);
-        }
+        batchOptions?.signal?.throwIfAborted();
         try {
           const result = await runChunk(
             chunk,
@@ -272,13 +270,6 @@ function validateBatch(
     );
   }
   return result.map((entry) => normalizeEntry(entry, context.targetLocales));
-}
-
-function toAbortError(signal: AbortSignal): Error {
-  if (signal.reason instanceof Error) {
-    return signal.reason;
-  }
-  return new Error('Translate batch aborted.');
 }
 
 function normalizeEntry(

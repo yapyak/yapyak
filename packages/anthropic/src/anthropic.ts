@@ -179,6 +179,7 @@ export function anthropic(options: AnthropicOptions): Translator {
       try {
         response = await fetchWithRetry(endpoint, init, fetchOptions);
       } catch (cause) {
+        signal?.throwIfAborted();
         throw causeToError(cause, 'anthropic');
       }
       if (!response.ok) {

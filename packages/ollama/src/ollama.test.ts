@@ -280,4 +280,31 @@ describe('ollama', () => {
     expect(typeof capturedBody?.options?.num_predict).toBe('number');
     expect(capturedBody?.options?.num_predict).toBeGreaterThan(0);
   });
+
+  it('throws the abort reason when the signal aborts during the request', async () => {
+    const controller = new AbortController();
+    vi.stubGlobal('fetch', async () => {
+      controller.abort(new Error('Stopped'));
+      throw new Error('network down');
+    });
+    const translator = ollama({
+      model: 'qwen2.5',
+    });
+
+    await expect(
+      translator.batch?.(
+        [
+          {
+            fileId: 'src/a.tsx',
+            source: 'Hello',
+            sourceLocale: 'en',
+            targetLocale: 'sv',
+          },
+        ],
+        {
+          signal: controller.signal,
+        },
+      ),
+    ).rejects.toThrow(/Stopped/);
+  });
 });

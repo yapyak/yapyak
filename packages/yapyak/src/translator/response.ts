@@ -100,8 +100,8 @@ async function readBody(
   }
   if (signal.aborted) {
     await body.cancel();
-    throw signal.reason ?? new Error('Aborted');
   }
+  signal.throwIfAborted();
   const reader = body.getReader();
   const onAbort = (): void => {
     void reader.cancel();
@@ -121,15 +121,11 @@ async function readBody(
     }
     raw += decoder.decode();
   } catch (cause) {
-    if (signal.aborted) {
-      throw signal.reason ?? new Error('Aborted');
-    }
+    signal.throwIfAborted();
     throw cause;
   } finally {
     signal.removeEventListener('abort', onAbort);
   }
-  if (signal.aborted) {
-    throw signal.reason ?? new Error('Aborted');
-  }
+  signal.throwIfAborted();
   return raw;
 }
