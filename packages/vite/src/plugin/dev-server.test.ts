@@ -1,7 +1,100 @@
-import { describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { toMessageKey } from 'yapyak/compiler/internal';
+import { normalizeYapyakConfig } from 'yapyak/config/internal';
 
-import { derivePatches, toExtractedKeysForFile } from './dev-server';
+import {
+  createDevServerPlugin,
+  derivePatches,
+  toExtractedKeysForFile,
+} from './dev-server';
+import { createState } from './state';
+import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+type ConfigureServerHook = (server: {
+  watcher: {
+    add: (path: string) => void;
+    on: (event: string, handler: (path: string) => void) => void;
+  };
+  ws: {
+    send: (payload: never) => void;
+  };
+}) => void;
+
+describe('createDevServerPlugin', () => {
+  let projectRoot: string;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    projectRoot = mkdtempSync(join(tmpdir(), 'yapyak-dev-server-'));
+    mkdirSync(join(projectRoot, 'locales'), {
+      recursive: true,
+    });
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    rmSync(projectRoot, {
+      force: true,
+      recursive: true,
+    });
+  });
+
+  it('writes a logger error when a locale file read throws inside a debounced callback', () => {
+    const state = createState();
+    state.normalized = normalizeYapyakConfig({});
+    state.projectRoot = projectRoot;
+    state.resolver = {
+      getDiscovery: () => ({
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        warnings: [],
+      }),
+      getEmittedLocales: () => ({
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+      }),
+      getLocaleData: () => ({}),
+      getProjectLocales: () => ({
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+      }),
+      invalidateData: () => {},
+      invalidateStructure: () => {},
+    };
+    const error = vi.spyOn(state.logger, 'error').mockImplementation(() => {});
+    const handlersByEvent = new Map<string, (path: string) => void>();
+    const plugin = createDevServerPlugin(state);
+    const configureServer = plugin.configureServer as ConfigureServerHook;
+    configureServer({
+      watcher: {
+        add: () => {},
+        on: (event, handler) => {
+          handlersByEvent.set(event, handler);
+        },
+      },
+      ws: {
+        send: () => {},
+      },
+    });
+    mkdirSync(join(projectRoot, 'locales', 'sv.json'));
+    handlersByEvent.get('change')?.(join(projectRoot, 'locales', 'sv.json'));
+
+    vi.advanceTimersByTime(50);
+    expect(error).toHaveBeenCalledWith(expect.stringContaining('[yapyak]'));
+  });
+});
 
 describe('derivePatches', () => {
   it('returns no patches when before and after match', () => {

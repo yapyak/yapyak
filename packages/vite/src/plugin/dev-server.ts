@@ -72,36 +72,40 @@ export function createDevServerPlugin(state: State): Plugin {
       }
 
       const pendingActionByFileId = new Map<string, 'add' | 'unlink'>();
-      const flush = debounce(() => {
-        if (pendingActionByFileId.size === 0) {
-          return;
-        }
-        for (const [fileId, kind] of pendingActionByFileId) {
-          if (kind === 'unlink') {
-            state.extractionCache.delete(fileId);
-            state.messagesByFile.delete(fileId);
-            continue;
+      const flush = debounce(
+        () => {
+          if (pendingActionByFileId.size === 0) {
+            return;
           }
-          let code: string;
-          try {
-            code = readFileSync(join(state.projectRoot, fileId), 'utf8');
-          } catch {
-            state.extractionCache.delete(fileId);
-            state.messagesByFile.delete(fileId);
-            continue;
+          for (const [fileId, kind] of pendingActionByFileId) {
+            if (kind === 'unlink') {
+              state.extractionCache.delete(fileId);
+              state.messagesByFile.delete(fileId);
+              continue;
+            }
+            let code: string;
+            try {
+              code = readFileSync(join(state.projectRoot, fileId), 'utf8');
+            } catch {
+              state.extractionCache.delete(fileId);
+              state.messagesByFile.delete(fileId);
+              continue;
+            }
+            const result = resolveExtraction(state, fileId, code);
+            renderErrorDiagnostics(state.logger, result);
+            if (result.messages.length > 0) {
+              state.messagesByFile.set(fileId, result.messages);
+            } else {
+              state.messagesByFile.delete(fileId);
+            }
           }
-          const result = resolveExtraction(state, fileId, code);
-          renderErrorDiagnostics(state.logger, result);
-          if (result.messages.length > 0) {
-            state.messagesByFile.set(fileId, result.messages);
-          } else {
-            state.messagesByFile.delete(fileId);
-          }
-        }
-        pendingActionByFileId.clear();
-        syncAll(state);
-        fillStubs(state);
-      }, 50);
+          pendingActionByFileId.clear();
+          syncAll(state);
+          fillStubs(state);
+        },
+        50,
+        state.logger,
+      );
       state.teardownCallbacks.push(flush.cancel);
 
       const previousLocaleData = new Map<string, LocaleFile>();
@@ -117,66 +121,76 @@ export function createDevServerPlugin(state: State): Plugin {
         previousLocaleData.set(locale, initial);
       }
       const pendingLocalePaths = new Set<string>();
-      const sendLocalePatches = debounce(() => {
-        if (pendingLocalePaths.size === 0) {
-          return;
-        }
-        const allPatches: Patch[] = [];
-        const filesToReload = new Set<string>();
-        const skipHmrExtensions = getNormalized(state)
-          .processors.filter((processor) => processor.skipHmrCallback === true)
-          .flatMap((processor) => processor.extensions);
-        for (const localePath of pendingLocalePaths) {
-          const locale = localeFromPath(localePath);
-          const before = previousLocaleData.get(locale) ?? {};
-          const after = tryReadLocaleFile(localePath, state.logger);
-          if (after === undefined) {
-            continue;
+      const sendLocalePatches = debounce(
+        () => {
+          if (pendingLocalePaths.size === 0) {
+            return;
           }
-          previousLocaleData.set(locale, after);
-          const localePatches = derivePatches(before, after, locale);
-          for (const patch of localePatches) {
-            if (
-              skipHmrExtensions.some((extension) =>
-                patch.fileId.endsWith(extension),
-              )
-            ) {
-              filesToReload.add(join(state.projectRoot, patch.fileId));
-            } else {
-              allPatches.push(patch);
+          const allPatches: Patch[] = [];
+          const filesToReload = new Set<string>();
+          const skipHmrExtensions = getNormalized(state)
+            .processors.filter(
+              (processor) => processor.skipHmrCallback === true,
+            )
+            .flatMap((processor) => processor.extensions);
+          for (const localePath of pendingLocalePaths) {
+            const locale = localeFromPath(localePath);
+            const before = previousLocaleData.get(locale) ?? {};
+            const after = tryReadLocaleFile(localePath, state.logger);
+            if (after === undefined) {
+              continue;
+            }
+            previousLocaleData.set(locale, after);
+            const localePatches = derivePatches(before, after, locale);
+            for (const patch of localePatches) {
+              if (
+                skipHmrExtensions.some((extension) =>
+                  patch.fileId.endsWith(extension),
+                )
+              ) {
+                filesToReload.add(join(state.projectRoot, patch.fileId));
+              } else {
+                allPatches.push(patch);
+              }
             }
           }
-        }
-        pendingLocalePaths.clear();
-        if (allPatches.length === 0 && filesToReload.size === 0) {
-          return;
-        }
-        getResolver(state).invalidateData();
-        for (const file of filesToReload) {
-          server.ws.send({
-            path: file,
-            type: 'full-reload',
-          });
-        }
-        if (allPatches.length > 0) {
-          server.ws.send({
-            data: {
-              patches: allPatches,
-            },
-            event: 'yapyak:patch',
-            type: 'custom',
-          });
-        }
-      }, 50);
+          pendingLocalePaths.clear();
+          if (allPatches.length === 0 && filesToReload.size === 0) {
+            return;
+          }
+          getResolver(state).invalidateData();
+          for (const file of filesToReload) {
+            server.ws.send({
+              path: file,
+              type: 'full-reload',
+            });
+          }
+          if (allPatches.length > 0) {
+            server.ws.send({
+              data: {
+                patches: allPatches,
+              },
+              event: 'yapyak:patch',
+              type: 'custom',
+            });
+          }
+        },
+        50,
+        state.logger,
+      );
       state.teardownCallbacks.push(sendLocalePatches.cancel);
 
-      const syncLocaleStructure = debounce(() => {
-        syncAll(state);
-        writeRegister(
-          getResolver(state).getEmittedLocales().locales,
-          state.yapyakDir,
-        );
-      }, 50);
+      const syncLocaleStructure = debounce(
+        () => {
+          syncAll(state);
+          writeRegister(
+            getResolver(state).getEmittedLocales().locales,
+            state.yapyakDir,
+          );
+        },
+        50,
+        state.logger,
+      );
       state.teardownCallbacks.push(syncLocaleStructure.cancel);
 
       server.watcher.on('change', (path: string) => {
@@ -526,13 +540,24 @@ function areMessagesEqual(
   return true;
 }
 
-function debounce(fn: () => void, milliseconds: number): Debounced {
+function debounce(
+  fn: () => void,
+  milliseconds: number,
+  logger: Logger,
+): Debounced {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const debounced = (() => {
     if (timer) {
       clearTimeout(timer);
     }
-    timer = setTimeout(fn, milliseconds);
+    timer = setTimeout(() => {
+      try {
+        fn();
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        logger.error(`[yapyak] ${message}`);
+      }
+    }, milliseconds);
   }) as Debounced;
   debounced.cancel = () => {
     if (timer) {
