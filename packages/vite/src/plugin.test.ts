@@ -1080,6 +1080,31 @@ describe('yapyak', () => {
       const output = await invokeTransform(plugin, join(root, 'src', 'a.tsx'));
       expect(output).toContain('_pick');
     });
+
+    it('emits the fixed locale as the runtime default locale', async () => {
+      const plugin = yapyak({
+        fixedLocale: 'sv',
+      });
+      await invokeConfigResolved(plugin, root, 'build');
+      const result = invokeLoad(plugin, '\0yapyak:runtime');
+      expect(result).toContain('export const LOCALES = ["sv"];');
+      expect(result).toContain('export const DEFAULT_LOCALE = "sv";');
+    });
+
+    it('emits a single-locale catalog for a plural call site when fixedLocale is set', async () => {
+      writeFileSync(
+        join(root, 'src', 'b.tsx'),
+        "import { t } from 'yapyak';\nexport const b = (count: number) => t('You have {count, plural, one {# item} other {# items}}', { count });\n",
+      );
+      const plugin = yapyak({
+        fixedLocale: 'sv',
+      });
+      await invokeConfigResolved(plugin, root, 'build');
+      const output = await invokeTransform(plugin, join(root, 'src', 'b.tsx'));
+      expect(output).toContain('_pick');
+      expect(output).toContain('{ sv: [');
+      expect(output).not.toContain('en:');
+    });
   });
 
   describe('sourcemap', () => {
@@ -1184,7 +1209,9 @@ describe('yapyak', () => {
 
     it('resolves `yapyak/runtime` to the virtual id', () => {
       const plugin = yapyak();
-      expect(invokeResolveId(plugin, 'yapyak/runtime')).toBe(' yapyak:runtime');
+      expect(invokeResolveId(plugin, 'yapyak/runtime')).toBe(
+        '\0yapyak:runtime',
+      );
     });
 
     it('returns `null` for `resolveId` on an unrelated module', () => {
@@ -1195,7 +1222,7 @@ describe('yapyak', () => {
     it('loads the resolved runtime virtual id with the runtime constants', async () => {
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
-      const result = invokeLoad(plugin, ' yapyak:runtime');
+      const result = invokeLoad(plugin, '\0yapyak:runtime');
       expect(result).toContain('export const');
     });
 
@@ -1210,7 +1237,7 @@ describe('yapyak', () => {
       await invokeConfigResolved(plugin, root, 'build');
       const result = await invokeTransformRaw(
         plugin,
-        ' virtual-module',
+        '\0virtual-module',
         'export const x = 1;',
       );
       expect(result).toBeNull();

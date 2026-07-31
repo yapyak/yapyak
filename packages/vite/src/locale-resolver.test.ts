@@ -207,7 +207,7 @@ describe('createLocaleResolver', () => {
       );
 
       expect(resolver.getEmittedLocales()).toEqual({
-        defaultLocale: 'en',
+        defaultLocale: 'sv',
         locales: [
           'sv',
         ],

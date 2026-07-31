@@ -561,6 +561,309 @@ describe('autoTranslate', () => {
     });
   });
 
+  it('preserves a concurrent edit when flushing a later chunk', async () => {
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      }),
+    );
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkComplete?: (
+              chunk: TranslateRequest[],
+              result: {
+                sv: string;
+              }[],
+            ) => void;
+          },
+        ): Promise<string[]> => {
+          options?.onChunkComplete?.(requests.slice(0, 1), [
+            {
+              sv: 'Spara',
+            },
+          ]);
+          writeFileSync(
+            localePath,
+            JSON.stringify({
+              'src/a.tsx': {
+                Hello: 'Hallo',
+                Save: 'Spara',
+              },
+            }),
+          );
+          options?.onChunkComplete?.(requests.slice(1, 2), [
+            {
+              sv: 'Avbryt',
+            },
+          ]);
+          return Promise.resolve([
+            'Spara',
+            'Avbryt',
+          ]);
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+      {
+        id: 'm2',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 2,
+                offset: 15,
+              },
+              start: {
+                column: 1,
+                line: 2,
+                offset: 11,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Save',
+      },
+      {
+        id: 'm3',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 7,
+                line: 3,
+                offset: 22,
+              },
+              start: {
+                column: 1,
+                line: 3,
+                offset: 16,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Cancel',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(result.translated).toBe(2);
+    expect(result.errors).toEqual([]);
+    expect(JSON.parse(readFileSync(localePath, 'utf-8'))).toEqual({
+      'src/a.tsx': {
+        Cancel: 'Avbryt',
+        Hello: 'Hallo',
+        Save: 'Spara',
+      },
+    });
+  });
+
+  it('preserves a concurrently added translation when flushing a later chunk', async () => {
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': {
+          Hello: 'Hej',
+        },
+      }),
+    );
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkComplete?: (
+              chunk: TranslateRequest[],
+              result: {
+                sv: string;
+              }[],
+            ) => void;
+          },
+        ): Promise<string[]> => {
+          options?.onChunkComplete?.(requests.slice(0, 1), [
+            {
+              sv: 'Spara',
+            },
+          ]);
+          writeFileSync(
+            localePath,
+            JSON.stringify({
+              'src/a.tsx': {
+                Hello: 'Hej',
+                Save: 'Spara',
+                Settings: 'Inställningar',
+              },
+            }),
+          );
+          options?.onChunkComplete?.(requests.slice(1, 2), [
+            {
+              sv: 'Avbryt',
+            },
+          ]);
+          return Promise.resolve([
+            'Spara',
+            'Avbryt',
+            '',
+          ]);
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Save',
+      },
+      {
+        id: 'm2',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 7,
+                line: 2,
+                offset: 13,
+              },
+              start: {
+                column: 1,
+                line: 2,
+                offset: 7,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Cancel',
+      },
+      {
+        id: 'm3',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 9,
+                line: 3,
+                offset: 23,
+              },
+              start: {
+                column: 1,
+                line: 3,
+                offset: 14,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Settings',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(result.translated).toBe(2);
+    expect(result.errors).toEqual([]);
+    expect(JSON.parse(readFileSync(localePath, 'utf-8'))).toEqual({
+      'src/a.tsx': {
+        Cancel: 'Avbryt',
+        Hello: 'Hej',
+        Save: 'Spara',
+        Settings: 'Inställningar',
+      },
+    });
+  });
+
   it('blocks persistence when the signal aborts before the translator returns', async () => {
     const controller = new AbortController();
     const translator: Translator = Object.assign(

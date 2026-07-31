@@ -110,7 +110,7 @@ Returns the matched `Locale` or `undefined` if no shipped locale matches even af
 
 yapyak parses an incoming `Accept-Language` header (`sv,en;q=0.8,en-US;q=0.6`) into an ordered list, most preferred entry first.
 
-If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled, the resolver walks that list and picks the first entry matching a shipped locale, using the fallback chain above.
+If [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled, the resolver walks that list and picks the first entry matching a shipped locale, using the fallback chain above. When the chain alone has no match, the resolver adds likely subtags and walks the maximized chain: a browser sending `zh-TW` matches a shipped `zh-Hant`. A bare `pt` matches `pt-BR` the same way.
 
 This is how a fresh visit gets a sensible default. The user's browser preferences take effect even before they've made an explicit choice or had their cookie set.
 

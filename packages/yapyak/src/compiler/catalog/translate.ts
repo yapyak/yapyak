@@ -10,7 +10,6 @@ import type {
   CatalogEntry,
   LocaleContext,
   LocaleData,
-  LocaleFile,
   OrphanCache,
 } from './locale';
 
@@ -125,8 +124,13 @@ export async function autoTranslate(
       });
     }
   };
-  const localeFiles = new Map<string, LocaleFile>();
-  const touchedLocales = new Set<string>();
+  const pendingTranslationsByLocale = new Map<
+    string,
+    {
+      stub: TranslationStub;
+      value: string;
+    }[]
+  >();
   const persistedStubs = new Set<TranslationStub>();
   const persistResult = (stub: TranslationStub, value: string): void => {
     if (signal?.aborted) {
@@ -172,42 +176,39 @@ export async function autoTranslate(
       });
       return;
     }
-    let localeFile = localeFiles.get(stub.locale);
-    if (!localeFile) {
-      const localePath = join(
-        projectRoot,
-        context.localesDir,
-        `${stub.locale}.json`,
-      );
-      localeFile = readLocaleFile(localePath);
-      localeFiles.set(stub.locale, localeFile);
+    let pending = pendingTranslationsByLocale.get(stub.locale);
+    if (!pending) {
+      pending = [];
+      pendingTranslationsByLocale.set(stub.locale, pending);
     }
-    const fileEntries: Record<string, CatalogEntry> =
-      localeFile[stub.fileId] ?? Object.create(null);
-    localeFile[stub.fileId] = fileEntries;
-    setEntry(fileEntries, stub.source, stub.disambiguation, trimmed);
+    pending.push({
+      stub,
+      value: trimmed,
+    });
     translated++;
-    touchedLocales.add(stub.locale);
     persistedStubs.add(stub);
   };
-  const flushTouchedLocales = (): void => {
-    for (const locale of touchedLocales) {
-      const localeFile = localeFiles.get(locale);
-      if (!localeFile) {
-        continue;
-      }
+  const flushPendingTranslations = (): void => {
+    for (const [locale, pending] of pendingTranslationsByLocale) {
       const localePath = join(
         projectRoot,
         context.localesDir,
         `${locale}.json`,
       );
+      const localeFile = readLocaleFile(localePath);
+      for (const { stub, value } of pending) {
+        const fileEntries: Record<string, CatalogEntry> =
+          localeFile[stub.fileId] ?? Object.create(null);
+        localeFile[stub.fileId] = fileEntries;
+        setEntry(fileEntries, stub.source, stub.disambiguation, value);
+      }
       writeLocaleFile({
         after: localeFile,
         extractedKeys,
         filePath: localePath,
       });
     }
-    touchedLocales.clear();
+    pendingTranslationsByLocale.clear();
   };
   const onChunkComplete = (
     chunkRequests: TranslateRequest[],
@@ -232,7 +233,7 @@ export async function autoTranslate(
       }
       persistResult(stub, value);
     }
-    flushTouchedLocales();
+    flushPendingTranslations();
   };
   let results: string[];
   try {
@@ -249,7 +250,7 @@ export async function autoTranslate(
           })
         : await runOneByOne(stubs, requests, input.translator, errors, signal);
   } catch (error) {
-    flushTouchedLocales();
+    flushPendingTranslations();
     if (!signal?.aborted) {
       for (const stub of stubs) {
         if (persistedStubs.has(stub)) {
@@ -279,7 +280,7 @@ export async function autoTranslate(
     }
     persistResult(stub, value);
   }
-  flushTouchedLocales();
+  flushPendingTranslations();
 
   return {
     errors,

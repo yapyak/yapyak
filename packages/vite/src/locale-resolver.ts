@@ -58,7 +58,7 @@ export function createLocaleResolver(
         fixedLocale === undefined
           ? project
           : {
-              defaultLocale: project.defaultLocale,
+              defaultLocale: fixedLocale,
               locales: [
                 fixedLocale,
               ],

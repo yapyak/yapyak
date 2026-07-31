@@ -102,4 +102,67 @@ describe('resolveLocale', () => {
       ),
     ).toBe('zh');
   });
+
+  it('finds the script-tagged locale for a region-tagged candidate', () => {
+    expect(
+      resolveLocale(
+        'en',
+        [
+          'en',
+          'zh-Hant',
+          'zh-Hans',
+        ],
+        {
+          acceptLanguage: 'zh-TW,zh;q=0.9',
+        },
+      ),
+    ).toBe('zh-Hant');
+  });
+
+  it('finds the script-tagged locale when the maximized region differs', () => {
+    expect(
+      resolveLocale(
+        'en',
+        [
+          'en',
+          'zh-Hant',
+          'zh-Hans',
+        ],
+        {
+          acceptLanguage: 'zh-HK',
+        },
+      ),
+    ).toBe('zh-Hant');
+  });
+
+  it('finds the region-tagged locale for a bare language candidate', () => {
+    expect(
+      resolveLocale(
+        'en',
+        [
+          'en',
+          'pt-BR',
+        ],
+        {
+          acceptLanguage: 'pt',
+        },
+      ),
+    ).toBe('pt-BR');
+  });
+
+  it('prefers the exact locale over the script-tagged locale', () => {
+    expect(
+      resolveLocale(
+        'en',
+        [
+          'en',
+          'zh-TW',
+          'zh-Hant',
+        ],
+        {
+          acceptLanguage: 'zh-TW',
+        },
+      ),
+    ).toBe('zh-TW');
+  });
 });
