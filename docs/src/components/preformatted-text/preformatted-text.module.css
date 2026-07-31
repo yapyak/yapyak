@@ -2,6 +2,7 @@
   .PreformattedText {
     padding: var(--spacing-4);
     padding-right: var(--preformatted-text-padding-right, var(--spacing-4));
+    padding-bottom: var(--spacing-5);
     overflow-x: auto;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
@@ -25,8 +26,8 @@
       0 0,
       0 100%;
     mask-size:
-      100% calc(100% - var(--spacing-3)),
-      100% var(--spacing-3);
+      100% calc(100% - var(--spacing-4)),
+      100% var(--spacing-4);
     mask-composite: add;
   }
 }

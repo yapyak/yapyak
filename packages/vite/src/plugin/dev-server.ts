@@ -13,6 +13,7 @@ import type {
   Template,
 } from 'yapyak/compiler/internal';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
+import type { Patch } from 'yapyak/internal';
 import type { State } from './state';
 
 import {
@@ -51,13 +52,6 @@ type CallSitePosition = {
 type Debounced = {
   cancel(): void;
   (): void;
-};
-
-type Patch = {
-  fileId: string;
-  id: string;
-  locale: string;
-  value: string | Template;
 };
 
 export function createDevServerPlugin(state: State): Plugin {

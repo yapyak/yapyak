@@ -56,6 +56,10 @@
     &:has(.CopyButton):not(:has(.Header)) {
       --preformatted-text-mask-image-end: calc(100% - var(--spacing-12));
       --preformatted-text-padding-right: var(--spacing-14);
+      --code-block-copy-button-top: calc(
+        (var(--code-block-row-height) + var(--spacing-1) - 32px) /
+        2
+      );
     }
 
     &[data-bare] {

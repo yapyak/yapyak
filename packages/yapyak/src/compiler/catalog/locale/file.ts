@@ -5,7 +5,7 @@ import type { OrphanCache } from './orphan';
 import { YAP_COMPILE, warnDiagnostic } from '../../../diagnostic';
 import { toMessageKey } from '../../parser';
 import { compareKeys, stringifyCanonical } from '../canonical';
-import { writeAtomicAll } from './atomic';
+import { writeEachAtomic } from './atomic';
 import { stripBom } from './bom';
 import { validateLocaleCode } from './code';
 import {
@@ -329,14 +329,19 @@ export function syncLocaleFiles(
 export function toEntry(
   byContext: Map<string | undefined, string>,
   source: string,
+  fileId: string,
 ): CatalogEntry {
   const plain = byContext.get(undefined);
   if (plain !== undefined && byContext.size === 1) {
     return plain;
   }
   if (plain !== undefined) {
+    const { code, hint, message } = YAP_COMPILE.CONTEXT_MIXED_USAGE;
     throw new Error(
-      `[yapyak] ${YAP_COMPILE.CONTEXT_MIXED_USAGE.code}: Source "${source}" is used with both \`t()\` and \`t.as()\`. Choose one form for every occurrence: either drop \`t.as\` or wrap every call with it. Run \`yapyak check\` to find the conflicting call sites.`,
+      `[yapyak] ${code}: ${message({
+        fileId,
+        source,
+      })} ${hint()}`,
     );
   }
   const variants: Record<string, string> = Object.create(null);
@@ -365,7 +370,7 @@ function writeLocaleFiles(writes: WriteLocaleFileInput[]): void {
       recursive: true,
     });
   }
-  writeAtomicAll(
+  writeEachAtomic(
     writes.map((write) => ({
       content: stringifyCanonical(write.after),
       path: write.filePath,
@@ -650,7 +655,7 @@ function buildFileEntries(
   }
   const fileEntries: Record<string, CatalogEntry> = Object.create(null);
   for (const [source, byContext] of byContextBySource) {
-    fileEntries[source] = toEntry(byContext, source);
+    fileEntries[source] = toEntry(byContext, source, input.fileId);
   }
   return fileEntries;
 }

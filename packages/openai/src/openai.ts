@@ -92,7 +92,8 @@ const DEFAULT_MAX_RETRIES = 2;
 const MAX_TOKENS_CAP = 16_000;
 const MAX_TOKENS_FLOOR = 1024;
 const MAX_TOKENS_PER_ITEM = 96;
-const REASONING_MODEL_RX = /^(gpt-5|o[1-9])/;
+const REASONING_MODEL_RX = /^(gpt-5(?!-chat)|o[1-9])/;
+const MAX_COMPLETION_TOKENS_MODEL_RX = /^(gpt-5|o[1-9])/;
 
 /**
  * Creates an OpenAI translator.
@@ -173,7 +174,7 @@ export function openai(options: OpenAIOptions): Translator {
         override: maxTokens,
         perItem: MAX_TOKENS_PER_ITEM,
       });
-      if (isReasoningModel) {
+      if (MAX_COMPLETION_TOKENS_MODEL_RX.test(model)) {
         body.max_completion_tokens = resolvedMaxTokens;
       } else {
         body.max_tokens = resolvedMaxTokens;

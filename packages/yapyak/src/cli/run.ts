@@ -100,7 +100,7 @@ export async function run(argv: string[]): Promise<number> {
         );
         if (missingValueFlags.length > 0) {
           process.stderr.write(
-            `\n  ${symbol.cross} ${color.red(`Missing value for flag${missingValueFlags.length === 1 ? '' : 's'}: ${missingValueFlags.join(', ')}`)}\n`,
+            `\n  ${symbol.cross} ${color.red(`Missing value for flag${missingValueFlags.length === 1 ? '' : 's'}: ${missingValueFlags.join(', ')}. Pass a value starting with "-" as --flag=value.`)}\n`,
           );
           printHelp();
           return 1;

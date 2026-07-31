@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { writeAtomic, writeAtomicAll } from './atomic';
+import { writeAtomic, writeEachAtomic } from './atomic';
 import {
   mkdirSync,
   mkdtempSync,
@@ -60,11 +60,11 @@ describe('writeAtomic', () => {
   });
 });
 
-describe('writeAtomicAll', () => {
+describe('writeEachAtomic', () => {
   let directory: string;
 
   beforeEach(() => {
-    directory = mkdtempSync(join(tmpdir(), 'yapyak-atomic-all-'));
+    directory = mkdtempSync(join(tmpdir(), 'yapyak-atomic-each-'));
   });
 
   afterEach(() => {
@@ -77,7 +77,7 @@ describe('writeAtomicAll', () => {
   it('writes every target when all stages succeed', () => {
     const firstPath = join(directory, 'a.json');
     const secondPath = join(directory, 'b.json');
-    writeAtomicAll([
+    writeEachAtomic([
       {
         content: '{"a":1}',
         path: firstPath,
@@ -96,7 +96,7 @@ describe('writeAtomicAll', () => {
     const secondPath = join(directory, 'missing', 'b.json');
     writeFileSync(firstPath, '{"a":"original"}');
     expect(() =>
-      writeAtomicAll([
+      writeEachAtomic([
         {
           content: '{"a":1}',
           path: firstPath,
@@ -114,7 +114,7 @@ describe('writeAtomicAll', () => {
     const firstPath = join(directory, 'a.json');
     const secondPath = join(directory, 'missing', 'b.json');
     expect(() =>
-      writeAtomicAll([
+      writeEachAtomic([
         {
           content: '{"a":1}',
           path: firstPath,
@@ -132,7 +132,7 @@ describe('writeAtomicAll', () => {
   });
 
   it('writes no `.tmp` artefact after a successful write', () => {
-    writeAtomicAll([
+    writeEachAtomic([
       {
         content: '{"a":1}',
         path: join(directory, 'a.json'),
@@ -149,7 +149,7 @@ describe('writeAtomicAll', () => {
   });
 
   it('writes nothing when the list is empty', () => {
-    writeAtomicAll([]);
+    writeEachAtomic([]);
     expect(readdirSync(directory)).toEqual([]);
   });
 
@@ -158,7 +158,7 @@ describe('writeAtomicAll', () => {
     const secondPath = join(directory, 'b.json');
     mkdirSync(secondPath);
     expect(() =>
-      writeAtomicAll([
+      writeEachAtomic([
         {
           content: '{"a":1}',
           path: firstPath,

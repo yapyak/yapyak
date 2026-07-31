@@ -1,3 +1,5 @@
+import type { Template } from './template';
+
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { registerCatalog, resetDevStore } from './dev-store';
@@ -102,8 +104,11 @@ describe('applyPatches', () => {
   });
 
   it('writes a template-array patch verbatim into the catalog entry', () => {
-    const template = [
-      'Hello, ',
+    const template: Template = [
+      {
+        kind: 'literal',
+        value: 'Hi ',
+      },
       {
         kind: 'placeholder',
         name: 'name',

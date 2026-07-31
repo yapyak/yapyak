@@ -1212,4 +1212,104 @@ describe('autoTranslate', () => {
       },
     });
   });
+
+  it('reports an error for every stub when the locale file turns corrupt mid-batch', async () => {
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkComplete?: (
+              chunk: TranslateRequest[],
+              result: {
+                sv: string;
+              }[],
+            ) => void;
+          },
+        ): Promise<string[]> => {
+          writeFileSync(localePath, '{');
+          options?.onChunkComplete?.(requests.slice(0, 1), [
+            {
+              sv: 'Hej',
+            },
+          ]);
+          return Promise.reject(new Error('batch failed'));
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+      {
+        id: 'm2',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 2,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 2,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'World',
+      },
+    ];
+
+    const result = await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(result.translated).toBe(0);
+    expect(result.errors).toHaveLength(2);
+    expect(result.errors[0]?.source).toBe('Hello');
+    expect(result.errors[0]?.error).toBeInstanceOf(Error);
+    expect(result.errors[1]?.source).toBe('World');
+    expect(readFileSync(localePath, 'utf-8')).toBe('{');
+  });
 });

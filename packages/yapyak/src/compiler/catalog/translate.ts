@@ -149,7 +149,11 @@ export async function autoTranslate(
             signal,
           );
   } catch (error) {
-    writePendingTranslations(batchContext);
+    try {
+      writePendingTranslations(batchContext);
+    } catch (writeError) {
+      collectPendingErrors(batchContext, writeError);
+    }
     if (!signal?.aborted) {
       collectBatchErrors(batchContext, error, stubs);
     }
@@ -453,8 +457,8 @@ function writePendingTranslations(context: BatchContext): void {
       extractedKeys: context.extractedKeys,
       filePath: localePath,
     });
+    context.pendingTranslationsByLocale.delete(locale);
   }
-  context.pendingTranslationsByLocale.clear();
 }
 
 function setEntry(
@@ -472,6 +476,21 @@ function setEntry(
     typeof existing === 'object' ? existing : Object.create(null);
   variants[context] = value;
   fileEntries[source] = variants;
+}
+
+function collectPendingErrors(context: BatchContext, error: unknown): void {
+  for (const pending of context.pendingTranslationsByLocale.values()) {
+    for (const { stub } of pending) {
+      context.errors.push({
+        error,
+        fileId: stub.fileId,
+        locale: stub.locale,
+        source: stub.source,
+      });
+      context.translated--;
+    }
+  }
+  context.pendingTranslationsByLocale.clear();
 }
 
 function collectBatchErrors(

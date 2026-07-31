@@ -888,7 +888,7 @@ describe('toEntry', () => {
         'Spara',
       ],
     ]);
-    expect(toEntry(byContext, 'Save')).toBe('Spara');
+    expect(toEntry(byContext, 'Save', 'src/a.tsx')).toBe('Spara');
   });
 
   it('returns a context-variant record when no plain value exists', () => {
@@ -902,7 +902,7 @@ describe('toEntry', () => {
         'Spara',
       ],
     ]);
-    expect(toEntry(byContext, 'Save')).toEqual({
+    expect(toEntry(byContext, 'Save', 'src/a.tsx')).toEqual({
       button: 'Spara',
       toolbar: 'Spara',
     });
@@ -919,9 +919,11 @@ describe('toEntry', () => {
         'Spara',
       ],
     ]);
-    expect(() => toEntry(byContext, 'Save')).toThrow(/YAP0018/);
-    expect(() => toEntry(byContext, 'Save')).toThrow(/"Save"/);
-    expect(() => toEntry(byContext, 'Save')).toThrow(/yapyak check/);
+    expect(() => toEntry(byContext, 'Save', 'src/a.tsx')).toThrow(/YAP0018/);
+    expect(() => toEntry(byContext, 'Save', 'src/a.tsx')).toThrow(/"Save"/);
+    expect(() => toEntry(byContext, 'Save', 'src/a.tsx')).toThrow(
+      /src\/a\.tsx/,
+    );
   });
 });
 

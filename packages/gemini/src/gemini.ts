@@ -201,8 +201,15 @@ export function gemini(options: GeminiOptions): Translator {
         'gemini',
       );
       validateResponse(responseBody);
-      const text = responseBody.candidates?.[0]?.content?.parts?.[0]?.text;
-      if (typeof text !== 'string') {
+      const parts = responseBody.candidates?.[0]?.content?.parts ?? [];
+      const textParts = parts.flatMap((part) =>
+        typeof part.text === 'string'
+          ? [
+              part.text,
+            ]
+          : [],
+      );
+      if (textParts.length === 0) {
         throw new TranslatorInvalidResponseError(
           'yapyak gemini: response did not contain a text part.',
           {
@@ -210,7 +217,7 @@ export function gemini(options: GeminiOptions): Translator {
           },
         );
       }
-      return parseTranslationsBatch(text, 'gemini');
+      return parseTranslationsBatch(textParts.join(''), 'gemini');
     },
   });
 }

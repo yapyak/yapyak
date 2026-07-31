@@ -13,7 +13,7 @@ export function writeAtomic(path: string, content: string): void {
   }
 }
 
-export function writeAtomicAll(
+export function writeEachAtomic(
   writes: {
     content: string;
     path: string;
@@ -26,11 +26,11 @@ export function writeAtomicAll(
   try {
     for (const [index, write] of writes.entries()) {
       const temporaryPath = `${write.path}.${process.pid}.${Date.now()}.${index}.tmp`;
-      writeFileSync(temporaryPath, write.content);
       staged.push({
         finalPath: write.path,
         temporaryPath,
       });
+      writeFileSync(temporaryPath, write.content);
     }
   } catch (cause) {
     for (const stage of staged) {

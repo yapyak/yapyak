@@ -221,6 +221,7 @@ describe('run', () => {
     expect(retranslate).not.toHaveBeenCalled();
     expect(errorWrites.join('')).toContain('Missing value for flag');
     expect(errorWrites.join('')).toContain('--locale');
+    expect(errorWrites.join('')).toContain('--flag=value');
   });
 
   it('refuses a value flag followed by another flag on the `retranslate` command', async () => {

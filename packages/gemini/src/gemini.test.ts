@@ -71,6 +71,49 @@ describe('gemini', () => {
     expect(result).toBe('Hej');
   });
 
+  it('returns translated text when the payload spans multiple text parts', async () => {
+    const payload = JSON.stringify([
+      {
+        sv: 'Hej',
+      },
+    ]);
+    vi.stubGlobal(
+      'fetch',
+      async () =>
+        new Response(
+          JSON.stringify({
+            candidates: [
+              {
+                content: {
+                  parts: [
+                    {
+                      text: payload.slice(0, 8),
+                    },
+                    {
+                      text: payload.slice(8),
+                    },
+                  ],
+                },
+              },
+            ],
+          }),
+          {
+            status: 200,
+          },
+        ),
+    );
+    const translator = gemini({
+      apiKey: 'k',
+    });
+    const result = await translator({
+      fileId: 'src/a.tsx',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    expect(result).toBe('Hej');
+  });
+
   it('writes the API key as `x-goog-api-key` header', async () => {
     const stub = stubFetch('Hej');
     await gemini({

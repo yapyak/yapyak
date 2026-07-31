@@ -152,6 +152,24 @@ describe('openai', () => {
     expect(body.temperature).toBe(0.5);
   });
 
+  it('writes `temperature` to the request body for `gpt-5-chat-latest`', async () => {
+    const stub = stubFetch('Hej');
+    await openai({
+      apiKey: 'k',
+      model: 'gpt-5-chat-latest',
+      temperature: 0.5,
+    })({
+      fileId: 'src/a.tsx',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    const body = stub.body() as {
+      temperature?: number;
+    };
+    expect(body.temperature).toBe(0.5);
+  });
+
   it('builds requests against the configured endpoint when set', async () => {
     const stub = stubFetch('Hej');
     await openai({
@@ -399,6 +417,28 @@ describe('openai', () => {
     };
     expect(body.max_tokens).toBe(4096);
     expect(body.max_completion_tokens).toBeUndefined();
+  });
+
+  it('writes `maxTokens` to `max_completion_tokens` for `gpt-5-chat-latest`', async () => {
+    const stub = stubFetch('Hej');
+    await openai({
+      apiKey: 'k',
+      maxTokens: 4096,
+      model: 'gpt-5-chat-latest',
+    })({
+      fileId: 'src/a.tsx',
+      source: 'Hello',
+      sourceLocale: 'en',
+      targetLocale: 'sv',
+    });
+    const body = stub.body() as {
+      // biome-ignore lint/style/useNamingConvention: yap yap yap
+      max_completion_tokens?: number;
+      // biome-ignore lint/style/useNamingConvention: yap yap yap
+      max_tokens?: number;
+    };
+    expect(body.max_completion_tokens).toBe(4096);
+    expect(body.max_tokens).toBeUndefined();
   });
 
   it('throws when `apiKey` is an empty string', () => {
