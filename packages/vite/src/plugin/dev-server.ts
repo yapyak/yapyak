@@ -12,6 +12,7 @@ import type {
   LocaleWarning,
   Template,
 } from 'yapyak/compiler/internal';
+import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { State } from './state';
 
 import {
@@ -23,6 +24,7 @@ import {
   parseTemplate,
   readLocaleFile,
   toMessageKey,
+  toVariants,
   validateLocaleCode,
   writeRegister,
 } from 'yapyak/compiler/internal';
@@ -226,14 +228,13 @@ export function createDevServerPlugin(state: State): Plugin {
             );
             return;
           }
-          const hint = `Run \`${runYapyakCommand(`translate ${locale}`)}\` to fill the stubs.`;
           getResolver(state).invalidateStructure();
           reloadAllModules(server);
           syncLocaleStructure();
-          state.logger.info(
-            `[yapyak] New locale '${locale}' detected. ${hint}`,
-          );
           const initial = tryReadLocaleFile(path, state.logger);
+          state.logger.info(
+            renderNewLocaleMessage(locale, initial, getNormalized(state)),
+          );
           if (initial === undefined) {
             return;
           }
@@ -353,6 +354,36 @@ function tryReadLocaleFile(
 function localeFromPath(path: string): string {
   const base = basename(path);
   return base.slice(0, -extname(base).length);
+}
+
+function renderNewLocaleMessage(
+  locale: string,
+  localeFile: LocaleFile | undefined,
+  config: NormalizedYapyakConfig,
+): string {
+  const detected = `[yapyak] New locale '${locale}' detected.`;
+  if (localeFile !== undefined && isTranslated(localeFile)) {
+    return detected;
+  }
+  if (config.translator) {
+    return `${detected} \`${runYapyakCommand(`translate ${locale}`)}\` fills anything untranslated.`;
+  }
+  return `${detected} Fill in ${config.localesDir}/${locale}.json.`;
+}
+
+function isTranslated(localeFile: LocaleFile): boolean {
+  let hasTranslations = false;
+  for (const entries of Object.values(localeFile)) {
+    for (const entry of Object.values(entries)) {
+      for (const { value } of toVariants(entry)) {
+        if (value === '') {
+          return false;
+        }
+        hasTranslations = true;
+      }
+    }
+  }
+  return hasTranslations;
 }
 
 export function derivePatches(
