@@ -6,7 +6,7 @@
     );
 
     position: absolute;
-    top: var(--code-block-copy-button-top, var(--code-block-copy-button-inset));
+    top: var(--code-block-copy-button-inset);
     right: var(--code-block-copy-button-inset);
     z-index: 1;
 

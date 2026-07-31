@@ -2,7 +2,6 @@
   .PreformattedText {
     padding: var(--spacing-4);
     padding-right: var(--preformatted-text-padding-right, var(--spacing-4));
-    padding-bottom: var(--spacing-5);
     overflow-x: auto;
     font-family: var(--font-family-mono);
     font-size: var(--font-size-xs);
