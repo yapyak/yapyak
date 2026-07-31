@@ -141,10 +141,10 @@ describe('findContextDiagnostics', () => {
       ),
     ];
     const diagnostics = findContextDiagnostics(messages);
-    const ypk404 = diagnostics.filter(
+    const yap0019 = diagnostics.filter(
       (diagnostic) => diagnostic.code === 'YAP0019',
     );
-    expect(ypk404).toHaveLength(1);
-    expect(ypk404[0]?.severity).toBe('warning');
+    expect(yap0019).toHaveLength(1);
+    expect(yap0019[0]?.severity).toBe('warning');
   });
 });

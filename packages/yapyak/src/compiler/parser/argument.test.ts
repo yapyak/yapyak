@@ -80,7 +80,7 @@ describe('parseArguments', () => {
   });
 
   it('parses placeholder keys from plural blocks', () => {
-    const [parsed] = parseAll('diagnostic', 'ypk202-invalid-plural.ts');
+    const [parsed] = parseAll('diagnostic', 'yap0008-invalid-plural.ts');
     expect(parsed?.source).toContain('plural');
     expect(parsed?.params?.keys).toEqual([
       'count',
@@ -112,48 +112,48 @@ describe('parseArguments', () => {
     });
 
     it('emits YAP0002 for dynamic source', () => {
-      const [parsed] = parseAll('diagnostic', 'ypk102-dynamic-source.ts');
+      const [parsed] = parseAll('diagnostic', 'yap0002-dynamic-source.ts');
       expect(parsed?.diagnostics).toHaveLength(1);
       expect(parsed?.diagnostics[0]?.code).toBe('YAP0002');
       expect(parsed?.diagnostics[0]?.severity).toBe('error');
     });
 
     it('emits YAP0003 for empty source', () => {
-      const [parsed] = parseAll('diagnostic', 'ypk103-empty-source.ts');
-      const ypk103 = parsed?.diagnostics.filter(
+      const [parsed] = parseAll('diagnostic', 'yap0003-empty-source.ts');
+      const yap0003 = parsed?.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0003',
       );
-      expect(ypk103).toHaveLength(1);
+      expect(yap0003).toHaveLength(1);
       expect(parsed?.source).toBe('');
     });
 
     it('emits YAP0004 for missing param', () => {
-      const [parsed] = parseAll('diagnostic', 'ypk104-missing-param.ts');
-      const ypk104 = parsed?.diagnostics.filter(
+      const [parsed] = parseAll('diagnostic', 'yap0004-missing-param.ts');
+      const yap0004 = parsed?.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0004',
       );
-      expect(ypk104).toHaveLength(1);
-      expect(ypk104?.[0]?.message).toContain('name');
+      expect(yap0004).toHaveLength(1);
+      expect(yap0004?.[0]?.message).toContain('name');
     });
 
     it('emits YAP0005 for extra param', () => {
-      const [parsed] = parseAll('diagnostic', 'ypk105-extra-param.ts');
-      const ypk105 = parsed?.diagnostics.filter(
+      const [parsed] = parseAll('diagnostic', 'yap0005-extra-param.ts');
+      const yap0005 = parsed?.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0005',
       );
-      expect(ypk105).toHaveLength(1);
-      expect(ypk105?.[0]?.severity).toBe('warning');
-      expect(ypk105?.[0]?.message).toContain('age');
+      expect(yap0005).toHaveLength(1);
+      expect(yap0005?.[0]?.severity).toBe('warning');
+      expect(yap0005?.[0]?.message).toContain('age');
     });
 
     it('emits YAP0006 for spread params', () => {
-      const [parsed] = parseAll('diagnostic', 'ypk106-spread-param.ts');
+      const [parsed] = parseAll('diagnostic', 'yap0006-spread-param.ts');
       expect(parsed?.params?.kind).toBe('spread');
-      const ypk106 = parsed?.diagnostics.filter(
+      const yap0006 = parsed?.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0006',
       );
-      expect(ypk106).toHaveLength(1);
-      expect(ypk106?.[0]?.severity).toBe('warning');
+      expect(yap0006).toHaveLength(1);
+      expect(yap0006?.[0]?.severity).toBe('warning');
     });
 
     it('emits YAP0006 for params passed as a variable', () => {
@@ -170,29 +170,29 @@ describe('parseArguments', () => {
       const parsed = parseInline(
         "const props = { name: 'x' };\nexport const y = t('Hi {name}', props);",
       );
-      const ypk104 = parsed.diagnostics.filter(
+      const yap0004 = parsed.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0004',
       );
-      expect(ypk104).toHaveLength(0);
+      expect(yap0004).toHaveLength(0);
     });
 
     it('emits YAP0007 for malformed ICU', () => {
       const parsed = parseInline("export const x = t('Hello {name');");
-      const ypk201 = parsed.diagnostics.filter(
+      const yap0007 = parsed.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0007',
       );
-      expect(ypk201).toHaveLength(1);
-      expect(ypk201[0]?.severity).toBe('error');
+      expect(yap0007).toHaveLength(1);
+      expect(yap0007[0]?.severity).toBe('error');
     });
 
     it('emits YAP0008 for plural without other branch', () => {
-      const [parsed] = parseAll('diagnostic', 'ypk202-invalid-plural.ts');
-      const ypk202 = parsed?.diagnostics.filter(
+      const [parsed] = parseAll('diagnostic', 'yap0008-invalid-plural.ts');
+      const yap0008 = parsed?.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0008',
       );
-      expect(ypk202).toHaveLength(1);
-      expect(ypk202?.[0]?.severity).toBe('error');
-      expect(ypk202?.[0]?.message).toContain('count');
+      expect(yap0008).toHaveLength(1);
+      expect(yap0008?.[0]?.severity).toBe('error');
+      expect(yap0008?.[0]?.message).toContain('count');
     });
 
     it('emits YAP0046 for an unknown plural keyword', () => {
@@ -212,23 +212,23 @@ describe('parseArguments', () => {
       const parsed = parseInline(
         "export const x = t('{g, select, male {he}}', { g: 'male' });",
       );
-      const ypk202 = parsed.diagnostics.filter(
+      const yap0008 = parsed.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0008',
       );
-      expect(ypk202).toHaveLength(1);
-      expect(ypk202[0]?.severity).toBe('error');
-      expect(ypk202[0]?.message).toContain('g');
+      expect(yap0008).toHaveLength(1);
+      expect(yap0008[0]?.severity).toBe('error');
+      expect(yap0008[0]?.message).toContain('g');
     });
 
     it('emits YAP0009 for an unsupported ICU feature', () => {
       const parsed = parseInline(
         "export const x = t('{n, number, ::currency/EUR}', { n: 1 });",
       );
-      const ypk203 = parsed.diagnostics.filter(
+      const yap0009 = parsed.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0009',
       );
-      expect(ypk203).toHaveLength(1);
-      expect(ypk203[0]?.severity).toBe('error');
+      expect(yap0009).toHaveLength(1);
+      expect(yap0009[0]?.severity).toBe('error');
     });
   });
 
@@ -256,10 +256,10 @@ describe('parseArguments', () => {
       const parsed = parseInline(
         "const ctx = 'button'; export const x = t.as(ctx, 'Save');",
       );
-      const ypk401 = parsed.diagnostics.filter(
+      const yap0017 = parsed.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0017',
       );
-      expect(ypk401).toHaveLength(1);
+      expect(yap0017).toHaveLength(1);
       expect(parsed.context).toBeUndefined();
     });
 
@@ -273,10 +273,10 @@ describe('parseArguments', () => {
 
     it('emits YAP0001 when called without arguments', () => {
       const parsed = parseInline('export const x = t.as();');
-      const ypk101 = parsed.diagnostics.filter(
+      const yap0001 = parsed.diagnostics.filter(
         (diagnostic) => diagnostic.code === 'YAP0001',
       );
-      expect(ypk101).toHaveLength(1);
+      expect(yap0001).toHaveLength(1);
     });
   });
 });

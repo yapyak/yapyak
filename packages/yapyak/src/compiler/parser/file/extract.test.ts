@@ -147,21 +147,21 @@ describe('extractFile', () => {
     });
 
     it('emits YAP0002 from `parse-arguments`', () => {
-      const result = extractFixture('diagnostic', 'ypk102-dynamic-source.ts');
+      const result = extractFixture('diagnostic', 'yap0002-dynamic-source.ts');
       expect(
         result.diagnostics.some((diagnostic) => diagnostic.code === 'YAP0002'),
       ).toBe(true);
     });
 
     it('emits YAP0004 from `parse-arguments`', () => {
-      const result = extractFixture('diagnostic', 'ypk104-missing-param.ts');
+      const result = extractFixture('diagnostic', 'yap0004-missing-param.ts');
       expect(
         result.diagnostics.some((diagnostic) => diagnostic.code === 'YAP0004'),
       ).toBe(true);
     });
 
     it('emits YAP0008 from `parse-arguments`', () => {
-      const result = extractFixture('diagnostic', 'ypk202-invalid-plural.ts');
+      const result = extractFixture('diagnostic', 'yap0008-invalid-plural.ts');
       expect(
         result.diagnostics.some((diagnostic) => diagnostic.code === 'YAP0008'),
       ).toBe(true);
