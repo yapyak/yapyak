@@ -115,9 +115,7 @@ export function createTranslator(input: CreateTranslatorInput): Translator {
           batchOptions?.onChunkComplete?.(chunk, result);
           batchOptions?.onChunk?.(result.length * targetLocales.length);
         } catch (error) {
-          if (batchOptions?.signal?.aborted) {
-            throw error;
-          }
+          batchOptions?.signal?.throwIfAborted();
           if (batchOptions?.onChunkError) {
             batchOptions.onChunkError(error, chunk);
           } else {

@@ -191,7 +191,6 @@ export function gemini(options: GeminiOptions): Translator {
       try {
         response = await fetchWithRetry(url, init, fetchOptions);
       } catch (cause) {
-        signal?.throwIfAborted();
         throw causeToError(cause, 'gemini');
       }
       if (!response.ok) {

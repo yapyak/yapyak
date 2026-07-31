@@ -163,7 +163,6 @@ export function ollama(options: OllamaOptions = {}): Translator {
       try {
         response = await fetchWithRetry(endpoint, init, fetchOptions);
       } catch (cause) {
-        signal?.throwIfAborted();
         throw causeToError(cause, 'ollama');
       }
       if (!response.ok) {
