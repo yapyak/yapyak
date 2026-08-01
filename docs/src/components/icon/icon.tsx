@@ -18,8 +18,8 @@ export function Icon(props: IconProps) {
 
   return (
     <Box
-      as="i"
       {...restProps}
+      as="i"
       className={[
         styles.Icon,
         className,

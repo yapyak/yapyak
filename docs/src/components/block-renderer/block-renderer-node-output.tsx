@@ -5,7 +5,7 @@ import { Box } from '#primitives/box';
 
 import styles from './block-renderer-node-output.module.css';
 
-export type BlockRendererNodeOutputProps = BoxProps<'span'> & {
+export type BlockRendererNodeOutputProps = BoxProps & {
   block: OutputBlock;
 };
 
@@ -15,6 +15,7 @@ export function BlockRendererNodeOutput(props: BlockRendererNodeOutputProps) {
 
   return (
     <Box
+      {...restProps}
       className={[
         styles.BlockRendererNodeOutput,
         className,
@@ -28,7 +29,6 @@ export function BlockRendererNodeOutput(props: BlockRendererNodeOutputProps) {
         >
           {line.locale !== null && (
             <Box
-              {...restProps}
               as="span"
               className={styles.Locale}
             >
