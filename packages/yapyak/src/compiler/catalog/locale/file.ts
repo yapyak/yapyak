@@ -36,7 +36,7 @@ export type SyncLocaleFilesOptions = {
   yapyakDir?: string;
 };
 
-type SyncItem = {
+export type SyncItem = {
   fileId: string;
   locale: string;
   source: string;

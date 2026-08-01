@@ -25,7 +25,7 @@ export function Radio(props: RadioProps) {
       {children && (
         <Box
           as="span"
-          className={styles.Label}
+          className={styles.LabelText}
         >
           {children}
         </Box>

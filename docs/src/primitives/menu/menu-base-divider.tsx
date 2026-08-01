@@ -2,9 +2,9 @@ import type { BoxProps } from '../box';
 
 import { Box } from '../box';
 
-export type MenuBaseSeparatorProps = BoxProps;
+export type MenuBaseDividerProps = BoxProps;
 
-export function MenuBaseSeparator(props: MenuBaseSeparatorProps) {
+export function MenuBaseDivider(props: MenuBaseDividerProps) {
   return (
     <Box
       {...props}

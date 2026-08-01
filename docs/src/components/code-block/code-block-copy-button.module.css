@@ -34,7 +34,7 @@
       width: 14px;
       height: 14px;
 
-      :is(.IconIdle, .IconCopied) {
+      :is(.IdleIcon, .CopiedIcon) {
         position: absolute;
         top: 0;
         left: 0;
@@ -47,13 +47,13 @@
           transform var(--transition);
       }
 
-      .IconCopied {
+      .CopiedIcon {
         opacity: 0;
         transform: scale(0.6);
       }
     }
 
-    .LiveRegion {
+    .Announcer {
       position: absolute;
       width: 1px;
       height: 1px;
@@ -86,12 +86,12 @@
     &[data-copied] {
       color: var(--brand);
 
-      .IconIdle {
+      .IdleIcon {
         opacity: 0;
         transform: scale(0.6);
       }
 
-      .IconCopied {
+      .CopiedIcon {
         opacity: 1;
         transform: scale(1);
       }

@@ -33,14 +33,14 @@ export function MenuRadioItem(props: MenuRadioItemProps) {
       )}
       <Box
         as="span"
-        className={styles.Label}
+        className={styles.LabelText}
       >
         {children}
       </Box>
       <Box
         aria-hidden={true}
         as="span"
-        className={styles.Check}
+        className={styles.CheckIcon}
       >
         <Icon
           name="check"

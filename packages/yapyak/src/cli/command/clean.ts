@@ -2,6 +2,7 @@ import type {
   CatalogEntry,
   ExtractedMessage,
   LocaleFile,
+  SyncItem,
 } from '../../compiler/internal';
 import type { Config } from '../config';
 
@@ -19,12 +20,6 @@ import { createFilter } from '../../config/internal';
 import { color, header, symbol } from '../tui';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
-
-type OrphanSource = {
-  fileId: string;
-  locale: string;
-  source: string;
-};
 
 type BuildExpectedResult = {
   expected: Record<string, Set<string>>;
@@ -53,7 +48,7 @@ export function clean(
   process.stdout.write(header('Locale cleanup'));
 
   const { expected, inScope } = buildExpected(projectRoot, config);
-  const orphanSources: OrphanSource[] = [];
+  const orphanSources: SyncItem[] = [];
   const filesToWrite: {
     next: LocaleFile;
     path: string;

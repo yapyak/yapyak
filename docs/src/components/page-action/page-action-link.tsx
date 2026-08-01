@@ -34,7 +34,7 @@ export function PageActionLink(props: PageActionLinkProps) {
       </Box>
       <Box
         as="span"
-        className={styles.Label}
+        className={styles.LabelText}
       >
         {label}
       </Box>

@@ -137,7 +137,12 @@ export function InstallationWizardGroup(props: InstallationWizardGroupProps) {
       data-ready={isReady}
       style={indicatorStyle}
     >
-      <Box className={styles.Label}>{group.label}</Box>
+      <Box
+        as="span"
+        className={styles.LabelText}
+      >
+        {group.label}
+      </Box>
       {isCompact ? (
         <OptionMenuTrigger group={groupId} />
       ) : (

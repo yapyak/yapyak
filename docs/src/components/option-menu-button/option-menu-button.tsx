@@ -32,7 +32,7 @@ export function OptionMenuButton(props: OptionMenuButtonProps) {
       <Swatch accent={accent} />
       <Box
         as="span"
-        className={styles.Label}
+        className={styles.LabelText}
       >
         {children}
       </Box>

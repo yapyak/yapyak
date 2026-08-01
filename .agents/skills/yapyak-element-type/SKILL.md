@@ -78,6 +78,8 @@ One HTML element or layout role each.
 |---|---|
 | `Icon` | icon-role `<svg>` |
 | `Image` | `<img>` |
+| `Flag` | flag-role `<svg>` identifying a locale |
+| `Wordmark` | logotype `<svg>` |
 
 **Indicator / primitive:**
 
@@ -92,6 +94,9 @@ One HTML element or layout role each.
 | `Overlay` | full-cover decorative layer |
 | `Skeleton` | loading placeholder |
 | `Announcer` | visually-hidden `aria-live` region announcing changes to assistive tech |
+| `Backdrop` | full-viewport dim layer behind an overlay |
+| `Handle` | drag or scroll handle |
+| `Token` | `<span>` carrying one syntax-highlight token |
 
 **List item:**
 
@@ -123,6 +128,23 @@ A component-level pattern, not one element. Each grounds in a root element, so i
 | `SearchInput` | `<input>` | wrapped search input |
 | `EmptyMessage` | `<div>` | empty state |
 | `Dialog` | `role="dialog"` | modal or non-modal overlay panel |
+| `Drawer` | `role="dialog"` | edge-anchored sliding panel |
+| `Menu` | `role="menu"` | popover command list |
+| `Listbox` | `role="listbox"` | selectable option container |
+| `Attachment` | `<div>` | floating panel anchored to a trigger |
+| `Callout` | `<aside>` | highlighted admonition block |
+| `Hero` | `<section>` | lead marketing section |
+| `Colophon` | `<footer>` content | site credits block |
+| `Terminal` | `<div>` | terminal output pane |
+| `Editor` | `<div>` | code-editor pane |
+| `Demo` | `<div>` | animated product demo region |
+| `Tab` | `<button>` | panel selector in a tab row |
+| `Wizard` | `<div>` | multi-group option chooser |
+| `Radio` | `<label>` + `<input type="radio">` | styled radio choice |
+| `Outline` | `<nav>` | in-page anchor list |
+| `View` | `<div>` | full-region state view |
+| `Renderer` | dispatcher root | renders a content tree by node kind |
+| `Block` | `<div>` | one rendered content block |
 
 ### Multi-match priority
 

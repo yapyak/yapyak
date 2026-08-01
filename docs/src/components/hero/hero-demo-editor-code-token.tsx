@@ -3,7 +3,7 @@ import type { Token } from '#lib/tokenize';
 import { Box } from '#primitives/box';
 
 import { CodeBlockToken } from '../code-block-token';
-import styles from './hero-demo-editor.module.css';
+import styles from './hero-demo-editor-code-token.module.css';
 
 export const CARET_MARKER = 'CARET';
 
@@ -25,14 +25,17 @@ export function HeroDemoEditorCodeToken(props: HeroDemoEditorCodeTokenProps) {
   const after = parts[1] ?? '';
 
   return (
-    <CodeBlockToken kind="tx-source">
+    <CodeBlockToken
+      className={styles.HeroDemoEditorCodeToken}
+      data-typing={typing}
+      kind="tx-source"
+    >
       <Box as="span">'</Box>
       {before}
       <Box
         aria-hidden="true"
         as="span"
         className={styles.Caret}
-        data-typing={typing}
       />
       {after}
       <Box as="span">'</Box>

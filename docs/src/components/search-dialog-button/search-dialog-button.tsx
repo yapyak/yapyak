@@ -37,7 +37,7 @@ export function SearchDialogButton(props: SearchDialogButtonProps) {
         <>
           <Box
             as="span"
-            className={styles.Label}
+            className={styles.LabelText}
           >
             {t('Search')}
           </Box>

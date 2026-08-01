@@ -10,7 +10,7 @@
     flex-direction: column;
     min-height: 0;
 
-    .Inner {
+    .Content {
       display: flex;
       flex-direction: column;
       overflow-y: auto;

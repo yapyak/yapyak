@@ -4,7 +4,7 @@
     flex-direction: column;
     gap: var(--spacing-3);
 
-    .Label {
+    .LabelText {
       padding-inline: var(--spacing-1);
       font-size: var(--font-size-xs);
       font-weight: var(--font-weight-semibold);

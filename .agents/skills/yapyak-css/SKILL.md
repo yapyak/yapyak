@@ -683,6 +683,8 @@ Because `:hover` is now gated behind `@media (hover: hover)`, touch devices skip
 
 If an element has `:hover` (now always wrapped), it MUST also have `:active`. And any element without a hover style still needs an `:active` if it's clickable/tappable at all.
 
+Exception — an element whose activation triggers its own activation animation carries no `:active`; the animation is the tap feedback.
+
 ```css
 /* ✓ Right — hover for desktop, active for everyone */
 .Button {

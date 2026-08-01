@@ -31,7 +31,7 @@ export function PageActionButton(props: PageActionButtonProps) {
       </Box>
       <Box
         as="span"
-        className={styles.Label}
+        className={styles.LabelText}
       >
         {label}
       </Box>

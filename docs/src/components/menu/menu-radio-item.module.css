@@ -19,12 +19,12 @@
     border-radius: var(--border-radius-sm);
     box-shadow: inset 0 0 0 var(--px) transparent;
 
-    .Label {
+    .LabelText {
       flex: 1 1 auto;
       line-height: 1;
     }
 
-    .Check {
+    .CheckIcon {
       display: none;
       color: var(--foreground);
     }
@@ -38,7 +38,7 @@
     &[data-checked] {
       color: var(--foreground);
 
-      .Check {
+      .CheckIcon {
         display: inline-flex;
       }
     }
@@ -51,7 +51,7 @@
     }
 
     &[data-selecting] {
-      .Check {
+      .CheckIcon {
         display: none;
       }
     }

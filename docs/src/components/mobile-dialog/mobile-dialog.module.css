@@ -11,7 +11,7 @@
     background-color: var(--canvas);
     transition: opacity var(--duration-medium) var(--ease-snappy);
 
-    .Inner {
+    .Content {
       display: flex;
       flex: 1;
       flex-direction: column;
@@ -22,7 +22,7 @@
     &:is([data-animate="enter"], [data-animate="exit"]) {
       opacity: 0;
 
-      .Inner {
+      .Content {
         transform: translateY(-8px);
       }
     }

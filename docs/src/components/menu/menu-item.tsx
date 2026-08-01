@@ -34,7 +34,7 @@ export function MenuItem(props: MenuItemProps) {
       )}
       <Box
         as="span"
-        className={styles.Label}
+        className={styles.LabelText}
       >
         {children}
       </Box>

@@ -18,7 +18,7 @@
       box-shadow var(--transition),
       outline var(--duration-slow);
 
-    .Label {
+    .LabelText {
       line-height: 1;
     }
 

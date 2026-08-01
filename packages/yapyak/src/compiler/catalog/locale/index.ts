@@ -7,6 +7,7 @@ export type {
 export type {
   CatalogEntry,
   LocaleFile,
+  SyncItem,
   SyncLocaleFilesResult,
 } from './file';
 export type { RenameConflict } from './migrate';

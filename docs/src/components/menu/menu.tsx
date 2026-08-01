@@ -7,8 +7,8 @@ import { useRect } from '#hooks/use-rect';
 import { useWindowEventListener } from '#hooks/use-window-event-listener';
 import {
   MenuBase,
+  MenuBaseDivider,
   MenuBaseRadioGroup,
-  MenuBaseSeparator,
 } from '#primitives/menu';
 import { isModifierWithKey } from '#utils/is-modifier-with-key';
 
@@ -104,4 +104,4 @@ export function Menu(props: MenuProps) {
 Menu.Item = MenuItem;
 Menu.RadioGroup = MenuBaseRadioGroup;
 Menu.RadioItem = MenuRadioItem;
-Menu.Separator = MenuBaseSeparator;
+Menu.Divider = MenuBaseDivider;

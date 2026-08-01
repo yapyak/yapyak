@@ -60,13 +60,13 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
         aria-hidden="true"
         className={styles.IconStack}
       >
-        <Box className={styles.IconIdle}>
+        <Box className={styles.IdleIcon}>
           <Icon
             name="copy"
             size="14"
           />
         </Box>
-        <Box className={styles.IconCopied}>
+        <Box className={styles.CopiedIcon}>
           <Icon
             name="check"
             size="14"
@@ -75,7 +75,7 @@ export function CodeBlockCopyButton(props: CodeBlockCopyButtonProps) {
       </Box>
       <Box
         aria-live="polite"
-        className={styles.LiveRegion}
+        className={styles.Announcer}
         role="status"
       >
         {isCopied ? t('Copied') : ''}

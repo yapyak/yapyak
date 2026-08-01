@@ -47,36 +47,11 @@
         font-size: var(--font-size-xs);
         line-height: var(--line-height-loose);
         white-space: pre;
-
-        .Caret {
-          display: inline-block;
-          width: var(--spacing-05);
-          height: 1.05em;
-          vertical-align: text-bottom;
-          background-color: var(--foreground);
-          border-radius: var(--px);
-          animation: caret-blink 1.06s steps(2, end) infinite;
-
-          &[data-typing] {
-            animation: none;
-          }
-        }
       }
     }
 
     &[data-saving] {
       animation: editor-pulse 600ms var(--ease-snappy) var(--duration-slow);
-    }
-  }
-
-  @keyframes caret-blink {
-    0%,
-    50% {
-      opacity: 1;
-    }
-    50.01%,
-    100% {
-      opacity: 0;
     }
   }
 

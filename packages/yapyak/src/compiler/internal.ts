@@ -8,6 +8,7 @@ export type {
   LocaleFile,
   LocaleWarning,
   RenameConflict,
+  SyncItem,
   SyncLocaleFilesResult,
 } from './catalog';
 export type {

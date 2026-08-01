@@ -20,7 +20,7 @@
         box-shadow var(--transition);
     }
 
-    .Label {
+    .LabelText {
       font-size: var(--font-size-sm);
       line-height: 1;
       color: var(--foreground);

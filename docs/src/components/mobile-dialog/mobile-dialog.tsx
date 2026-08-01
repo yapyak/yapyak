@@ -56,7 +56,7 @@ export function MobileDialog(props: MobileDialogProps) {
         '--keyboard-inset': px(viewport.insetBottom),
       }}
     >
-      <Box className={styles.Inner}>{children}</Box>
+      <Box className={styles.Content}>{children}</Box>
     </Box>
   );
 }

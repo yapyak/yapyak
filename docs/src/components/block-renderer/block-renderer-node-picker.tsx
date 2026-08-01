@@ -41,7 +41,12 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
         className,
       ]}
     >
-      <Box className={styles.Label}>{group.label}</Box>
+      <Box
+        as="span"
+        className={styles.LabelText}
+      >
+        {group.label}
+      </Box>
       <Box
         aria-label={group.label}
         className={styles.Group}

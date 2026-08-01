@@ -51,7 +51,7 @@ export function SlideBar(props: SlideBarProps) {
       data-with-start-scroll-offset={hasStartScrollOffset}
     >
       <Box
-        className={styles.Inner}
+        className={styles.Content}
         ref={
           innerRef
             ? [
