@@ -11,6 +11,7 @@ import { Box } from '#primitives/box';
 
 import { Dialog } from '../dialog';
 import { Icon } from '../icon';
+import { SearchEmptyMessage } from '../search-empty-message';
 import styles from './search-dialog.module.css';
 import { SearchDialogListbox } from './search-dialog-listbox';
 
@@ -91,9 +92,7 @@ export function SearchDialog(props: SearchDialogProps) {
           results={search.results}
         />
       )}
-      {search.query.length > 0 && !search.hasResults && (
-        <Box className={styles.EmptyMessage}>{t('No results found')}</Box>
-      )}
+      {search.query.length > 0 && !search.hasResults && <SearchEmptyMessage />}
     </Dialog>
   );
 }

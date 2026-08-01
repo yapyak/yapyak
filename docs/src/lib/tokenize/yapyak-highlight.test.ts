@@ -125,6 +125,136 @@ describe('applyYapyakHighlight', () => {
     expect(tokens[7]?.kind).toBe('tx-source');
   });
 
+  it('marks the source argument of a chained `t.in().as()` as `tx-source`', () => {
+    const tokens: Token[] = [
+      {
+        kind: 'fn-call',
+        value: 't',
+      },
+      {
+        kind: 'punct',
+        value: '.',
+      },
+      {
+        kind: 'keyword',
+        value: 'in',
+      },
+      {
+        kind: 'punct',
+        value: '(',
+      },
+      {
+        kind: 'string',
+        value: "'sv'",
+      },
+      {
+        kind: 'punct',
+        value: ')',
+      },
+      {
+        kind: 'punct',
+        value: '.',
+      },
+      {
+        kind: 'keyword',
+        value: 'as',
+      },
+      {
+        kind: 'punct',
+        value: '(',
+      },
+      {
+        kind: 'string',
+        value: "'button'",
+      },
+      {
+        kind: 'punct',
+        value: ',',
+      },
+      {
+        kind: 'plain',
+        value: ' ',
+      },
+      {
+        kind: 'string',
+        value: "'Open'",
+      },
+      {
+        kind: 'punct',
+        value: ')',
+      },
+    ];
+    applyYapyakHighlight(tokens);
+    expect(tokens[4]?.kind).toBe('string');
+    expect(tokens[9]?.kind).toBe('string');
+    expect(tokens[12]?.kind).toBe('tx-source');
+  });
+
+  it('marks the source argument of a chained `t.as().in()` as `tx-source`', () => {
+    const tokens: Token[] = [
+      {
+        kind: 'fn-call',
+        value: 't',
+      },
+      {
+        kind: 'punct',
+        value: '.',
+      },
+      {
+        kind: 'keyword',
+        value: 'as',
+      },
+      {
+        kind: 'punct',
+        value: '(',
+      },
+      {
+        kind: 'string',
+        value: "'button'",
+      },
+      {
+        kind: 'punct',
+        value: ')',
+      },
+      {
+        kind: 'punct',
+        value: '.',
+      },
+      {
+        kind: 'keyword',
+        value: 'in',
+      },
+      {
+        kind: 'punct',
+        value: '(',
+      },
+      {
+        kind: 'string',
+        value: "'sv'",
+      },
+      {
+        kind: 'punct',
+        value: ',',
+      },
+      {
+        kind: 'plain',
+        value: ' ',
+      },
+      {
+        kind: 'string',
+        value: "'Open'",
+      },
+      {
+        kind: 'punct',
+        value: ')',
+      },
+    ];
+    applyYapyakHighlight(tokens);
+    expect(tokens[4]?.kind).toBe('string');
+    expect(tokens[9]?.kind).toBe('string');
+    expect(tokens[12]?.kind).toBe('tx-source');
+  });
+
   it('marks every string inside a `_$pick()` call as `tx-source`', () => {
     const tokens: Token[] = [
       {

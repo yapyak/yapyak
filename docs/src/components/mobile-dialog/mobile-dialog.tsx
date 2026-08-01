@@ -12,6 +12,7 @@ import { Box } from '#primitives/box';
 import { px } from '#utils/px';
 
 import styles from './mobile-dialog.module.css';
+import { MobileDialogFooter } from './mobile-dialog-footer';
 
 export type MobileDialogProps = BoxProps & {
   onClose: () => void;
@@ -59,3 +60,5 @@ export function MobileDialog(props: MobileDialogProps) {
     </Box>
   );
 }
+
+MobileDialog.Footer = MobileDialogFooter;

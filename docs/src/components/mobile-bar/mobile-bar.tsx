@@ -10,14 +10,15 @@ import { useSearchData } from '#hooks/use-search-data';
 import { useSearchNavigation } from '#hooks/use-search-navigation';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
-import { LinkBase } from '#primitives/link';
 import { Animate } from '#systems/animate';
 
 import { Icon } from '../icon';
 import { IconLink } from '../icon-link';
 import { MobileDialog } from '../mobile-dialog';
 import { MobileDialogButton } from '../mobile-dialog-button';
+import { MobileNavigation } from '../mobile-navigation';
 import { SearchDialogListbox } from '../search-dialog';
+import { SearchEmptyMessage } from '../search-empty-message';
 import styles from './mobile-bar.module.css';
 
 const LISTBOX_ID = 'mobile-search-listbox';
@@ -154,43 +155,13 @@ export function MobileBar(props: MobileBarProps) {
                   />
                 )}
                 {search.query.length > 0 && !search.hasResults && (
-                  <Box className={styles.EmptyMessage}>
-                    {t('No results found')}
-                  </Box>
+                  <SearchEmptyMessage />
                 )}
               </>
             ) : (
               <>
-                <Box className={styles.Scroll}>
-                  <Box
-                    aria-label={t('Menu')}
-                    as="nav"
-                    className={styles.LinkStack}
-                  >
-                    <LinkBase
-                      className={styles.Link}
-                      to="/"
-                    >
-                      {t('Home')}
-                    </LinkBase>
-                    <LinkBase
-                      className={styles.Link}
-                      to="/guide"
-                    >
-                      {t('Guide')}
-                    </LinkBase>
-                    <LinkBase
-                      className={styles.Link}
-                      to="/reference"
-                    >
-                      {t('Reference')}
-                    </LinkBase>
-                  </Box>
-                </Box>
-                <Box
-                  as="footer"
-                  className={styles.Footer}
-                >
+                <MobileNavigation />
+                <MobileDialog.Footer>
                   <IconLink
                     aria-label={t('View on GitHub')}
                     href="https://github.com/yapyak/yapyak"
@@ -199,7 +170,7 @@ export function MobileBar(props: MobileBarProps) {
                   >
                     <Icon name="github" />
                   </IconLink>
-                </Box>
+                </MobileDialog.Footer>
               </>
             )}
           </MobileDialog>

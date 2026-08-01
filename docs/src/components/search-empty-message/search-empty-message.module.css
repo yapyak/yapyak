@@ -1,0 +1,8 @@
+@layer components {
+  .SearchEmptyMessage {
+    padding: var(--spacing-8) var(--spacing-5);
+    font-size: var(--font-size-sm);
+    color: var(--foreground-softer);
+    text-align: center;
+  }
+}

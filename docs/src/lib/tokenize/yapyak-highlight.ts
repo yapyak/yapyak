@@ -45,41 +45,58 @@ export function applyYapyakHighlight(tokens: Token[]): void {
       }
 
       if (tokens[next]?.kind === 'punct' && tokens[next]?.value === '.') {
-        const method = findNextSignificant(tokens, next + 1);
-        if (method === undefined) {
-          continue;
-        }
-        const methodValue = tokens[method]?.value;
-        if (methodValue !== 'as' && methodValue !== 'in') {
-          continue;
-        }
-        const paren = findNextSignificant(tokens, method + 1);
-        if (
-          paren === undefined ||
-          tokens[paren]?.kind !== 'punct' ||
-          tokens[paren]?.value !== '('
-        ) {
-          continue;
-        }
-        const firstArgument = findNextSignificant(tokens, paren + 1);
-        if (firstArgument === undefined) {
-          continue;
-        }
-        const comma = findTopLevelComma(tokens, firstArgument + 1);
-        if (comma === undefined) {
-          continue;
-        }
-        const secondArgument = findNextSignificant(tokens, comma + 1);
-        if (secondArgument === undefined) {
-          continue;
-        }
-        const secondToken = tokens[secondArgument];
-        if (
-          secondToken !== undefined &&
-          (secondToken.kind === 'string' || secondToken.kind === 'template') &&
-          !isDottedKey(secondToken.value)
-        ) {
-          secondToken.kind = 'tx-source';
+        let dot = next;
+        for (;;) {
+          const method = findNextSignificant(tokens, dot + 1);
+          if (method === undefined) {
+            break;
+          }
+          const methodValue = tokens[method]?.value;
+          if (methodValue !== 'as' && methodValue !== 'in') {
+            break;
+          }
+          const paren = findNextSignificant(tokens, method + 1);
+          if (
+            paren === undefined ||
+            tokens[paren]?.kind !== 'punct' ||
+            tokens[paren]?.value !== '('
+          ) {
+            break;
+          }
+          const firstArgument = findNextSignificant(tokens, paren + 1);
+          if (firstArgument === undefined) {
+            break;
+          }
+          const comma = findTopLevelComma(tokens, firstArgument + 1);
+          if (comma !== undefined) {
+            const secondArgument = findNextSignificant(tokens, comma + 1);
+            if (secondArgument === undefined) {
+              break;
+            }
+            const secondToken = tokens[secondArgument];
+            if (
+              secondToken !== undefined &&
+              (secondToken.kind === 'string' ||
+                secondToken.kind === 'template') &&
+              !isDottedKey(secondToken.value)
+            ) {
+              secondToken.kind = 'tx-source';
+            }
+            break;
+          }
+          const callEnd = findCallEnd(tokens, paren);
+          if (callEnd === undefined) {
+            break;
+          }
+          const afterCall = findNextSignificant(tokens, callEnd + 1);
+          if (
+            afterCall === undefined ||
+            tokens[afterCall]?.kind !== 'punct' ||
+            tokens[afterCall]?.value !== '.'
+          ) {
+            break;
+          }
+          dot = afterCall;
         }
       }
     }
@@ -118,6 +135,29 @@ export function applyYapyakHighlight(tokens: Token[]): void {
 function isDottedKey(value: string): boolean {
   const inner = value.slice(1, -1);
   return DOTTED_KEY_RX.test(inner);
+}
+
+function findCallEnd(tokens: Token[], openParen: number): number | undefined {
+  let depth = 0;
+  for (let index = openParen; index < tokens.length; index++) {
+    const token = tokens[index];
+    if (token === undefined) {
+      continue;
+    }
+    if (token.kind === 'punct') {
+      if (token.value === '(') {
+        depth++;
+        continue;
+      }
+      if (token.value === ')') {
+        depth--;
+        if (depth === 0) {
+          return index;
+        }
+      }
+    }
+  }
+  return undefined;
 }
 
 function findTopLevelComma(tokens: Token[], from: number): number | undefined {

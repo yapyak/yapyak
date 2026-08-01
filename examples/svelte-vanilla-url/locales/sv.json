@@ -1,5 +1,5 @@
 {
-  "src/App.svelte": {
+  "src/app.svelte": {
     "apple": "äpple",
     "At: {when, time, short}": "Klockan: {when, time, short}",
     "banana": "banan",
