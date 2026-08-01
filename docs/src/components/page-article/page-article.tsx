@@ -1,9 +1,9 @@
 import type { Page } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { PaginationNavigation } from '#components/pagination-navigation';
 import { Box } from '#primitives/box';
 
+import { PaginationNavigation } from '../pagination-navigation';
 import styles from './page-article.module.css';
 import { doc } from 'virtual:docs-compiler';
 

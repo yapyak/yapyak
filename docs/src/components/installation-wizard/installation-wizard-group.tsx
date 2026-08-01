@@ -1,15 +1,15 @@
 import type { TransitionEvent } from 'react';
-import type { SwatchAccent } from '#components/swatch';
+import type { SwatchAccent } from '../swatch';
 
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
-import { OptionMenuTrigger } from '#components/option-menu-trigger';
-import { useOptionContext } from '#components/option-provider';
 import { useMediaQuery } from '#hooks/use-media-query';
 import { visibleOptionsForGroup } from '#lib/adapter';
 import { Box } from '#primitives/box';
 import { RadioGroupBase } from '#primitives/radio';
 
+import { OptionMenuTrigger } from '../option-menu-trigger';
+import { useOptionContext } from '../option-provider';
 import styles from './installation-wizard-group.module.css';
 import { InstallationWizardOption } from './installation-wizard-option';
 import { doc } from 'virtual:docs-compiler';

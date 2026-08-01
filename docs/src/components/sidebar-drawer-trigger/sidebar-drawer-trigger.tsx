@@ -3,11 +3,12 @@ import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { t } from 'yapyak';
 
-import { DialogTrigger } from '#components/dialog-trigger';
-import { Drawer } from '#components/drawer';
-import { Icon } from '#components/icon';
-import { IconButton } from '#components/icon-button';
 import { useMediaQuery } from '#hooks/use-media-query';
+
+import { DialogTrigger } from '../dialog-trigger';
+import { Drawer } from '../drawer';
+import { Icon } from '../icon';
+import { IconButton } from '../icon-button';
 
 export type SidebarDrawerTriggerProps = {
   drawer: ReactNode;

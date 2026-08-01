@@ -1,8 +1,8 @@
 import type { Locale } from '#lib/hero-demo';
 
-import { CodeBlockToken } from '#components/code-block-token';
 import { Box } from '#primitives/box';
 
+import { CodeBlockToken } from '../code-block-token';
 import { HeroDemoLocaleFlag } from './hero-demo-locale-flag';
 import styles from './hero-demo-locale-stack.module.css';
 

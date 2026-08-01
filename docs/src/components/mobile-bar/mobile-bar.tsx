@@ -5,11 +5,6 @@ import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { t } from 'yapyak';
 
-import { Icon } from '#components/icon';
-import { IconLink } from '#components/icon-link';
-import { MobileDialog } from '#components/mobile-dialog';
-import { MobileDialogButton } from '#components/mobile-dialog-button';
-import { SearchDialogListbox } from '#components/search-dialog';
 import { useSearch } from '#hooks/use-search';
 import { useSearchData } from '#hooks/use-search-data';
 import { useSearchNavigation } from '#hooks/use-search-navigation';
@@ -18,6 +13,11 @@ import { ButtonBase } from '#primitives/button';
 import { LinkBase } from '#primitives/link';
 import { Animate } from '#systems/animate';
 
+import { Icon } from '../icon';
+import { IconLink } from '../icon-link';
+import { MobileDialog } from '../mobile-dialog';
+import { MobileDialogButton } from '../mobile-dialog-button';
+import { SearchDialogListbox } from '../search-dialog';
 import styles from './mobile-bar.module.css';
 
 const LISTBOX_ID = 'mobile-search-listbox';

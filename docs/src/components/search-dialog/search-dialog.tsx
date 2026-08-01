@@ -1,16 +1,16 @@
 import type { SearchData } from '@yapyak/docs-compiler';
 import type { ChangeEvent, PointerEvent } from 'react';
-import type { DialogProps } from '#components/dialog';
+import type { DialogProps } from '../dialog';
 
 import { useLayoutEffect, useRef } from 'react';
 import { t } from 'yapyak';
 
-import { Dialog } from '#components/dialog';
-import { Icon } from '#components/icon';
 import { useSearch } from '#hooks/use-search';
 import { useSearchNavigation } from '#hooks/use-search-navigation';
 import { Box } from '#primitives/box';
 
+import { Dialog } from '../dialog';
+import { Icon } from '../icon';
 import styles from './search-dialog.module.css';
 import { SearchDialogListbox } from './search-dialog-listbox';
 

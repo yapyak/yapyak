@@ -1,11 +1,8 @@
 import type { KeyboardEvent, MouseEvent, PointerEvent } from 'react';
-import type { AttachmentProps } from '#components/attachment';
-import type { OverlayProps } from '#components/overlay';
 import type { MenuBaseProps } from '#primitives/menu';
+import type { AttachmentProps } from '../attachment';
+import type { OverlayProps } from '../overlay';
 
-import { Attachment } from '#components/attachment';
-import { Overlay } from '#components/overlay';
-import { SlideBar } from '#components/slide-bar';
 import { useRect } from '#hooks/use-rect';
 import { useWindowEventListener } from '#hooks/use-window-event-listener';
 import {
@@ -15,6 +12,9 @@ import {
 } from '#primitives/menu';
 import { isModifierWithKey } from '#utils/is-modifier-with-key';
 
+import { Attachment } from '../attachment';
+import { Overlay } from '../overlay';
+import { SlideBar } from '../slide-bar';
 import styles from './menu.module.css';
 import { MenuItem } from './menu-item';
 import { MenuRadioItem } from './menu-radio-item';

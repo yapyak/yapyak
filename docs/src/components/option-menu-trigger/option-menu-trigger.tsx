@@ -1,11 +1,11 @@
-import type { SwatchAccent } from '#components/swatch';
+import type { SwatchAccent } from '../swatch';
 
-import { MenuTrigger } from '#components/menu';
-import { OptionMenu } from '#components/option-menu';
-import { OptionMenuButton } from '#components/option-menu-button';
-import { useOptionContext } from '#components/option-provider';
 import { visibleOptionsForGroup } from '#lib/adapter';
 
+import { MenuTrigger } from '../menu';
+import { OptionMenu } from '../option-menu';
+import { OptionMenuButton } from '../option-menu-button';
+import { useOptionContext } from '../option-provider';
 import { doc } from 'virtual:docs-compiler';
 
 export type OptionMenuTriggerProps = {

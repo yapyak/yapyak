@@ -1,13 +1,13 @@
-import type { SwatchAccent } from '#components/swatch';
 import type { ButtonBaseProps } from '#primitives/button';
+import type { SwatchAccent } from '../swatch';
 
 import { t } from 'yapyak';
 
-import { Icon } from '#components/icon';
-import { Swatch } from '#components/swatch';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
+import { Icon } from '../icon';
+import { Swatch } from '../swatch';
 import styles from './option-menu-button.module.css';
 
 export type OptionMenuButtonProps = ButtonBaseProps & {

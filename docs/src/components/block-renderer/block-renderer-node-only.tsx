@@ -1,7 +1,6 @@
 import type { OnlyBlock } from '@yapyak/docs-compiler';
 
-import { useOptionContext } from '#components/option-provider';
-
+import { useOptionContext } from '../option-provider';
 import { BlockRendererNode } from './block-renderer-node';
 
 export type BlockRendererNodeOnlyProps = {

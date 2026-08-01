@@ -1,7 +1,6 @@
 import type { CalloutBlock } from '@yapyak/docs-compiler';
 
-import { Callout } from '#components/callout';
-
+import { Callout } from '../callout';
 import { BlockRendererNode } from './block-renderer-node';
 
 export type BlockRendererNodeCalloutProps = {

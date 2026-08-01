@@ -1,6 +1,6 @@
 import type { TerminalBlock } from '@yapyak/docs-compiler';
 
-import { Terminal } from '#components/terminal';
+import { Terminal } from '../terminal';
 
 export type BlockRendererNodeTerminalProps = {
   block: TerminalBlock;

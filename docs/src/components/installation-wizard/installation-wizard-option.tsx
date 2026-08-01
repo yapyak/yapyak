@@ -1,9 +1,9 @@
-import type { SwatchAccent } from '#components/swatch';
 import type { RadioBaseProps } from '#primitives/radio';
+import type { SwatchAccent } from '../swatch';
 
-import { Swatch } from '#components/swatch';
 import { RadioBase } from '#primitives/radio';
 
+import { Swatch } from '../swatch';
 import styles from './installation-wizard-option.module.css';
 
 export type InstallationWizardOptionProps = RadioBaseProps & {

@@ -1,12 +1,13 @@
-import type { DialogTriggerProps } from '#components/dialog-trigger';
-import type { SearchDialogButtonVariant } from '#components/search-dialog-button';
+import type { DialogTriggerProps } from '../dialog-trigger';
+import type { SearchDialogButtonVariant } from '../search-dialog-button';
 
 import { useState } from 'react';
 
-import { DialogTrigger } from '#components/dialog-trigger';
-import { SearchDialog } from '#components/search-dialog';
-import { SearchDialogButton } from '#components/search-dialog-button';
 import { useSearchData } from '#hooks/use-search-data';
+
+import { DialogTrigger } from '../dialog-trigger';
+import { SearchDialog } from '../search-dialog';
+import { SearchDialogButton } from '../search-dialog-button';
 
 export type SearchDialogTriggerProps = Pick<DialogTriggerProps, 'shortcut'> & {
   variant?: SearchDialogButtonVariant;

@@ -1,15 +1,15 @@
 import type { Page } from '@yapyak/docs-compiler';
-import type { SwatchAccent } from '#components/swatch';
 import type { BoxProps } from '#primitives/box';
+import type { SwatchAccent } from '../swatch';
 
 import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
-import { Icon } from '#components/icon';
-import { Menu, MenuTrigger } from '#components/menu';
-import { Swatch } from '#components/swatch';
 import { Box } from '#primitives/box';
 
+import { Icon } from '../icon';
+import { Menu, MenuTrigger } from '../menu';
+import { Swatch } from '../swatch';
 import styles from './page-action.module.css';
 import { PageActionButton } from './page-action-button';
 import { PageActionLink } from './page-action-link';

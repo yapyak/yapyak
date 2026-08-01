@@ -1,11 +1,11 @@
 import type { Language } from '#lib/tokenize';
 import type { BoxProps } from '#primitives/box';
 
-import { CodeBlockToken } from '#components/code-block-token';
-import { PreformattedText } from '#components/preformatted-text';
 import { tokenize } from '#lib/tokenize';
 import { Box } from '#primitives/box';
 
+import { CodeBlockToken } from '../code-block-token';
+import { PreformattedText } from '../preformatted-text';
 import styles from './code-block.module.css';
 import { CodeBlockCopyButton } from './code-block-copy-button';
 

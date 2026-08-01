@@ -1,10 +1,10 @@
 import type { EyebrowBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { ExternalLink } from '#components/external-link';
-import { KindBadge } from '#components/kind-badge';
 import { Box } from '#primitives/box';
 
+import { ExternalLink } from '../external-link';
+import { KindBadge } from '../kind-badge';
 import styles from './block-renderer-node-eyebrow.module.css';
 
 export type BlockRendererNodeEyebrowProps = BoxProps<'p'> & {

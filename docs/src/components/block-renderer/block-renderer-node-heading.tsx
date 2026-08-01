@@ -1,9 +1,9 @@
 import type { HeadingBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 
+import { Icon } from '../icon';
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-heading.module.css';
 

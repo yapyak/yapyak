@@ -2,10 +2,10 @@ import type { ButtonBaseProps } from '#primitives/button';
 
 import { t } from 'yapyak';
 
-import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
+import { Icon } from '../icon';
 import styles from './search-dialog-button.module.css';
 
 export type SearchDialogButtonVariant = 'default' | 'icon';

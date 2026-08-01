@@ -1,6 +1,6 @@
 import type { CodeBlock as CodeBlockData } from '@yapyak/docs-compiler';
 
-import { CodeBlock } from '#components/code-block';
+import { CodeBlock } from '../code-block';
 
 export type BlockRendererNodeCodeBlockProps = {
   block: CodeBlockData;

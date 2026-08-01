@@ -1,6 +1,6 @@
 import type { KindBadgeBlock } from '@yapyak/docs-compiler';
 
-import { KindBadge } from '#components/kind-badge';
+import { KindBadge } from '../kind-badge';
 
 export type BlockRendererNodeKindBadgeProps = {
   block: KindBadgeBlock;

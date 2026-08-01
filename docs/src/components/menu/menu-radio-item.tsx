@@ -1,10 +1,10 @@
 import type { ReactNode } from 'react';
 import type { MenuBaseRadioItemProps } from '#primitives/menu';
 
-import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 import { MenuBaseRadioItem } from '#primitives/menu';
 
+import { Icon } from '../icon';
 import styles from './menu-radio-item.module.css';
 
 export type MenuRadioItemProps = MenuBaseRadioItemProps & {

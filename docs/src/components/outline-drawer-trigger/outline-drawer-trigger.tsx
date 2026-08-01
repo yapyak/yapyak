@@ -3,13 +3,14 @@ import type { Anchor, Page } from '@yapyak/docs-compiler';
 import { useEffect, useState } from 'react';
 import { t } from 'yapyak';
 
-import { AnchorNavigation } from '#components/anchor-navigation';
-import { DialogTrigger } from '#components/dialog-trigger';
-import { Drawer } from '#components/drawer';
-import { Icon } from '#components/icon';
-import { IconButton } from '#components/icon-button';
-import { PageAction } from '#components/page-action';
 import { useMediaQuery } from '#hooks/use-media-query';
+
+import { AnchorNavigation } from '../anchor-navigation';
+import { DialogTrigger } from '../dialog-trigger';
+import { Drawer } from '../drawer';
+import { Icon } from '../icon';
+import { IconButton } from '../icon-button';
+import { PageAction } from '../page-action';
 
 export type OutlineDrawerTriggerProps = {
   anchors: Anchor[];

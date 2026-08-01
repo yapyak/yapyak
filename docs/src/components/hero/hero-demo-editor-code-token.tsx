@@ -1,8 +1,8 @@
 import type { Token } from '#lib/tokenize';
 
-import { CodeBlockToken } from '#components/code-block-token';
 import { Box } from '#primitives/box';
 
+import { CodeBlockToken } from '../code-block-token';
 import styles from './hero-demo-editor.module.css';
 
 export const CARET_MARKER = 'CARET';

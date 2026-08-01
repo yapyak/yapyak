@@ -3,10 +3,10 @@ import type { SearchResult } from '#lib/search-result';
 
 import { Fragment } from 'react';
 
-import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 import { ListboxBase, ListboxBaseOption } from '#primitives/listbox';
 
+import { Icon } from '../icon';
 import styles from './search-dialog-listbox.module.css';
 
 export type SearchDialogListboxProps = {

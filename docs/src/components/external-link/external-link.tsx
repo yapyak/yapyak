@@ -1,9 +1,9 @@
-import type { IconSize } from '#components/icon';
 import type { BoxProps } from '#primitives/box';
+import type { IconSize } from '../icon';
 
-import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 
+import { Icon } from '../icon';
 import styles from './external-link.module.css';
 
 export type ExternalLinkSize = 'lg' | 'md' | 'sm';

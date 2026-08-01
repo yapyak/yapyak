@@ -1,9 +1,9 @@
-import type { SwatchAccent } from '#components/swatch';
 import type { ButtonBaseProps } from '#primitives/button';
+import type { SwatchAccent } from '../swatch';
 
-import { Swatch } from '#components/swatch';
 import { ButtonBase } from '#primitives/button';
 
+import { Swatch } from '../swatch';
 import styles from './block-renderer-node-picker.module.css';
 
 export type BlockRendererNodePickerOptionProps = ButtonBaseProps & {

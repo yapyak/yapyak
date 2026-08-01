@@ -1,10 +1,10 @@
 import type { BoxProps } from '#primitives/box';
 import type { AnimateChildProps } from '#systems/animate';
 
-import { Backdrop } from '#components/backdrop';
-import { Overlay } from '#components/overlay';
 import { Box } from '#primitives/box';
 
+import { Backdrop } from '../backdrop';
+import { Overlay } from '../overlay';
 import styles from './drawer.module.css';
 
 export type DrawerDirection = 'end' | 'start';

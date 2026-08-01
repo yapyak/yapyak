@@ -1,9 +1,9 @@
 import type { TerminalLine } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { PreformattedText } from '#components/preformatted-text';
 import { Box } from '#primitives/box';
 
+import { PreformattedText } from '../preformatted-text';
 import styles from './terminal.module.css';
 import { TerminalLineRow } from './terminal-line-row';
 

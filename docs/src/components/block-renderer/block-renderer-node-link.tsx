@@ -1,9 +1,9 @@
 import type { LinkBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { ExternalLink } from '#components/external-link';
 import { LinkBase } from '#primitives/link';
 
+import { ExternalLink } from '../external-link';
 import { BlockRendererNode } from './block-renderer-node';
 import styles from './block-renderer-node-link.module.css';
 

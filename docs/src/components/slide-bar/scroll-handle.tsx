@@ -2,12 +2,12 @@ import type { BoxProps } from '#primitives/box';
 
 import { useRef } from 'react';
 
-import { Icon } from '#components/icon';
 import { useEventListener } from '#hooks/use-event-listener';
 import { useHoverInterval } from '#hooks/use-hover-interval';
 import { Box } from '#primitives/box';
 import { mergeProps } from '#utils/merge-props';
 
+import { Icon } from '../icon';
 import styles from './scroll-handle.module.css';
 
 export type ScrollHandlePlacement = 'end' | 'start';

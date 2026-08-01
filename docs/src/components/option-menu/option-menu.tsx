@@ -1,9 +1,8 @@
-import type { MenuProps } from '#components/menu';
-import type { SwatchAccent } from '#components/swatch';
+import type { MenuProps } from '../menu';
+import type { SwatchAccent } from '../swatch';
 
-import { Menu } from '#components/menu';
-import { Swatch } from '#components/swatch';
-
+import { Menu } from '../menu';
+import { Swatch } from '../swatch';
 import styles from './option-menu.module.css';
 
 type OptionMenuItem = {

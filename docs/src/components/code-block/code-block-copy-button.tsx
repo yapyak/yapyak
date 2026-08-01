@@ -3,10 +3,10 @@ import type { ButtonBaseProps } from '#primitives/button';
 import { useEffect, useRef, useState } from 'react';
 import { t } from 'yapyak';
 
-import { Icon } from '#components/icon';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
+import { Icon } from '../icon';
 import styles from './code-block-copy-button.module.css';
 
 export type CodeBlockCopyButtonProps = ButtonBaseProps & {

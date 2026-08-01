@@ -1,4 +1,4 @@
-import { InstallationWizard } from '#components/installation-wizard';
+import { InstallationWizard } from '../installation-wizard';
 
 export function BlockRendererNodeInstallationWizard() {
   return <InstallationWizard />;

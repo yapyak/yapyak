@@ -1,11 +1,11 @@
 import type { DiagnosticBlock } from '@yapyak/docs-compiler';
 import type { Language } from '#lib/tokenize';
 
-import { CodeBlockToken } from '#components/code-block-token';
-import { Icon } from '#components/icon';
 import { tokenize } from '#lib/tokenize';
 import { Box } from '#primitives/box';
 
+import { CodeBlockToken } from '../code-block-token';
+import { Icon } from '../icon';
 import styles from './block-renderer-node-diagnostic.module.css';
 
 export type BlockRendererNodeDiagnosticLineRowProps = {
