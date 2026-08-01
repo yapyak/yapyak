@@ -604,7 +604,7 @@ export function buildPackageIndexPage(
     exportKind: null,
     kind: 'eyebrow',
     module: context.packageName,
-    sourceHref: input.sourceHref ?? null,
+    sourceHref: nullify(input.sourceHref),
   });
 
   if (input.subpaths.length > 0) {
@@ -679,7 +679,7 @@ export function buildModulePage(
     exportKind: null,
     kind: 'eyebrow',
     module: module.id,
-    sourceHref: input.sourceHref ?? null,
+    sourceHref: nullify(input.sourceHref),
   });
 
   if (module.description) {

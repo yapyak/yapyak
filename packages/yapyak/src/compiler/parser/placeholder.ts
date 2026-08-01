@@ -26,7 +26,7 @@ export function parsePlaceholders(source: string): ParsedMessage {
 function hasFatalDiagnostic(diagnostics: TemplateDiagnostic[]): boolean {
   return diagnostics.some(
     (diagnostic) =>
-      diagnostic.reason === 'unsupported' &&
+      diagnostic.kind === 'unsupported' &&
       diagnostic.feature === 'apostrophe escaping',
   );
 }

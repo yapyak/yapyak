@@ -9,6 +9,7 @@ import type { ReferenceParameter } from './type';
 
 import ts from '@typescript/typescript6';
 
+import { nullify } from '../../nullify';
 import { buildTypeTokens } from './type-token';
 
 export function extractParameters(
@@ -23,7 +24,7 @@ export function extractParameters(
     const rawComment = getTagComment(tag);
     const { description, shape } = extractInlineShape(rawComment);
     result.push({
-      defaultValue: parameter.initializer?.getText() ?? null,
+      defaultValue: nullify(parameter.initializer?.getText()),
       description,
       name,
       optional:

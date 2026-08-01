@@ -252,8 +252,8 @@ describe('parsePlaceholders', () => {
     const { issues } = parsePlaceholders('{count, plural, one {# item}}');
     expect(issues).toMatchObject([
       {
+        kind: 'missing-other',
         name: 'count',
-        reason: 'missing-other',
       },
     ]);
   });
@@ -262,8 +262,8 @@ describe('parsePlaceholders', () => {
     const { issues } = parsePlaceholders('{rank, selectordinal, one {#st}}');
     expect(issues).toMatchObject([
       {
+        kind: 'missing-other',
         name: 'rank',
-        reason: 'missing-other',
       },
     ]);
   });
@@ -272,8 +272,8 @@ describe('parsePlaceholders', () => {
     const { issues } = parsePlaceholders('{gender, select, male {he}}');
     expect(issues).toMatchObject([
       {
+        kind: 'missing-other',
         name: 'gender',
-        reason: 'missing-other',
       },
     ]);
   });
@@ -283,8 +283,8 @@ describe('parsePlaceholders', () => {
     expect(issues).toMatchObject([
       {
         feature: 'number skeleton',
+        kind: 'unsupported',
         name: 'amount',
-        reason: 'unsupported',
       },
     ]);
   });
@@ -294,15 +294,15 @@ describe('parsePlaceholders', () => {
     expect(issues).toMatchObject([
       {
         feature: 'currency without a code',
+        kind: 'unsupported',
         name: 'cost',
-        reason: 'unsupported',
       },
     ]);
   });
 
   it('warns on a legacy number pattern as unsupported', () => {
     const { issues } = parsePlaceholders('{n, number, #,##0.00}');
-    expect(issues[0]?.reason).toBe('unsupported');
+    expect(issues[0]?.kind).toBe('unsupported');
   });
 
   it('warns on a date skeleton as unsupported', () => {
@@ -310,8 +310,8 @@ describe('parsePlaceholders', () => {
     expect(issues).toMatchObject([
       {
         feature: 'date skeleton or custom pattern',
+        kind: 'unsupported',
         name: 'when',
-        reason: 'unsupported',
       },
     ]);
   });
@@ -321,8 +321,8 @@ describe('parsePlaceholders', () => {
     expect(issues).toMatchObject([
       {
         feature: 'date skeleton or custom pattern',
+        kind: 'unsupported',
         name: 'when',
-        reason: 'unsupported',
       },
     ]);
   });
@@ -332,8 +332,8 @@ describe('parsePlaceholders', () => {
     expect(issues).toMatchObject([
       {
         feature: 'time skeleton or custom pattern',
+        kind: 'unsupported',
         name: 'at',
-        reason: 'unsupported',
       },
     ]);
   });
@@ -343,8 +343,8 @@ describe('parsePlaceholders', () => {
     expect(issues).toMatchObject([
       {
         feature: 'time skeleton or custom pattern',
+        kind: 'unsupported',
         name: 'at',
-        reason: 'unsupported',
       },
     ]);
   });
@@ -356,8 +356,8 @@ describe('parsePlaceholders', () => {
     expect(issues).toMatchObject([
       {
         feature: 'plural offset',
+        kind: 'unsupported',
         name: 'count',
-        reason: 'unsupported',
       },
     ]);
   });
@@ -367,24 +367,24 @@ describe('parsePlaceholders', () => {
     expect(issues).toMatchObject([
       {
         feature: 'apostrophe escaping',
+        kind: 'unsupported',
         name: '',
-        reason: 'unsupported',
       },
     ]);
   });
 
   it('warns on an unbalanced brace as malformed', () => {
     const { issues } = parsePlaceholders('Hello {name');
-    expect(issues[0]?.reason).toBe('malformed');
+    expect(issues[0]?.kind).toBe('malformed');
   });
 
   it('warns on an empty argument as malformed', () => {
     const { issues } = parsePlaceholders('a {} b');
-    expect(issues[0]?.reason).toBe('malformed');
+    expect(issues[0]?.kind).toBe('malformed');
   });
 
   it('warns on an unknown argument type as malformed', () => {
     const { issues } = parsePlaceholders('{x, mystery, body}');
-    expect(issues[0]?.reason).toBe('malformed');
+    expect(issues[0]?.kind).toBe('malformed');
   });
 });

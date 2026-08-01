@@ -40,12 +40,12 @@ export function parseTemplate(source: string): ParseTemplateResult {
   if (apostropheMatch) {
     diagnostics.push({
       feature: 'apostrophe escaping',
+      kind: 'unsupported',
       name: '',
       range: {
         end: apostropheMatch.index + apostropheMatch[0].length,
         start: apostropheMatch.index,
       },
-      reason: 'unsupported',
     });
   }
   const context: ParseContext = {
@@ -107,12 +107,12 @@ function parseNodes(
     }
     if (character === '}' && terminator === undefined) {
       context.diagnostics.push({
+        kind: 'malformed',
         message: `unbalanced '}' at index ${position}: missing opening '{'`,
         range: {
           end: position + 1,
           start: position,
         },
-        reason: 'malformed',
       });
       nodes.push({
         kind: 'literal',
@@ -207,12 +207,12 @@ function parseToken(
   const closeIndex = findMatchingBrace(context.source, position);
   if (closeIndex === undefined) {
     context.diagnostics.push({
+      kind: 'malformed',
       message: `unbalanced '{' at index ${position}: missing closing '}'`,
       range: {
         end: context.source.length,
         start: position,
       },
-      reason: 'malformed',
     });
     const node: LiteralNode = {
       kind: 'literal',
@@ -334,9 +334,9 @@ function parseTokenBody(
     );
   }
   context.diagnostics.push({
+    kind: 'malformed',
     message: `unknown argument type "${kind}"`,
     range: trimmedRange(context.source, afterName, kindEnd),
-    reason: 'malformed',
   });
   return {
     kind: 'placeholder',
@@ -351,17 +351,17 @@ function emitNameDiagnostic(
 ): void {
   if (name === '') {
     context.diagnostics.push({
+      kind: 'malformed',
       message: 'empty argument',
       range: tokenRange,
-      reason: 'malformed',
     });
     return;
   }
   if (name.includes('{') || name.includes('}')) {
     context.diagnostics.push({
+      kind: 'malformed',
       message: `placeholder name contains an unbalanced brace: "${name}"`,
       range: tokenRange,
-      reason: 'malformed',
     });
   }
 }
@@ -385,12 +385,12 @@ function buildPluralNode(
   if (offsetMatch) {
     context.diagnostics.push({
       feature: 'plural offset',
+      kind: 'unsupported',
       name: input.name,
       range: {
         end: input.bodyStart + offsetMatch.index + offsetMatch[0].length,
         start: input.bodyStart + offsetMatch.index,
       },
-      reason: 'unsupported',
     });
   }
   const branchesStart = offsetMatch
@@ -399,9 +399,9 @@ function buildPluralNode(
   const branches = parseBranches(context, branchesStart, input.bodyEnd, true);
   if (!('other' in branches)) {
     context.diagnostics.push({
+      kind: 'missing-other',
       name: input.name,
       range: input.tokenRange,
-      reason: 'missing-other',
     });
   }
   for (const branch of Object.keys(branches)) {
@@ -410,10 +410,10 @@ function buildPluralNode(
     }
     context.diagnostics.push({
       branch,
+      kind: 'unknown-keyword',
       name: input.name,
       pluralKind: input.pluralKind,
       range: input.tokenRange,
-      reason: 'unknown-keyword',
     });
   }
   return {
@@ -444,9 +444,9 @@ function buildSelectNode(
   );
   if (!('other' in branches)) {
     context.diagnostics.push({
+      kind: 'missing-other',
       name: input.name,
       range: input.tokenRange,
-      reason: 'missing-other',
     });
   }
   return {
@@ -525,34 +525,34 @@ function parseBranches(
     }
     if (context.source[position] !== '{') {
       context.diagnostics.push({
+        kind: 'malformed',
         message: `branch "${branchName}" at index ${nameStart}: missing '{' after branch name`,
         range: {
           end: nameEnd,
           start: nameStart,
         },
-        reason: 'malformed',
       });
       continue;
     }
     if (branchName === '') {
       context.diagnostics.push({
+        kind: 'malformed',
         message: `branch at index ${position}: missing name before '{'`,
         range: {
           end: position + 1,
           start: position,
         },
-        reason: 'malformed',
       });
     }
     const closeIndex = findMatchingBrace(context.source, position);
     if (closeIndex === undefined) {
       context.diagnostics.push({
+        kind: 'malformed',
         message: `unbalanced '{' at index ${position}: missing closing '}'`,
         range: {
           end: context.source.length,
           start: position,
         },
-        reason: 'malformed',
       });
       break;
     }
@@ -664,9 +664,9 @@ function resolveNumberOptions(
   if (body === 'currency') {
     context.diagnostics.push({
       feature: 'currency without a code',
+      kind: 'unsupported',
       name: input.name,
       range: input.bodyRange,
-      reason: 'unsupported',
     });
     return {};
   }
@@ -675,9 +675,9 @@ function resolveNumberOptions(
     if (currencyCode !== '') {
       if (!isCurrency(currencyCode)) {
         context.diagnostics.push({
+          kind: 'malformed',
           message: `Unsupported currency code "${currencyCode}".`,
           range: input.bodyRange,
-          reason: 'malformed',
         });
         return {};
       }
@@ -690,17 +690,17 @@ function resolveNumberOptions(
   if (body.startsWith('::')) {
     context.diagnostics.push({
       feature: 'number skeleton',
+      kind: 'unsupported',
       name: input.name,
       range: input.bodyRange,
-      reason: 'unsupported',
     });
     return {};
   }
   context.diagnostics.push({
     feature: `number style "${body}"`,
+    kind: 'unsupported',
     name: input.name,
     range: input.bodyRange,
-    reason: 'unsupported',
   });
   return {};
 }
@@ -726,9 +726,9 @@ function resolveDateTimeStyle(
   }
   context.diagnostics.push({
     feature: `${kind} skeleton or custom pattern`,
+    kind: 'unsupported',
     name: input.name,
     range: input.bodyRange,
-    reason: 'unsupported',
   });
   return 'medium';
 }

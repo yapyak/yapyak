@@ -172,7 +172,7 @@ function toIcuDiagnostic(
     range: context.range,
     severity: 'error' as const,
   };
-  if (issue.reason === 'missing-other') {
+  if (issue.kind === 'missing-other') {
     return buildDiagnostic(
       'PLACEHOLDER_MISSING_OTHER',
       {
@@ -181,7 +181,7 @@ function toIcuDiagnostic(
       diagnosticContext,
     );
   }
-  if (issue.reason === 'malformed') {
+  if (issue.kind === 'malformed') {
     return buildDiagnostic(
       'PLACEHOLDER_MALFORMED',
       {
@@ -190,7 +190,7 @@ function toIcuDiagnostic(
       diagnosticContext,
     );
   }
-  if (issue.reason === 'unknown-keyword') {
+  if (issue.kind === 'unknown-keyword') {
     return buildDiagnostic(
       'PLACEHOLDER_KEYWORD_UNKNOWN',
       {

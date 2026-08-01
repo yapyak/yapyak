@@ -7,23 +7,23 @@ export type TemplateDiagnostic =
   | {
       message: string;
       range: TemplateRange;
-      reason: 'malformed';
+      kind: 'malformed';
     }
   | {
       name: string;
       range: TemplateRange;
-      reason: 'missing-other';
+      kind: 'missing-other';
     }
   | {
       branch: string;
       name: string;
       pluralKind: 'cardinal' | 'ordinal';
       range: TemplateRange;
-      reason: 'unknown-keyword';
+      kind: 'unknown-keyword';
     }
   | {
       feature: string;
       name: string;
       range: TemplateRange;
-      reason: 'unsupported';
+      kind: 'unsupported';
     };

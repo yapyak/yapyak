@@ -176,12 +176,12 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate(source);
       expect(diagnostics).toEqual([
         {
+          kind: 'missing-other',
           name: 'count',
           range: {
             end: source.length,
             start: 0,
           },
-          reason: 'missing-other',
         },
       ]);
     });
@@ -192,12 +192,12 @@ describe('parseTemplate', () => {
       const offsetStart = source.indexOf('offset:1');
       expect(diagnostics).toContainEqual({
         feature: 'plural offset',
+        kind: 'unsupported',
         name: 'count',
         range: {
           end: offsetStart + 'offset:1'.length,
           start: offsetStart,
         },
-        reason: 'unsupported',
       });
     });
 
@@ -207,7 +207,7 @@ describe('parseTemplate', () => {
       );
 
       expect(
-        diagnostics.filter((diagnostic) => diagnostic.reason === 'malformed'),
+        diagnostics.filter((diagnostic) => diagnostic.kind === 'malformed'),
       ).toHaveLength(0);
     });
 
@@ -219,9 +219,9 @@ describe('parseTemplate', () => {
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
           branch: 'oen',
+          kind: 'unknown-keyword',
           name: 'count',
           pluralKind: 'cardinal',
-          reason: 'unknown-keyword',
         }),
       );
     });
@@ -234,9 +234,9 @@ describe('parseTemplate', () => {
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
           branch: 'oen',
+          kind: 'unknown-keyword',
           name: 'count',
           pluralKind: 'ordinal',
-          reason: 'unknown-keyword',
         }),
       );
     });
@@ -312,12 +312,12 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate(source);
       expect(diagnostics).toEqual([
         {
+          kind: 'missing-other',
           name: 'gender',
           range: {
             end: source.length,
             start: 0,
           },
-          reason: 'missing-other',
         },
       ]);
     });
@@ -394,12 +394,12 @@ describe('parseTemplate', () => {
       expect(diagnostics).toEqual([
         {
           feature: 'number skeleton',
+          kind: 'unsupported',
           name: 'amount',
           range: {
             end: bodyEnd,
             start: bodyStart,
           },
-          reason: 'unsupported',
         },
       ]);
     });
@@ -408,8 +408,8 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency eur}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
+          kind: 'malformed',
           message: 'Unsupported currency code "eur".',
-          reason: 'malformed',
         }),
       );
     });
@@ -418,8 +418,8 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency EU}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
+          kind: 'malformed',
           message: expect.stringContaining('Unsupported currency code "EU"'),
-          reason: 'malformed',
         }),
       );
     });
@@ -428,8 +428,8 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency EURO}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
+          kind: 'malformed',
           message: expect.stringContaining('Unsupported currency code "EURO"'),
-          reason: 'malformed',
         }),
       );
     });
@@ -438,8 +438,8 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency US1}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
+          kind: 'malformed',
           message: expect.stringContaining('Unsupported currency code "US1"'),
-          reason: 'malformed',
         }),
       );
     });
@@ -448,8 +448,8 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency XYZ}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
+          kind: 'malformed',
           message: expect.stringContaining('Unsupported currency code "XYZ"'),
-          reason: 'malformed',
         }),
       );
     });
@@ -462,19 +462,19 @@ describe('parseTemplate', () => {
       expect(diagnostics).toEqual([
         {
           feature: 'currency without a code',
+          kind: 'unsupported',
           name: 'cost',
           range: {
             end: bodyEnd,
             start: bodyStart,
           },
-          reason: 'unsupported',
         },
       ]);
     });
 
     it('emits unsupported for a legacy number pattern', () => {
       const { diagnostics } = parseTemplate('{n, number, #,##0.00}');
-      expect(diagnostics[0]?.reason).toBe('unsupported');
+      expect(diagnostics[0]?.kind).toBe('unsupported');
     });
   });
 
@@ -505,12 +505,12 @@ describe('parseTemplate', () => {
       expect(diagnostics).toEqual([
         {
           feature: 'date skeleton or custom pattern',
+          kind: 'unsupported',
           name: 'when',
           range: {
             end: bodyEnd,
             start: bodyStart,
           },
-          reason: 'unsupported',
         },
       ]);
     });
@@ -544,25 +544,25 @@ describe('parseTemplate', () => {
   describe('errors', () => {
     it('emits malformed for an unbalanced opening brace', () => {
       const { diagnostics } = parseTemplate('Hi {name');
-      expect(diagnostics[0]?.reason).toBe('malformed');
+      expect(diagnostics[0]?.kind).toBe('malformed');
     });
 
     it('emits malformed for an unbalanced closing brace', () => {
       const { diagnostics } = parseTemplate('Hi name}');
-      expect(diagnostics[0]?.reason).toBe('malformed');
+      expect(diagnostics[0]?.kind).toBe('malformed');
     });
 
     it('emits malformed for an empty argument', () => {
       const { diagnostics } = parseTemplate('a {} b');
-      expect(diagnostics[0]?.reason).toBe('malformed');
+      expect(diagnostics[0]?.kind).toBe('malformed');
     });
 
     it('emits malformed for an empty ICU argument name', () => {
       const { diagnostics } = parseTemplate('{, plural, other {x}}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
+          kind: 'malformed',
           message: 'empty argument',
-          reason: 'malformed',
         }),
       );
     });
@@ -571,15 +571,15 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate('{a{b}}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
+          kind: 'malformed',
           message: expect.stringContaining('unbalanced brace'),
-          reason: 'malformed',
         }),
       );
     });
 
     it('emits malformed for an unknown argument type', () => {
       const { diagnostics } = parseTemplate('{x, mystery, body}');
-      expect(diagnostics[0]?.reason).toBe('malformed');
+      expect(diagnostics[0]?.kind).toBe('malformed');
     });
 
     it('emits malformed for a branch name without a body', () => {
@@ -588,12 +588,12 @@ describe('parseTemplate', () => {
       const start = source.indexOf('one');
 
       expect(diagnostics).toContainEqual({
+        kind: 'malformed',
         message: `branch "one" at index ${start}: missing '{' after branch name`,
         range: {
           end: start + 'one'.length,
           start,
         },
-        reason: 'malformed',
       });
     });
 
@@ -603,12 +603,12 @@ describe('parseTemplate', () => {
       const start = source.indexOf('{# item}');
 
       expect(diagnostics).toContainEqual({
+        kind: 'malformed',
         message: `branch at index ${start}: missing name before '{'`,
         range: {
           end: start + 1,
           start,
         },
-        reason: 'malformed',
       });
     });
 
@@ -618,12 +618,12 @@ describe('parseTemplate', () => {
       const start = source.indexOf("'{");
       expect(diagnostics).toContainEqual({
         feature: 'apostrophe escaping',
+        kind: 'unsupported',
         name: '',
         range: {
           end: start + 2,
           start,
         },
-        reason: 'unsupported',
       });
     });
   });
@@ -634,12 +634,12 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('}');
       expect(diagnostics).toContainEqual({
+        kind: 'malformed',
         message: `unbalanced '}' at index ${start}: missing opening '{'`,
         range: {
           end: start + 1,
           start,
         },
-        reason: 'malformed',
       });
     });
 
@@ -648,12 +648,12 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('{');
       expect(diagnostics).toContainEqual({
+        kind: 'malformed',
         message: `unbalanced '{' at index ${start}: missing closing '}'`,
         range: {
           end: source.length,
           start,
         },
-        reason: 'malformed',
       });
     });
 
@@ -662,12 +662,12 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('{');
       expect(diagnostics).toContainEqual({
+        kind: 'malformed',
         message: 'empty argument',
         range: {
           end: start + 2,
           start,
         },
-        reason: 'malformed',
       });
     });
 
@@ -676,12 +676,12 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate(source);
       const start = source.indexOf('mystery');
       expect(diagnostics).toContainEqual({
+        kind: 'malformed',
         message: 'unknown argument type "mystery"',
         range: {
           end: start + 'mystery'.length,
           start,
         },
-        reason: 'malformed',
       });
     });
 
@@ -691,12 +691,12 @@ describe('parseTemplate', () => {
       const start = source.indexOf('{n');
       const end = source.indexOf('}}') + 2;
       expect(diagnostics).toContainEqual({
+        kind: 'missing-other',
         name: 'n',
         range: {
           end,
           start,
         },
-        reason: 'missing-other',
       });
     });
 
@@ -706,12 +706,12 @@ describe('parseTemplate', () => {
       const start = source.indexOf('{g');
       const end = source.indexOf('}}') + 2;
       expect(diagnostics).toContainEqual({
+        kind: 'missing-other',
         name: 'g',
         range: {
           end,
           start,
         },
-        reason: 'missing-other',
       });
     });
 
@@ -721,12 +721,12 @@ describe('parseTemplate', () => {
       const start = source.indexOf('offset:2');
       expect(diagnostics).toContainEqual({
         feature: 'plural offset',
+        kind: 'unsupported',
         name: 'c',
         range: {
           end: start + 'offset:2'.length,
           start,
         },
-        reason: 'unsupported',
       });
     });
 
@@ -736,7 +736,7 @@ describe('parseTemplate', () => {
       const { diagnostics } = parseTemplate(source);
       const offsetDiagnostic = diagnostics.find(
         (diagnostic) =>
-          diagnostic.reason === 'unsupported' &&
+          diagnostic.kind === 'unsupported' &&
           diagnostic.feature === 'plural offset',
       );
       expect(offsetDiagnostic).toBeUndefined();
@@ -748,12 +748,12 @@ describe('parseTemplate', () => {
       const start = source.indexOf('weird');
       expect(diagnostics).toContainEqual({
         feature: 'time skeleton or custom pattern',
+        kind: 'unsupported',
         name: 'when',
         range: {
           end: start + 'weird'.length,
           start,
         },
-        reason: 'unsupported',
       });
     });
 
@@ -763,12 +763,12 @@ describe('parseTemplate', () => {
       const start = source.indexOf('#,##0.00');
       expect(diagnostics).toContainEqual({
         feature: 'number style "#,##0.00"',
+        kind: 'unsupported',
         name: 'n',
         range: {
           end: start + '#,##0.00'.length,
           start,
         },
-        reason: 'unsupported',
       });
     });
   });

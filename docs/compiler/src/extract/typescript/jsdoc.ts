@@ -204,7 +204,7 @@ function parseExample(text: string): ReferenceExample {
   return {
     code: (fence[3] ?? '').trim(),
     language: fence[1] ?? '',
-    path: fence[2] ?? null,
+    path: nullify(fence[2]),
     title: before === '' ? null : before,
   };
 }

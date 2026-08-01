@@ -42,7 +42,10 @@ export function SidebarNodeNavigationNodeLink(
       });
     };
 
-    document.fonts.ready.then(scrollToActive);
+    void (async () => {
+      await document.fonts.ready;
+      scrollToActive();
+    })();
 
     return () => {
       isCancelled = true;

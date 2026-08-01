@@ -22,9 +22,7 @@ export function useSearchData(enabled: boolean) {
         if (!isCancelled) {
           setSearchData(data);
         }
-      } catch {
-        // Search stays unavailable when the data can't be loaded.
-      }
+      } catch {}
     })();
     return () => {
       isCancelled = true;
