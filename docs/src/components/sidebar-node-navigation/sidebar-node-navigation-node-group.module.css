@@ -48,19 +48,21 @@
           color var(--transition),
           outline var(--duration-slow);
 
-        @media (hover: hover) {
-          &:hover {
+        &:enabled {
+          @media (hover: hover) {
+            &:hover {
+              color: var(--foreground);
+            }
+          }
+
+          &:active {
             color: var(--foreground);
           }
-        }
 
-        &:active {
-          color: var(--foreground);
-        }
-
-        &:focus-visible {
-          outline-width: var(--spacing-1);
-          outline-color: var(--accent-soft);
+          &:focus-visible {
+            outline-width: var(--spacing-1);
+            outline-color: var(--accent-soft);
+          }
         }
       }
 
@@ -90,23 +92,25 @@
           transition: transform var(--transition);
         }
 
-        @media (hover: hover) {
-          &:hover {
+        &:enabled {
+          @media (hover: hover) {
+            &:hover {
+              color: var(--foreground);
+              background-color: var(--surface);
+              box-shadow: var(--shadow-ring-inset);
+            }
+          }
+
+          &:active {
             color: var(--foreground);
-            background-color: var(--surface);
+            background-color: var(--surface-strong);
             box-shadow: var(--shadow-ring-inset);
           }
-        }
 
-        &:active {
-          color: var(--foreground);
-          background-color: var(--surface-strong);
-          box-shadow: var(--shadow-ring-inset);
-        }
-
-        &:focus-visible {
-          outline-width: var(--spacing-1);
-          outline-color: var(--accent-soft);
+          &:focus-visible {
+            outline-width: var(--spacing-1);
+            outline-color: var(--accent-soft);
+          }
         }
       }
 

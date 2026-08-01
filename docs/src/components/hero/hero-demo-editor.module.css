@@ -93,26 +93,28 @@
           }
         }
 
-        @media (hover: hover) {
-          &:hover {
+        &:enabled {
+          @media (hover: hover) {
+            &:hover {
+              color: var(--foreground-soft);
+              box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+
+              .TabFill {
+                background-color: var(--surface);
+              }
+            }
+
+            &:not([data-active]):has(+ .TabButton:hover) {
+              box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+            }
+          }
+
+          &:active {
             color: var(--foreground-soft);
-            box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
 
             .TabFill {
               background-color: var(--surface);
             }
-          }
-
-          &:not([data-active]):has(+ .TabButton:hover) {
-            box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
-          }
-        }
-
-        &:active {
-          color: var(--foreground-soft);
-
-          .TabFill {
-            background-color: var(--surface);
           }
         }
 

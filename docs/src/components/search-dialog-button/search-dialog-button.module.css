@@ -36,16 +36,18 @@
       border-radius: var(--border-radius-sm);
     }
 
-    @media (hover: hover) {
-      &:hover {
-        color: var(--foreground);
-        background-color: var(--surface);
+    &:enabled {
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+          background-color: var(--surface);
+        }
       }
-    }
 
-    &:active {
-      color: var(--foreground);
-      background-color: var(--surface-strong);
+      &:active {
+        color: var(--foreground);
+        background-color: var(--surface-strong);
+      }
     }
 
     &[aria-expanded="true"] {
@@ -70,14 +72,16 @@
         color: currentColor;
       }
 
-      @media (hover: hover) {
-        &:hover {
+      &:enabled {
+        @media (hover: hover) {
+          &:hover {
+            background-color: transparent;
+          }
+        }
+
+        &:active {
           background-color: transparent;
         }
-      }
-
-      &:active {
-        background-color: transparent;
       }
 
       &[aria-expanded="true"] {

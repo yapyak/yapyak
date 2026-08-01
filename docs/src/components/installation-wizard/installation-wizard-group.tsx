@@ -131,7 +131,10 @@ export function InstallationWizardGroup(props: InstallationWizardGroupProps) {
     : undefined;
 
   return (
-    <Box className={styles.InstallationWizardGroup}>
+    <Box
+      className={styles.InstallationWizardGroup}
+      style={indicatorStyle}
+    >
       <Box className={styles.Label}>{group.label}</Box>
       {isCompact ? (
         <OptionMenuTrigger group={groupId} />
@@ -143,7 +146,6 @@ export function InstallationWizardGroup(props: InstallationWizardGroupProps) {
           name={`installation-wizard-${groupId}`}
           onChange={handleChange}
           ref={radioGroupElement}
-          style={indicatorStyle}
           value={activeValue}
         >
           {indicator && (

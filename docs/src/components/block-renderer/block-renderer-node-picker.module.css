@@ -26,15 +26,12 @@
         gap: var(--spacing-2);
         align-items: center;
         padding: var(--spacing-2) var(--spacing-3);
-        font-family: inherit;
         font-size: inherit;
         font-weight: var(--font-weight-medium);
         color: var(--foreground-soft);
-        cursor: pointer;
         outline: var(--spacing-2) solid transparent;
         outline-offset: calc(var(--px) * -1);
         background-color: transparent;
-        border: 0;
         border-radius: var(--border-radius-sm);
         box-shadow: var(--shadow-ring-inset);
         transition:

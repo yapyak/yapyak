@@ -14,29 +14,29 @@
       width: 44px;
       height: 44px;
       color: var(--foreground-soft);
-      cursor: pointer;
       outline: var(--spacing-2) solid transparent;
       outline-offset: calc(var(--px) * -1);
       background-color: transparent;
-      border: 0;
       border-radius: var(--border-radius-full);
       transition:
         color var(--transition),
         outline var(--duration-slow);
 
-      @media (hover: hover) {
-        &:hover {
+      &:enabled {
+        @media (hover: hover) {
+          &:hover {
+            color: var(--foreground);
+          }
+        }
+
+        &:active {
           color: var(--foreground);
         }
-      }
 
-      &:active {
-        color: var(--foreground);
-      }
-
-      &:focus-visible {
-        outline-width: var(--spacing-1);
-        outline-color: var(--accent-soft);
+        &:focus-visible {
+          outline-width: var(--spacing-1);
+          outline-color: var(--accent-soft);
+        }
       }
     }
 
