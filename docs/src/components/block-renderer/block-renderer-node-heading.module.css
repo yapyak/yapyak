@@ -13,15 +13,18 @@
       transition: outline var(--duration-slow);
 
       .HashIcon {
-        --hash-icon-size: 16px;
+        --block-renderer-node-heading-hash-icon-size: 16px;
 
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: var(--hash-icon-size);
-        height: var(--hash-icon-size);
+        width: var(--block-renderer-node-heading-hash-icon-size);
+        height: var(--block-renderer-node-heading-hash-icon-size);
         margin-right: var(--spacing-2);
-        margin-left: calc(-1 * (var(--hash-icon-size) + var(--spacing-2)));
+        margin-left: calc(
+          -1 *
+          (var(--block-renderer-node-heading-hash-icon-size) + var(--spacing-2))
+        );
         vertical-align: calc(-1 * var(--spacing-05));
         color: var(--foreground-softer);
         opacity: 0;
@@ -40,6 +43,12 @@
           .HashIcon {
             opacity: 1;
           }
+        }
+      }
+
+      &:active {
+        .HashIcon {
+          opacity: 1;
         }
       }
     }

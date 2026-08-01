@@ -6,8 +6,7 @@
     font-size: var(--font-size-sm);
 
     > [data-kind="group"]:not([data-collapsible])
-      + [data-kind="group"][data-collapsible],
-    > [data-kind="group"]:not([data-collapsible]) + [data-kind="link"] {
+      + :is([data-kind="group"][data-collapsible], [data-kind="link"]) {
       padding-top: var(--spacing-5);
       margin-top: var(--spacing-3);
       border-top: var(--px) solid var(--rule);

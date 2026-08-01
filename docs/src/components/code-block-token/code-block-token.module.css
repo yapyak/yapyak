@@ -16,8 +16,7 @@
       color: var(--syntax-literal);
     }
 
-    &[data-kind="string"],
-    &[data-kind="template"] {
+    &:is([data-kind="string"], [data-kind="template"]) {
       color: var(--syntax-string);
     }
 
@@ -30,8 +29,7 @@
       color: var(--foreground-softer);
     }
 
-    &[data-kind="fn-call"],
-    &[data-kind="tx-call"] {
+    &:is([data-kind="fn-call"], [data-kind="tx-call"]) {
       color: var(--syntax-fn-call);
     }
 

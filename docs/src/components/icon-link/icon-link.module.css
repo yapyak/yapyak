@@ -20,6 +20,10 @@
       }
     }
 
+    &:active {
+      color: var(--foreground);
+    }
+
     &:focus-visible {
       outline-width: 4px;
       outline-color: var(--accent-soft);

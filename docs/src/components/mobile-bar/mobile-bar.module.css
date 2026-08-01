@@ -113,6 +113,10 @@
           }
         }
 
+        &:active {
+          color: var(--foreground);
+        }
+
         &[data-status="active"] {
           color: var(--brand);
         }

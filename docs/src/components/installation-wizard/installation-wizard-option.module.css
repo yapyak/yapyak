@@ -27,6 +27,11 @@
       }
     }
 
+    &:active:not([data-checked]) {
+      color: var(--foreground);
+      background-color: var(--surface);
+    }
+
     &:has(input:focus-visible) {
       outline: var(--spacing-05) solid var(--accent-soft);
       outline-offset: var(--spacing-05);

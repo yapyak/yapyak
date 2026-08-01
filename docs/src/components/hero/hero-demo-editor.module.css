@@ -58,8 +58,7 @@
           transition: background-color var(--transition);
         }
 
-        .TabFilenameTextShort,
-        .TabFilenameTextFull {
+        :is(.TabFilenameTextShort, .TabFilenameTextFull) {
           overflow: hidden;
           text-overflow: ellipsis;
           letter-spacing: var(--letter-spacing-tight);
@@ -106,6 +105,14 @@
 
           &:not([data-active]):has(+ .TabButton:hover) {
             box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
+          }
+        }
+
+        &:active {
+          color: var(--foreground-soft);
+
+          .TabFill {
+            background-color: var(--surface);
           }
         }
 

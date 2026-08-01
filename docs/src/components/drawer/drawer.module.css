@@ -12,8 +12,7 @@
     scrollbar-color: var(--ring-stronger) transparent;
     scrollbar-width: thin;
     background-color: var(--canvas);
-    box-shadow: 0 16px 80px
-      color-mix(in oklab, var(--color-black) 60%, transparent);
+    box-shadow: var(--shadow-overlay);
     transition: transform var(--duration-slow) var(--ease-snappy);
 
     &[data-direction="start"] {
@@ -22,8 +21,7 @@
       border-top-right-radius: var(--border-radius-lg);
       border-bottom-right-radius: var(--border-radius-lg);
 
-      &[data-animate="enter"],
-      &[data-animate="exit"] {
+      &:is([data-animate="enter"], [data-animate="exit"]) {
         transform: translateX(calc(-100% - 96px));
       }
     }
@@ -34,8 +32,7 @@
       border-top-left-radius: var(--border-radius-lg);
       border-bottom-left-radius: var(--border-radius-lg);
 
-      &[data-animate="enter"],
-      &[data-animate="exit"] {
+      &:is([data-animate="enter"], [data-animate="exit"]) {
         transform: translateX(calc(100% + 96px));
       }
     }

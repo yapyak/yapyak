@@ -13,8 +13,7 @@
     background-color: var(--canvas);
     border-bottom: var(--px) solid var(--rule);
 
-    .Start,
-    .End {
+    :is(.Start, .End) {
       display: flex;
       align-items: center;
     }

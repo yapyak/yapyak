@@ -31,16 +31,18 @@
       color: var(--foreground-softer);
     }
 
-    @media (hover: hover) {
-      &:hover {
-        color: var(--foreground);
-        background-color: var(--surface);
+    &:enabled {
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+          background-color: var(--surface);
+        }
       }
-    }
 
-    &:active {
-      color: var(--foreground);
-      background-color: var(--surface-strong);
+      &:active {
+        color: var(--foreground);
+        background-color: var(--surface-strong);
+      }
     }
 
     &[aria-expanded="true"] {
@@ -48,9 +50,11 @@
       background-color: var(--surface-strong);
     }
 
-    &:focus-visible {
-      outline-width: 4px;
-      outline-color: var(--accent-soft);
+    &:enabled {
+      &:focus-visible {
+        outline-width: 4px;
+        outline-color: var(--accent-soft);
+      }
     }
   }
 }

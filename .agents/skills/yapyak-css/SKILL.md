@@ -566,7 +566,9 @@ If a new reset is needed broadly, add it to the global reset file — not per-co
 
 #### Never write vendor prefixes
 
-Build pipeline auto-prefixes via Lightning CSS based on browserslist targets. Write the standard property only:
+Build pipeline auto-prefixes via Lightning CSS based on browserslist targets. Write the standard property only.
+
+Exception — line clamping: Lightning CSS strips a bare `line-clamp`, so write the `-webkit-box` quartet (`display: -webkit-box`, `-webkit-box-orient: vertical`, `overflow: hidden`, `-webkit-line-clamp: N`) by hand.
 
 ```css
 /* ✓ */

@@ -43,8 +43,15 @@
           box-shadow var(--transition),
           outline var(--duration-slow);
 
-        @media (hover: hover) {
-          &:hover:not([data-active]) {
+        &:enabled {
+          @media (hover: hover) {
+            &:hover:not([data-active]) {
+              color: var(--foreground);
+              background-color: var(--surface);
+            }
+          }
+
+          &:active:not([data-active]) {
             color: var(--foreground);
             background-color: var(--surface);
           }

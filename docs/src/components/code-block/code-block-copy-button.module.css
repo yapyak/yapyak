@@ -34,8 +34,7 @@
       width: 14px;
       height: 14px;
 
-      .IconIdle,
-      .IconCopied {
+      :is(.IconIdle, .IconCopied) {
         position: absolute;
         top: 0;
         left: 0;
@@ -66,21 +65,23 @@
       clip: rect(0, 0, 0, 0);
     }
 
-    @media (hover: hover) {
-      &:hover {
-        color: var(--foreground);
-        background-color: var(--surface);
+    &:enabled {
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+          background-color: var(--surface);
+        }
       }
-    }
 
-    &:active {
-      color: var(--foreground);
-      background-color: var(--surface-strong);
-    }
+      &:active {
+        color: var(--foreground);
+        background-color: var(--surface-strong);
+      }
 
-    &:focus-visible {
-      outline-width: var(--spacing-1);
-      outline-color: var(--accent-soft);
+      &:focus-visible {
+        outline-width: var(--spacing-1);
+        outline-color: var(--accent-soft);
+      }
     }
 
     &[data-copied] {

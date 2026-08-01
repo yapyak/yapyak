@@ -29,15 +29,21 @@
         opacity var(--duration-medium) var(--ease-snappy);
     }
 
-    @media (hover: hover) {
-      &:hover {
+    &:enabled {
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+        }
+      }
+
+      &:active {
         color: var(--foreground);
       }
-    }
 
-    &:focus-visible {
-      outline-width: var(--spacing-1);
-      outline-color: var(--accent-soft);
+      &:focus-visible {
+        outline-width: var(--spacing-1);
+        outline-color: var(--accent-soft);
+      }
     }
 
     &[data-open] {

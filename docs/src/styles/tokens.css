@@ -98,6 +98,7 @@
   --color-silver: #e6e6e6;
   --color-ink: #141414;
   --color-black: #000000;
+  --color-white: #ffffff;
 
   --brand: var(--color-mint);
   --accent: var(--color-aqua);
@@ -148,8 +149,11 @@
   --brand-contrast: color-mix(in oklab, var(--brand) 8%, var(--color-ink));
 
   --shadow-brand-glow: 0 0 12px var(--brand-soft);
+  --shadow-overlay: 0 16px 80px
+    color-mix(in oklab, var(--color-black) 60%, transparent);
   --shadow-ring-inset:
-    inset 0 0 0 var(--px) var(--ring), inset 0 1px 0 #ffffff08;
+    inset 0 0 0 var(--px) var(--ring),
+    inset 0 1px 0 color-mix(in oklab, var(--color-white) 3%, transparent);
 
   --header-height: 64px;
   --content-header-height: 44px;

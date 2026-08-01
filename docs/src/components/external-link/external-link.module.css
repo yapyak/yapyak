@@ -28,6 +28,10 @@
       }
     }
 
+    &:active {
+      text-decoration-color: currentColor;
+    }
+
     &:focus-visible {
       outline-width: var(--spacing-1);
       outline-color: var(--accent-soft);

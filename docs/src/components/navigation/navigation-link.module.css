@@ -41,6 +41,11 @@
             transform var(--transition);
         }
       }
+
+      &:active {
+        color: var(--foreground);
+        background-color: var(--surface-stronger);
+      }
     }
   }
 }

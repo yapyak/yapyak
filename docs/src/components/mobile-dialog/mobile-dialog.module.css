@@ -1,10 +1,12 @@
 @layer components {
   .MobileDialog {
+    --keyboard-inset: 0px;
+
     position: fixed;
     inset: var(--header-height) 0 0 0;
     display: flex;
     flex-direction: column;
-    padding-bottom: var(--keyboard-inset, 0px);
+    padding-bottom: var(--keyboard-inset);
     overflow: hidden;
     background-color: var(--canvas);
     transition: opacity var(--duration-medium) var(--ease-snappy);
@@ -17,8 +19,7 @@
       transition: transform var(--duration-medium) var(--ease-snappy);
     }
 
-    &[data-animate="enter"],
-    &[data-animate="exit"] {
+    &:is([data-animate="enter"], [data-animate="exit"]) {
       opacity: 0;
 
       .Inner {

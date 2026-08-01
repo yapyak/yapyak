@@ -12,15 +12,12 @@
     color: var(--foreground);
     background-color: var(--surface-elevated);
     border-radius: var(--border-radius-md);
-    box-shadow:
-      var(--shadow-ring-inset),
-      0 16px 80px color-mix(in oklab, var(--color-black) 60%, transparent);
+    box-shadow: var(--shadow-ring-inset), var(--shadow-overlay);
     transition:
       transform var(--duration-slow) var(--ease-snappy),
       opacity var(--duration-slow) var(--ease-snappy);
 
-    &[data-animate="enter"],
-    &[data-animate="exit"] {
+    &:is([data-animate="enter"], [data-animate="exit"]) {
       opacity: 0;
       transform: translateY(-8px) scale(0.98);
     }

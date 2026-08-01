@@ -5,7 +5,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: var(--scroll-handle-height);
+    height: var(--scroll-handle-height, 24px);
     color: var(--foreground-softer);
 
     &[data-placement="start"] {

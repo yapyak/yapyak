@@ -4,8 +4,7 @@
     grid-template-columns: 1fr;
     gap: var(--spacing-3);
 
-    .PreviousLink,
-    .NextLink {
+    :is(.PreviousLink, .NextLink) {
       display: flex;
       flex-direction: column;
       gap: var(--spacing-2);
