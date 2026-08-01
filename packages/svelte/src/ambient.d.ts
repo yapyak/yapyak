@@ -1,4 +1,3 @@
-// biome-ignore lint/style/useConsistentTypeDefinitions: yap yap yap
 interface ImportMeta {
   readonly env?: {
     readonly DEV?: boolean;

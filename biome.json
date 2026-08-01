@@ -224,6 +224,10 @@
         "rules": {
           "correctness": {
             "noUnusedVariables": "off"
+          },
+          "style": {
+            "noNamespace": "off",
+            "useConsistentTypeDefinitions": "off"
           }
         }
       }
