@@ -135,12 +135,12 @@ function transformImportDeclaration(
   );
 }
 
-function renderSpecifier(item: ImportSpecifier): string {
-  const prefix = item.typeOnly ? 'type ' : '';
+function renderSpecifier(specifier: ImportSpecifier): string {
+  const prefix = specifier.typeOnly ? 'type ' : '';
   const body =
-    item.imported === item.local
-      ? item.imported
-      : `${item.imported} as ${item.local}`;
+    specifier.imported === specifier.local
+      ? specifier.imported
+      : `${specifier.imported} as ${specifier.local}`;
   return `${prefix}${body}`;
 }
 
@@ -171,13 +171,13 @@ function countReferences(referenceAsts: ts.SourceFile[], name: string): number {
 
 function countReferencesIn(sourceFile: ts.SourceFile, name: string): number {
   let count = 0;
-  const visit = (node: ts.Node): void => {
+  const walkNode = (node: ts.Node): void => {
     if (ts.isIdentifier(node) && node.text === name && isReference(node)) {
       count += 1;
     }
-    ts.forEachChild(node, visit);
+    ts.forEachChild(node, walkNode);
   };
-  visit(sourceFile);
+  walkNode(sourceFile);
   return count;
 }
 

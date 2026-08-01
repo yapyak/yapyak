@@ -169,7 +169,7 @@ function extractDirectModifier(
   }
 
   if (call.arguments.length === 1) {
-    reportCapture(call, methodName, context);
+    emitCaptureDiagnostic(call, methodName, context);
     return;
   }
 
@@ -263,7 +263,7 @@ function extractNamespaceModifier(
   }
 
   if (call.arguments.length === 1) {
-    reportCapture(call, methodName, context);
+    emitCaptureDiagnostic(call, methodName, context);
     return;
   }
 
@@ -318,7 +318,7 @@ function resolveChainBinding(
   return undefined;
 }
 
-function reportCapture(
+function emitCaptureDiagnostic(
   call: ts.CallExpression,
   methodName: string,
   context: DiscoveryContext,

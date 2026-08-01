@@ -344,7 +344,7 @@ function findClosestIn(
       }
     | undefined;
   for (const code of candidates) {
-    const distance = levenshtein(input, code);
+    const distance = getLevenshteinDistance(input, code);
     if (distance > 2) {
       continue;
     }
@@ -358,31 +358,31 @@ function findClosestIn(
   return best?.code;
 }
 
-function levenshtein(a: string, b: string): number {
-  if (a === b) {
+function getLevenshteinDistance(source: string, target: string): number {
+  if (source === target) {
     return 0;
   }
-  if (a.length === 0) {
-    return b.length;
+  if (source.length === 0) {
+    return target.length;
   }
-  if (b.length === 0) {
-    return a.length;
+  if (target.length === 0) {
+    return source.length;
   }
   let previous: number[] = Array.from(
     {
-      length: b.length + 1,
+      length: target.length + 1,
     },
     (_, index) => index,
   );
-  let current: number[] = new Array(b.length + 1).fill(0);
-  for (let aIndex = 1; aIndex <= a.length; aIndex++) {
-    current[0] = aIndex;
-    for (let bIndex = 1; bIndex <= b.length; bIndex++) {
-      const cost = a[aIndex - 1] === b[bIndex - 1] ? 0 : 1;
-      current[bIndex] = Math.min(
-        (current[bIndex - 1] ?? 0) + 1,
-        (previous[bIndex] ?? 0) + 1,
-        (previous[bIndex - 1] ?? 0) + cost,
+  let current: number[] = new Array(target.length + 1).fill(0);
+  for (let sourceIndex = 1; sourceIndex <= source.length; sourceIndex++) {
+    current[0] = sourceIndex;
+    for (let targetIndex = 1; targetIndex <= target.length; targetIndex++) {
+      const cost = source[sourceIndex - 1] === target[targetIndex - 1] ? 0 : 1;
+      current[targetIndex] = Math.min(
+        (current[targetIndex - 1] ?? 0) + 1,
+        (previous[targetIndex] ?? 0) + 1,
+        (previous[targetIndex - 1] ?? 0) + cost,
       );
     }
     [previous, current] = [
@@ -390,5 +390,5 @@ function levenshtein(a: string, b: string): number {
       previous,
     ];
   }
-  return previous[b.length] ?? 0;
+  return previous[target.length] ?? 0;
 }

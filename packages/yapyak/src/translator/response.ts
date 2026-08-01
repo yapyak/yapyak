@@ -16,7 +16,7 @@ export function parseTranslationsBatch(
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause);
     throw new TranslatorInvalidResponseError(
-      `yapyak ${vendor}: model response is not valid JSON (${reason}). Preview: ${JSON.stringify(preview(unwrapped))}`,
+      `yapyak ${vendor}: model response is not valid JSON (${reason}). Preview: ${JSON.stringify(formatPreview(unwrapped))}`,
       {
         cause,
         vendor,
@@ -25,7 +25,7 @@ export function parseTranslationsBatch(
   }
   if (!Array.isArray(parsed)) {
     throw new TranslatorInvalidResponseError(
-      `yapyak ${vendor}: model returned ${getShapeDescription(parsed)}, expected an array. Preview: ${JSON.stringify(preview(unwrapped))}`,
+      `yapyak ${vendor}: model returned ${getShapeDescription(parsed)}, expected an array. Preview: ${JSON.stringify(formatPreview(unwrapped))}`,
       {
         vendor,
       },
@@ -60,7 +60,7 @@ export async function parseResponseBody<T>(
   } catch (cause) {
     const reason = cause instanceof Error ? cause.message : String(cause);
     throw new TranslatorInvalidResponseError(
-      `yapyak ${vendor}: response is not valid JSON (${reason}). Preview: ${JSON.stringify(preview(raw))}`,
+      `yapyak ${vendor}: response is not valid JSON (${reason}). Preview: ${JSON.stringify(formatPreview(raw))}`,
       {
         cause,
         vendor,
@@ -69,7 +69,7 @@ export async function parseResponseBody<T>(
   }
 }
 
-function preview(text: string): string {
+function formatPreview(text: string): string {
   const trimmed = text.trim();
   if (trimmed.length <= PREVIEW_LENGTH) {
     return trimmed;
@@ -103,10 +103,10 @@ async function readBody(
   }
   signal.throwIfAborted();
   const reader = body.getReader();
-  const onAbort = (): void => {
+  const handleAbort = (): void => {
     void reader.cancel();
   };
-  signal.addEventListener('abort', onAbort, {
+  signal.addEventListener('abort', handleAbort, {
     once: true,
   });
   const decoder = new TextDecoder();
@@ -124,7 +124,7 @@ async function readBody(
     signal.throwIfAborted();
     throw cause;
   } finally {
-    signal.removeEventListener('abort', onAbort);
+    signal.removeEventListener('abort', handleAbort);
   }
   signal.throwIfAborted();
   return raw;

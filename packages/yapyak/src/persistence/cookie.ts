@@ -2,7 +2,7 @@ import type { Persistence } from './type';
 
 import { warnDiagnostic } from '../diagnostic';
 import { subscribeHistory } from './history';
-import { appendPendingResponseHeader } from './pending-response-header';
+import { writePendingResponseHeader } from './pending-response-header';
 
 type CookieOptions = {
   name: string;
@@ -78,7 +78,7 @@ export function cookie(options: CookieOptions): Persistence {
       const value = encodeURIComponent(locale);
       const cookieString = `${name}=${value}; ${attributes}`;
       if (typeof globalThis.document === 'undefined') {
-        const applied = appendPendingResponseHeader('Set-Cookie', cookieString);
+        const applied = writePendingResponseHeader('Set-Cookie', cookieString);
         if (!applied) {
           warnDiagnostic('PERSISTENCE_COOKIE_WRITER_MISSING', undefined);
         }

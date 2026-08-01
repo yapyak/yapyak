@@ -168,7 +168,7 @@ const CONTENT: Record<
 test('renders English content for the default locale', async ({ page }) => {
   await page.goto('/');
 
-  await expectContent(page, 'en');
+  await validateContent(page, 'en');
 });
 
 test('renders Swedish content when Swedish is clicked', async ({
@@ -185,7 +185,7 @@ test('renders Swedish content when Swedish is clicked', async ({
       .first(),
   );
 
-  await expectContent(page, 'sv');
+  await validateContent(page, 'sv');
 });
 
 test('preserves the locale when the page reloads', async ({
@@ -214,9 +214,9 @@ test('preserves the locale when the page reloads', async ({
 
 test('renders Swedish content when the server switch is clicked', async ({
   page,
-  serverSwitch,
+  switchLocaleOnServer,
 }) => {
-  test.skip(!serverSwitch);
+  test.skip(!switchLocaleOnServer);
 
   await page.goto('/');
   await setSwedishLocale(
@@ -236,10 +236,10 @@ test('renders Swedish content for `/sv`', async ({ page, persistence }) => {
 
   await page.goto('/sv');
 
-  await expectContent(page, 'sv');
+  await validateContent(page, 'sv');
 });
 
-async function expectContent(page: Page, locale: 'en' | 'sv'): Promise<void> {
+async function validateContent(page: Page, locale: 'en' | 'sv'): Promise<void> {
   const { heading, strongs, texts } = CONTENT[locale];
   await expect(
     page.getByRole('heading', {

@@ -27,10 +27,10 @@ export async function fetchWithRetry(
       nextBackoffMs = undefined;
     }
     const controller = new AbortController();
-    const onAbort = (): void => controller.abort();
+    const handleAbort = (): void => controller.abort();
     if (outerSignal) {
       outerSignal.throwIfAborted();
-      outerSignal.addEventListener('abort', onAbort, {
+      outerSignal.addEventListener('abort', handleAbort, {
         once: true,
       });
     }
@@ -63,7 +63,7 @@ export async function fetchWithRetry(
       }
     } finally {
       clearTimeout(timeoutId);
-      outerSignal?.removeEventListener('abort', onAbort);
+      outerSignal?.removeEventListener('abort', handleAbort);
     }
   }
   throw lastError ?? new Error('fetchWithRetry: exhausted retries');
@@ -119,21 +119,21 @@ function getBackoffMs(attempt: number): number {
   return Math.min(MAX_BACKOFF_MS, exponential * jitterFactor);
 }
 
-function delay(ms: number, signal?: AbortSignal): Promise<void> {
+function delay(milliseconds: number, signal?: AbortSignal): Promise<void> {
   return new Promise((resolve, reject) => {
     if (signal?.aborted) {
       reject(signal.reason);
       return;
     }
-    const onAbort = (): void => {
+    const handleAbort = (): void => {
       clearTimeout(timer);
       reject(signal?.reason);
     };
     const timer = setTimeout(() => {
-      signal?.removeEventListener('abort', onAbort);
+      signal?.removeEventListener('abort', handleAbort);
       resolve();
-    }, ms);
-    signal?.addEventListener('abort', onAbort, {
+    }, milliseconds);
+    signal?.addEventListener('abort', handleAbort, {
       once: true,
     });
   });

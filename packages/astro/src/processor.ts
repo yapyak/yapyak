@@ -89,7 +89,7 @@ export function astro(): Processor {
       }
       const ast = parse(source).ast as AstroRoot;
       return [
-        frontmatterFragment(ast.frontmatter, source),
+        fragmentsFromFrontmatter(ast.frontmatter, source),
         ...ast.body.flatMap((node) => fragmentsFromBodyNode(node, source)),
       ];
     },
@@ -97,7 +97,7 @@ export function astro(): Processor {
   });
 }
 
-function frontmatterFragment(
+function fragmentsFromFrontmatter(
   frontmatter: AstroFrontmatter,
   source: string,
 ): Fragment {
@@ -235,7 +235,7 @@ function fragmentsFromAttribute(
     range === undefined
       ? undefined
       : {
-          attributeName: attributeNameString(attribute.name),
+          attributeName: readAttributeName(attribute.name),
           mode: 'attribute',
           range: rangeFromOffsets(source, range.start, range.end),
         },
@@ -243,7 +243,7 @@ function fragmentsFromAttribute(
   );
 }
 
-function attributeNameString(name: JSXIdentifier | JSXNamespacedName): string {
+function readAttributeName(name: JSXIdentifier | JSXNamespacedName): string {
   return name.type === 'JSXIdentifier'
     ? name.name
     : `${name.namespace.name}:${name.name.name}`;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { appendPendingResponseHeader } from '../persistence';
+import { writePendingResponseHeader } from '../persistence';
 import { createStorage } from './storage';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
@@ -20,7 +20,7 @@ describe('createStorage', () => {
     const responseHeaders = new Headers();
     let applied = false;
     storage.headers.run(responseHeaders, () => {
-      applied = appendPendingResponseHeader('Set-Cookie', 'locale=sv');
+      applied = writePendingResponseHeader('Set-Cookie', 'locale=sv');
     });
 
     expect(applied).toBe(true);
@@ -30,6 +30,6 @@ describe('createStorage', () => {
   it('writes no pending header when called outside a request scope', () => {
     createStorage();
 
-    expect(appendPendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
+    expect(writePendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
   });
 });

@@ -10,7 +10,7 @@ export function resetResponseHeaderWriter(): void {
   responseHeaderWriter = undefined;
 }
 
-export function appendPendingResponseHeader(
+export function writePendingResponseHeader(
   name: string,
   value: string,
 ): boolean {

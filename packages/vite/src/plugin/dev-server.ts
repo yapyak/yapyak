@@ -137,7 +137,7 @@ export function createDevServerPlugin(state: State): Plugin {
               continue;
             }
             previousLocaleData.set(locale, after);
-            const localePatches = derivePatches(before, after, locale);
+            const localePatches = buildPatches(before, after, locale);
             for (const patch of localePatches) {
               if (
                 skipHmrExtensions.some((extension) =>
@@ -387,7 +387,7 @@ function isTranslated(localeFile: LocaleFile): boolean {
   return hasTranslations;
 }
 
-export function derivePatches(
+export function buildPatches(
   before: LocaleFile,
   after: LocaleFile,
   locale: string,
@@ -437,7 +437,7 @@ function walkEntry(
         fileId,
         id: toMessageKey(source),
         locale,
-        value: compileLocaleValue(afterEntry),
+        value: parseLocaleValue(afterEntry),
       });
     }
     return;
@@ -466,7 +466,7 @@ function walkEntry(
             fileId,
             id: toMessageKey(source, context),
             locale,
-            value: compileLocaleValue(afterValue),
+            value: parseLocaleValue(afterValue),
           });
         }
       } else if (afterValue === undefined && typeof beforeValue === 'string') {
@@ -500,7 +500,7 @@ function walkEntry(
   }
 }
 
-function compileLocaleValue(raw: string): string | Template {
+function parseLocaleValue(raw: string): string | Template {
   const { template } = parseTemplate(raw);
   if (template.length === 0) {
     return '';

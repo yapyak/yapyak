@@ -100,13 +100,13 @@ export async function translate(
   const startedAt = Date.now();
 
   const controller = new AbortController();
-  const onSigint = (): void => {
+  const handleSigint = (): void => {
     wasAborted = true;
     controller.abort(new Error('Translate cancelled by SIGINT.'));
   };
-  process.once('SIGINT', onSigint);
+  process.once('SIGINT', handleSigint);
 
-  const onProgress = (count: number): void => {
+  const handleProgress = (count: number): void => {
     done += count;
     activeSpinner.update(
       `${color.bold(`${done}/${stubsToFill.length}`)} ${color.dim('·')} ${progressBar(done, stubsToFill.length, 24)}`,
@@ -120,7 +120,7 @@ export async function translate(
     const result = await autoTranslate(
       {
         messages: report.messages,
-        translator: withProgress(translator, onProgress),
+        translator: withProgress(translator, handleProgress),
       },
       {
         defaultLocale: report.defaultLocale,
@@ -140,7 +140,7 @@ export async function translate(
     failed += result.errors.length;
     allErrors.push(...result.errors);
   } finally {
-    process.off('SIGINT', onSigint);
+    process.off('SIGINT', handleSigint);
     activeSpinner.stop();
   }
 

@@ -6,7 +6,7 @@ let patch:
     }
   | undefined;
 
-function dispatch(): void {
+function runListeners(): void {
   for (const listener of listeners) {
     listener();
   }
@@ -26,13 +26,13 @@ export function subscribeHistory(onChange: () => void): () => void {
       ...args: Parameters<typeof window.history.pushState>
     ): void => {
       originalPushState(...args);
-      dispatch();
+      runListeners();
     };
     window.history.replaceState = (
       ...args: Parameters<typeof window.history.replaceState>
     ): void => {
       originalReplaceState(...args);
-      dispatch();
+      runListeners();
     };
   }
   window.addEventListener('popstate', onChange);

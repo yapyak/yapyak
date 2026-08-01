@@ -96,7 +96,7 @@ export function createTranslator(input: CreateTranslatorInput): Translator {
 
     const chunkResults: LocaleTranslations[][] = new Array(chunks.length);
     let cursor = 0;
-    async function worker(): Promise<void> {
+    async function runWorker(): Promise<void> {
       while (cursor < chunks.length) {
         const myIndex = cursor;
         cursor += 1;
@@ -132,7 +132,7 @@ export function createTranslator(input: CreateTranslatorInput): Translator {
         {
           length: workerCount,
         },
-        () => worker(),
+        () => runWorker(),
       ),
     );
 

@@ -1,10 +1,10 @@
 // biome-ignore lint/suspicious/noControlCharactersInRegex: yap yap yap
 const stripAnsi = (value: string): string => value.replace(/\x1b\[\d+m/g, '');
 
-const visualLength = (value: string): number => stripAnsi(value).length;
+const getVisualLength = (value: string): number => stripAnsi(value).length;
 
 const padEndVisual = (value: string, width: number): string => {
-  const length = visualLength(value);
+  const length = getVisualLength(value);
   return length >= width ? value : value + ' '.repeat(width - length);
 };
 
@@ -19,9 +19,9 @@ export function renderTable(
 ): string {
   const align = options?.align ?? [];
   const widths = headers.map((header, columnIndex) => {
-    const headerWidth = visualLength(header);
+    const headerWidth = getVisualLength(header);
     const maxRowWidth = rows.reduce(
-      (max, row) => Math.max(max, visualLength(row[columnIndex] ?? '')),
+      (max, row) => Math.max(max, getVisualLength(row[columnIndex] ?? '')),
       0,
     );
     return Math.max(headerWidth, maxRowWidth);
@@ -31,7 +31,7 @@ export function renderTable(
     const padded = cells.map((cell, columnIndex) => {
       const width = widths[columnIndex] ?? 0;
       const alignment = align[columnIndex] ?? 'left';
-      const length = visualLength(cell);
+      const length = getVisualLength(cell);
       if (alignment === 'right') {
         return ' '.repeat(Math.max(0, width - length)) + cell;
       }

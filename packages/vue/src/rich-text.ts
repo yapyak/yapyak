@@ -100,10 +100,11 @@ function renderNodes(
     }
     const slot = slots[node.name];
     if (slot) {
-      const children = (): VNodeChild[] => renderNodes(node.children, slots);
+      const renderChildren = (): VNodeChild[] =>
+        renderNodes(node.children, slots);
       out.push(
         ...slot({
-          children,
+          children: renderChildren,
         }),
       );
       continue;

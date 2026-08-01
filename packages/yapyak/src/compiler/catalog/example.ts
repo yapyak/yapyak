@@ -56,7 +56,7 @@ function candidatesFromLocaleData(input: ExtractExamplesInput): Candidate[] {
         }
         candidates.push({
           fileId,
-          score: similarity(input.source, source),
+          score: getSimilarity(input.source, source),
           source,
           translation: value,
         });
@@ -80,7 +80,7 @@ function candidatesFromOrphans(input: ExtractExamplesInput): Candidate[] {
       const source = fromMessageKey(key).source;
       candidates.push({
         fileId,
-        score: similarity(input.source, source),
+        score: getSimilarity(input.source, source),
         source,
         translation,
       });
@@ -131,17 +131,17 @@ function toExample(candidate: Candidate): TranslationExample {
   };
 }
 
-function similarity(a: string, b: string): number {
-  if (a === b) {
+function getSimilarity(source: string, candidateSource: string): number {
+  if (source === candidateSource) {
     return 1;
   }
-  const wordsA = tokenize(a);
-  const wordsB = tokenize(b);
-  if (wordsA.length === 0 || wordsB.length === 0) {
+  const sourceWords = tokenize(source);
+  const candidateWords = tokenize(candidateSource);
+  if (sourceWords.length === 0 || candidateWords.length === 0) {
     return 0;
   }
-  const distance = wordLevenshtein(wordsA, wordsB);
-  const maxLength = Math.max(wordsA.length, wordsB.length);
+  const distance = getWordLevenshteinDistance(sourceWords, candidateWords);
+  const maxLength = Math.max(sourceWords.length, candidateWords.length);
   return 1 - distance / maxLength;
 }
 
@@ -153,28 +153,36 @@ function tokenize(text: string): string[] {
     .filter((word) => word.length > 0);
 }
 
-function wordLevenshtein(a: string[], b: string[]): number {
-  if (a.length === 0) {
-    return b.length;
+function getWordLevenshteinDistance(
+  sourceWords: string[],
+  targetWords: string[],
+): number {
+  if (sourceWords.length === 0) {
+    return targetWords.length;
   }
-  if (b.length === 0) {
-    return a.length;
+  if (targetWords.length === 0) {
+    return sourceWords.length;
   }
   let previous: number[] = Array.from(
     {
-      length: b.length + 1,
+      length: targetWords.length + 1,
     },
     (_, index) => index,
   );
-  let current: number[] = new Array(b.length + 1).fill(0);
-  for (let aIndex = 1; aIndex <= a.length; aIndex++) {
-    current[0] = aIndex;
-    for (let bIndex = 1; bIndex <= b.length; bIndex++) {
-      const cost = a[aIndex - 1] === b[bIndex - 1] ? 0 : 1;
-      current[bIndex] = Math.min(
-        (current[bIndex - 1] ?? 0) + 1,
-        (previous[bIndex] ?? 0) + 1,
-        (previous[bIndex - 1] ?? 0) + cost,
+  let current: number[] = new Array(targetWords.length + 1).fill(0);
+  for (let sourceIndex = 1; sourceIndex <= sourceWords.length; sourceIndex++) {
+    current[0] = sourceIndex;
+    for (
+      let targetIndex = 1;
+      targetIndex <= targetWords.length;
+      targetIndex++
+    ) {
+      const cost =
+        sourceWords[sourceIndex - 1] === targetWords[targetIndex - 1] ? 0 : 1;
+      current[targetIndex] = Math.min(
+        (current[targetIndex - 1] ?? 0) + 1,
+        (previous[targetIndex] ?? 0) + 1,
+        (previous[targetIndex - 1] ?? 0) + cost,
       );
     }
     [previous, current] = [
@@ -182,5 +190,5 @@ function wordLevenshtein(a: string[], b: string[]): number {
       previous,
     ];
   }
-  return previous[b.length] ?? 0;
+  return previous[targetWords.length] ?? 0;
 }

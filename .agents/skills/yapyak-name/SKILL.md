@@ -518,18 +518,32 @@ Closed list. Every function starts with one of these (or follows a documented ex
 | `inject*` | Insert generated code into existing source | `injectComponentHooks()` |
 | `try*` | Attempt — returns result or `undefined` | `tryBareElision()` |
 | `apply*` | Apply a set of changes/patches | `applyPatches()` |
+| `classify*` | Assign an item to a category | `classifyExportKind()` |
+| `close*` | Exit an open state | `close()` |
 | `collect*` | Gather items into a result set | `collectExports()` |
+| `compare*` | Order two values for a sort | `compareKeys(a, b)` |
 | `count*` | Tally occurrences | `countReferences()` |
+| `dedent*` | Strip common leading indentation | `dedentTerminalLines()` |
+| `dedupe*` | Drop duplicate entries from a collection | `dedupeStubs()` |
 | `emit*` | Produce derived output/diagnostics | `emitPersistenceConfig()` |
 | `expand*` | Expand a source into parts | `expandModuleEntries()` |
 | `filter*` | Narrow a collection by predicate | `filterAdaptersByFramework()` |
+| `flush*` | Emit buffered items and clear the buffer | `flushPending()` |
+| `handle*` | Local event listener; `on*` is reserved for event props | `handleClick()` |
 | `interpret*` | Evaluate a parsed structure | `interpretNode()` |
 | `mark*` | Tag/annotate tokens in place | `markTaggedTemplates()` |
+| `measure*` | Read layout geometry from the DOM | `measure()` |
+| `open*` | Enter an open state | `open()` |
 | `print*` | Write formatted output to a stream | `printHelp()` |
+| `save*` | Persist state for a later restore | `saveCurrentPosition()` |
 | `scan*` | Sweep source/tokens linearly | `scanToken()` |
 | `skip*` | Advance past a span | `skipBalancedBraces()` |
 | `sort*` | Order a collection | `sortKeys()` |
 | `split*` | Divide into parts | `splitAtDepthZero()` |
+| `start*` / `stop*` | Begin/end a repeating process | `startGlobalObservers()` |
+| `throw*` | Construct and throw — returns `never` | `throwNotCompiled()` |
+| `toggle*` | Flip a binary state | `toggle()` |
+| `tokenize*` | Split source text into tokens | `tokenizeJson()` |
 
 #### Getter noun mirrors the return type
 

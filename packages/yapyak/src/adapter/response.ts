@@ -51,15 +51,15 @@ export function withResponse<T>(
       const result = await handler();
       const response =
         extractResponse === undefined
-          ? requireResponse(result)
+          ? validateResponse(result)
           : extractResponse(result);
-      drainPendingResponseHeaders(response.headers);
+      mergePendingResponseHeaders(response.headers);
       return result;
     }),
   );
 }
 
-function requireResponse<T>(result: T): Response {
+function validateResponse<T>(result: T): Response {
   if (result instanceof Response) {
     return result;
   }
@@ -68,7 +68,7 @@ function requireResponse<T>(result: T): Response {
   );
 }
 
-function drainPendingResponseHeaders(target: Headers): void {
+function mergePendingResponseHeaders(target: Headers): void {
   const buffer = createStorage().headers.getStore();
   if (buffer === undefined) {
     return;

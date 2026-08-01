@@ -6,8 +6,8 @@ import { toMessageKey } from 'yapyak/compiler/internal';
 import { normalizeYapyakConfig } from 'yapyak/config/internal';
 
 import {
+  buildPatches,
   createDevServerPlugin,
-  derivePatches,
   toExtractedKeysForFile,
 } from './dev-server';
 import { createState } from './state';
@@ -182,18 +182,18 @@ describe('createDevServerPlugin', () => {
   });
 });
 
-describe('derivePatches', () => {
+describe('buildPatches', () => {
   it('returns no patches when before and after match', () => {
     const file = {
       'src/a.tsx': {
         Hello: 'Hej',
       },
     };
-    expect(derivePatches(file, file, 'sv')).toEqual([]);
+    expect(buildPatches(file, file, 'sv')).toEqual([]);
   });
 
   it('emits a patch when a simple value changes', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {
         'src/a.tsx': {
           Hello: 'Hej',
@@ -220,7 +220,7 @@ describe('derivePatches', () => {
   });
 
   it('emits a patch when a source key is new', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {},
       {
         'src/a.tsx': {
@@ -243,7 +243,7 @@ describe('derivePatches', () => {
   });
 
   it('emits a context-keyed patch when a context-variant value changes', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {
         'src/a.tsx': {
           Save: {
@@ -274,7 +274,7 @@ describe('derivePatches', () => {
   });
 
   it('emits a Template patch when the value holds an ICU placeholder', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {},
       {
         'src/a.tsx': {
@@ -296,7 +296,7 @@ describe('derivePatches', () => {
   });
 
   it('emits a context-keyed patch when a context map is new', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {},
       {
         'src/a.tsx': {
@@ -328,11 +328,11 @@ describe('derivePatches', () => {
         },
       },
     };
-    expect(derivePatches(file, file, 'sv')).toEqual([]);
+    expect(buildPatches(file, file, 'sv')).toEqual([]);
   });
 
   it('emits an empty-string patch when a context variant is removed', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {
         'src/a.tsx': {
           Open: {
@@ -364,7 +364,7 @@ describe('derivePatches', () => {
   });
 
   it('emits an empty-string patch when a context map is removed', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {
         'src/a.tsx': {
           Open: {
@@ -389,7 +389,7 @@ describe('derivePatches', () => {
   });
 
   it('emits an empty-string plain-key patch when an entry becomes a context map', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {
         'src/a.tsx': {
           Open: 'Öppna',
@@ -427,7 +427,7 @@ describe('derivePatches', () => {
   });
 
   it('emits empty-string context patches when an entry becomes a plain string', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {
         'src/a.tsx': {
           Open: {
@@ -475,7 +475,7 @@ describe('derivePatches', () => {
   });
 
   it('emits an empty-string patch when the value is an empty stub', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {},
       {
         'src/a.tsx': {
@@ -498,7 +498,7 @@ describe('derivePatches', () => {
   });
 
   it('emits an empty-string patch when a source key is removed', () => {
-    const patches = derivePatches(
+    const patches = buildPatches(
       {
         'src/a.tsx': {
           Save: 'Spara',

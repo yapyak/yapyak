@@ -109,7 +109,7 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
           buildDiagnostic(
             'CATALOG_INVALID_SHAPE',
             {
-              detail: entryErrorMessage(error, pathKey, source),
+              detail: formatEntryErrorMessage(error, pathKey, source),
             },
             stubContext,
           ),
@@ -150,7 +150,7 @@ export function validateLocaleFile(fileId: string, path: string): Diagnostic[] {
   return diagnostics;
 }
 
-function entryErrorMessage(
+function formatEntryErrorMessage(
   error: ParseEntryError,
   pathKey: string,
   source: string,

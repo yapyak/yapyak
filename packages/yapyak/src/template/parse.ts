@@ -305,7 +305,7 @@ function parseTokenBody(
       context,
     );
   }
-  const bodyRange = trimmedRange(context.source, bodyStart, innerEnd);
+  const bodyRange = getTrimmedRange(context.source, bodyStart, innerEnd);
   if (kind === 'number') {
     return buildNumberNode(
       {
@@ -336,7 +336,7 @@ function parseTokenBody(
   context.diagnostics.push({
     kind: 'malformed',
     message: `unknown argument type "${kind}"`,
-    range: trimmedRange(context.source, afterName, kindEnd),
+    range: getTrimmedRange(context.source, afterName, kindEnd),
   });
   return {
     kind: 'placeholder',
@@ -616,7 +616,7 @@ function isWhitespace(character: string | undefined): boolean {
   );
 }
 
-function trimmedRange(
+function getTrimmedRange(
   source: string,
   start: number,
   end: number,

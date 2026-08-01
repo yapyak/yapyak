@@ -264,7 +264,7 @@ Three-tier rule.
 // ✓
 const localesDir = config.localesDir ?? 'locales';
 const temperature = options.temperature ?? 0.2;   // 0 passes through
-const enabled = options.enabled ?? true;          // false passes through
+const shouldApplyInMemory = persistence?.set(value) ?? true;   // false passes through
 ```
 
 `??` triggers only on `null`/`undefined`. Always prefer over `||` for defaults.
@@ -327,14 +327,17 @@ function transformSource(code, options): TransformResult { ... }
 
 ### Never re-declare upstream types
 
-If an upstream package exports a type, import it. Never re-declare it locally.
+If a runtime or peer dependency exports a type, import it. Never re-declare it locally. A devDependency-only upstream is never imported at runtime → declare the shape locally.
 
 ```ts
-// ✗ Wrong
-type FilterPattern = string | RegExp | (string | RegExp)[] | null;
+// ✗ Wrong — vite is a peer dependency of @yapyak/vite
+type Plugin = { name: string; enforce?: 'pre' | 'post' };
 
 // ✓ Right
-import type { FilterPattern } from 'vite';
+import type { Plugin } from 'vite';
+
+// ✓ Right — vite is devDependency-only in yapyak; local shape, no import
+export type FilterPattern = string | RegExp | (string | RegExp)[];
 ```
 
 ### Prefer `===` over `!==`
@@ -386,7 +389,7 @@ Wrap in an arrow only when the function has more arguments, optional parameters 
 
 ### Error classes
 
-Custom error types extend `Error` directly, set `this.name` explicitly, use ES2022 `cause` for wrapped errors.
+Custom error types extend `Error` — directly, or via one domain base class that extends `Error` — set `this.name` explicitly, and use ES2022 `cause` for wrapped errors.
 
 ```ts
 export class ValidationError extends Error {
@@ -421,7 +424,7 @@ Applies to `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval`, `reques
 
 ### Language atoms
 
-- `readonly` is forbidden. Not in types, not in array types, not on class properties. `ReadonlyMap<K, V>` and `ReadonlySet<T>` are also forbidden.
+- `readonly` is forbidden in types and array types. Exception: class properties assigned only in the constructor — Biome's `useReadonlyClassProperties` requires the modifier there. `Readonly<T>`, `ReadonlyMap<K, V>`, and `ReadonlySet<T>` are forbidden.
 - `Array<T>` and `ReadonlyArray<T>` are forbidden. Use `T[]`. For unions and function types, wrap in parens: `(string | RegExp)[]`, `(() => void)[]`.
 - `as unknown as` is forbidden. Fix the type.
 - `as` to narrow to a literal union is forbidden. Write an `is*` typeguard.

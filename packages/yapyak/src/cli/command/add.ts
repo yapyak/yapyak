@@ -151,17 +151,17 @@ export async function add(
   let wasAborted = false;
 
   const controller = new AbortController();
-  const onSigint = (): void => {
+  const handleSigint = (): void => {
     wasAborted = true;
     controller.abort(new Error('Add cancelled by SIGINT.'));
   };
-  process.once('SIGINT', onSigint);
+  process.once('SIGINT', handleSigint);
 
   const activeSpinner = spinner(
     `Translating ${color.bold(String(totalMissing))} strings…`,
   );
   let done = 0;
-  const onProgress = (count: number): void => {
+  const handleProgress = (count: number): void => {
     done += count;
     activeSpinner.update(
       `${color.bold(`${done}/${totalMissing}`)} ${color.dim('·')} ${progressBar(done, totalMissing, 24)}`,
@@ -173,7 +173,7 @@ export async function add(
     const result = await autoTranslate(
       {
         messages: report.messages,
-        translator: withProgress(translator, onProgress),
+        translator: withProgress(translator, handleProgress),
       },
       {
         defaultLocale: report.defaultLocale,
@@ -193,7 +193,7 @@ export async function add(
     totalFailed = result.errors.length;
     allErrors.push(...result.errors);
   } finally {
-    process.off('SIGINT', onSigint);
+    process.off('SIGINT', handleSigint);
     activeSpinner.stop();
   }
 

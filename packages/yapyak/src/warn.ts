@@ -1,6 +1,6 @@
 export type WarnFn = (message: string, meta?: Record<string, unknown>) => void;
 
-let active: WarnFn = defaultWarn;
+let active: WarnFn = warnToConsole;
 
 export function warn(message: string, meta?: Record<string, unknown>): void {
   active(message, meta);
@@ -11,10 +11,10 @@ export function setWarn(warn: WarnFn): void {
 }
 
 export function resetWarn(): void {
-  active = defaultWarn;
+  active = warnToConsole;
 }
 
-function defaultWarn(message: string, meta?: Record<string, unknown>): void {
+function warnToConsole(message: string, meta?: Record<string, unknown>): void {
   if (typeof process !== 'undefined') {
     const nodeEnv = process.env.NODE_ENV;
     if (nodeEnv === 'production' || nodeEnv === 'test') {

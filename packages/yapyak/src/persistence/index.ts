@@ -9,7 +9,7 @@ export type {
 
 export { buildPersistence } from './build';
 export {
-  appendPendingResponseHeader,
   setResponseHeaderWriter,
+  writePendingResponseHeader,
 } from './pending-response-header';
 export { readRequest, setRequestReader } from './request';

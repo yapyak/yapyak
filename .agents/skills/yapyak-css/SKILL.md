@@ -131,7 +131,7 @@ The component's root class is just the component name (no Role, no ElementType s
   - ✗ `.Description` (must be `.DescriptionParagraph`)
   - ✗ `.Title` (must be `.NameHeading`, `.PageHeading`, etc.)
 - Semantic group names without ElementType: `.Actions`, `.Meta`, `.Info`, `.Details`, `.Body`
-- Fantasy suffixes not in vocab: `.Container`, `.Inner`, `.Outer`, `.Group`, `.Block`, `.Panel`, `.Holder`
+- Fantasy suffixes not in vocab: `.Container`, `.Inner`, `.Outer`, `.Panel`, `.Holder`
 
 If no rule matches unambiguously, the structure is wrong, not the name. Fix the structure.
 

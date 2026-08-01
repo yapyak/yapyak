@@ -90,7 +90,7 @@ export function renderCallReplacement(
   const hasPlaceholders = placeholders.length > 0;
   const nested = input.nestedReplacements ?? [];
   const paramsExpressionText = hasPlaceholders
-    ? getParamArgText(callSite, nested)
+    ? getParamArgumentText(callSite, nested)
     : undefined;
   const localeExpression = callSite.localeExpression;
   const localeText = localeExpression
@@ -301,7 +301,7 @@ function parseKey(inner: string): string | undefined {
   return match?.[1];
 }
 
-function getParamArgText(
+function getParamArgumentText(
   callSite: ParsedCallSite,
   nested: NestedReplacement[],
 ): string | undefined {

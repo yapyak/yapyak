@@ -143,33 +143,33 @@ function renderNode(
   usedFactories: Set<string>,
   localsByFactory: Map<string, string>,
 ): string {
-  const localFor = (factory: string): string =>
+  const getLocalName = (factory: string): string =>
     localsByFactory.get(factory) ?? `_${factory}`;
   switch (node.kind) {
     case 'literal':
       usedFactories.add('literal');
-      return `${localFor('literal')}(${JSON.stringify(node.value)})`;
+      return `${getLocalName('literal')}(${JSON.stringify(node.value)})`;
     case 'placeholder':
       usedFactories.add('placeholder');
-      return `${localFor('placeholder')}(${JSON.stringify(node.name)})`;
+      return `${getLocalName('placeholder')}(${JSON.stringify(node.name)})`;
     case 'count':
       usedFactories.add('count');
-      return `${localFor('count')}()`;
+      return `${getLocalName('count')}()`;
     case 'plural':
       usedFactories.add('plural');
-      return `${localFor('plural')}(${JSON.stringify(node.name)},${JSON.stringify(node.pluralKind)},${renderBranches(node.branches, usedFactories, localsByFactory)})`;
+      return `${getLocalName('plural')}(${JSON.stringify(node.name)},${JSON.stringify(node.pluralKind)},${renderBranches(node.branches, usedFactories, localsByFactory)})`;
     case 'select':
       usedFactories.add('select');
-      return `${localFor('select')}(${JSON.stringify(node.name)},${renderBranches(node.branches, usedFactories, localsByFactory)})`;
+      return `${getLocalName('select')}(${JSON.stringify(node.name)},${renderBranches(node.branches, usedFactories, localsByFactory)})`;
     case 'number':
       usedFactories.add('number');
-      return `${localFor('number')}(${JSON.stringify(node.name)},${JSON.stringify(node.options)})`;
+      return `${getLocalName('number')}(${JSON.stringify(node.name)},${JSON.stringify(node.options)})`;
     case 'date':
       usedFactories.add('date');
-      return `${localFor('date')}(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
+      return `${getLocalName('date')}(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
     case 'time':
       usedFactories.add('time');
-      return `${localFor('time')}(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
+      return `${getLocalName('time')}(${JSON.stringify(node.name)},${JSON.stringify(node.style)})`;
     default:
       return '';
   }

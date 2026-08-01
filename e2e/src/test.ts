@@ -2,7 +2,7 @@ import { test as base, expect } from '@playwright/test';
 
 export type ExampleOptions = {
   persistence: 'cookie' | 'local-storage' | 'url';
-  serverSwitch: boolean;
+  switchLocaleOnServer: boolean;
 };
 
 export const test = base.extend<ExampleOptions>({
@@ -25,7 +25,7 @@ export const test = base.extend<ExampleOptions>({
       option: true,
     },
   ],
-  serverSwitch: [
+  switchLocaleOnServer: [
     false,
     {
       option: true,

@@ -130,13 +130,13 @@ export async function retranslate(
   const startedAt = Date.now();
 
   const controller = new AbortController();
-  const onSigint = (): void => {
+  const handleSigint = (): void => {
     wasAborted = true;
     controller.abort(new Error('Retranslate cancelled by SIGINT.'));
   };
-  process.once('SIGINT', onSigint);
+  process.once('SIGINT', handleSigint);
 
-  const onProgress = (count: number): void => {
+  const handleProgress = (count: number): void => {
     done += count;
     activeSpinner.update(
       `${color.bold(`${done}/${total}`)} ${color.dim('·')} ${progressBar(done, total, 24)}`,
@@ -147,7 +147,7 @@ export async function retranslate(
     const result = await autoTranslate(
       {
         messages: matching,
-        translator: withProgress(translator, onProgress),
+        translator: withProgress(translator, handleProgress),
       },
       {
         defaultLocale: report.defaultLocale,
@@ -167,7 +167,7 @@ export async function retranslate(
     failed += result.errors.length;
     allErrors.push(...result.errors);
   } finally {
-    process.off('SIGINT', onSigint);
+    process.off('SIGINT', handleSigint);
     activeSpinner.stop();
   }
 
