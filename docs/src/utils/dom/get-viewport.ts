@@ -1,5 +1,4 @@
-import { Viewport } from '#utils/geometry';
-
+import { Viewport } from '../geometry';
 import { getWindow } from './get-window';
 
 export function getViewport(element?: Element) {

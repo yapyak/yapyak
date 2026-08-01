@@ -1,10 +1,10 @@
 import type { Ref } from 'react';
 import type { Props } from '#types';
 
-import { mergeClassNames } from '#utils/merge-class-names';
-import { mergeEvents } from '#utils/merge-events';
-import { mergeRefs } from '#utils/merge-refs';
-import { mergeStyles } from '#utils/merge-styles';
+import { mergeClassNames } from './merge-class-names';
+import { mergeEvents } from './merge-events';
+import { mergeRefs } from './merge-refs';
+import { mergeStyles } from './merge-styles';
 
 type Prettify<T> = { [K in keyof T]: T[K] } & {};
 

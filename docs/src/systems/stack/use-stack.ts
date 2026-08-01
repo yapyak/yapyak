@@ -1,7 +1,6 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 
-import { useAnimateContext } from '#systems/animate';
-
+import { useAnimateContext } from '../animate';
 import { useStackContext } from './use-stack-context';
 
 export type UseStackOptions = {

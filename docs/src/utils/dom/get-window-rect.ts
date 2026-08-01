@@ -1,5 +1,4 @@
-import { Rect } from '#utils/geometry';
-
+import { Rect } from '../geometry';
 import { getWindow } from './get-window';
 
 export function getWindowRect(element?: Element) {

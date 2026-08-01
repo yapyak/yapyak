@@ -1,4 +1,4 @@
-import { Rect } from '#utils/geometry';
+import { Rect } from '../geometry';
 
 export function getRect(element: Element) {
   const { height, width, x, y } = element.getBoundingClientRect();
