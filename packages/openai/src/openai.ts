@@ -144,8 +144,8 @@ export function openai(options: OpenAIOptions): Translator {
     concurrency,
     context,
     id: 'openai',
-    translate: async (params) => {
-      const { items, signal, sourceLocale, targetLocales } = params;
+    translate: async (request) => {
+      const { items, signal, sourceLocale, targetLocales } = request;
       const body: Record<string, unknown> = {
         messages: [
           {

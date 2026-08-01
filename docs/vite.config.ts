@@ -171,10 +171,11 @@ export default defineConfig({
       },
       collections: {
         guide: {
+          kind: 'markdown',
           root: resolve(import.meta.dirname, 'content/guide'),
-          source: 'markdown',
         },
         reference: {
+          kind: 'typescript',
           packages: REFERENCE_PACKAGES.map((pkg) => ({
             collapsible: pkg.collapsible ?? Boolean(pkg.group),
             group: pkg.group,
@@ -182,7 +183,6 @@ export default defineConfig({
             root: resolve(import.meta.dirname, `../packages/${pkg.dir}`),
             subpaths: pkg.subpaths,
           })),
-          source: 'typescript',
           supplements: [
             {
               collapsible: true,

@@ -63,8 +63,8 @@ describe('buildManifest', () => {
     const config: Config = {
       collections: {
         guide: {
+          kind: 'markdown',
           root,
-          source: 'markdown',
         },
       },
     };
@@ -90,8 +90,8 @@ describe('buildManifest', () => {
     const config: Config = {
       collections: {
         guide: {
+          kind: 'markdown',
           root,
-          source: 'markdown',
         },
       },
     };
@@ -110,13 +110,13 @@ describe('buildManifest', () => {
     const config: Config = {
       collections: {
         reference: {
+          kind: 'typescript',
           packages: [
             {
               name: 'yapyak',
               root,
             },
           ],
-          source: 'typescript',
         },
       },
     };
@@ -133,13 +133,13 @@ describe('buildManifest', () => {
     const config: Config = {
       collections: {
         reference: {
+          kind: 'typescript',
           packages: [
             {
               name: 'yapyak',
               root,
             },
           ],
-          source: 'typescript',
         },
       },
     };

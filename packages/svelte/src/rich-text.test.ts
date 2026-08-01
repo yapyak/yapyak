@@ -1,4 +1,4 @@
-import type { PairHandler, VoidHandler } from './rich-text';
+import type { PairFn, VoidFn } from './rich-text';
 
 import { render } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
@@ -19,7 +19,7 @@ describe('RichText', () => {
   it('binds every named tag to the matching handler', () => {
     const link = createRawSnippet(() => ({
       render: () => '<a href="/x">LINK</a>',
-    })) as unknown as PairHandler;
+    })) as unknown as PairFn;
     const props = {
       link,
       value: 'Click <link>here</link>.',
@@ -85,7 +85,7 @@ describe('RichText', () => {
   it('emits a void tag through its snippet', () => {
     const br = createRawSnippet(() => ({
       render: () => '<br/>',
-    })) as unknown as VoidHandler;
+    })) as unknown as VoidFn;
     const props = {
       br,
       value: 'Line one<br/>line two',

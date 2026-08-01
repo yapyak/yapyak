@@ -1,6 +1,7 @@
 import type {
   CatalogEntry,
   ExtractedMessage,
+  LocaleData,
   LocaleFile,
 } from '../../compiler/internal';
 import type { Config } from '../config';
@@ -23,8 +24,6 @@ export type ExportOptions = {
   out?: string;
   split: boolean;
 };
-
-type Snapshot = Record<string, LocaleFile>;
 
 export function exportCommand(
   config: Config,
@@ -81,9 +80,9 @@ export function exportCommand(
   }
 
   const variantsByFile = buildVariantsByFile(report.messages);
-  let snapshot: Snapshot;
+  let localeData: LocaleData;
   try {
-    snapshot = buildSnapshot(
+    localeData = buildLocaleData(
       report.defaultLocale,
       join(projectRoot, config.localesDir),
       targetLocales,
@@ -106,7 +105,7 @@ export function exportCommand(
         recursive: true,
       });
     }
-    for (const [locale, data] of Object.entries(snapshot)) {
+    for (const [locale, data] of Object.entries(localeData)) {
       const wrapped = {
         [locale]: data,
       };
@@ -116,12 +115,12 @@ export function exportCommand(
       );
     }
     process.stdout.write(
-      `  ${symbol.check} Exported ${color.bold(String(Object.keys(snapshot).length))} locale${Object.keys(snapshot).length === 1 ? '' : 's'} to ${color.bold(out as string)}/\n`,
+      `  ${symbol.check} Exported ${color.bold(String(Object.keys(localeData).length))} locale${Object.keys(localeData).length === 1 ? '' : 's'} to ${color.bold(out as string)}/\n`,
     );
     return 0;
   }
 
-  const payload = stringifyCanonical(snapshot);
+  const payload = stringifyCanonical(localeData);
   if (!out) {
     process.stdout.write(`${payload}\n`);
     return 0;
@@ -132,7 +131,7 @@ export function exportCommand(
   });
   writeFileSync(outPath, payload);
   process.stdout.write(
-    `  ${symbol.check} Wrote ${color.bold(out)} (${Object.keys(snapshot).length} locale${Object.keys(snapshot).length === 1 ? '' : 's'})\n`,
+    `  ${symbol.check} Wrote ${color.bold(out)} (${Object.keys(localeData).length} locale${Object.keys(localeData).length === 1 ? '' : 's'})\n`,
   );
   return 0;
 }
@@ -175,22 +174,22 @@ function buildVariantsByFile(
   return variantsByFile;
 }
 
-function buildSnapshot(
+function buildLocaleData(
   defaultLocale: string,
   localesDir: string,
   targetLocales: string[],
   variantsByFile: Map<string, ExportVariant[]>,
-): Snapshot {
-  const snapshot: Snapshot = {};
+): LocaleData {
+  const localeData: LocaleData = {};
   for (const locale of targetLocales) {
-    snapshot[locale] = buildLocaleFile(
+    localeData[locale] = buildLocaleFile(
       defaultLocale,
       locale,
       join(localesDir, `${locale}.json`),
       variantsByFile,
     );
   }
-  return snapshot;
+  return localeData;
 }
 
 function buildLocaleFile(

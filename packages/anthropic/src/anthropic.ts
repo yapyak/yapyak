@@ -134,8 +134,8 @@ export function anthropic(options: AnthropicOptions): Translator {
     concurrency,
     context,
     id: 'anthropic',
-    translate: async (params) => {
-      const { items, signal, sourceLocale, targetLocales } = params;
+    translate: async (request) => {
+      const { items, signal, sourceLocale, targetLocales } = request;
       const resolvedMaxTokens = resolveMaxTokens({
         cap: MAX_TOKENS_CAP,
         floor: MAX_TOKENS_FLOOR,

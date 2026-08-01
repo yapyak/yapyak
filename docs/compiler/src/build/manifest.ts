@@ -172,7 +172,7 @@ async function buildCollection(
   symbols: Record<string, SymbolEntry>,
   sourceUrl: SourceUrlConfig | undefined,
 ): Promise<Collection> {
-  if (config.source === 'markdown') {
+  if (config.kind === 'markdown') {
     return buildMarkdownCollection(collectionName, config.root);
   }
   return buildTypeScriptCollection(

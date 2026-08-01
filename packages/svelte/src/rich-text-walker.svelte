@@ -2,14 +2,14 @@
   import type { Snippet } from "svelte";
   import type { RichTextNode } from "yapyak";
 
-  import type { PairHandler, VoidHandler } from "./rich-text";
+  import type { PairFn, VoidFn } from "./rich-text";
   import RichTextWalker from "./rich-text-walker.svelte";
 
   let {
     handlers,
     nodes,
   }: {
-    handlers: Record<string, PairHandler | VoidHandler>;
+    handlers: Record<string, PairFn | VoidFn>;
     nodes: RichTextNode[];
   } = $props();
 </script>
@@ -19,12 +19,12 @@
     {node.value}
   {:else if node.type === "void"}
     {#if handlers[node.name]}
-      {@render (handlers[node.name] as VoidHandler)()}
+      {@render (handlers[node.name] as VoidFn)()}
     {:else}
       {`<${node.name}/>`}
     {/if}
   {:else if handlers[node.name]}
-    {@const handler = handlers[node.name] as PairHandler}
+    {@const handler = handlers[node.name] as PairFn}
     {#snippet children()}
       <RichTextWalker {handlers} nodes={node.children} />
     {/snippet}

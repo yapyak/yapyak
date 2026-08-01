@@ -28,12 +28,12 @@ export type CollectionConfig = MarkdownSource | TypeScriptSource;
 
 export type MarkdownSource = {
   root: string;
-  source: 'markdown';
+  kind: 'markdown';
 };
 
 export type TypeScriptSource = {
   packages: TypeScriptPackage[];
-  source: 'typescript';
+  kind: 'typescript';
   supplements?: Supplement[];
 };
 

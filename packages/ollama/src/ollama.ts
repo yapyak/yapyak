@@ -121,8 +121,8 @@ export function ollama(options: OllamaOptions = {}): Translator {
     concurrency,
     context,
     id: 'ollama',
-    translate: async (params) => {
-      const { items, signal, sourceLocale, targetLocales } = params;
+    translate: async (request) => {
+      const { items, signal, sourceLocale, targetLocales } = request;
       const resolvedMaxTokens = resolveMaxTokens({
         cap: MAX_TOKENS_CAP,
         floor: MAX_TOKENS_FLOOR,

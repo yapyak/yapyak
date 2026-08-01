@@ -115,8 +115,8 @@ describe('docCompiler', () => {
     return {
       collections: {
         guide: {
+          kind: 'markdown',
           root: markdownRoot,
-          source: 'markdown',
         },
       },
     };

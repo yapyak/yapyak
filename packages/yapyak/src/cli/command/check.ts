@@ -1,5 +1,6 @@
 import type { Diagnostic } from '../../compiler/internal';
 import type { Config } from '../config';
+import type { MissingEntry } from '../report';
 
 import {
   YAP_COMPILE,
@@ -10,13 +11,6 @@ import {
 import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
 import { join } from 'node:path';
-
-type MissingTranslation = {
-  context?: string;
-  fileId: string;
-  locale: string;
-  source: string;
-};
 
 export function check(config: Config, projectRoot: string): number {
   const report = buildReport({
@@ -76,7 +70,7 @@ export function check(config: Config, projectRoot: string): number {
   }
 
   if (report.missing.length > 0) {
-    const byLocale: Record<string, MissingTranslation[]> = {};
+    const byLocale: Record<string, MissingEntry[]> = {};
     for (const entry of report.missing) {
       const list = byLocale[entry.locale];
       if (list) {

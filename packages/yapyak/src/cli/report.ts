@@ -20,7 +20,7 @@ import { createFilter } from '../config/internal';
 import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
-type MissingEntry = {
+export type MissingEntry = {
   context?: string;
   fileId: string;
   locale: string;

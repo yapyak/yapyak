@@ -134,8 +134,8 @@ export function gemini(options: GeminiOptions): Translator {
     concurrency,
     context,
     id: 'gemini',
-    translate: async (params) => {
-      const { items, signal, sourceLocale, targetLocales } = params;
+    translate: async (request) => {
+      const { items, signal, sourceLocale, targetLocales } = request;
       const url = `${endpoint}/models/${model}:generateContent`;
       const resolvedMaxTokens = resolveMaxTokens({
         cap: MAX_TOKENS_CAP,

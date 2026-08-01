@@ -294,7 +294,7 @@ function invalidateVirtualModules(server: ViteDevServer) {
 function getWatchedDirectories(config: Config): string[] {
   const directories: string[] = [];
   for (const collection of Object.values(config.collections)) {
-    if (collection.source === 'markdown') {
+    if (collection.kind === 'markdown') {
       directories.push(resolve(collection.root));
     } else {
       for (const typescriptPackage of collection.packages) {
