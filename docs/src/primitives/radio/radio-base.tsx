@@ -2,7 +2,6 @@ import type { ChangeEvent } from 'react';
 import type { BoxProps } from '../box';
 
 import { Box } from '../box';
-import styles from './radio-base.module.css';
 import { useRadioGroupContext } from './radio-group-context';
 
 export type RadioBaseProps = Omit<BoxProps<'label'>, 'onChange'> & {
@@ -45,13 +44,18 @@ export function RadioBase(props: RadioBaseProps) {
         {...inputProps}
         as="input"
         checked={isChecked}
-        className={[
-          styles.Input,
-          inputProps?.className,
-        ]}
         disabled={isDisabled}
         name={group.name}
         onChange={handleInputChange}
+        style={[
+          {
+            cursor: 'inherit',
+            inset: 0,
+            opacity: 0,
+            position: 'absolute',
+          },
+          inputProps?.style,
+        ]}
         type="radio"
         value={value}
       />

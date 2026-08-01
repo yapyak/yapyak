@@ -1,8 +1,0 @@
-@layer primitives {
-  .Input {
-    position: absolute;
-    inset: 0;
-    cursor: inherit;
-    opacity: 0;
-  }
-}
