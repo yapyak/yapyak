@@ -123,16 +123,18 @@ export function InstallationWizardGroup(props: InstallationWizardGroupProps) {
 
   const indicatorStyle = indicator
     ? {
-        '--installation-wizard-indicator-height': `${indicator.height}px`,
-        '--installation-wizard-indicator-width': `${indicator.width}px`,
-        '--installation-wizard-indicator-x': `${indicator.x}px`,
-        '--installation-wizard-indicator-y': `${indicator.y}px`,
+        '--installation-wizard-group-indicator-height': `${indicator.height}px`,
+        '--installation-wizard-group-indicator-width': `${indicator.width}px`,
+        '--installation-wizard-group-indicator-x': `${indicator.x}px`,
+        '--installation-wizard-group-indicator-y': `${indicator.y}px`,
       }
     : undefined;
 
   return (
     <Box
       className={styles.InstallationWizardGroup}
+      data-animating={isAnimating}
+      data-ready={isReady}
       style={indicatorStyle}
     >
       <Box className={styles.Label}>{group.label}</Box>
@@ -142,7 +144,6 @@ export function InstallationWizardGroup(props: InstallationWizardGroupProps) {
         <RadioGroupBase
           aria-label={group.label}
           className={styles.RadioGroup}
-          data-animating={isAnimating}
           name={`installation-wizard-${groupId}`}
           onChange={handleChange}
           ref={radioGroupElement}
@@ -153,7 +154,6 @@ export function InstallationWizardGroup(props: InstallationWizardGroupProps) {
               aria-hidden={true}
               as="span"
               className={styles.IndicatorBar}
-              data-ready={isReady}
               onTransitionEnd={handleIndicatorTransitionEnd}
             />
           )}

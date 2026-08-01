@@ -64,16 +64,14 @@ export function SidebarNodeNavigationNodeGroupCollapsible(
         styles.SidebarNodeNavigationNodeGroup,
         className,
       ]}
+      data-active={isActive}
       data-collapsible={true}
       data-depth={depth}
       data-kind="group"
+      data-on-path={isOnPath && !isActive}
+      data-open={isOpen}
     >
-      <Box
-        className={styles.GroupBar}
-        data-active={isActive}
-        data-on-path={isOnPath && !isActive}
-        data-open={isOpen}
-      >
+      <Box className={styles.GroupBar}>
         {sidebarNode.href === undefined ? (
           <ButtonBase
             className={styles.GroupToggle}

@@ -27,132 +27,6 @@
         transform: translateX(calc(var(--demo-editor-tab-index) * 100%));
         transition: transform var(--duration-medium) var(--ease-snappy);
       }
-
-      .TabButton {
-        position: relative;
-        display: inline-flex;
-        flex: 1 1 0;
-        gap: var(--spacing-1);
-        align-items: center;
-        justify-content: center;
-        min-width: 0;
-        padding: var(--spacing-2) var(--spacing-1);
-        font-family: var(--font-family-mono);
-        font-size: var(--font-size-xs);
-        color: var(--foreground-softer);
-        outline: var(--spacing-2) solid transparent;
-        outline-offset: calc(var(--px) * -1);
-        box-shadow: inset calc(var(--px) * -1) 0 0 var(--rule);
-        transition:
-          color var(--transition),
-          outline var(--duration-slow),
-          border-radius var(--duration-slow);
-
-        .TabFill {
-          position: absolute;
-          inset: 0;
-          right: var(--px);
-          z-index: -1;
-          pointer-events: none;
-          background-color: transparent;
-          transition: background-color var(--transition);
-        }
-
-        :is(.TabFilenameTextShort, .TabFilenameTextFull) {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          letter-spacing: var(--letter-spacing-tight);
-          white-space: nowrap;
-        }
-
-        .TabFilenameTextFull {
-          display: none;
-        }
-
-        .TabDot {
-          width: 6px;
-          height: 6px;
-          border-radius: 50%;
-
-          &[data-dirty] {
-            background-color: var(--brand);
-            animation: dot-show 260ms var(--ease-bounce);
-          }
-        }
-
-        @media (min-width: 640px) {
-          gap: var(--spacing-2);
-          padding-block: var(--spacing-3);
-
-          .TabFilenameTextShort {
-            display: none;
-          }
-
-          .TabFilenameTextFull {
-            display: inline;
-          }
-        }
-
-        &:enabled {
-          @media (hover: hover) {
-            &:hover {
-              color: var(--foreground-soft);
-              box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
-
-              .TabFill {
-                background-color: var(--surface);
-              }
-            }
-
-            &:not([data-active]):has(+ .TabButton:hover) {
-              box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
-            }
-          }
-
-          &:active {
-            color: var(--foreground-soft);
-
-            .TabFill {
-              background-color: var(--surface);
-            }
-          }
-        }
-
-        &[data-active] {
-          color: var(--foreground);
-          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
-
-          .TabFill {
-            background-color: var(--surface);
-          }
-        }
-
-        &:not([data-active]):has(+ .TabButton[data-active]) {
-          box-shadow: inset calc(var(--px) * -1) 0 0 var(--ring);
-        }
-
-        &:focus-visible {
-          outline-width: var(--spacing-1);
-          outline-color: var(--accent-soft);
-          border-radius: var(--spacing-05);
-        }
-
-        &:first-of-type {
-          border-top-left-radius: var(--border-radius-md);
-
-          .TabFill {
-            border-top-left-radius: var(--border-radius-md);
-          }
-        }
-
-        &:last-of-type {
-          border-top-right-radius: var(--border-radius-md);
-
-          .TabFill {
-            border-top-right-radius: var(--border-radius-md);
-          }
-        }
-      }
     }
 
     .PreformattedText {
@@ -192,11 +66,6 @@
 
     &[data-saving] {
       animation: editor-pulse 600ms var(--ease-snappy) var(--duration-slow);
-
-      .TabDot[data-dirty] {
-        animation: dot-pulse 950ms var(--ease-snappy) var(--duration-slow)
-          forwards;
-      }
     }
   }
 
@@ -208,35 +77,6 @@
     50.01%,
     100% {
       opacity: 0;
-    }
-  }
-
-  @keyframes dot-show {
-    0% {
-      transform: scale(0);
-    }
-    100% {
-      transform: scale(1);
-    }
-  }
-
-  @keyframes dot-pulse {
-    0% {
-      opacity: 1;
-      transform: scale(1);
-      animation-timing-function: var(--ease-bounce);
-    }
-    16% {
-      opacity: 1;
-      transform: scale(1.55);
-    }
-    50% {
-      opacity: 1;
-      transform: scale(1.55);
-    }
-    100% {
-      opacity: 0;
-      transform: scale(0);
     }
   }
 

@@ -121,30 +121,36 @@
           }
         }
       }
-
-      &[data-on-path] {
-        :is(.GroupLink, .GroupToggle) {
-          color: var(--foreground);
-        }
-      }
-
-      &[data-active] {
-        :is(.GroupLink, .GroupToggle) {
-          color: var(--brand);
-        }
-      }
-
-      &[data-open] {
-        .Chevron {
-          transform: rotate(90deg);
-        }
-      }
     }
 
     .List {
       display: flex;
       flex-direction: column;
       gap: var(--spacing-05);
+    }
+
+    &[data-on-path] {
+      > .GroupBar {
+        :is(.GroupLink, .GroupToggle) {
+          color: var(--foreground);
+        }
+      }
+    }
+
+    &[data-active] {
+      > .GroupBar {
+        :is(.GroupLink, .GroupToggle) {
+          color: var(--brand);
+        }
+      }
+    }
+
+    &[data-open] {
+      > .GroupBar {
+        .Chevron {
+          transform: rotate(90deg);
+        }
+      }
     }
 
     &[data-depth="0"] {

@@ -23,6 +23,7 @@ export function SidebarNodeNavigationNodeGroupStatic(
         styles.SidebarNodeNavigationNodeGroup,
         className,
       ]}
+      data-active={isActive}
       data-depth={depth}
       data-kind="group"
     >
@@ -36,7 +37,6 @@ export function SidebarNodeNavigationNodeGroupStatic(
       ) : (
         <LinkBase
           className={styles.TitleLink}
-          data-active={isActive}
           to={sidebarNode.href}
         >
           {sidebarNode.label}

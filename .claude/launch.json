@@ -1,6 +1,17 @@
 {
   "configurations": [
     {
+      "autoPort": true,
+      "name": "demo-cool",
+      "port": 3100,
+      "runtimeArgs": [
+        "--dir",
+        "/Users/joakim/GitHub/demo-cool",
+        "dev"
+      ],
+      "runtimeExecutable": "pnpm"
+    },
+    {
       "name": "docs-dev",
       "port": 4321,
       "runtimeArgs": [

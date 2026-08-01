@@ -3,7 +3,7 @@ import type { Framework, FrameworkDefinition } from '#lib/hero-demo';
 import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
-import styles from './hero-demo-editor.module.css';
+import styles from './hero-demo-editor-tab.module.css';
 
 export type HeroDemoEditorTabProps = {
   activeFramework: Framework;
@@ -30,8 +30,10 @@ export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
 
   return (
     <ButtonBase
-      className={styles.TabButton}
+      className={styles.HeroDemoEditorTab}
       data-active={isActive}
+      data-dirty={isDirty}
+      data-saving={saving}
       onClick={handleClick}
     >
       <Box
@@ -54,7 +56,6 @@ export function HeroDemoEditorTab(props: HeroDemoEditorTabProps) {
         aria-hidden="true"
         as="span"
         className={styles.TabDot}
-        data-dirty={isDirty}
       />
     </ButtonBase>
   );
