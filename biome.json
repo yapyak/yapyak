@@ -217,6 +217,18 @@
       }
     },
     {
+      "includes": [
+        "**/*.d.ts"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedVariables": "off"
+          }
+        }
+      }
+    },
+    {
       "assist": {
         "actions": {
           "source": {
