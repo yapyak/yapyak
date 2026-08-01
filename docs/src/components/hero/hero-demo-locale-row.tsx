@@ -66,7 +66,7 @@ export function HeroDemoLocaleRow(props: HeroDemoLocaleRowProps) {
             className={styles.ValueText}
             key={value}
           >
-            <CodeBlockToken kind="tx-source">
+            <CodeBlockToken kind="t-source">
               <Box as="span">"</Box>
               {value}
               <Box as="span">"</Box>

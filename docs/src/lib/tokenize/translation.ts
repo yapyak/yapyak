@@ -23,13 +23,13 @@ export function tokenizeTranslation(code: string) {
         });
         if (content.length > 0) {
           tokens.push({
-            kind: 'tx-source',
+            kind: 't-source',
             value: content,
           });
         }
       } else {
         tokens.push({
-          kind: 'tx-source',
+          kind: 't-source',
           value: line,
         });
       }

@@ -8,7 +8,7 @@ export type UseStackOptions = {
 };
 
 export type UseStackReturn = {
-  isActive: boolean;
+  active: boolean;
 };
 
 export function useStack({
@@ -50,6 +50,6 @@ export function useStack({
   ]);
 
   return {
-    isActive,
+    active: isActive,
   };
 }

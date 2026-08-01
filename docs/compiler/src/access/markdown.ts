@@ -1,5 +1,7 @@
 import type { Block, ListBlock, TableBlock, TableRowBlock } from './block';
 
+import { capitalize } from '../capitalize';
+
 export function blocksToMarkdown(blocks: Block[]): string {
   const out: string[] = [];
   for (const block of blocks) {
@@ -247,11 +249,4 @@ function renderEyebrow(block: {
     return '';
   }
   return `*${parts.join(' ')}*`;
-}
-
-function capitalize(value: string): string {
-  if (value === '') {
-    return value;
-  }
-  return value.charAt(0).toUpperCase() + value.slice(1);
 }

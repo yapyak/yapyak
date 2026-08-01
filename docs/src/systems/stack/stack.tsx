@@ -15,14 +15,14 @@ export type StackProps = BoxProps & {
 export function Stack(props: StackProps) {
   const { inert, style, onActiveChange, ...restProps } = props;
 
-  const { isActive } = useStack({
+  const { active } = useStack({
     onActiveChange,
   });
 
   return (
     <Box
       {...restProps}
-      inert={!isActive || inert}
+      inert={!active || inert}
       style={[
         ISOLATION_STYLE,
         style,

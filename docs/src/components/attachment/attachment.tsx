@@ -68,8 +68,8 @@ export function Attachment(props: AttachmentProps) {
         className,
       ]}
       data-alignment={anchoredPosition.alignment}
-      data-arrow-overflow={anchoredPosition.isArrowOverflow}
-      data-docked={anchoredPosition.isDocked}
+      data-arrow-overflow={anchoredPosition.arrowOverflow}
+      data-docked={anchoredPosition.docked}
       data-placement={anchoredPosition.placement}
       ref={[
         element,

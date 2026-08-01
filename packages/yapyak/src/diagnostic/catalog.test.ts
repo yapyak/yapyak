@@ -144,9 +144,9 @@ describe('warnDiagnostic', () => {
 
 describe('YAP_COMPILE', () => {
   it('holds every entry in the `YAP<NNNN>` code format', () => {
-    const pattern = /^YAP\d{4}$/;
+    const patternRx = /^YAP\d{4}$/;
     for (const entry of Object.values(YAP_COMPILE)) {
-      expect(entry.code).toMatch(pattern);
+      expect(entry.code).toMatch(patternRx);
     }
   });
 
@@ -184,9 +184,9 @@ describe('YAP_COMPILE', () => {
 
 describe('YAP_RUNTIME', () => {
   it('holds every entry in the `YAP<NNNN>` code format', () => {
-    const pattern = /^YAP\d{4}$/;
+    const patternRx = /^YAP\d{4}$/;
     for (const entry of Object.values(YAP_RUNTIME)) {
-      expect(entry.code).toMatch(pattern);
+      expect(entry.code).toMatch(patternRx);
     }
   });
 

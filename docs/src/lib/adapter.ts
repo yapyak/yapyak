@@ -41,7 +41,7 @@ export function filterAdaptersByFramework(framework: string) {
   return ADAPTERS.filter((adapter) => adapter.frameworks.includes(framework));
 }
 
-export function visibleOptionsForGroup<
+export function filterVisibleOptions<
   T extends {
     value: string;
   },

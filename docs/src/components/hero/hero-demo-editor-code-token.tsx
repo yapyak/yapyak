@@ -15,7 +15,7 @@ export type HeroDemoEditorCodeTokenProps = {
 export function HeroDemoEditorCodeToken(props: HeroDemoEditorCodeTokenProps) {
   const { token, typing } = props;
 
-  if (token.kind !== 'tx-source' || !token.value.includes(CARET_MARKER)) {
+  if (token.kind !== 't-source' || !token.value.includes(CARET_MARKER)) {
     return <CodeBlockToken kind={token.kind}>{token.value}</CodeBlockToken>;
   }
 
@@ -28,7 +28,7 @@ export function HeroDemoEditorCodeToken(props: HeroDemoEditorCodeTokenProps) {
     <CodeBlockToken
       className={styles.HeroDemoEditorCodeToken}
       data-typing={typing}
-      kind="tx-source"
+      kind="t-source"
     >
       <Box as="span">'</Box>
       {before}

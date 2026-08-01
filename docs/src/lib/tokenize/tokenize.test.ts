@@ -31,18 +31,18 @@ describe('tokenize', () => {
     ).toBe(true);
   });
 
-  it('returns `tx-source` tokens for a `json` source value after `:`', () => {
+  it('returns `t-source` tokens for a `json` source value after `:`', () => {
     expect(
       tokenize('{"key": "Hello"}', 'json').some(
-        (token) => token.kind === 'tx-source',
+        (token) => token.kind === 't-source',
       ),
     ).toBe(true);
   });
 
-  it('returns `tx-source` tokens for a `translation` source', () => {
+  it('returns `t-source` tokens for a `translation` source', () => {
     expect(
       tokenize('Hello', 'translation').some(
-        (token) => token.kind === 'tx-source',
+        (token) => token.kind === 't-source',
       ),
     ).toBe(true);
   });
@@ -55,23 +55,23 @@ describe('tokenize', () => {
     ).toBe(true);
   });
 
-  it('marks a `yapyak` import string as `tx-yapyak` in a `ts` source', () => {
+  it('marks a `yapyak` import string as `t-yapyak` in a `ts` source', () => {
     expect(
       tokenize("import { t } from 'yapyak'", 'ts').some(
-        (token) => token.kind === 'tx-yapyak',
+        (token) => token.kind === 't-yapyak',
       ),
     ).toBe(true);
   });
 
-  it('marks a `t()` source argument as `tx-source` in a `ts` source', () => {
+  it('marks a `t()` source argument as `t-source` in a `ts` source', () => {
     const tokens = tokenize("t('Hello')", 'ts');
     expect(
       tokens.some(
-        (token) => token.kind === 'tx-source' && token.value === "'Hello'",
+        (token) => token.kind === 't-source' && token.value === "'Hello'",
       ),
     ).toBe(true);
     expect(
-      tokens.some((token) => token.kind === 'tx-call' && token.value === 't'),
+      tokens.some((token) => token.kind === 't-call' && token.value === 't'),
     ).toBe(true);
   });
 

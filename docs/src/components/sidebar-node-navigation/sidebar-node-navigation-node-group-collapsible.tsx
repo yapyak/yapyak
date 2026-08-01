@@ -17,7 +17,7 @@ export function SidebarNodeNavigationNodeGroupCollapsible(
 ) {
   const { className, depth, sidebarNode, ...restProps } = props;
   const location = useLocation();
-  const isOnPath = childrenContainPath(sidebarNode.children, location.pathname);
+  const isOnPath = hasPathInChildren(sidebarNode.children, location.pathname);
   const isActive =
     sidebarNode.href !== undefined && location.pathname === sidebarNode.href;
   const [isOpen, setIsOpen] = useState(sidebarNode.defaultOpen || isOnPath);
@@ -119,7 +119,7 @@ export function SidebarNodeNavigationNodeGroupCollapsible(
   );
 }
 
-function childrenContainPath(
+function hasPathInChildren(
   sidebarNodes: SidebarNode[],
   pathname: string,
 ): boolean {
@@ -129,7 +129,7 @@ function childrenContainPath(
     }
     if (
       sidebarNode.kind === 'group' &&
-      childrenContainPath(sidebarNode.children, pathname)
+      hasPathInChildren(sidebarNode.children, pathname)
     ) {
       return true;
     }

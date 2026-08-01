@@ -3,23 +3,23 @@ import { describe, expect, it } from 'vitest';
 import { tokenizeTranslation } from './translation';
 
 describe('tokenizeTranslation', () => {
-  it('returns a `comment` prefix and `tx-source` content for a locale-prefixed line', () => {
+  it('returns a `comment` prefix and `t-source` content for a locale-prefixed line', () => {
     expect(tokenizeTranslation('sv: Hej')).toEqual([
       {
         kind: 'comment',
         value: 'sv: ',
       },
       {
-        kind: 'tx-source',
+        kind: 't-source',
         value: 'Hej',
       },
     ]);
   });
 
-  it('returns a `tx-source` token for a line without a locale prefix', () => {
+  it('returns a `t-source` token for a line without a locale prefix', () => {
     expect(tokenizeTranslation('Hello')).toEqual([
       {
-        kind: 'tx-source',
+        kind: 't-source',
         value: 'Hello',
       },
     ]);

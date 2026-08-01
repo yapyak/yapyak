@@ -1,6 +1,7 @@
 import type { Dirent } from 'node:fs';
 import type { SidebarNode } from './manifest';
 
+import { capitalize } from '../capitalize';
 import { parseFrontmatterOnly } from '../extract/markdown';
 import { readFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -148,11 +149,4 @@ async function buildGroup(
 function getLabel(href: string) {
   const last = href.split('/').pop() ?? '';
   return last.split('-').map(capitalize).join(' ');
-}
-
-function capitalize(value: string) {
-  if (value.length === 0) {
-    return value;
-  }
-  return value.charAt(0).toUpperCase() + value.slice(1);
 }

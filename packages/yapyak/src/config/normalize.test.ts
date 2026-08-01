@@ -181,12 +181,12 @@ describe('normalizeYapyakConfig', () => {
   });
 
   it('preserves a `RegExp` include verbatim', () => {
-    const pattern = /\.svelte$/;
+    const patternRx = /\.svelte$/;
     const result = normalizeYapyakConfig({
-      include: pattern,
+      include: patternRx,
     });
 
-    expect(result.include).toBe(pattern);
+    expect(result.include).toBe(patternRx);
   });
 
   it('normalizes a directory shortcut in `exclude` into a glob with the registered extensions', () => {
@@ -216,12 +216,12 @@ describe('normalizeYapyakConfig', () => {
   });
 
   it('preserves a `RegExp` exclude verbatim', () => {
-    const pattern = /\.deprecated\.ts$/;
+    const patternRx = /\.deprecated\.ts$/;
     const result = normalizeYapyakConfig({
-      exclude: pattern,
+      exclude: patternRx,
     });
 
-    expect(result.exclude).toBe(pattern);
+    expect(result.exclude).toBe(patternRx);
   });
 
   it('preserves an explicit file path with a registered extension verbatim', () => {
@@ -316,14 +316,14 @@ describe('normalizeYapyakConfig', () => {
   });
 
   it('preserves a `RegExp` inside an include array verbatim', () => {
-    const pattern = /\.special$/;
+    const patternRx = /\.special$/;
     const result = normalizeYapyakConfig({
       include: [
-        pattern,
+        patternRx,
       ],
     });
     expect(result.include).toEqual([
-      pattern,
+      patternRx,
     ]);
   });
 
@@ -408,15 +408,15 @@ describe('normalizeYapyakConfig', () => {
   });
 
   it('preserves a `match` matcher on a url persistence config', () => {
-    const match = /^\/(en|sv)/;
+    const matchRx = /^\/(en|sv)/;
     const result = normalizeYapyakConfig({
       persistence: {
-        match,
+        match: matchRx,
         type: 'url',
       },
     });
     expect(result.persistence).toEqual({
-      match,
+      match: matchRx,
       type: 'url',
     });
   });

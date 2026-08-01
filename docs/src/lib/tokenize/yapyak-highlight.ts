@@ -14,7 +14,7 @@ export function applyYapyakHighlight(tokens: Token[]): void {
     }
 
     if (token.kind === 'string' && YAPYAK_STRING_RX.test(token.value)) {
-      token.kind = 'tx-yapyak';
+      token.kind = 't-yapyak';
       continue;
     }
 
@@ -37,8 +37,8 @@ export function applyYapyakHighlight(tokens: Token[]): void {
               argumentToken.kind === 'template') &&
             !isDottedKey(argumentToken.value)
           ) {
-            token.kind = 'tx-call';
-            argumentToken.kind = 'tx-source';
+            token.kind = 't-call';
+            argumentToken.kind = 't-source';
           }
         }
         continue;
@@ -80,7 +80,7 @@ export function applyYapyakHighlight(tokens: Token[]): void {
                 secondToken.kind === 'template') &&
               !isDottedKey(secondToken.value)
             ) {
-              secondToken.kind = 'tx-source';
+              secondToken.kind = 't-source';
             }
             break;
           }
@@ -123,7 +123,7 @@ export function applyYapyakHighlight(tokens: Token[]): void {
             }
           }
           if (inner.kind === 'string' || inner.kind === 'template') {
-            inner.kind = 'tx-source';
+            inner.kind = 't-source';
           }
           cursor++;
         }

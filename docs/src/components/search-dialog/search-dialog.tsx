@@ -57,7 +57,7 @@ export function SearchDialog(props: SearchDialogProps) {
         styles.SearchDialog,
         className,
       ]}
-      data-populated={search.isPopulated}
+      data-populated={search.populated}
       onClose={onClose}
       onPointerDown={handleDialogPointerDown}
     >

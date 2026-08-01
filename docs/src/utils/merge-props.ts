@@ -8,12 +8,12 @@ import { mergeStyles } from './merge-styles';
 
 type Prettify<T> = { [K in keyof T]: T[K] } & {};
 
-type UnionToIntersection<U> = (
-  U extends unknown
-    ? (k: U) => void
+type UnionToIntersection<T> = (
+  T extends unknown
+    ? (value: T) => void
     : never
-) extends (k: infer I) => void
-  ? I
+) extends (value: infer TIntersection) => void
+  ? TIntersection
   : never;
 
 export function mergeProps<T extends readonly (null | object | undefined)[]>(

@@ -4,8 +4,8 @@ import { useEventListener } from './use-event-listener';
 
 export type WindowListenerEvent = keyof WindowEventMap;
 
-export type WindowListener<K extends keyof WindowEventMap> = (
-  event: WindowEventMap[K],
+export type WindowListener<T extends keyof WindowEventMap> = (
+  event: WindowEventMap[T],
 ) => void;
 
 export function useWindowEventListener<T extends WindowListenerEvent>(

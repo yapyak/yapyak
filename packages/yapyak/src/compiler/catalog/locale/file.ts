@@ -74,7 +74,7 @@ export type ParseEntryError =
     };
 
 export type ParseEntryResult = {
-  entry: CatalogEntry | undefined;
+  entry?: CatalogEntry;
   errors: ParseEntryError[];
 };
 
@@ -168,7 +168,6 @@ export function parseEntry(value: unknown): ParseEntryResult {
   }
   if (!isPlainObject(value)) {
     return {
-      entry: undefined,
       errors: [
         {
           kind: 'value-not-string-or-object',
@@ -195,7 +194,6 @@ export function parseEntry(value: unknown): ParseEntryResult {
       });
     }
     return {
-      entry: undefined,
       errors,
     };
   }

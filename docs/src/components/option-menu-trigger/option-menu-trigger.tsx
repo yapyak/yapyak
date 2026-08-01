@@ -1,6 +1,6 @@
 import type { SwatchAccent } from '../swatch';
 
-import { visibleOptionsForGroup } from '#lib/adapter';
+import { filterVisibleOptions } from '#lib/adapter';
 
 import { MenuTrigger } from '../menu';
 import { OptionMenu } from '../option-menu';
@@ -23,11 +23,7 @@ export function OptionMenuTrigger(props: OptionMenuTriggerProps) {
     return null;
   }
 
-  const options = visibleOptionsForGroup(
-    groupId,
-    group.options,
-    activeFramework,
-  );
+  const options = filterVisibleOptions(groupId, group.options, activeFramework);
   if (options.length < 2) {
     return null;
   }

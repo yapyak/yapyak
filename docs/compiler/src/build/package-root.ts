@@ -46,8 +46,8 @@ export function buildPackageRoot(
   const root = modulesById.get(packageName);
   const children =
     root === undefined
-      ? topLevelSubpathChildren(modulesById, childrenByParentId, context)
-      : moduleChildren(root, modulesById, childrenByParentId, context);
+      ? getTopLevelSubpathChildren(modulesById, childrenByParentId, context)
+      : getModuleChildren(root, modulesById, childrenByParentId, context);
 
   return {
     children,
@@ -61,7 +61,7 @@ export function buildPackageRoot(
   };
 }
 
-function moduleChildren(
+function getModuleChildren(
   module: ReferenceModule,
   modulesById: Map<string, ReferenceModule>,
   childrenByParentId: Map<string, ReferenceModule[]>,
@@ -98,17 +98,22 @@ function moduleChildren(
   for (const child of subModules) {
     const childSlug = child.id.slice(packageName.length + 1);
     sidebarNodes.push({
-      children: moduleChildren(child, modulesById, childrenByParentId, context),
+      children: getModuleChildren(
+        child,
+        modulesById,
+        childrenByParentId,
+        context,
+      ),
       collapsible: true,
       href: `/${collectionName}/${packageSlug}/${childSlug}`,
       kind: 'group',
-      label: lastSegment(child.id),
+      label: getLastSegment(child.id),
     });
   }
   return sidebarNodes;
 }
 
-function topLevelSubpathChildren(
+function getTopLevelSubpathChildren(
   modulesById: Map<string, ReferenceModule>,
   childrenByParentId: Map<string, ReferenceModule[]>,
   context: PackageContext,
@@ -128,11 +133,16 @@ function topLevelSubpathChildren(
   }
   topLevel.sort((a, b) => a.id.localeCompare(b.id));
   return topLevel.map((child) => ({
-    children: moduleChildren(child, modulesById, childrenByParentId, context),
+    children: getModuleChildren(
+      child,
+      modulesById,
+      childrenByParentId,
+      context,
+    ),
     collapsible: true,
     href: `/${collectionName}/${packageSlug}/${child.id.slice(prefix.length)}`,
     kind: 'group',
-    label: lastSegment(child.id),
+    label: getLastSegment(child.id),
   }));
 }
 
@@ -153,7 +163,7 @@ function findParentId(
   }
 }
 
-function lastSegment(id: string): string {
+function getLastSegment(id: string): string {
   const slashIndex = id.lastIndexOf('/');
   if (slashIndex === -1) {
     return id;

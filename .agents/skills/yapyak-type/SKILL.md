@@ -254,6 +254,51 @@ function createProcessor(input: CreateProcessorInput): Processor;
 
 `transferMoney(from: string, to: string)` keeps both positional. Lean on signature + IDE tooltips. Never move required values into `options` to "self-document" the call site.
 
+### Class member shape — getter vs method
+
+Apply top to bottom. First match wins.
+
+```
+Q1: Static member?                          → method
+Q2: 1+ parameters?                          → method
+Q3: Name is verb-led (per [[yapyak-name]]
+    § Function verb prefix vocabulary)?     → method
+Q4: Otherwise                               → getter
+```
+
+`is*` / `has*` / `can*` are boolean prefixes, not verbs — a zero-parameter predicate reaches Q4 and is a getter.
+
+```ts
+// ✓ Right
+class Rect {
+  static zero(): Rect { ... }             // Q1
+  get center(): Point { ... }             // Q4 — noun
+  get isZero(): boolean { ... }           // Q4 — predicate, not a verb
+  contains(point: Point): boolean { ... } // Q2
+  toJSON(): RectJSON { ... }              // Q3 — `to*` is a conversion verb
+}
+
+// ✗ Wrong
+class Rect {
+  getCenter(): Point { ... }              // zero-parameter noun → getter
+  get json(): RectJSON { ... }            // conversion verb → method
+}
+```
+
+`toJSON` is method-only by hard constraint: `JSON.stringify` reads the property and then tests the **returned value** with `IsCallable`. A getter returning an object fails that test and is silently skipped.
+
+Cost is deliberately not a criterion — "cheap enough for a getter" admits no mechanical test. A getter that allocates stays a getter; memoize inside the class instead of reshaping the API.
+
+**Exception — cursor members.** A sequence-navigation member keeps its bare position name (`first`, `last`, `next`, `previous`), mirroring `Iterator.prototype.next()`. Project-local convention, scoped to cursor/navigator classes.
+
+```ts
+// ✓ — cursor vocabulary
+class FocusManager {
+  next(options: FocusManagerStepOptions = {}) { ... }
+  previous(options: FocusManagerStepOptions = {}) { ... }
+}
+```
+
 ### Null/undefined checks
 
 Three-tier rule.

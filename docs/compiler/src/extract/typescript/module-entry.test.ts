@@ -254,7 +254,7 @@ describe('getTypeMembers', () => {
 describe('resolveTypeExport', () => {
   it('returns the export when the type identifier matches a name in the map', () => {
     const target = interfaceExport('Format');
-    const map = new Map<string, ReferenceExport>([
+    const exportsByName = new Map<string, ReferenceExport>([
       [
         'Format',
         target,
@@ -268,17 +268,17 @@ describe('resolveTypeExport', () => {
         text: 'Format',
       },
     ];
-    expect(resolveTypeExport(tokens, map)).toBe(target);
+    expect(resolveTypeExport(tokens, exportsByName)).toBe(target);
   });
 
   it('returns `undefined` when no type identifier is found', () => {
-    const map = new Map<string, ReferenceExport>();
+    const exportsByName = new Map<string, ReferenceExport>();
     const tokens: TypeToken[] = [
       {
         kind: 'text',
         text: 'string',
       },
     ];
-    expect(resolveTypeExport(tokens, map)).toBeUndefined();
+    expect(resolveTypeExport(tokens, exportsByName)).toBeUndefined();
   });
 });

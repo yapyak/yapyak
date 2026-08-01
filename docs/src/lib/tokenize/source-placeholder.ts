@@ -1,9 +1,9 @@
 import type { Token } from './type';
 
-export function expandTxSourcePlaceholders(tokens: Token[]) {
+export function expandSourcePlaceholders(tokens: Token[]) {
   const result: Token[] = [];
   for (const token of tokens) {
-    if (token.kind !== 'tx-source') {
+    if (token.kind !== 't-source') {
       result.push(token);
       continue;
     }
@@ -29,12 +29,12 @@ function expandSingleSource(value: string) {
 
   if (isQuoted) {
     result.push({
-      kind: 'tx-source',
+      kind: 't-source',
       value: firstCharacter,
     });
     parseTextWithPlaceholders(value.slice(1, -1), result);
     result.push({
-      kind: 'tx-source',
+      kind: 't-source',
       value: lastCharacter,
     });
     return result;
@@ -51,7 +51,7 @@ function parseTextWithPlaceholders(text: string, output: Token[]): void {
   const flushPlain = () => {
     if (index > plainStart) {
       output.push({
-        kind: 'tx-source',
+        kind: 't-source',
         value: text.slice(plainStart, index),
       });
     }
@@ -63,7 +63,7 @@ function parseTextWithPlaceholders(text: string, output: Token[]): void {
       const closeIndex = findMatchingClose(text, index);
       if (closeIndex === -1) {
         output.push({
-          kind: 'tx-source',
+          kind: 't-source',
           value: text.slice(index),
         });
         return;
@@ -90,7 +90,7 @@ function parsePlaceholder(text: string, output: Token[]): void {
 
   if (firstComma === -1) {
     output.push({
-      kind: 'tx-placeholder',
+      kind: 't-placeholder',
       value: inner,
     });
     output.push({
@@ -102,7 +102,7 @@ function parsePlaceholder(text: string, output: Token[]): void {
 
   const variableName = inner.slice(0, firstComma);
   output.push({
-    kind: 'tx-placeholder',
+    kind: 't-placeholder',
     value: variableName,
   });
   output.push({
@@ -120,7 +120,7 @@ function parsePlaceholder(text: string, output: Token[]): void {
 
   if (secondComma === -1) {
     output.push({
-      kind: 'tx-icu-keyword',
+      kind: 't-icu-keyword',
       value: trimmedAfterFirst,
     });
     output.push({
@@ -133,7 +133,7 @@ function parsePlaceholder(text: string, output: Token[]): void {
   const keywordEnd = secondComma - (firstComma + 1) - consumedFirstWhitespace;
   const keyword = trimmedAfterFirst.slice(0, keywordEnd).trimEnd();
   output.push({
-    kind: 'tx-icu-keyword',
+    kind: 't-icu-keyword',
     value: keyword,
   });
   const keywordTrailingWhitespace =
@@ -187,7 +187,7 @@ function parseBranches(text: string, output: Token[]): void {
     const key = text.slice(keyStart, index);
     if (key.length > 0) {
       output.push({
-        kind: 'tx-icu-key',
+        kind: 't-icu-key',
         value: key,
       });
     }
@@ -207,7 +207,7 @@ function parseBranches(text: string, output: Token[]): void {
       const closeIndex = findMatchingClose(text, index);
       if (closeIndex === -1) {
         output.push({
-          kind: 'tx-source',
+          kind: 't-source',
           value: text.slice(index),
         });
         return;
@@ -233,7 +233,7 @@ function parseBranchText(text: string, output: Token[]): void {
   const flushPlain = () => {
     if (index > plainStart) {
       output.push({
-        kind: 'tx-source',
+        kind: 't-source',
         value: text.slice(plainStart, index),
       });
     }
@@ -244,7 +244,7 @@ function parseBranchText(text: string, output: Token[]): void {
     if (character === '#') {
       flushPlain();
       output.push({
-        kind: 'tx-icu-hash',
+        kind: 't-icu-hash',
         value: '#',
       });
       index++;
@@ -254,7 +254,7 @@ function parseBranchText(text: string, output: Token[]): void {
       const closeIndex = findMatchingClose(text, index);
       if (closeIndex === -1) {
         output.push({
-          kind: 'tx-source',
+          kind: 't-source',
           value: text.slice(index),
         });
         return;

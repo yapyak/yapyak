@@ -2,6 +2,7 @@ import type { Block } from '../access';
 import type { Manifest, Page, SidebarNode } from './manifest';
 
 import { blocksToMarkdown } from '../access';
+import { capitalize } from '../capitalize';
 
 export type AgentArtifactConfig = {
   description: string;
@@ -144,11 +145,4 @@ function hrefToFilePath(href: string): string {
     return 'index.md';
   }
   return `${trimmed}.md`;
-}
-
-function capitalize(value: string): string {
-  if (value === '') {
-    return value;
-  }
-  return value.charAt(0).toUpperCase() + value.slice(1);
 }

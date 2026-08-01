@@ -29,7 +29,7 @@
       color: var(--foreground-softer);
     }
 
-    &:is([data-kind="fn-call"], [data-kind="tx-call"]) {
+    &:is([data-kind="fn-call"], [data-kind="t-call"]) {
       color: var(--syntax-fn-call);
     }
 
@@ -57,34 +57,34 @@
       color: var(--syntax-fn-call);
     }
 
-    &[data-kind="tx-yapyak"] {
+    &[data-kind="t-yapyak"] {
       color: var(--syntax-string);
     }
 
-    &[data-kind="tx-source"] {
+    &[data-kind="t-source"] {
       color: var(--brand);
       text-shadow: var(--shadow-brand-glow);
     }
 
-    &[data-kind="tx-placeholder"] {
+    &[data-kind="t-placeholder"] {
       font-style: italic;
       color: var(--foreground);
     }
 
-    &[data-kind="tx-icu-keyword"] {
+    &[data-kind="t-icu-keyword"] {
       color: var(--syntax-keyword);
     }
 
-    &[data-kind="tx-icu-key"] {
+    &[data-kind="t-icu-key"] {
       color: var(--syntax-literal);
     }
 
-    &[data-kind="tx-icu-hash"] {
+    &[data-kind="t-icu-hash"] {
       color: var(--brand);
       text-shadow: var(--shadow-brand-glow);
     }
 
-    &[data-kind="tx-tag"] {
+    &[data-kind="t-tag"] {
       color: var(--syntax-jsx-tag);
     }
 

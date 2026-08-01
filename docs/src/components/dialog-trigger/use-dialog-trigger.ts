@@ -23,7 +23,7 @@ export type UseDialogTriggerReturn = {
     id: string;
     onClose: () => void;
   };
-  isOpen: boolean;
+  open: boolean;
   triggerProps: {
     'aria-controls': string | undefined;
     'aria-expanded': boolean;
@@ -92,7 +92,7 @@ export function useDialogTrigger(
 
   return {
     dialogProps,
-    isOpen: drawer.isOpen,
+    open: drawer.isOpen,
     triggerProps,
   };
 }

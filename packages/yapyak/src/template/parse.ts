@@ -225,9 +225,9 @@ function parseToken(
   }
   const node = parseTokenBody(
     {
+      inPluralBranch: isInPluralBranch,
       innerEnd: closeIndex,
       innerStart: position + 1,
-      isInPluralBranch,
       tokenRange: {
         end: closeIndex + 1,
         start: position,
@@ -244,7 +244,7 @@ function parseToken(
 type ParseTokenBodyInput = {
   innerEnd: number;
   innerStart: number;
-  isInPluralBranch: boolean;
+  inPluralBranch: boolean;
   tokenRange: TemplateRange;
 };
 
@@ -252,7 +252,7 @@ function parseTokenBody(
   input: ParseTokenBodyInput,
   context: ParseContext,
 ): TemplateNode {
-  const { innerEnd, innerStart, isInPluralBranch, tokenRange } = input;
+  const { innerEnd, innerStart, inPluralBranch, tokenRange } = input;
   const firstComma = findTopLevelComma(context.source, innerStart, innerEnd);
   if (firstComma === undefined) {
     const name = context.source.slice(innerStart, innerEnd).trim();
@@ -298,7 +298,7 @@ function parseTokenBody(
       {
         bodyEnd: innerEnd,
         bodyStart,
-        isInPluralBranch,
+        inPluralBranch,
         name,
         tokenRange,
       },
@@ -427,7 +427,7 @@ function buildPluralNode(
 type BuildSelectNodeInput = {
   bodyEnd: number;
   bodyStart: number;
-  isInPluralBranch: boolean;
+  inPluralBranch: boolean;
   name: string;
   tokenRange: TemplateRange;
 };
@@ -440,7 +440,7 @@ function buildSelectNode(
     context,
     input.bodyStart,
     input.bodyEnd,
-    input.isInPluralBranch,
+    input.inPluralBranch,
   );
   if (!('other' in branches)) {
     context.diagnostics.push({

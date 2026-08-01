@@ -6,12 +6,12 @@ import { tokenizeHtml } from './html';
 import { tokenizeJson } from './json';
 import { reclassifyJsxText } from './jsx-text';
 import { mergePlainTokens } from './plain-token';
+import { expandSourcePlaceholders } from './source-placeholder';
+import { expandSourceTags } from './source-tag';
 import { markTaggedTemplates } from './tagged-template';
 import { expandTemplateInterpolations } from './template-interpolation';
 import { scanToken } from './token';
 import { tokenizeTranslation } from './translation';
-import { expandTxSourcePlaceholders } from './tx-icu';
-import { expandTxSourceTags } from './tx-tag';
 import { applyTypePositions } from './type-position';
 import { expandVueAttributeBindings } from './vue-attribute-binding';
 import { tokenizeYaml } from './yaml';
@@ -31,11 +31,11 @@ export function tokenize(code: string, language: Language) {
     return tokenizeYaml(code);
   }
   if (language === 'json') {
-    return expandTxSourceTags(expandTxSourcePlaceholders(tokenizeJson(code)));
+    return expandSourceTags(expandSourcePlaceholders(tokenizeJson(code)));
   }
   if (language === 'translation') {
-    return expandTxSourceTags(
-      expandTxSourcePlaceholders(tokenizeTranslation(code)),
+    return expandSourceTags(
+      expandSourcePlaceholders(tokenizeTranslation(code)),
     );
   }
   const tokens: Token[] = [];
@@ -72,7 +72,7 @@ export function tokenize(code: string, language: Language) {
     language,
     tokenize,
   );
-  const icuExpanded = expandTxSourcePlaceholders(templateExpanded);
-  const tagExpanded = expandTxSourceTags(icuExpanded);
+  const icuExpanded = expandSourcePlaceholders(templateExpanded);
+  const tagExpanded = expandSourceTags(icuExpanded);
   return mergePlainTokens(tagExpanded);
 }

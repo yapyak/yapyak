@@ -47,14 +47,14 @@ function collectLocalExports(
 ): void {
   const localByName = new Map<string, ExportEntry>();
   for (const node of sourceFile.statements) {
-    for (const [name, entry] of declarationEntries(node, sourceFile)) {
+    for (const [name, entry] of collectDeclarationEntries(node, sourceFile)) {
       localByName.set(name, entry);
     }
   }
 
   for (const node of sourceFile.statements) {
     if (hasExportModifier(node)) {
-      for (const [name, entry] of declarationEntries(node, sourceFile)) {
+      for (const [name, entry] of collectDeclarationEntries(node, sourceFile)) {
         out.set(name, entry);
       }
       continue;
@@ -72,7 +72,7 @@ function collectLocalExports(
   }
 }
 
-function declarationEntries(
+function collectDeclarationEntries(
   node: Node,
   sourceFile: SourceFile,
 ): [

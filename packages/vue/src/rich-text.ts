@@ -72,12 +72,12 @@ type RichTextComponent = <T extends string>(
 export const RichText: RichTextComponent = (props, context) =>
   renderNodes(
     parseRichText(props.value),
-    (context?.slots ?? {}) as Readonly<Record<string, SlotFn | undefined>>,
+    (context?.slots ?? {}) as Record<string, SlotFn | undefined>,
   );
 
 function renderNodes(
   nodes: RichTextNode[],
-  slots: Readonly<Record<string, SlotFn | undefined>>,
+  slots: Record<string, SlotFn | undefined>,
 ): VNodeChild[] {
   const out: VNodeChild[] = [];
   for (const node of nodes) {

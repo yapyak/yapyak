@@ -522,6 +522,7 @@ Closed list. Every function starts with one of these (or follows a documented ex
 | `close*` | Exit an open state | `close()` |
 | `collect*` | Gather items into a result set | `collectExports()` |
 | `compare*` | Order two values for a sort | `compareKeys(a, b)` |
+| `contains*` | Containment predicate — returns `boolean` | `contains(point)` |
 | `count*` | Tally occurrences | `countReferences()` |
 | `dedent*` | Strip common leading indentation | `dedentTerminalLines()` |
 | `dedupe*` | Drop duplicate entries from a collection | `dedupeStubs()` |
@@ -671,8 +672,8 @@ Rule depends on where the boolean lives.
 
 **Three rules:**
 
-1. **Fresh boolean variables** (`useState`, `const`, `let`, function returns) — always carry `is*` / `has*` / `can*` / `should*` / `will*` / `was*` / `are*` prefix.
-2. **Object property fields** (interface fields, context values, options, config, props) — NEVER carry that prefix. Bare adjective or verb-phrase.
+1. **Fresh boolean variables** (`useState`, `const`, `let`, function returns, computed getters) — always carry `is*` / `has*` / `can*` / `should*` / `will*` / `was*` / `are*` prefix.
+2. **Object property fields** (interface fields, context values, options, config, props, stored class fields) — NEVER carry that prefix. Bare adjective or verb-phrase.
 3. **Crossing the boundary:**
    - Fresh variable → property (assignment INTO an object): alias `{ property: variable }`.
    - Property → local binding (destructuring OUT): keep the bare property name.
@@ -699,6 +700,45 @@ extractStubs({ force, messages }, context);
 const shouldPreserve = options?.preserve ?? false;
 value = shouldPreserve ? previous : '';
 ```
+
+#### Class members
+
+Decide by what the member is, never by how it is accessed.
+
+| Member | Prefix |
+| --- | --- |
+| Stored field (`#field`, `field: boolean`) | bare |
+| Getter returning a stored field | bare |
+| Getter computing its value | `is*` / `has*` / `can*` / … |
+| Method returning a boolean | `is*` / `has*` / `can*` / … |
+
+```ts
+// ✓ Right
+class Sidebar {
+  #open = false;
+
+  get open(): boolean {                 // reads the slot
+    return this.#open;
+  }
+
+  get isEmpty(): boolean {              // computes a predicate
+    return this.#nodes.length === 0;
+  }
+
+  isEqual(other: Sidebar): boolean {
+    return this.#nodes.length === other.#nodes.length;
+  }
+}
+
+// ✗ Wrong — computed predicate stripped to a bare noun
+class Sidebar {
+  get empty(): boolean {
+    return this.#nodes.length === 0;
+  }
+}
+```
+
+Never reshape a computed getter into a method to dodge a name collision → keep the getter and keep its prefix.
 
 #### Standalone variables and function returns — required prefixes
 

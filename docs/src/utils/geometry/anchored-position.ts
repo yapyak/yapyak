@@ -6,7 +6,7 @@ import { Rect } from './rect';
 export type AnchoredPositionJSON = {
   alignment: Alignment;
   arrowOffset: number;
-  isDocked: boolean;
+  docked: boolean;
   maxHeight: number;
   maxWidth: number;
   minHeight: number;
@@ -34,8 +34,8 @@ type Placement = 'bottom' | 'left' | 'right' | 'top';
 export class AnchoredPosition {
   #alignment: Alignment = 'center';
   #arrowOffset = 0;
-  #isArrowOverflow = false;
-  #isDocked = false;
+  #arrowOverflow = false;
+  #docked = false;
   #maxHeight = 0;
   #maxWidth = 0;
   #minHeight = 0;
@@ -58,11 +58,11 @@ export class AnchoredPosition {
   get arrowOffset(): number {
     return this.#arrowOffset;
   }
-  get isArrowOverflow(): boolean {
-    return this.#isArrowOverflow;
+  get arrowOverflow(): boolean {
+    return this.#arrowOverflow;
   }
-  get isDocked(): boolean {
-    return this.#isDocked;
+  get docked(): boolean {
+    return this.#docked;
   }
   get maxHeight(): number {
     return this.#maxHeight;
@@ -89,7 +89,7 @@ export class AnchoredPosition {
       this.#placement === other.placement &&
       this.#alignment === other.alignment &&
       this.#arrowOffset === other.arrowOffset &&
-      this.#isDocked === other.isDocked &&
+      this.#docked === other.docked &&
       this.#minWidth === other.minWidth &&
       this.#maxWidth === other.maxWidth &&
       this.#minHeight === other.minHeight &&
@@ -101,7 +101,7 @@ export class AnchoredPosition {
     return {
       alignment: this.#alignment,
       arrowOffset: this.#arrowOffset,
-      isDocked: this.#isDocked,
+      docked: this.#docked,
       maxHeight: this.#maxHeight,
       maxWidth: this.#maxWidth,
       minHeight: this.#minHeight,
@@ -353,7 +353,7 @@ export class AnchoredPosition {
         const overflowLeft = leftEdge < arrowSafeOffset;
         const overflowRight = rightEdge > rect.width - arrowSafeOffset;
 
-        this.#isArrowOverflow = overflowLeft || overflowRight;
+        this.#arrowOverflow = overflowLeft || overflowRight;
       } else {
         arrowOffset = targetRect.center.y - y - arrowSize / 2;
 
@@ -363,7 +363,7 @@ export class AnchoredPosition {
         const overflowTop = topEdge < arrowSafeOffset;
         const overflowBottom = bottomEdge > rect.height - arrowSafeOffset;
 
-        this.#isArrowOverflow = overflowTop || overflowBottom;
+        this.#arrowOverflow = overflowTop || overflowBottom;
       }
 
       arrowOffset = Math.round(arrowOffset);
@@ -379,7 +379,7 @@ export class AnchoredPosition {
     this.#placement = currentPlacement;
     this.#alignment = alignment;
     this.#arrowOffset = Math.round(arrowOffset);
-    this.#isDocked = restrain || isDocked;
+    this.#docked = restrain || isDocked;
     this.#minWidth = minWidth;
     this.#maxWidth = Math.round(maxWidth);
     this.#minHeight = minHeight;

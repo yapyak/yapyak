@@ -5,8 +5,8 @@ import { Box } from '../box';
 import { useListboxContext } from './listbox-context';
 
 export type ListboxOptionState = {
-  isHighlighted: boolean;
-  isSelected: boolean;
+  highlighted: boolean;
+  selected: boolean;
 };
 
 export type ListboxBaseOptionProps = Omit<BoxProps, 'children'> & {
@@ -34,8 +34,8 @@ export function ListboxBaseOption(props: ListboxBaseOptionProps) {
     >
       {typeof children === 'function'
         ? children({
-            isHighlighted,
-            isSelected,
+            highlighted: isHighlighted,
+            selected: isSelected,
           })
         : children}
     </Box>

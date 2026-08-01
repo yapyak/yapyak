@@ -5,7 +5,7 @@ import { mergePlainTokens } from './plain-token';
 export function tokenizeJson(code: string) {
   const tokens: Token[] = [];
   let index = 0;
-  let lastWas: 'open' | 'colon' | 'comma' | 'value' | null = null;
+  let previousRole: 'open' | 'colon' | 'comma' | 'value' | undefined;
 
   while (index < code.length) {
     const character = code[index] ?? '';
@@ -32,7 +32,7 @@ export function tokenizeJson(code: string) {
         kind: 'punct',
         value: character,
       });
-      lastWas = 'open';
+      previousRole = 'open';
       index++;
       continue;
     }
@@ -42,7 +42,7 @@ export function tokenizeJson(code: string) {
         kind: 'punct',
         value: character,
       });
-      lastWas = 'value';
+      previousRole = 'value';
       index++;
       continue;
     }
@@ -52,7 +52,7 @@ export function tokenizeJson(code: string) {
         kind: 'punct',
         value: character,
       });
-      lastWas = 'colon';
+      previousRole = 'colon';
       index++;
       continue;
     }
@@ -62,7 +62,7 @@ export function tokenizeJson(code: string) {
         kind: 'punct',
         value: character,
       });
-      lastWas = 'comma';
+      previousRole = 'comma';
       index++;
       continue;
     }
@@ -70,12 +70,12 @@ export function tokenizeJson(code: string) {
     if (character === '"') {
       const match = /^"(?:\\.|[^"\\])*"/.exec(code.slice(index));
       if (match) {
-        const isValue = lastWas === 'colon';
+        const isValue = previousRole === 'colon';
         tokens.push({
-          kind: isValue ? 'tx-source' : 'string',
+          kind: isValue ? 't-source' : 'string',
           value: match[0],
         });
-        lastWas = 'value';
+        previousRole = 'value';
         index += match[0].length;
         continue;
       }
@@ -88,7 +88,7 @@ export function tokenizeJson(code: string) {
           kind: 'number',
           value: match[0],
         });
-        lastWas = 'value';
+        previousRole = 'value';
         index += match[0].length;
         continue;
       }
@@ -101,7 +101,7 @@ export function tokenizeJson(code: string) {
           kind: 'literal',
           value: match[0],
         });
-        lastWas = 'value';
+        previousRole = 'value';
         index += match[0].length;
         continue;
       }

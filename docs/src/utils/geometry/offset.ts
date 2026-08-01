@@ -22,18 +22,18 @@ export class Offset {
     this.bottom = bottom;
   }
 
+  get isZero(): boolean {
+    return (
+      this.left === 0 && this.top === 0 && this.right === 0 && this.bottom === 0
+    );
+  }
+
   isEqual(other: Offset): boolean {
     return (
       this.left === other.left &&
       this.top === other.top &&
       this.right === other.right &&
       this.bottom === other.bottom
-    );
-  }
-
-  isZero(): boolean {
-    return (
-      this.left === 0 && this.top === 0 && this.right === 0 && this.bottom === 0
     );
   }
 

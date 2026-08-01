@@ -19,7 +19,7 @@ export type UseSearchReturn = {
   handleSelect: (href: string) => void;
   hasResults: boolean;
   highlightedHref: null | string;
-  isPopulated: boolean;
+  populated: boolean;
   query: string;
   results: SearchResult[];
   setHighlightedHref: (href: null | string) => void;
@@ -121,7 +121,7 @@ export function useSearch(options: UseSearchOptions): UseSearchReturn {
     handleSelect,
     hasResults,
     highlightedHref,
-    isPopulated,
+    populated: isPopulated,
     query,
     results,
     setHighlightedHref,

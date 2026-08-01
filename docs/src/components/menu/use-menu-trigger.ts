@@ -11,7 +11,7 @@ export type UseMenuTriggerOptions = {
 };
 
 export type UseMenuTriggerReturn = {
-  isOpen: boolean;
+  open: boolean;
   menuProps: {
     id: string;
     onClose: () => void;
@@ -63,12 +63,12 @@ export function useMenuTrigger(
   };
 
   return {
-    isOpen: drawer.isOpen,
     menuProps: {
       id,
       onClose: drawer.close,
       targetElement,
     },
+    open: drawer.isOpen,
     triggerProps: {
       'aria-controls': drawer.isOpen ? id : undefined,
       'aria-expanded': drawer.isOpen,

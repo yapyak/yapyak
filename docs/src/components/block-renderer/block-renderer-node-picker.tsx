@@ -1,7 +1,7 @@
 import type { PickerBlock } from '@yapyak/docs-compiler';
 import type { BoxProps } from '#primitives/box';
 
-import { visibleOptionsForGroup } from '#lib/adapter';
+import { filterVisibleOptions } from '#lib/adapter';
 import { Box } from '#primitives/box';
 
 import { useOptionContext } from '../option-provider';
@@ -23,7 +23,7 @@ export function BlockRendererNodePicker(props: BlockRendererNodePickerProps) {
     return null;
   }
 
-  const options = visibleOptionsForGroup(
+  const options = filterVisibleOptions(
     block.group,
     group.options,
     get('framework'),

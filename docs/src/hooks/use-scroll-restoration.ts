@@ -15,7 +15,7 @@ const STORAGE_KEY = 'yapyak-scroll-v1';
 const MAX_ENTRIES = 50;
 const THROTTLE_MS = 100;
 
-const cache = new Map<string, ScrollEntry>();
+const scrollEntryCache = new Map<string, ScrollEntry>();
 let isHydrated = false;
 
 function hydrate() {
@@ -33,7 +33,7 @@ function hydrate() {
     }
     const parsed = JSON.parse(raw) as Record<string, ScrollEntry>;
     for (const [key, entry] of Object.entries(parsed)) {
-      cache.set(key, entry);
+      scrollEntryCache.set(key, entry);
     }
   } catch {}
 }
@@ -44,7 +44,7 @@ function persist() {
   }
   try {
     const record: Record<string, ScrollEntry> = {};
-    for (const [key, entry] of cache) {
+    for (const [key, entry] of scrollEntryCache) {
       record[key] = entry;
     }
     window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(record));
@@ -56,12 +56,12 @@ function getKey(location: ParsedLocation): string {
 }
 
 function saveEntry(key: string, entry: ScrollEntry) {
-  cache.delete(key);
-  cache.set(key, entry);
-  if (cache.size > MAX_ENTRIES) {
-    const firstKey = cache.keys().next().value;
+  scrollEntryCache.delete(key);
+  scrollEntryCache.set(key, entry);
+  if (scrollEntryCache.size > MAX_ENTRIES) {
+    const firstKey = scrollEntryCache.keys().next().value;
     if (firstKey !== undefined) {
-      cache.delete(firstKey);
+      scrollEntryCache.delete(firstKey);
     }
   }
 }
@@ -120,7 +120,7 @@ export function useScrollRestoration() {
       (event) => {
         currentKeyRef.current = getKey(event.toLocation);
         if (isPopNavigationRef.current) {
-          const cached = cache.get(currentKeyRef.current);
+          const cached = scrollEntryCache.get(currentKeyRef.current);
           if (cached !== undefined) {
             window.scrollTo(cached.x, cached.y);
             return;
@@ -139,7 +139,7 @@ export function useScrollRestoration() {
     const unsubscribeOnResolved = router.subscribe('onResolved', (event) => {
       currentKeyRef.current = getKey(event.toLocation);
       if (isPopNavigationRef.current) {
-        const cached = cache.get(currentKeyRef.current);
+        const cached = scrollEntryCache.get(currentKeyRef.current);
         if (cached !== undefined) {
           window.requestAnimationFrame(() => {
             window.scrollTo(cached.x, cached.y);

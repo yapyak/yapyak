@@ -20,8 +20,8 @@ describe('tokenizeJson', () => {
     expect(types('{"Hello": 1}')).toContain('string');
   });
 
-  it('returns a `tx-source` token for a string value after `:`', () => {
-    expect(types('{"key": "Hello"}')).toContain('tx-source');
+  it('returns a `t-source` token for a string value after `:`', () => {
+    expect(types('{"key": "Hello"}')).toContain('t-source');
   });
 
   it('returns a `number` token for a numeric value', () => {

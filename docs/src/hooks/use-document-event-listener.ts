@@ -6,8 +6,8 @@ import { useEventListener } from './use-event-listener';
 
 export type DocumentListenerEvent = keyof DocumentEventMap;
 
-export type DocumentListener<K extends keyof DocumentEventMap> = (
-  event: DocumentEventMap[K],
+export type DocumentListener<T extends keyof DocumentEventMap> = (
+  event: DocumentEventMap[T],
 ) => void;
 
 export function useDocumentEventListener<T extends DocumentListenerEvent>(

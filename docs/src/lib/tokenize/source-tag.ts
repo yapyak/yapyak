@@ -1,9 +1,9 @@
 import type { Token } from './type';
 
-export function expandTxSourceTags(tokens: Token[]) {
+export function expandSourceTags(tokens: Token[]) {
   const result: Token[] = [];
   for (const token of tokens) {
-    if (token.kind !== 'tx-source' || !token.value.includes('<')) {
+    if (token.kind !== 't-source' || !token.value.includes('<')) {
       result.push(token);
       continue;
     }
@@ -19,7 +19,7 @@ function extractTags(text: string, output: Token[]): void {
   const flushPlain = () => {
     if (index > plainStart) {
       output.push({
-        kind: 'tx-source',
+        kind: 't-source',
         value: text.slice(plainStart, index),
       });
     }
@@ -94,7 +94,7 @@ function emitTag(raw: string, output: Token[]): void {
     nameEnd++;
   }
   output.push({
-    kind: 'tx-tag',
+    kind: 't-tag',
     value: raw.slice(position, nameEnd),
   });
   position = nameEnd;

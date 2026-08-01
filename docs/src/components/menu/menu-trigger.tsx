@@ -22,7 +22,7 @@ export type MenuTriggerProps = UseMenuTriggerOptions & {
 export function MenuTrigger(props: MenuTriggerProps) {
   const { children, initialOpen, menu, onClose, onOpen } = props;
 
-  const { isOpen, menuProps, triggerProps } = useMenuTrigger({
+  const { menuProps, open, triggerProps } = useMenuTrigger({
     initialOpen,
     onClose,
     onOpen,
@@ -31,7 +31,7 @@ export function MenuTrigger(props: MenuTriggerProps) {
   return (
     <>
       {children(triggerProps)}
-      <Animate in={isOpen}>
+      <Animate in={open}>
         {(animateProps) => menu(mergeProps(menuProps, animateProps))}
       </Animate>
     </>

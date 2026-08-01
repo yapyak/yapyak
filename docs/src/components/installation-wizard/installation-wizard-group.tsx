@@ -4,7 +4,7 @@ import type { SwatchAccent } from '../swatch';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import { useMediaQuery } from '#hooks/use-media-query';
-import { visibleOptionsForGroup } from '#lib/adapter';
+import { filterVisibleOptions } from '#lib/adapter';
 import { Box } from '#primitives/box';
 import { RadioGroupBase } from '#primitives/radio';
 
@@ -99,11 +99,7 @@ export function InstallationWizardGroup(props: InstallationWizardGroupProps) {
     return null;
   }
 
-  const options = visibleOptionsForGroup(
-    groupId,
-    group.options,
-    activeFramework,
-  );
+  const options = filterVisibleOptions(groupId, group.options, activeFramework);
   if (options.length < 2) {
     return null;
   }
