@@ -51,12 +51,12 @@
         background-color: var(--brand);
         animation: dot-show 260ms var(--ease-bounce);
       }
-    }
 
-    &[data-dirty][data-saving] {
-      .TabDot {
-        animation: dot-pulse 950ms var(--ease-snappy) var(--duration-slow)
-          forwards;
+      &[data-saving] {
+        .TabDot {
+          animation: dot-pulse 950ms var(--ease-snappy) var(--duration-slow)
+            forwards;
+        }
       }
     }
 
