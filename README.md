@@ -5,9 +5,7 @@
 [![npm](https://img.shields.io/npm/v/yapyak?logo=npm&color=cb3837&label=npm)](https://www.npmjs.com/package/yapyak)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-### [yapyak.dev](https://yapyak.dev)
-
-[Guide](https://yapyak.dev/guide) · [Reference](https://yapyak.dev/reference) · [Examples](https://github.com/yapyak/yapyak/tree/main/examples)
+## What is yapyak?
 
 yapyak is an i18n compiler with a small runtime, built for the way code gets written today: rapidly, often with help from a coding agent, and rarely pausing for a separate translation step.
 
@@ -30,6 +28,8 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
   }
 }
 ```
+
+**Everything else lives at [yapyak.dev](https://yapyak.dev).**
 
 ---
 
