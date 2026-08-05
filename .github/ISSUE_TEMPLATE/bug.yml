@@ -1,0 +1,66 @@
+name: Bug report
+description: Something is broken.
+labels:
+  - bug
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: input
+    id: diagnostic
+    attributes:
+      label: Diagnostic code
+      description: If yapyak showed a `YAP` code, paste it — it points straight at the subsystem.
+      placeholder: YAP0021
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: The smallest `t()` call, config, or repository link that shows the problem.
+    validations:
+      required: true
+  - type: dropdown
+    id: framework
+    attributes:
+      label: Framework
+      options:
+        - React
+        - Vue
+        - Svelte
+        - Astro
+        - None (vanilla)
+    validations:
+      required: true
+  - type: dropdown
+    id: adapter
+    attributes:
+      label: Adapter
+      options:
+        - None
+        - Astro
+        - React Router
+        - SvelteKit
+        - TanStack Start
+  - type: dropdown
+    id: translator
+    attributes:
+      label: Translator
+      options:
+        - None
+        - Anthropic
+        - OpenAI
+        - Gemini
+        - Ollama
+        - Custom
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: yapyak, Vite, and Node.
+      placeholder: yapyak 0.1.0 · vite 8.1.5 · node 22.22
+    validations:
+      required: true

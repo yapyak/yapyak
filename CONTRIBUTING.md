@@ -51,6 +51,7 @@ This repo encodes its conventions in [`AGENTS.md`](AGENTS.md) and the modular ru
 2. Add or update tests for behavioral changes.
 3. Update documentation when public API changes.
 4. Keep the diff scoped — one concern per PR.
+5. Add a changeset (`pnpm changeset`) if the change is user-facing — the file body becomes the changelog entry.
 
 CI runs the verification chain on Linux, macOS, and Windows, plus coverage thresholds, `pnpm knip`, and both e2e modes.
 
