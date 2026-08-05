@@ -1,4 +1,6 @@
-![yapyak](docs/public/banner.svg)
+[![yapyak](docs/public/banner.svg)](https://yapyak.dev)
+
+# yapyak
 
 ---
 
@@ -32,6 +34,10 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 }
 ```
 
+![Works with Vite, React, Vue, Svelte, and Astro — SSR on Astro, React Router, SvelteKit, and TanStack Start](docs/public/stack.svg)
+
+**[Get started → yapyak.dev](https://yapyak.dev/guide/getting-started/installation)**
+
 ---
 
 ## Features
@@ -50,15 +56,14 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 
 ---
 
-## Install
+## Documentation
 
-```bash
-npm install yapyak
-```
+Everything lives at **[yapyak.dev](https://yapyak.dev)**.
 
-Add the Vite plugin and you're set. See the [installation guide](https://yapyak.dev/guide/getting-started/installation).
-
-Full documentation at [yapyak.dev](https://yapyak.dev).
+- [Installation](https://yapyak.dev/guide/getting-started/installation) — a wizard picks the exact packages for your framework, SSR setup, and translator
+- [Getting started](https://yapyak.dev/guide/getting-started/introduction) — from install to first translation
+- [Diagnostics](https://yapyak.dev/reference/diagnostics) — all 47 codes, each with the fix
+- [Examples](https://github.com/yapyak/yapyak/tree/main/examples) — 17 minimal apps, one per stack
 
 ---
 
