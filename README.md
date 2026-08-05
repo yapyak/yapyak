@@ -1,9 +1,5 @@
-![yapyak](docs/public/banner-dark.svg#gh-dark-mode-only)
-![yapyak](docs/public/banner-light.svg#gh-light-mode-only)
-
-# yapyak
-
-**i18n that keeps up.**
+![yapyak — i18n that keeps up.](docs/public/banner-dark.svg#gh-dark-mode-only)
+![yapyak — i18n that keeps up.](docs/public/banner-light.svg#gh-light-mode-only)
 
 [![CI](https://github.com/yapyak/yapyak/actions/workflows/ci.yml/badge.svg)](https://github.com/yapyak/yapyak/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/yapyak?logo=npm&color=cb3837&label=npm)](https://www.npmjs.com/package/yapyak)
