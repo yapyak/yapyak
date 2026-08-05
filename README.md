@@ -9,7 +9,7 @@
 [![npm](https://img.shields.io/npm/v/yapyak?logo=npm&color=cb3837&label=npm)](https://www.npmjs.com/package/yapyak)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**[yapyak.dev](https://yapyak.dev)** · [Get started](https://yapyak.dev/guide/getting-started/introduction) · [Examples](https://github.com/yapyak/yapyak/tree/main/examples)
+**[Documentation](https://yapyak.dev)** · [Get started](https://yapyak.dev/guide/getting-started/introduction) · [Examples](https://github.com/yapyak/yapyak/tree/main/examples)
 
 yapyak is an i18n compiler with a small runtime, built for the way code gets written today: rapidly, often with help from a coding agent, and rarely pausing for a separate translation step.
 
@@ -50,17 +50,6 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 - **Locale switching, handled.** Instant, with nothing to load. Keep the choice in a cookie or the URL, which work with SSR, or in local storage for a SPA.
 - **Built for agents.** yapyak is designed so an agent can own i18n. It writes `t('...')` like any string, and gets clear errors early, even in the TypeScript type, so it can fix them right away.
 - **Open source, not open core.** yapyak is MIT open source and runs on your machine. Your translations are JSON files in your repo. If you use a model, requests go straight to it. There's no yapyak service in between.
-
----
-
-## Documentation
-
-Everything lives at **[yapyak.dev](https://yapyak.dev)**.
-
-- [Installation](https://yapyak.dev/guide/getting-started/installation) — a wizard picks the exact packages for your framework, SSR setup, and translator
-- [Getting started](https://yapyak.dev/guide/getting-started/introduction) — from install to first translation
-- [Diagnostics](https://yapyak.dev/reference/diagnostics) — all 47 codes, each with the fix
-- [Examples](https://github.com/yapyak/yapyak/tree/main/examples) — 17 minimal apps, one per stack
 
 ---
 
