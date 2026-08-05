@@ -1,9 +1,6 @@
 ![yapyak](docs/public/banner-dark.svg#gh-dark-mode-only)
 ![yapyak](docs/public/banner-light.svg#gh-light-mode-only)
 
-![Works with Vite, React, Vue, Svelte, and Astro — SSR on Astro, React Router, SvelteKit, and TanStack Start](docs/public/stack-dark.svg#gh-dark-mode-only)
-![Works with Vite, React, Vue, Svelte, and Astro — SSR on Astro, React Router, SvelteKit, and TanStack Start](docs/public/stack-light.svg#gh-light-mode-only)
-
 # yapyak
 
 **i18n that keeps up.**
@@ -35,6 +32,22 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
   }
 }
 ```
+
+**Bundlers**
+
+![Vite](docs/public/badges/vite-dark.svg#gh-dark-mode-only)![Vite](docs/public/badges/vite-light.svg#gh-light-mode-only)
+
+**Frameworks**
+
+![React](docs/public/badges/react-dark.svg#gh-dark-mode-only)![React](docs/public/badges/react-light.svg#gh-light-mode-only) ![Vue](docs/public/badges/vue-dark.svg#gh-dark-mode-only)![Vue](docs/public/badges/vue-light.svg#gh-light-mode-only) ![Svelte](docs/public/badges/svelte-dark.svg#gh-dark-mode-only)![Svelte](docs/public/badges/svelte-light.svg#gh-light-mode-only) ![Astro](docs/public/badges/astro-dark.svg#gh-dark-mode-only)![Astro](docs/public/badges/astro-light.svg#gh-light-mode-only)
+
+**Adapters**
+
+![Astro](docs/public/badges/astro-dark.svg#gh-dark-mode-only)![Astro](docs/public/badges/astro-light.svg#gh-light-mode-only) ![React Router](docs/public/badges/reactrouter-dark.svg#gh-dark-mode-only)![React Router](docs/public/badges/reactrouter-light.svg#gh-light-mode-only) ![SvelteKit](docs/public/badges/sveltekit-dark.svg#gh-dark-mode-only)![SvelteKit](docs/public/badges/sveltekit-light.svg#gh-light-mode-only) ![TanStack Start](docs/public/badges/tanstack-start-dark.svg#gh-dark-mode-only)![TanStack Start](docs/public/badges/tanstack-start-light.svg#gh-light-mode-only)
+
+**Translators**
+
+![Anthropic](docs/public/badges/anthropic-dark.svg#gh-dark-mode-only)![Anthropic](docs/public/badges/anthropic-light.svg#gh-light-mode-only) ![OpenAI](docs/public/badges/openai-dark.svg#gh-dark-mode-only)![OpenAI](docs/public/badges/openai-light.svg#gh-light-mode-only) ![Gemini](docs/public/badges/gemini-dark.svg#gh-dark-mode-only)![Gemini](docs/public/badges/gemini-light.svg#gh-light-mode-only) ![Ollama](docs/public/badges/ollama-dark.svg#gh-dark-mode-only)![Ollama](docs/public/badges/ollama-light.svg#gh-light-mode-only)
 
 **[Get started → yapyak.dev](https://yapyak.dev/guide/getting-started/installation)**
 
