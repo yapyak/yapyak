@@ -6,7 +6,7 @@ body:
   - type: textarea
     id: problem
     attributes:
-      label: The problem
+      label: What's missing?
       description: What can't you do today? A concrete `t()` call or workflow beats an abstract wish.
     validations:
       required: true

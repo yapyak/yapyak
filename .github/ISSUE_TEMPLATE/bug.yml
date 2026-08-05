@@ -13,8 +13,8 @@ body:
   - type: input
     id: diagnostic
     attributes:
-      label: Diagnostic code
-      description: If yapyak showed a `YAP` code, paste it — it points straight at the subsystem.
+      label: Diagnostic
+      description: If yapyak showed a `YAPnnnn` diagnostic, paste it.
       placeholder: YAP0021
   - type: textarea
     id: repro
@@ -32,10 +32,6 @@ body:
         - Vue
         - Svelte
         - Astro
-        - No framework
-      default: 4
-    validations:
-      required: true
   - type: dropdown
     id: adapter
     attributes:
@@ -45,10 +41,6 @@ body:
         - React Router
         - SvelteKit
         - TanStack Start
-        - No adapter
-      default: 4
-    validations:
-      required: true
   - type: dropdown
     id: translator
     attributes:
@@ -59,15 +51,11 @@ body:
         - Gemini
         - Ollama
         - Custom
-        - No translator
-      default: 5
-    validations:
-      required: true
   - type: textarea
     id: versions
     attributes:
       label: Versions
-      description: Paste the output of `npx -y envinfo --system --browsers --npmPackages '{yapyak,@yapyak/*,vite}'` and `node -v`.
+      description: Paste the output of `npx -y envinfo --system --binaries --browsers --npmPackages '{yapyak,@yapyak/*,vite}'`. Review it before posting — the paths can include your username.
       render: shell
     validations:
       required: true
