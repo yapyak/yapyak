@@ -6,13 +6,13 @@ export type {
   ReferenceModule,
 } from './type';
 
-export { extractPackage } from './extract';
 export {
   expandModuleEntries,
   getTypeCallSignatures,
   getTypeMembers,
   resolveTypeExport,
 } from './module-entry';
+export { extractPackage } from './package';
 export {
   buildMethodPage,
   buildModulePage,

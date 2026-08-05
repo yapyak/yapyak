@@ -1,5 +1,9 @@
 # yapyak
 
+![yapyak](docs/public/banner.svg)
+
+---
+
 **i18n that keeps up.**
 
 [![CI](https://github.com/yapyak/yapyak/actions/workflows/ci.yml/badge.svg)](https://github.com/yapyak/yapyak/actions/workflows/ci.yml)
@@ -30,6 +34,8 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 }
 ```
 
+---
+
 ## Features
 
 - **Source string is the key.** Write `t('Save changes')`. There are no separate names to invent.
@@ -44,6 +50,8 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 - **Built for agents.** yapyak is designed so an agent can own i18n. It writes `t('...')` like any string, and gets clear errors early, even in the TypeScript type, so it can fix them right away.
 - **Open source, not open core.** yapyak is MIT open source and runs on your machine. Your translations are JSON files in your repo. If you use a model, requests go straight to it. There's no yapyak service in between.
 
+---
+
 ## Install
 
 ```bash
@@ -54,11 +62,15 @@ Add the Vite plugin and you're set. See the [installation guide](https://yapyak.
 
 Full documentation at [yapyak.dev](https://yapyak.dev).
 
+---
+
 ## Contributing
 
 yapyak is early, and contributions are very welcome.
 
 Bug reports, docs fixes, examples, adapter work, and feedback from real projects all help. If you find yapyak useful, sharing it helps too.
+
+---
 
 ## License
 
