@@ -2,4 +2,4 @@ blank_issues_enabled: true
 contact_links:
   - name: Documentation
     url: https://yapyak.dev
-    about: Guides, reference, and every YAP diagnostic explained.
+    about: Guides, reference, and every YAP diagnostic explained

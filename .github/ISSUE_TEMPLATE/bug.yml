@@ -1,5 +1,5 @@
 name: Bug report
-description: Something is broken.
+description: Something is broken
 labels:
   - bug
 body:
@@ -32,7 +32,8 @@ body:
         - Vue
         - Svelte
         - Astro
-        - None (vanilla)
+        - No framework
+      default: 4
     validations:
       required: true
   - type: dropdown
@@ -44,6 +45,10 @@ body:
         - React Router
         - SvelteKit
         - TanStack Start
+        - No adapter
+      default: 4
+    validations:
+      required: true
   - type: dropdown
     id: translator
     attributes:
@@ -54,6 +59,10 @@ body:
         - Gemini
         - Ollama
         - Custom
+        - No translator
+      default: 5
+    validations:
+      required: true
   - type: input
     id: versions
     attributes:
