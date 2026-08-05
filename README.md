@@ -1,5 +1,3 @@
-# yapyak
-
 ![yapyak](docs/public/banner.svg)
 
 ---
