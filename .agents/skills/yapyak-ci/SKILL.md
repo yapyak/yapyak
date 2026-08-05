@@ -22,7 +22,7 @@ Never pin an action to a tag, branch, or shortened SHA → resolve the full comm
 2. Take the SHA on the `^{}` (dereferenced) line for that tag; when no `^{}` line exists, the tag line's SHA is the commit.
 3. Write `<owner>/<repo>@<sha> # <exact tag>`.
 
-Bump action SHAs by hand with the same algorithm — dependency-bot configuration is forbidden per [[yapyak-dependency]].
+Action SHA bumps arrive as monthly dependabot PRs (`github-actions` ecosystem only, per [[yapyak-dependency]]) → review each with the same algorithm: the new SHA must match the tag in the comment.
 
 ### Permissions
 

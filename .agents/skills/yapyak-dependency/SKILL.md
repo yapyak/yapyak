@@ -5,7 +5,7 @@ description: "Dependency updates: the bump routine, holds, the release-age gate,
 
 ### The bump routine
 
-Never add dependabot or renovate configuration → run this routine. Action SHAs follow [[yapyak-ci]] § Action pinning.
+Never add dependabot or renovate configuration for npm packages → run this routine. The single exception is `.github/dependabot.yml` scoped to `package-ecosystem: github-actions` — action SHA bumps arrive as monthly PRs, reviewed per [[yapyak-ci]] § Action pinning.
 
 1. `pnpm -r outdated` — exit ≠ 0 means bump candidates exist.
 2. Drop every package in the Holds table from the candidates.
