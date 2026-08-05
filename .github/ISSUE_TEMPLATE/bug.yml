@@ -40,7 +40,6 @@ body:
     attributes:
       label: Adapter
       options:
-        - None
         - Astro
         - React Router
         - SvelteKit
@@ -50,7 +49,6 @@ body:
     attributes:
       label: Translator
       options:
-        - None
         - Anthropic
         - OpenAI
         - Gemini
