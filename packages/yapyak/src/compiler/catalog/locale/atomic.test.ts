@@ -1,0 +1,177 @@
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+
+import { writeAtomic, writeEachAtomic } from './atomic';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+
+describe('writeAtomic', () => {
+  let directory: string;
+
+  beforeEach(() => {
+    directory = mkdtempSync(join(tmpdir(), 'yapyak-atomic-'));
+  });
+
+  afterEach(() => {
+    rmSync(directory, {
+      force: true,
+      recursive: true,
+    });
+  });
+
+  it('writes the content to the target path', () => {
+    const path = join(directory, 'data.json');
+    writeAtomic(path, '{"key":"value"}');
+    expect(readFileSync(path, 'utf-8')).toBe('{"key":"value"}');
+  });
+
+  it('transforms existing content into the new bytes', () => {
+    const path = join(directory, 'data.json');
+    writeFileSync(path, '{"old":"value"}');
+    writeAtomic(path, '{"new":"value"}');
+    expect(readFileSync(path, 'utf-8')).toBe('{"new":"value"}');
+  });
+
+  it('writes no `.tmp` artefact after a successful write', () => {
+    const path = join(directory, 'data.json');
+    writeAtomic(path, '{"key":"value"}');
+    const remaining = readdirSync(directory).filter((name) =>
+      name.endsWith('.tmp'),
+    );
+    expect(remaining).toEqual([]);
+  });
+
+  it('preserves the original file when the rename target is invalid', () => {
+    const path = join(directory, 'missing', 'data.json');
+    expect(() => writeAtomic(path, '{"key":"value"}')).toThrow();
+    expect(readdirSync(directory)).toEqual([]);
+  });
+
+  it('throws when the directory does not exist', () => {
+    const path = join(directory, 'missing', 'data.json');
+    expect(() => writeAtomic(path, '{"key":"value"}')).toThrow();
+  });
+});
+
+describe('writeEachAtomic', () => {
+  let directory: string;
+
+  beforeEach(() => {
+    directory = mkdtempSync(join(tmpdir(), 'yapyak-atomic-each-'));
+  });
+
+  afterEach(() => {
+    rmSync(directory, {
+      force: true,
+      recursive: true,
+    });
+  });
+
+  it('writes every target when all stages succeed', () => {
+    const firstPath = join(directory, 'a.json');
+    const secondPath = join(directory, 'b.json');
+    writeEachAtomic([
+      {
+        content: '{"a":1}',
+        path: firstPath,
+      },
+      {
+        content: '{"b":2}',
+        path: secondPath,
+      },
+    ]);
+    expect(readFileSync(firstPath, 'utf-8')).toBe('{"a":1}');
+    expect(readFileSync(secondPath, 'utf-8')).toBe('{"b":2}');
+  });
+
+  it('preserves every existing target when staging fails', () => {
+    const firstPath = join(directory, 'a.json');
+    const secondPath = join(directory, 'missing', 'b.json');
+    writeFileSync(firstPath, '{"a":"original"}');
+    expect(() =>
+      writeEachAtomic([
+        {
+          content: '{"a":1}',
+          path: firstPath,
+        },
+        {
+          content: '{"b":2}',
+          path: secondPath,
+        },
+      ]),
+    ).toThrow();
+    expect(readFileSync(firstPath, 'utf-8')).toBe('{"a":"original"}');
+  });
+
+  it('writes no `.tmp` artefact after a failed staging', () => {
+    const firstPath = join(directory, 'a.json');
+    const secondPath = join(directory, 'missing', 'b.json');
+    expect(() =>
+      writeEachAtomic([
+        {
+          content: '{"a":1}',
+          path: firstPath,
+        },
+        {
+          content: '{"b":2}',
+          path: secondPath,
+        },
+      ]),
+    ).toThrow();
+    const remaining = readdirSync(directory).filter((name) =>
+      name.endsWith('.tmp'),
+    );
+    expect(remaining).toEqual([]);
+  });
+
+  it('writes no `.tmp` artefact after a successful write', () => {
+    writeEachAtomic([
+      {
+        content: '{"a":1}',
+        path: join(directory, 'a.json'),
+      },
+      {
+        content: '{"b":2}',
+        path: join(directory, 'b.json'),
+      },
+    ]);
+    const remaining = readdirSync(directory).filter((name) =>
+      name.endsWith('.tmp'),
+    );
+    expect(remaining).toEqual([]);
+  });
+
+  it('writes nothing when the list is empty', () => {
+    writeEachAtomic([]);
+    expect(readdirSync(directory)).toEqual([]);
+  });
+
+  it('writes no `.tmp` artefact when a later rename fails mid-commit', () => {
+    const firstPath = join(directory, 'a.json');
+    const secondPath = join(directory, 'b.json');
+    mkdirSync(secondPath);
+    expect(() =>
+      writeEachAtomic([
+        {
+          content: '{"a":1}',
+          path: firstPath,
+        },
+        {
+          content: '{"b":2}',
+          path: secondPath,
+        },
+      ]),
+    ).toThrow();
+    const remaining = readdirSync(directory).filter((name) =>
+      name.endsWith('.tmp'),
+    );
+    expect(remaining).toEqual([]);
+  });
+});

@@ -1,0 +1,14 @@
+---
+import { parseRichText } from 'yapyak';
+
+import { renderRichText } from './rich-text';
+
+interface Props {
+  value: string;
+}
+
+const { value } = Astro.props;
+const html = await renderRichText(parseRichText(value), Astro.slots);
+---
+
+<Fragment set:html={html} />

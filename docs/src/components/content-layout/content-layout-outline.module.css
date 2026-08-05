@@ -1,0 +1,26 @@
+@layer components {
+  .ContentLayoutOutline {
+    display: none;
+
+    @media (min-width: 1324px) {
+      position: sticky;
+      top: var(--header-height);
+      display: block;
+      align-self: start;
+      width: calc(var(--layout-outline-width) + var(--layout-side-bleed));
+      padding: var(--spacing-5)
+        calc(var(--spacing-3) + var(--layout-side-bleed)) var(--spacing-5) 0;
+    }
+
+    .Stack {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-1);
+
+      @media (min-width: 1324px) {
+        padding-left: var(--spacing-4);
+        border-left: var(--px) solid var(--rule);
+      }
+    }
+  }
+}

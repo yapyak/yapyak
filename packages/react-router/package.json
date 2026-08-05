@@ -1,0 +1,56 @@
+{
+  "name": "@yapyak/react-router",
+  "version": "0.0.0",
+  "description": "React Router adapter for yapyak.",
+  "keywords": [
+    "adapter",
+    "i18n",
+    "react",
+    "react-router",
+    "translation",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
+  "bugs": "https://github.com/yapyak/yapyak/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yapyak/yapyak.git",
+    "directory": "packages/react-router"
+  },
+  "license": "MIT",
+  "author": "Joakim Uhrwing",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "pnpm -w vitest --run --project=@yapyak/react-router",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@yapyak/tsdown-config": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "react-router": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "react-router": ">=7.9",
+    "yapyak": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22.22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

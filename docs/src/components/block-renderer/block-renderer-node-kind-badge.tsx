@@ -1,0 +1,21 @@
+import type { KindBadgeBlock } from '@yapyak/docs-compiler';
+
+import { KindBadge } from '../kind-badge';
+
+export type BlockRendererNodeKindBadgeProps = {
+  block: KindBadgeBlock;
+};
+
+export function BlockRendererNodeKindBadge(
+  props: BlockRendererNodeKindBadgeProps,
+) {
+  const { block } = props;
+
+  return (
+    <KindBadge
+      appearance="plain"
+      size="sm"
+      variant={block.exportKind}
+    />
+  );
+}

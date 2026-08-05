@@ -1,0 +1,53 @@
+{
+  "name": "@yapyak/gemini",
+  "version": "0.0.0",
+  "description": "Gemini translator for yapyak.",
+  "keywords": [
+    "gemini",
+    "i18n",
+    "translation",
+    "translator",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
+  "bugs": "https://github.com/yapyak/yapyak/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yapyak/yapyak.git",
+    "directory": "packages/gemini"
+  },
+  "license": "MIT",
+  "author": "Joakim Uhrwing",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "pnpm -w vitest --run --project=@yapyak/gemini",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@yapyak/tsdown-config": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "yapyak": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22.22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

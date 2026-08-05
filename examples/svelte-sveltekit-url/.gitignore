@@ -1,0 +1,4 @@
+.svelte-kit
+.yapyak/
+build
+node_modules

@@ -1,0 +1,40 @@
+@layer components {
+  .Drawer {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: var(--z-index-4);
+    display: flex;
+    flex-direction: column;
+    width: min(85vw, 320px);
+    padding: var(--spacing-6) var(--spacing-4);
+    overflow-y: auto;
+    scrollbar-color: var(--ring-stronger) transparent;
+    scrollbar-width: thin;
+    background-color: var(--canvas);
+    box-shadow: var(--shadow-overlay);
+    transition: transform var(--duration-slow) var(--ease-snappy);
+
+    &[data-direction="start"] {
+      left: 0;
+      border-right: var(--px) solid var(--rule);
+      border-top-right-radius: var(--border-radius-lg);
+      border-bottom-right-radius: var(--border-radius-lg);
+
+      &:is([data-animate="enter"], [data-animate="exit"]) {
+        transform: translateX(calc(-100% - 96px));
+      }
+    }
+
+    &[data-direction="end"] {
+      right: 0;
+      border-left: var(--px) solid var(--rule);
+      border-top-left-radius: var(--border-radius-lg);
+      border-bottom-left-radius: var(--border-radius-lg);
+
+      &:is([data-animate="enter"], [data-animate="exit"]) {
+        transform: translateX(calc(100% + 96px));
+      }
+    }
+  }
+}

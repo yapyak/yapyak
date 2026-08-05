@@ -1,0 +1,46 @@
+{
+  "name": "@yapyak/docs",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#components/*": "./src/components/*",
+    "#constants": "./src/constants.ts",
+    "#docs/*": "./src/docs/*",
+    "#hooks/*": "./src/hooks/*",
+    "#lib/*": "./src/lib/*",
+    "#primitives/*": "./src/primitives/*",
+    "#styles/*": "./src/styles/*",
+    "#systems/*": "./src/systems/*",
+    "#types": "./src/types.ts",
+    "#utils/*": "./src/utils/*"
+  },
+  "scripts": {
+    "build": "NODE_OPTIONS=--max-old-space-size=6144 vite build",
+    "dev": "vite dev",
+    "preview": "vite preview",
+    "test": "pnpm -w vitest --run --project=@yapyak/docs",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/react-router": "catalog:",
+    "@tanstack/react-start": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "@yapyak/docs-compiler": "workspace:*",
+    "@yapyak/react": "workspace:*",
+    "@yapyak/tanstack-start": "workspace:*",
+    "@yapyak/vite": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vitest-config": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  }
+}

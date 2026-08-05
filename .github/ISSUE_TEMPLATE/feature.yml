@@ -1,0 +1,17 @@
+name: Feature request
+description: Something is missing
+labels:
+  - enhancement
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's missing?
+      description: What can't you do today? A concrete `t()` call or workflow beats an abstract wish.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: Optional — how you imagine it working.

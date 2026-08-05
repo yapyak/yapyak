@@ -1,0 +1,25 @@
+html {
+  scrollbar-gutter: stable;
+  color-scheme: dark;
+  scroll-padding-top: calc(var(--header-height) + var(--content-header-height));
+
+  @media (min-width: 1324px) {
+    scroll-padding-top: var(--header-height);
+  }
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: clip;
+  font-family: system-ui;
+  font-size: var(--font-size-md);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: var(--line-height-relaxed);
+  color: var(--foreground-soft);
+  background-color: var(--canvas);
+}
+
+::selection {
+  background-color: var(--brand-soft);
+}

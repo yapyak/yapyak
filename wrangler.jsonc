@@ -1,0 +1,8 @@
+{
+  "assets": {
+    "directory": "docs/dist/client",
+    "not_found_handling": "404-page"
+  },
+  "compatibility_date": "2026-07-08",
+  "name": "yapyak"
+}

@@ -1,0 +1,73 @@
+{
+  "name": "@yapyak/svelte",
+  "version": "0.0.0",
+  "description": "Svelte bindings for yapyak.",
+  "keywords": [
+    "bindings",
+    "i18n",
+    "svelte",
+    "translation",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
+  "bugs": "https://github.com/yapyak/yapyak/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yapyak/yapyak.git",
+    "directory": "packages/svelte"
+  },
+  "license": "MIT",
+  "author": "Joakim Uhrwing",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "svelte": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./internal": {
+      "types": "./src/internal.ts",
+      "svelte": "./src/internal.ts",
+      "default": "./src/internal.ts"
+    },
+    "./processor": {
+      "types": "./dist/processor.d.ts",
+      "default": "./dist/processor.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "!src/**/*.test.ts"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "pnpm -w vitest --run --project=@yapyak/svelte",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "catalog:",
+    "@testing-library/svelte": "catalog:",
+    "@types/node": "catalog:",
+    "@yapyak/tsdown-config": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vitest-config": "workspace:*",
+    "happy-dom": "catalog:",
+    "svelte": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "svelte": ">=5",
+    "yapyak": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22.22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

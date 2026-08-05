@@ -1,0 +1,83 @@
+---
+title: Selects
+order: 4
+---
+
+`select` picks between branches based on a string value. It's the counterpart to [`plural`](/guide/writing/plurals), which switches on a number. Use `select` whenever the translation changes based on a category (role, status, and so on).
+
+```ts
+t('{role, select, admin {Admin panel} editor {Editor view} other {Reader view}}', { role: 'admin' });
+// output:
+// en-US: 'Admin panel'
+```
+
+The keys are arbitrary strings you choose. Unlike `plural`, where the categories come from ICU's locale rules, `select` lets you define whatever set fits your data.
+
+## The `other` fallback
+
+Every `select` needs an `other` branch as the fallback. If the runtime value doesn't match any of the named branches, `other` is used:
+
+```ts
+t('{status, select, draft {Draft} published {Published} other {Unknown}}', { status: 'archived' });
+// output:
+// en-US: 'Unknown'
+```
+
+`'archived'` doesn't match any named branch, so `other` is used.
+
+Omitting `other` is a compile-time error ([`YAP0008`](/reference/diagnostics/YAP0008)).
+
+## Per-locale branching
+
+Like with plurals, the translator (human or model) is free to add, remove, or merge branches per locale. Some languages need gendered verb forms; others don't.
+
+In the English source the verb doesn't change:
+
+```ts
+t('{gender, select, female {She is online} male {He is online} other {They are online}}', { gender });
+```
+
+Spanish adds a gendered adjective:
+
+```json [locales/es.json]
+{
+  "{gender, select, female {She is online} male {He is online} other {They are online}}": "{gender, select, female {Está conectada} male {Está conectado} other {Está conectado}}"
+}
+```
+
+Finnish drops the distinction; one branch covers all:
+
+```json [locales/fi.json]
+{
+  "{gender, select, female {She is online} male {He is online} other {They are online}}": "{gender, select, other {Hän on paikalla}}"
+}
+```
+
+## Nesting placeholders
+
+A `select` branch is a full message. You can put placeholders, plurals, or even other selects inside:
+
+```ts
+t('{role, select, admin {Admin {name} has {count, plural, one {# alert} other {# alerts}}} other {{name} has {count, plural, one {# alert} other {# alerts}}}}', {
+  count: 3,
+  name: 'Ada',
+  role: 'admin'
+});
+```
+
+Long ICU expressions get hard to read. yapyak doesn't cap the length. If a message is unreadable, split it into two `t()` calls and let the component pick.
+
+## Selectordinal
+
+If your branching looks like a select but the value is an ordinal ("1st place", "2nd place", "3rd place"), that's `selectordinal`. It's covered in [Plurals](/guide/writing/plurals#ordinals-selectordinal) since the categories and rules match `plural`.
+
+## Runtime values
+
+The parameter value is whatever you pass in:
+
+- A string matching a branch key renders that branch.
+- A string with no matching branch renders `other`.
+- A non-string value is coerced to string with `String(value)`, then matched.
+
+Keeping the values typed (a union literal like `'admin' | 'editor' | 'viewer'`) is the easiest way to be sure every legal value has a branch. TypeScript can't introspect the branches at the source-string level, but a tight union type at the call site catches mismatches at the call site.
+

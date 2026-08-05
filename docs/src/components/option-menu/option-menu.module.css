@@ -1,0 +1,5 @@
+@layer components {
+  .OptionMenu {
+    min-width: 140px;
+  }
+}

@@ -1,0 +1,42 @@
+@layer components {
+  .ContentLayoutContentHeader {
+    position: fixed;
+    top: var(--header-height);
+    right: 0;
+    left: 0;
+    z-index: var(--z-index-1);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    height: var(--content-header-height);
+    padding: 0 var(--spacing-4-5);
+    background-color: var(--canvas);
+    border-bottom: var(--px) solid var(--rule);
+
+    :is(.Start, .End) {
+      display: flex;
+      align-items: center;
+    }
+
+    .Start {
+      justify-self: start;
+
+      @media (min-width: 1024px) {
+        display: none;
+      }
+    }
+
+    .End {
+      justify-self: end;
+    }
+
+    @media (min-width: 1024px) {
+      right: var(--layout-side-bleed);
+      left: calc(var(--layout-side-bleed) + var(--layout-sidebar-width));
+    }
+
+    @media (min-width: 1324px) {
+      display: none;
+    }
+  }
+}

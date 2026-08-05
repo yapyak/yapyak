@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "ignoreDeprecations": "6.0",
+    "isolatedDeclarations": true,
+    "jsx": "react-jsx",
+    "module": "esnext",
+    "target": "es2022"
+  },
+  "extends": "./base.json"
+}

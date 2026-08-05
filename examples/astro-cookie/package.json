@@ -1,0 +1,21 @@
+{
+  "name": "@yapyak-examples/astro-cookie",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "dev": "astro dev",
+    "preview": "astro preview",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/node": "catalog:",
+    "@yapyak/astro": "workspace:*",
+    "astro": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@astrojs/check": "catalog:",
+    "typescript": "catalog:"
+  }
+}

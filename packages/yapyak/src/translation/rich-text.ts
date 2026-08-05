@@ -1,0 +1,262 @@
+/**
+ * The rich-text node.
+ */
+export type RichTextNode =
+  | {
+      type: 'text';
+      value: string;
+    }
+  | {
+      type: 'pair';
+      name: string;
+      children: RichTextNode[];
+    }
+  | {
+      type: 'void';
+      name: string;
+    };
+
+/**
+ * Parses a source string with `<tag>` markers into rich-text nodes.
+ *
+ * @remarks
+ * Tag names must start with a letter; subsequent characters are letters or digits. Tags with attributes or no matching close marker remain in the output as literal text.
+ *
+ * @param source - The source string.
+ *
+ * @example
+ * ```ts
+ * import { parseRichText, t } from 'yapyak';
+ *
+ * parseRichText(t('Click <link>here</link>.'));
+ * // output: [
+ * //   { type: 'text', value: 'Click ' },
+ * //   { type: 'pair', name: 'link', children: [{ type: 'text', value: 'here' }] },
+ * //   { type: 'text', value: '.' },
+ * // ]
+ * ```
+ *
+ * @example Void tag
+ * ```ts
+ * import { parseRichText } from 'yapyak';
+ *
+ * parseRichText('First<br/>Second');
+ * // output: [
+ * //   { type: 'text', value: 'First' },
+ * //   { type: 'void', name: 'br' },
+ * //   { type: 'text', value: 'Second' },
+ * // ]
+ * ```
+ *
+ * @example Plain-text renderer
+ * ```ts
+ * import { parseRichText, type RichTextNode } from 'yapyak';
+ *
+ * function toPlain(nodes: RichTextNode[]): string {
+ *   return nodes
+ *     .map((node) => {
+ *       if (node.type === 'text') return node.value;
+ *       if (node.type === 'void') return '';
+ *       return toPlain(node.children);
+ *     })
+ *     .join('');
+ * }
+ *
+ * toPlain(parseRichText('Click <link>here</link>.'));
+ * // output: 'Click here.'
+ * ```
+ */
+export function parseRichText(source: string): RichTextNode[] {
+  return parseRichTextAtDepth(source, 0);
+}
+
+const MAX_RICH_TEXT_DEPTH = 1000;
+
+function parseRichTextAtDepth(source: string, depth: number): RichTextNode[] {
+  if (depth > MAX_RICH_TEXT_DEPTH) {
+    return source === ''
+      ? []
+      : [
+          {
+            type: 'text',
+            value: source,
+          },
+        ];
+  }
+  const nodes: RichTextNode[] = [];
+  let text = '';
+  let index = 0;
+
+  const flush = (): void => {
+    if (text !== '') {
+      nodes.push({
+        type: 'text',
+        value: text,
+      });
+      text = '';
+    }
+  };
+
+  while (index < source.length) {
+    const openTag = source.startsWith('<', index)
+      ? readOpenTag(source, index)
+      : undefined;
+    if (openTag) {
+      if (openTag.kind === 'void') {
+        flush();
+        nodes.push({
+          name: openTag.name,
+          type: 'void',
+        });
+        index = openTag.end;
+        continue;
+      }
+      const close = findClosingTagRange(source, openTag.end, openTag.name);
+      if (close) {
+        flush();
+        nodes.push({
+          children: parseRichTextAtDepth(
+            source.slice(openTag.end, close.start),
+            depth + 1,
+          ),
+          name: openTag.name,
+          type: 'pair',
+        });
+        index = close.end;
+        continue;
+      }
+    }
+    text += source[index];
+    index += 1;
+  }
+  flush();
+  return nodes;
+}
+
+export function walkRichText<T>(
+  source: string,
+  handlers: Record<string, (children?: T) => T>,
+  renderer: {
+    leaf: (text: string) => T;
+    concat: (parts: T[]) => T;
+  },
+): T {
+  return renderNodes(parseRichText(source), handlers, renderer);
+}
+
+function renderNodes<T>(
+  nodes: RichTextNode[],
+  handlers: Record<string, (children?: T) => T>,
+  renderer: {
+    leaf: (text: string) => T;
+    concat: (parts: T[]) => T;
+  },
+): T {
+  const parts: T[] = [];
+  for (const node of nodes) {
+    if (node.type === 'text') {
+      parts.push(renderer.leaf(node.value));
+      continue;
+    }
+    if (node.type === 'void') {
+      const handler = handlers[node.name];
+      if (handler) {
+        parts.push(handler());
+        continue;
+      }
+      parts.push(renderer.leaf(`<${node.name}/>`));
+      continue;
+    }
+    const handler = handlers[node.name];
+    if (handler) {
+      const inner = renderNodes(node.children, handlers, renderer);
+      parts.push(handler(inner));
+      continue;
+    }
+    parts.push(renderer.leaf(`<${node.name}>`));
+    parts.push(renderNodes(node.children, handlers, renderer));
+    parts.push(renderer.leaf(`</${node.name}>`));
+  }
+  return renderer.concat(parts);
+}
+
+function readOpenTag(
+  source: string,
+  index: number,
+):
+  | {
+      name: string;
+      end: number;
+      kind: 'open' | 'void';
+    }
+  | undefined {
+  const close = source.indexOf('>', index + 1);
+  if (close === -1) {
+    return undefined;
+  }
+  let name = source.slice(index + 1, close);
+  let kind: 'open' | 'void' = 'open';
+  if (name.endsWith('/')) {
+    name = name.slice(0, -1).trimEnd();
+    kind = 'void';
+  }
+  if (!/^[A-Za-z][A-Za-z0-9]*$/.test(name)) {
+    return undefined;
+  }
+  return {
+    end: close + 1,
+    kind,
+    name,
+  };
+}
+
+function findClosingTagRange(
+  source: string,
+  from: number,
+  name: string,
+):
+  | {
+      start: number;
+      end: number;
+    }
+  | undefined {
+  const openPrefix = `<${name}`;
+  const close = `</${name}>`;
+  const openPrefixLength = openPrefix.length;
+  let depth = 1;
+  let index = from;
+  while (index < source.length) {
+    if (source.startsWith(close, index)) {
+      depth -= 1;
+      if (depth === 0) {
+        return {
+          end: index + close.length,
+          start: index,
+        };
+      }
+      index += close.length;
+      continue;
+    }
+    if (source.startsWith(openPrefix, index)) {
+      const after = source[index + openPrefixLength];
+      if (after === '>') {
+        depth += 1;
+        index += openPrefixLength + 1;
+        continue;
+      }
+      if (after === ' ' || after === '\t' || after === '\n' || after === '/') {
+        const closeBracket = source.indexOf('>', index + openPrefixLength);
+        if (closeBracket === -1) {
+          return undefined;
+        }
+        if (source[closeBracket - 1] !== '/') {
+          depth += 1;
+        }
+        index = closeBracket + 1;
+        continue;
+      }
+    }
+    index += 1;
+  }
+  return undefined;
+}

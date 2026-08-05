@@ -1,0 +1,189 @@
+import type {
+  CatalogEntry,
+  ExtractedMessage,
+  LocaleFile,
+  SyncItem,
+} from '../../compiler/internal';
+import type { Config } from '../config';
+
+import {
+  CorruptLocaleFileError,
+  extractFile,
+  readLocaleFile,
+  toEntry,
+  toMessageKey,
+  toVariants,
+  walkSourceFiles,
+  writeLocaleFile,
+} from '../../compiler/internal';
+import { createFilter } from '../../config/internal';
+import { color, header, symbol } from '../tui';
+import { existsSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
+
+type BuildExpectedResult = {
+  expected: Record<string, Set<string>>;
+  inScope: (fileId: string) => boolean;
+};
+
+export type CleanOptions = {
+  write: boolean;
+};
+
+export function clean(
+  config: Config,
+  projectRoot: string,
+  options: CleanOptions,
+): number {
+  const { write } = options;
+  const localesPath = join(projectRoot, config.localesDir);
+  const fileLocales = existsSync(localesPath)
+    ? readdirSync(localesPath)
+        .filter((name) => name.endsWith('.json'))
+        .map((name) => name.replace(/\.json$/, ''))
+    : [];
+  const { defaultLocale } = config;
+  const locales = fileLocales.filter((locale) => locale !== defaultLocale);
+
+  process.stdout.write(header('Locale cleanup'));
+
+  const { expected, inScope } = buildExpected(projectRoot, config);
+  const orphanSources: SyncItem[] = [];
+  const filesToWrite: {
+    next: LocaleFile;
+    path: string;
+  }[] = [];
+
+  for (const locale of locales) {
+    const localePath = join(localesPath, `${locale}.json`);
+    let existing: LocaleFile;
+    try {
+      existing = readLocaleFile(localePath);
+    } catch (error) {
+      if (error instanceof CorruptLocaleFileError) {
+        process.stderr.write(
+          `\n  ${symbol.cross} ${color.red(error.message)}\n  ${color.dim('Refusing to clean — fix the locale file or run `yapyak check` to see all issues.')}\n\n`,
+        );
+        return 1;
+      }
+      throw error;
+    }
+    const next: LocaleFile = {};
+    let hasChanged = false;
+
+    for (const [fileId, entries] of Object.entries(existing)) {
+      if (!inScope(fileId)) {
+        next[fileId] = {
+          ...entries,
+        };
+        continue;
+      }
+      const expectedKeys = expected[fileId];
+      const byContextBySource = new Map<
+        string,
+        Map<string | undefined, string>
+      >();
+      for (const [source, entry] of Object.entries(entries)) {
+        for (const { context, value } of toVariants(entry)) {
+          if (!expectedKeys?.has(toMessageKey(source, context))) {
+            orphanSources.push({
+              fileId,
+              locale,
+              source,
+            });
+            hasChanged = true;
+            continue;
+          }
+          let byContext = byContextBySource.get(source);
+          if (!byContext) {
+            byContext = new Map();
+            byContextBySource.set(source, byContext);
+          }
+          byContext.set(context, value);
+        }
+      }
+      const nextEntries: Record<string, CatalogEntry> = Object.create(null);
+      for (const [source, byContext] of byContextBySource) {
+        nextEntries[source] = toEntry(byContext, source, fileId);
+      }
+      if (Object.keys(nextEntries).length > 0) {
+        next[fileId] = nextEntries;
+      }
+    }
+
+    if (hasChanged && write) {
+      filesToWrite.push({
+        next,
+        path: localePath,
+      });
+    }
+  }
+
+  if (orphanSources.length === 0) {
+    process.stdout.write(
+      `  ${symbol.check} ${color.green('No orphan entries.')}\n\n`,
+    );
+    return 0;
+  }
+
+  process.stdout.write(
+    `  ${symbol.cross} ${color.red(`${orphanSources.length} orphan source(s)`)}\n\n`,
+  );
+  for (const orphan of orphanSources) {
+    process.stdout.write(
+      `    ${color.dim(orphan.locale)} ${color.dim('—')} ${color.dim(orphan.fileId)} ${color.dim('—')} ${color.bold(orphan.source)}\n`,
+    );
+  }
+  process.stdout.write('\n');
+
+  if (!write) {
+    process.stdout.write(
+      `  ${color.dim('Run')} ${color.cyan('yapyak clean --write')} ${color.dim('to remove these entries.')}\n\n`,
+    );
+    return 0;
+  }
+
+  for (const file of filesToWrite) {
+    writeLocaleFile({
+      after: file.next,
+      extractedKeys: expected,
+      filePath: file.path,
+    });
+  }
+  process.stdout.write(
+    `  ${symbol.check} ${color.green(`Removed ${orphanSources.length} entry/entries from ${filesToWrite.length} locale file(s).`)}\n\n`,
+  );
+  return 0;
+}
+
+function buildExpected(
+  projectRoot: string,
+  config: Config,
+): BuildExpectedResult {
+  const filter = createFilter(config.include, config.exclude);
+  const sourceFiles = walkSourceFiles(filter, projectRoot);
+  const scopedFileIds = new Set<string>(sourceFiles.map((file) => file.fileId));
+  const messages: ExtractedMessage[] = [];
+  for (const file of sourceFiles) {
+    const result = extractFile(file.fileId, file.code, {
+      processors: config.processors,
+    });
+    messages.push(...result.messages);
+  }
+  const expected: Record<string, Set<string>> = {};
+  for (const message of messages) {
+    const key = toMessageKey(message.source, message.context);
+    for (const location of message.locations) {
+      let perFile = expected[location.fileId];
+      if (!perFile) {
+        perFile = new Set<string>();
+        expected[location.fileId] = perFile;
+      }
+      perFile.add(key);
+    }
+  }
+  return {
+    expected,
+    inScope: (fileId): boolean => scopedFileIds.has(fileId),
+  };
+}

@@ -1,0 +1,15 @@
+@layer components {
+  .ContentLayoutContentContent {
+    padding-inline: var(--spacing-6);
+
+    @media (min-width: 1024px) {
+      padding-inline: var(--spacing-12);
+    }
+
+    @media (min-width: 1324px) {
+      width: 100%;
+      max-width: 784px;
+      margin-inline: auto;
+    }
+  }
+}

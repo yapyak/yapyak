@@ -1,0 +1,251 @@
+import type {
+  CatalogEntry,
+  ExtractedMessage,
+  LocaleData,
+  LocaleFile,
+} from '../../compiler/internal';
+import type { Config } from '../config';
+
+import {
+  CorruptLocaleFileError,
+  findTranslation,
+  readLocaleFile,
+  stringifyCanonical,
+  toEntry,
+  toMessageKey,
+} from '../../compiler/internal';
+import { buildReport } from '../report';
+import { color, symbol } from '../tui';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { dirname, isAbsolute, join, relative, resolve } from 'node:path';
+
+export type ExportOptions = {
+  locales: string[];
+  out?: string;
+  split: boolean;
+};
+
+export function exportCommand(
+  config: Config,
+  projectRoot: string,
+  options: ExportOptions,
+): number {
+  const { locales: localeFilter, out, split } = options;
+
+  if (split && !out) {
+    process.stderr.write(
+      `\n  ${symbol.cross} ${color.red('--split requires --out=<dir>')}\n\n`,
+    );
+    return 1;
+  }
+
+  if (out && isInsideLocalesDir(out, projectRoot, config.localesDir)) {
+    process.stderr.write(
+      `\n  ${symbol.cross} ${color.red(`yapyak export refuses to write inside ${config.localesDir}/.`)}\n  ${color.dim('That directory is owned by the plugin and represents the on-disk state, not a derived snapshot.')}\n\n`,
+    );
+    return 1;
+  }
+
+  const report = buildReport({
+    defaultLocale: config.defaultLocale,
+    exclude: config.exclude,
+    include: config.include,
+    localesDir: config.localesDir,
+    processors: config.processors,
+    projectRoot,
+  });
+
+  const errorCount = report.diagnostics.filter(
+    (diagnostic) => diagnostic.severity === 'error',
+  ).length;
+  if (errorCount > 0) {
+    process.stderr.write(
+      `\n  ${symbol.cross} ${color.red(`${errorCount} error${errorCount === 1 ? '' : 's'} in locale files`)}\n  ${color.dim('Refusing to export — run `yapyak check` to see details.')}\n\n`,
+    );
+    return 1;
+  }
+
+  const allLocales = report.locales;
+  const targetLocales =
+    localeFilter.length === 0
+      ? allLocales
+      : localeFilter.filter((locale) => allLocales.includes(locale));
+
+  const unknown = localeFilter.filter((locale) => !allLocales.includes(locale));
+  if (unknown.length > 0) {
+    process.stderr.write(
+      `\n  ${symbol.cross} ${color.red(`Unknown locale${unknown.length > 1 ? 's' : ''}: ${unknown.join(', ')}`)}\n  ${color.dim(`Known: ${allLocales.join(', ')}`)}\n\n`,
+    );
+    return 1;
+  }
+
+  const variantsByFile = buildVariantsByFile(report.messages);
+  let localeData: LocaleData;
+  try {
+    localeData = buildLocaleData(
+      report.defaultLocale,
+      join(projectRoot, config.localesDir),
+      targetLocales,
+      variantsByFile,
+    );
+  } catch (error) {
+    if (error instanceof CorruptLocaleFileError) {
+      process.stderr.write(
+        `\n  ${symbol.cross} ${color.red(error.message)}\n  ${color.dim('Refusing to export — fix the locale file or run `yapyak check` to see all issues.')}\n\n`,
+      );
+      return 1;
+    }
+    throw error;
+  }
+
+  if (split) {
+    const outputDirectory = resolve(projectRoot, out as string);
+    if (!existsSync(outputDirectory)) {
+      mkdirSync(outputDirectory, {
+        recursive: true,
+      });
+    }
+    for (const [locale, data] of Object.entries(localeData)) {
+      const wrapped = {
+        [locale]: data,
+      };
+      writeFileSync(
+        join(outputDirectory, `${locale}.json`),
+        stringifyCanonical(wrapped),
+      );
+    }
+    process.stdout.write(
+      `  ${symbol.check} Exported ${color.bold(String(Object.keys(localeData).length))} locale${Object.keys(localeData).length === 1 ? '' : 's'} to ${color.bold(out as string)}/\n`,
+    );
+    return 0;
+  }
+
+  const payload = stringifyCanonical(localeData);
+  if (!out) {
+    process.stdout.write(`${payload}\n`);
+    return 0;
+  }
+  const outPath = resolve(projectRoot, out);
+  mkdirSync(dirname(outPath), {
+    recursive: true,
+  });
+  writeFileSync(outPath, payload);
+  process.stdout.write(
+    `  ${symbol.check} Wrote ${color.bold(out)} (${Object.keys(localeData).length} locale${Object.keys(localeData).length === 1 ? '' : 's'})\n`,
+  );
+  return 0;
+}
+
+type ExportVariant = {
+  context?: string;
+  source: string;
+};
+
+function buildVariantsByFile(
+  messages: ExtractedMessage[],
+): Map<string, ExportVariant[]> {
+  const byFile = new Map<string, Map<string, ExportVariant>>();
+  for (const message of messages) {
+    const key = toMessageKey(message.source, message.context);
+    const variant: ExportVariant =
+      message.context === undefined
+        ? {
+            source: message.source,
+          }
+        : {
+            context: message.context,
+            source: message.source,
+          };
+    for (const location of message.locations) {
+      let variants = byFile.get(location.fileId);
+      if (!variants) {
+        variants = new Map();
+        byFile.set(location.fileId, variants);
+      }
+      variants.set(key, variant);
+    }
+  }
+  const variantsByFile = new Map<string, ExportVariant[]>();
+  for (const [fileId, variants] of byFile) {
+    variantsByFile.set(fileId, [
+      ...variants.values(),
+    ]);
+  }
+  return variantsByFile;
+}
+
+function buildLocaleData(
+  defaultLocale: string,
+  localesDir: string,
+  targetLocales: string[],
+  variantsByFile: Map<string, ExportVariant[]>,
+): LocaleData {
+  const localeData: LocaleData = {};
+  for (const locale of targetLocales) {
+    localeData[locale] = buildLocaleFile(
+      defaultLocale,
+      locale,
+      join(localesDir, `${locale}.json`),
+      variantsByFile,
+    );
+  }
+  return localeData;
+}
+
+function buildLocaleFile(
+  defaultLocale: string,
+  locale: string,
+  localePath: string,
+  variantsByFile: Map<string, ExportVariant[]>,
+): LocaleFile {
+  const isDefault = locale === defaultLocale;
+  let onDisk: LocaleFile;
+  if (isDefault) {
+    onDisk = {};
+  } else {
+    onDisk = readLocaleFile(localePath);
+  }
+  const localeFile: LocaleFile = {};
+  for (const [fileId, variants] of variantsByFile) {
+    const fileEntries = onDisk[fileId];
+    const byContextBySource = new Map<
+      string,
+      Map<string | undefined, string>
+    >();
+    for (const { context, source } of variants) {
+      const value = isDefault
+        ? source
+        : (findTranslation(fileEntries?.[source], context) ?? '');
+      let byContext = byContextBySource.get(source);
+      if (!byContext) {
+        byContext = new Map();
+        byContextBySource.set(source, byContext);
+      }
+      byContext.set(context, value);
+    }
+    const entries: Record<string, CatalogEntry> = Object.create(null);
+    for (const [source, byContext] of byContextBySource) {
+      entries[source] = toEntry(byContext, source, fileId);
+    }
+    localeFile[fileId] = entries;
+  }
+  return localeFile;
+}
+
+function isInsideLocalesDir(
+  out: string,
+  projectRoot: string,
+  localesDir: string,
+): boolean {
+  const absoluteOut = isAbsolute(out) ? out : resolve(projectRoot, out);
+  const absoluteLocales = resolve(projectRoot, localesDir);
+  if (absoluteOut === absoluteLocales) {
+    return true;
+  }
+  const relativePath = relative(absoluteLocales, absoluteOut);
+  return (
+    relativePath !== '' &&
+    !relativePath.startsWith('..') &&
+    !isAbsolute(relativePath)
+  );
+}

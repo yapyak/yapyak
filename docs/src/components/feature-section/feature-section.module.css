@@ -1,0 +1,28 @@
+@layer components {
+  .FeatureSection {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-24);
+    place-self: center;
+    width: 100%;
+    max-width: 1024px;
+    padding: 0 var(--spacing-6) var(--spacing-24);
+
+    .Divider {
+      display: none;
+      height: var(--px);
+      background-color: var(--rule);
+    }
+
+    .List {
+      position: relative;
+      width: 100%;
+    }
+
+    @media (min-width: 1024px) {
+      .Divider {
+        display: block;
+      }
+    }
+  }
+}

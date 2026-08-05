@@ -1,0 +1,37 @@
+{
+  "name": "@yapyak/tsdown-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@arethetypeswrong/core": "catalog:",
+    "publint": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@yapyak/typescript-config": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "tsdown": ">=0.22"
+  },
+  "engines": {
+    "node": ">=22.22"
+  }
+}

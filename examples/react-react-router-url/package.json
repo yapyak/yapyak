@@ -1,0 +1,31 @@
+{
+  "name": "@yapyak-examples/react-react-router-url",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build",
+    "dev": "react-router dev",
+    "start": "react-router-serve ./build/server/index.js",
+    "typecheck": "react-router typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@react-router/node": "catalog:",
+    "@react-router/serve": "catalog:",
+    "@yapyak/react": "workspace:*",
+    "@yapyak/react-router": "workspace:*",
+    "isbot": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-router": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@react-router/dev": "catalog:",
+    "@types/node": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@yapyak/vite": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

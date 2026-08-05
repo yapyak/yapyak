@@ -1,0 +1,85 @@
+@layer components {
+  .Swatch {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    background-color: var(--foreground-softer);
+    border-radius: var(--border-radius-full);
+
+    &[data-accent="react"] {
+      background-color: var(--accent-react);
+    }
+
+    &[data-accent="vue"] {
+      background-color: var(--accent-vue);
+    }
+
+    &[data-accent="svelte"] {
+      background-color: var(--accent-svelte);
+    }
+
+    &[data-accent="astro"] {
+      background-color: var(--accent-astro);
+    }
+
+    &[data-accent="pnpm"] {
+      background-color: var(--accent-pnpm);
+    }
+
+    &[data-accent="npm"] {
+      background-color: var(--accent-npm);
+    }
+
+    &[data-accent="bun"] {
+      background-color: var(--accent-bun);
+    }
+
+    &[data-accent="none"] {
+      background-color: var(--accent-none);
+    }
+
+    &[data-accent="react-router"] {
+      background-color: var(--accent-react-router);
+    }
+
+    &[data-accent="tanstack-start"] {
+      background-color: var(--accent-tanstack-start);
+    }
+
+    &[data-accent="sveltekit"] {
+      background-color: var(--accent-sveltekit);
+    }
+
+    &[data-accent="anthropic"] {
+      background-color: var(--accent-anthropic);
+    }
+
+    &[data-accent="openai"] {
+      background-color: var(--accent-openai);
+    }
+
+    &[data-accent="gemini"] {
+      background-color: var(--accent-gemini);
+    }
+
+    &[data-accent="ollama"] {
+      background-color: var(--accent-ollama);
+    }
+
+    &[data-accent="chatgpt"] {
+      background-color: var(--accent-chatgpt);
+    }
+
+    &[data-accent="claude"] {
+      background-color: var(--accent-claude);
+    }
+
+    &[data-accent="cursor"] {
+      background-color: var(--accent-cursor);
+    }
+
+    &[data-accent="t3-chat"] {
+      background-color: var(--accent-t3-chat);
+    }
+  }
+}

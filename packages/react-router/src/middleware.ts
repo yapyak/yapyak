@@ -1,0 +1,20 @@
+import type { MiddlewareFunction } from 'react-router';
+
+import { withResponse } from 'yapyak/adapter';
+
+/**
+ * Middleware for React Router. Provides yapyak's per-request locale context.
+ *
+ * @remarks
+ * Requires `future.v8_middleware: true` in `react-router.config.ts`.
+ *
+ * @example
+ * ```tsx [app/root.tsx]
+ * import type { Route } from './+types/root';
+ * import { middleware as yapyakMiddleware } from '@yapyak/react-router';
+ *
+ * export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
+ * ```
+ */
+export const middleware: MiddlewareFunction<Response> = ({ request }, next) =>
+  withResponse(request, () => next());

@@ -1,0 +1,33 @@
+@layer components {
+  .Colophon {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    align-items: center;
+    max-width: 640px;
+    text-align: center;
+
+    .BubbleImage {
+      width: 72px;
+      height: 72px;
+
+      .BrandFill {
+        fill: var(--brand);
+      }
+    }
+
+    .TaglineParagraph {
+      font-size: var(--font-size-lg);
+      font-style: italic;
+      color: var(--foreground-soft);
+      letter-spacing: var(--letter-spacing-tight);
+      text-wrap: balance;
+    }
+
+    .LicenseParagraph {
+      padding-top: var(--spacing-2);
+      font-size: var(--font-size-xs);
+      color: var(--foreground-softer);
+    }
+  }
+}

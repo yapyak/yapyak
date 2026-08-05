@@ -1,0 +1,31 @@
+@layer components {
+  .LogoLink {
+    display: inline-flex;
+    align-items: center;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: var(--spacing-1);
+    border-radius: var(--border-radius-xs);
+
+    transition:
+      background-color var(--duration-slow),
+      outline var(--duration-slow);
+
+    .Wordmark {
+      width: 92px;
+      height: auto;
+
+      .BrandFill {
+        fill: var(--brand);
+      }
+
+      .YapText {
+        fill: var(--foreground);
+      }
+    }
+
+    &:focus-visible {
+      outline-width: var(--spacing-1);
+      outline-color: var(--accent-soft);
+    }
+  }
+}

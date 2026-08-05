@@ -1,0 +1,37 @@
+@layer components {
+  .ContentLayout {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-3);
+    place-self: center;
+    width: 100%;
+    max-width: 1024px;
+
+    .Backdrop {
+      display: none;
+    }
+
+    &[data-drawer-open] {
+      .Backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: var(--z-index-3);
+        display: block;
+        background-color: color-mix(in oklab, var(--scrim) 50%, transparent);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      display: grid;
+      grid-template-columns: var(--layout-sidebar-width) minmax(0, 1fr);
+      gap: 0;
+      max-width: var(--layout-max-width);
+    }
+
+    @media (min-width: 1324px) {
+      grid-template-columns:
+        var(--layout-sidebar-width) minmax(0, 1fr)
+        var(--layout-outline-width);
+    }
+  }
+}

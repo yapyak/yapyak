@@ -1,0 +1,23 @@
+{
+  "name": "@yapyak/e2e-sandbox",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "reset": "mkdir -p locales && rm -rf src/checkout locales/de.json .yapyak/orphans.json && cp template/app.tsx src/app.tsx && cp template/cart.tsx src/cart.tsx && cp template/sv.json locales/sv.json"
+  },
+  "dependencies": {
+    "@yapyak/react": "workspace:*",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "@yapyak/vite": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

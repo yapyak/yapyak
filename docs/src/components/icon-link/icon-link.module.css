@@ -1,0 +1,32 @@
+@layer components {
+  .IconLink {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    color: var(--foreground-soft);
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: var(--spacing-1);
+    border-radius: var(--border-radius-full);
+    transition:
+      color var(--transition),
+      outline var(--duration-slow);
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--foreground);
+      }
+    }
+
+    &:active {
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      outline-width: 4px;
+      outline-color: var(--accent-soft);
+    }
+  }
+}

@@ -1,0 +1,102 @@
+@layer components {
+  .BlockRendererNodeHeading {
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-snug);
+    color: var(--foreground);
+    letter-spacing: var(--letter-spacing-tighter);
+    scroll-margin-top: calc(var(--header-height) + var(--spacing-6));
+
+    .HeadingLink {
+      outline: var(--spacing-2) solid transparent;
+      outline-offset: var(--spacing-1);
+      border-radius: var(--border-radius-xs);
+      transition: outline var(--duration-slow);
+
+      .HashIcon {
+        --block-renderer-node-heading-hash-icon-size: 16px;
+
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--block-renderer-node-heading-hash-icon-size);
+        height: var(--block-renderer-node-heading-hash-icon-size);
+        margin-right: var(--spacing-2);
+        margin-left: calc(
+          -1 *
+          (var(--block-renderer-node-heading-hash-icon-size) + var(--spacing-2))
+        );
+        vertical-align: calc(-1 * var(--spacing-05));
+        color: var(--foreground-softer);
+        opacity: 0;
+        transition:
+          color var(--transition),
+          opacity var(--transition);
+      }
+
+      &:focus-visible {
+        outline-width: var(--spacing-1);
+        outline-color: var(--accent-soft);
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          .HashIcon {
+            opacity: 1;
+          }
+        }
+      }
+
+      &:active {
+        .HashIcon {
+          opacity: 1;
+        }
+      }
+    }
+
+    &[data-level="1"] {
+      font-size: var(--font-size-2xl);
+    }
+
+    &[data-level="2"] {
+      padding-top: var(--spacing-7);
+      font-size: var(--font-size-xl);
+      scroll-margin-top: calc(
+        var(--header-height) +
+        var(--spacing-6) -
+        var(--spacing-7)
+      );
+      border-top: var(--px) solid var(--rule);
+    }
+
+    &[data-level="3"] {
+      padding-top: var(--spacing-5);
+      font-size: var(--font-size-lg);
+      scroll-margin-top: calc(
+        var(--header-height) +
+        var(--spacing-6) -
+        var(--spacing-5)
+      );
+    }
+
+    &[data-level="4"] {
+      padding-top: var(--spacing-3);
+      font-size: var(--font-size-md);
+      scroll-margin-top: calc(
+        var(--header-height) +
+        var(--spacing-6) -
+        var(--spacing-3)
+      );
+    }
+
+    &[data-level="5"] {
+      font-size: var(--font-size-sm);
+    }
+
+    &[data-level="6"] {
+      font-size: var(--font-size-xs);
+      color: var(--foreground-softer);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wide);
+    }
+  }
+}

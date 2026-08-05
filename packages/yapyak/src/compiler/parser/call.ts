@@ -1,0 +1,365 @@
+import type { ElisionContext, Range } from '../../processor';
+import type { Binding, BindingTable } from './binding';
+import type { Diagnostic } from './diagnostic';
+
+import ts from '@typescript/typescript6';
+
+import { buildDiagnostic } from '../../diagnostic';
+import { RUNTIME_NAME } from './binding';
+import { toRange } from './range';
+
+export type CallSite = {
+  binding: Binding;
+  contextExpression?: ts.Expression;
+  elisionContext?: ElisionContext;
+  localeExpression?: ts.Expression;
+  node: ts.CallExpression;
+  paramsExpression?: ts.Expression;
+  range: Range;
+  sourceExpression?: ts.Expression;
+};
+
+export type DiscoverCallsResult = {
+  callSites: CallSite[];
+  diagnostics: Diagnostic[];
+};
+
+const IN_NAME = 'in';
+const AS_NAME = 'as';
+
+type DiscoveryContext = {
+  bindings: BindingTable;
+  callSites: CallSite[];
+  consumed: Set<ts.CallExpression>;
+  diagnostics: Diagnostic[];
+  sourceFile: ts.SourceFile;
+};
+
+export function discoverCalls(
+  sourceFile: ts.SourceFile,
+  bindings: BindingTable,
+): DiscoverCallsResult {
+  const context: DiscoveryContext = {
+    bindings,
+    callSites: [],
+    consumed: new Set(),
+    diagnostics: [],
+    sourceFile,
+  };
+  walk(sourceFile, context);
+  return {
+    callSites: context.callSites,
+    diagnostics: context.diagnostics,
+  };
+}
+
+function walk(node: ts.Node, context: DiscoveryContext): void {
+  if (ts.isCallExpression(node) && !context.consumed.has(node)) {
+    tryExtract(node, context);
+  }
+  ts.forEachChild(node, (child) => {
+    walk(child, context);
+  });
+}
+
+function tryExtract(call: ts.CallExpression, context: DiscoveryContext): void {
+  const callee = call.expression;
+
+  if (ts.isIdentifier(callee)) {
+    extractBaseCall(call, callee, context);
+    return;
+  }
+
+  if (ts.isPropertyAccessExpression(callee)) {
+    extractMemberCall(call, callee, context);
+  }
+}
+
+function extractBaseCall(
+  call: ts.CallExpression,
+  callee: ts.Identifier,
+  context: DiscoveryContext,
+): void {
+  const binding = context.bindings.find(callee.text, call);
+  if (!binding || binding.kind === 'namespace' || binding.kind === 'shadow') {
+    return;
+  }
+  const callSite: CallSite = {
+    binding,
+    node: call,
+    range: toRange(call, context.sourceFile),
+  };
+  if (call.arguments[0]) {
+    callSite.sourceExpression = call.arguments[0];
+  }
+  if (call.arguments[1]) {
+    callSite.paramsExpression = call.arguments[1];
+  }
+  context.callSites.push(callSite);
+}
+
+function extractMemberCall(
+  call: ts.CallExpression,
+  callee: ts.PropertyAccessExpression,
+  context: DiscoveryContext,
+): void {
+  const methodName = callee.name.text;
+  const receiver = callee.expression;
+
+  if (methodName === RUNTIME_NAME && ts.isIdentifier(receiver)) {
+    extractNamespaceBase(call, receiver, context);
+    return;
+  }
+
+  if (methodName !== IN_NAME && methodName !== AS_NAME) {
+    return;
+  }
+
+  if (ts.isIdentifier(receiver)) {
+    extractDirectModifier(call, receiver, methodName, context);
+    return;
+  }
+
+  if (ts.isCallExpression(receiver)) {
+    extractChainedModifier(call, receiver, methodName, context);
+    return;
+  }
+
+  if (
+    ts.isPropertyAccessExpression(receiver) &&
+    ts.isIdentifier(receiver.expression) &&
+    receiver.name.text === RUNTIME_NAME
+  ) {
+    extractNamespaceModifier(call, receiver, methodName, context);
+  }
+}
+
+function extractNamespaceBase(
+  call: ts.CallExpression,
+  receiver: ts.Identifier,
+  context: DiscoveryContext,
+): void {
+  const binding = context.bindings.find(receiver.text, call);
+  if (binding?.kind !== 'namespace') {
+    return;
+  }
+  const callSite: CallSite = {
+    binding,
+    node: call,
+    range: toRange(call, context.sourceFile),
+  };
+  if (call.arguments[0]) {
+    callSite.sourceExpression = call.arguments[0];
+  }
+  if (call.arguments[1]) {
+    callSite.paramsExpression = call.arguments[1];
+  }
+  context.callSites.push(callSite);
+}
+
+function extractDirectModifier(
+  call: ts.CallExpression,
+  receiver: ts.Identifier,
+  methodName: string,
+  context: DiscoveryContext,
+): void {
+  const binding = context.bindings.find(receiver.text, call);
+  if (!binding || binding.kind === 'namespace' || binding.kind === 'shadow') {
+    return;
+  }
+
+  if (call.arguments.length === 1) {
+    emitCaptureDiagnostic(call, methodName, context);
+    return;
+  }
+
+  const callSite: CallSite = {
+    binding,
+    node: call,
+    range: toRange(call, context.sourceFile),
+  };
+
+  if (call.arguments[1]) {
+    callSite.sourceExpression = call.arguments[1];
+  }
+  if (call.arguments[2]) {
+    callSite.paramsExpression = call.arguments[2];
+  }
+
+  if (methodName === IN_NAME) {
+    callSite.localeExpression = call.arguments[0];
+  } else {
+    callSite.contextExpression = call.arguments[0];
+  }
+
+  context.callSites.push(callSite);
+}
+
+function extractChainedModifier(
+  call: ts.CallExpression,
+  innerCall: ts.CallExpression,
+  outerMethod: string,
+  context: DiscoveryContext,
+): void {
+  const innerCallee = innerCall.expression;
+  if (!ts.isPropertyAccessExpression(innerCallee)) {
+    return;
+  }
+
+  const innerMethod = innerCallee.name.text;
+  if (innerMethod === outerMethod) {
+    return;
+  }
+  if (innerMethod !== IN_NAME && innerMethod !== AS_NAME) {
+    return;
+  }
+
+  const binding = resolveChainBinding(innerCallee, innerCall, context);
+  if (!binding) {
+    return;
+  }
+
+  if (innerCall.arguments.length !== 1) {
+    return;
+  }
+
+  const callSite: CallSite = {
+    binding,
+    node: call,
+    range: toRange(call, context.sourceFile),
+  };
+
+  if (call.arguments[1]) {
+    callSite.sourceExpression = call.arguments[1];
+  }
+  if (call.arguments[2]) {
+    callSite.paramsExpression = call.arguments[2];
+  }
+
+  if (innerMethod === IN_NAME) {
+    callSite.localeExpression = innerCall.arguments[0];
+    callSite.contextExpression = call.arguments[0];
+  } else {
+    callSite.contextExpression = innerCall.arguments[0];
+    callSite.localeExpression = call.arguments[0];
+  }
+
+  context.consumed.add(innerCall);
+  context.callSites.push(callSite);
+}
+
+function extractNamespaceModifier(
+  call: ts.CallExpression,
+  receiver: ts.PropertyAccessExpression,
+  methodName: string,
+  context: DiscoveryContext,
+): void {
+  if (!ts.isIdentifier(receiver.expression)) {
+    return;
+  }
+  const binding = context.bindings.find(receiver.expression.text, call);
+  if (binding?.kind !== 'namespace') {
+    return;
+  }
+
+  if (call.arguments.length === 1) {
+    emitCaptureDiagnostic(call, methodName, context);
+    return;
+  }
+
+  const callSite: CallSite = {
+    binding,
+    node: call,
+    range: toRange(call, context.sourceFile),
+  };
+
+  if (call.arguments[1]) {
+    callSite.sourceExpression = call.arguments[1];
+  }
+  if (call.arguments[2]) {
+    callSite.paramsExpression = call.arguments[2];
+  }
+
+  if (methodName === IN_NAME) {
+    callSite.localeExpression = call.arguments[0];
+  } else {
+    callSite.contextExpression = call.arguments[0];
+  }
+
+  context.callSites.push(callSite);
+}
+
+function resolveChainBinding(
+  innerCallee: ts.PropertyAccessExpression,
+  innerCall: ts.CallExpression,
+  context: DiscoveryContext,
+): Binding | undefined {
+  const innerReceiver = innerCallee.expression;
+  if (ts.isIdentifier(innerReceiver)) {
+    const binding = context.bindings.find(innerReceiver.text, innerCall);
+    if (!binding || binding.kind === 'namespace' || binding.kind === 'shadow') {
+      return undefined;
+    }
+    return binding;
+  }
+  if (
+    ts.isPropertyAccessExpression(innerReceiver) &&
+    ts.isIdentifier(innerReceiver.expression) &&
+    innerReceiver.name.text === RUNTIME_NAME
+  ) {
+    const binding = context.bindings.find(
+      innerReceiver.expression.text,
+      innerCall,
+    );
+    if (binding?.kind === 'namespace') {
+      return binding;
+    }
+  }
+  return undefined;
+}
+
+function emitCaptureDiagnostic(
+  call: ts.CallExpression,
+  methodName: string,
+  context: DiscoveryContext,
+): void {
+  if (isInlineChain(call)) {
+    return;
+  }
+  const sourceFile = context.sourceFile;
+  context.diagnostics.push(
+    buildDiagnostic(
+      'CONTEXT_DYNAMIC_CALL',
+      {
+        methodName: methodName === IN_NAME ? 'in' : 'as',
+      },
+      {
+        fileId: sourceFile.fileName,
+        range: toRange(call, sourceFile),
+        severity: 'error',
+      },
+    ),
+  );
+}
+
+function isInlineChain(call: ts.CallExpression): boolean {
+  const parent = call.parent;
+  if (!ts.isPropertyAccessExpression(parent)) {
+    return false;
+  }
+  if (parent.expression !== call) {
+    return false;
+  }
+  const grandparent = parent.parent;
+  if (!ts.isCallExpression(grandparent)) {
+    return false;
+  }
+  if (grandparent.expression !== parent) {
+    return false;
+  }
+  const propertyName = parent.name.text;
+  if (propertyName !== IN_NAME && propertyName !== AS_NAME) {
+    return false;
+  }
+  return grandparent.arguments.length >= 2;
+}

@@ -1,0 +1,205 @@
+@layer components {
+  .HeroDemoLocaleStack {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-ring-inset);
+    transform-origin: center;
+
+    .FlashOverlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background-color: var(--brand);
+      opacity: 0;
+    }
+
+    .LocaleRow {
+      display: grid;
+      grid-template-columns: auto auto minmax(0, 1fr);
+      gap: var(--spacing-3);
+      align-items: center;
+      padding: var(--spacing-3) var(--spacing-4);
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      border-bottom: var(--px) solid var(--rule);
+
+      .FlagIcon {
+        display: inline-flex;
+        align-items: center;
+        line-height: var(--line-height-none);
+      }
+
+      .FilenameText {
+        color: var(--foreground-softer);
+        letter-spacing: var(--letter-spacing-tight);
+      }
+
+      .JsonText {
+        display: inline-flex;
+        align-items: center;
+        overflow: hidden;
+        color: var(--foreground);
+        white-space: nowrap;
+        mask-image: linear-gradient(
+          to right,
+          black 0,
+          black calc(100% - var(--spacing-4)),
+          transparent 100%
+        );
+
+        .JsonOpening {
+          display: none;
+
+          .KeyText {
+            display: inline-block;
+            margin-inline-start: var(--spacing-2);
+          }
+
+          @media (min-width: 640px) {
+            display: inline-flex;
+            align-items: center;
+          }
+        }
+
+        .Skeleton {
+          display: inline-block;
+          width: 128px;
+          height: 12px;
+          padding: 0 var(--px);
+          margin-inline: var(--spacing-2);
+          background-image: linear-gradient(
+            90deg,
+            var(--ring) 0%,
+            color-mix(in oklab, var(--foreground) 10%, transparent) 40%,
+            color-mix(in oklab, var(--brand) 18%, transparent) 50%,
+            color-mix(in oklab, var(--foreground) 10%, transparent) 60%,
+            var(--ring) 100%
+          );
+          background-clip: padding-box;
+          background-size: 250% 100%;
+          border-radius: 4px;
+          animation: skeleton-sweep 2s ease-in-out infinite;
+        }
+
+        .ValueText {
+          display: inline-block;
+          margin-inline: var(--spacing-2);
+        }
+
+        .JsonClosing {
+          display: none;
+
+          @media (min-width: 640px) {
+            display: inline-flex;
+            align-items: center;
+          }
+        }
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    &[data-receiving] {
+      animation:
+        locales-pulse 950ms var(--ease-snappy),
+        locales-ring 950ms var(--ease-snappy);
+
+      .FlashOverlay {
+        animation: locales-flash 950ms linear forwards;
+      }
+    }
+
+    &[data-primed] {
+      .KeyText {
+        animation: materialize 750ms var(--ease-smooth) both;
+      }
+
+      .ValueText {
+        animation: materialize 900ms var(--ease-smooth) both;
+      }
+    }
+  }
+
+  @keyframes materialize {
+    0% {
+      opacity: 0;
+      filter: blur(8px);
+      transform: translateY(6px) scale(0.96);
+      text-shadow: 0 0 0 transparent;
+    }
+    55% {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0) scale(1);
+      text-shadow: 0 0 18px color-mix(in oklab, var(--brand) 55%, transparent);
+    }
+    100% {
+      opacity: 1;
+      filter: blur(0);
+      transform: translateY(0) scale(1);
+      text-shadow: 0 0 0 transparent;
+    }
+  }
+
+  @keyframes locales-ring {
+    0% {
+      box-shadow: var(--shadow-ring-inset);
+    }
+    4% {
+      box-shadow: inset 0 0 0 var(--px)
+        color-mix(in oklab, var(--brand) 12%, transparent);
+    }
+    44% {
+      box-shadow: inset 0 0 0 var(--px)
+        color-mix(in oklab, var(--brand) 12%, transparent);
+    }
+    100% {
+      box-shadow: var(--shadow-ring-inset);
+    }
+  }
+
+  @keyframes locales-flash {
+    0% {
+      opacity: 0;
+    }
+    4% {
+      opacity: 0.06;
+    }
+    44% {
+      opacity: 0.06;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes locales-pulse {
+    0% {
+      transform: scale(1);
+    }
+    4% {
+      transform: scale(0.985);
+    }
+    44% {
+      transform: scale(0.985);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  @keyframes skeleton-sweep {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+}

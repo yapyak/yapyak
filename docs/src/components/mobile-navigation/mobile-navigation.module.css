@@ -1,0 +1,41 @@
+@layer components {
+  .MobileNavigation {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    padding: var(--spacing-4) var(--spacing-6) 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--ring-stronger) transparent;
+    scrollbar-width: thin;
+
+    .Link {
+      display: block;
+      padding: var(--spacing-4);
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground-soft);
+      letter-spacing: var(--letter-spacing-tight);
+      border-bottom: var(--px) solid var(--rule);
+      transition: color var(--transition);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+        }
+      }
+
+      &:active {
+        color: var(--foreground);
+      }
+
+      &[data-status="active"] {
+        color: var(--brand);
+      }
+    }
+  }
+}

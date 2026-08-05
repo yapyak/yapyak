@@ -1,0 +1,51 @@
+@layer components {
+  .NavigationLink {
+    position: relative;
+    display: inline-block;
+    min-width: 96px;
+    padding: var(--spacing-1) var(--spacing-6);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    text-align: center;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
+    border-radius: var(--border-radius-full);
+    transition:
+      box-shadow var(--transition),
+      outline var(--duration-slow);
+
+    &:focus-visible {
+      outline-width: 4px;
+      outline-color: var(--accent-soft);
+    }
+
+    &[data-status="active"] {
+      color: var(--navigation-active-color, var(--brand-contrast));
+      background-color: var(--navigation-active-background-color, var(--brand));
+    }
+
+    &:not([data-status="active"]) {
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+          background-color: var(--surface-stronger);
+          box-shadow:
+            inset 0 0 0 var(--px) var(--ring-strong),
+            inset 0 var(--px) var(--ring-strong);
+          transition:
+            color var(--navigation-slide-duration, var(--transition))
+            var(--ease-snappy),
+            background-color var(--transition),
+            box-shadow var(--transition),
+            outline var(--duration-slow),
+            transform var(--transition);
+        }
+      }
+
+      &:active {
+        color: var(--foreground);
+        background-color: var(--surface-stronger);
+      }
+    }
+  }
+}

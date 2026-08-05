@@ -1,0 +1,201 @@
+:root {
+  --px: 1px;
+  --infinite: 9999px;
+
+  --spacing-0: 0;
+  --spacing-05: 2px;
+  --spacing-1: 4px;
+  --spacing-1-5: 6px;
+  --spacing-2: 8px;
+  --spacing-2-5: 10px;
+  --spacing-3: 12px;
+  --spacing-3-5: 14px;
+  --spacing-4: 16px;
+  --spacing-4-5: 18px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-14: 56px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+
+  --border-radius-xs: 4px;
+  --border-radius-sm: 8px;
+  --border-radius-md: 12px;
+  --border-radius-lg: 16px;
+  --border-radius-full: 9999px;
+
+  --font-size-2xs: 0.6875rem;
+  --font-size-xs: 0.8125rem;
+  --font-size-sm: 0.9375rem;
+  --font-size-md: 1.0625rem;
+  --font-size-lg: 1.1875rem;
+  --font-size-xl: 1.4375rem;
+  --font-size-2xl: 1.8125rem;
+  --font-size-3xl: 2.3125rem;
+  --font-size-4xl: 3.5rem;
+  --font-size-5xl: 4.625rem;
+  --font-size-6xl: 6.125rem;
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-none: 1;
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.2;
+  --line-height-normal: 1.55;
+  --line-height-relaxed: 1.65;
+  --line-height-loose: 1.7;
+
+  --letter-spacing-tightest: -0.04em;
+  --letter-spacing-tighter: -0.025em;
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.05em;
+  --letter-spacing-wider: 0.06em;
+
+  --duration-fast: 150ms;
+  --duration-medium: 320ms;
+  --duration-slow: 400ms;
+
+  --transition: var(--duration-fast) ease;
+
+  --ease-snappy: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.7, 0.5, 1);
+
+  --z-index-1: 10;
+  --z-index-2: 20;
+  --z-index-3: 30;
+  --z-index-4: 40;
+  --z-index-5: 50;
+
+  --font-family-mono:
+    "Menlo", "Monaco", "Cascadia Code", "Roboto Mono", Consolas,
+    "Liberation Mono", monospace;
+
+  --color-mint: oklab(0.87 -0.24 0.06);
+  --color-aqua: oklab(0.88 -0.21 0.01);
+  --color-sky: oklab(0.83 -0.06 -0.16);
+  --color-coral: oklab(0.8 0.16 0.05);
+
+  --color-lilac: oklab(0.74 0.1 -0.03);
+  --color-iris: oklab(0.78 -0.04 -0.14);
+  --color-steel: oklab(0.72 -0.02 -0.05);
+  --color-amber: oklab(0.78 0.05 0.1);
+  --color-sand: oklab(0.84 -0.007 0.07);
+  --color-fern: oklab(0.76 -0.1 0.04);
+  --color-clay: oklab(0.76 0.05 0.06);
+
+  --color-silver: #e6e6e6;
+  --color-ink: #141414;
+  --color-black: #000000;
+  --color-white: #ffffff;
+
+  --brand: var(--color-mint);
+  --accent: var(--color-aqua);
+  --tip: var(--color-mint);
+  --info: var(--color-sky);
+  --danger: var(--color-coral);
+  --warning: var(--color-amber);
+
+  --brand-soft: color-mix(in oklab, var(--brand) 40%, transparent);
+  --brand-softer: color-mix(in oklab, var(--brand) 8%, transparent);
+  --accent-soft: color-mix(in oklab, var(--accent) 40%, transparent);
+
+  --canvas: var(--color-ink);
+  --canvas-strong: color-mix(in oklab, var(--color-black) 20%, transparent);
+
+  --surface: color-mix(in oklab, var(--color-silver) 2%, transparent);
+  --surface-strong: color-mix(in oklab, var(--color-silver) 4%, transparent);
+  --surface-stronger: color-mix(in oklab, var(--color-silver) 7%, transparent);
+  --surface-strongest: color-mix(
+    in oklab,
+    var(--color-silver) 11%,
+    transparent
+  );
+  --surface-elevated: color-mix(
+    in oklab,
+    var(--color-silver) 2%,
+    var(--color-ink)
+  );
+
+  --rule: color-mix(in oklab, var(--color-silver) 2%, transparent);
+
+  --ring: color-mix(in oklab, var(--color-silver) 4%, transparent);
+  --ring-strong: color-mix(in oklab, var(--color-silver) 8%, transparent);
+  --ring-stronger: color-mix(in oklab, var(--color-silver) 12%, transparent);
+
+  --foreground: var(--color-silver);
+  --foreground-soft: color-mix(
+    in oklab,
+    var(--color-silver) 78%,
+    var(--color-ink)
+  );
+  --foreground-softer: color-mix(
+    in oklab,
+    var(--color-silver) 56%,
+    var(--color-ink)
+  );
+
+  --brand-contrast: color-mix(in oklab, var(--brand) 8%, var(--color-ink));
+
+  --shadow-brand-glow: 0 0 12px var(--brand-soft);
+  --shadow-overlay: 0 16px 80px
+    color-mix(in oklab, var(--color-black) 60%, transparent);
+  --shadow-ring-inset:
+    inset 0 0 0 var(--px) var(--ring),
+    inset 0 1px 0 color-mix(in oklab, var(--color-white) 3%, transparent);
+
+  --header-height: 64px;
+  --content-header-height: 44px;
+
+  --syntax-keyword: var(--color-lilac);
+  --syntax-fn-call: var(--color-iris);
+  --syntax-type: var(--color-steel);
+  --syntax-jsx-tag: var(--color-steel);
+  --syntax-literal: var(--color-amber);
+  --syntax-number: var(--color-amber);
+  --syntax-string: var(--color-sand);
+
+  --kind-function: var(--color-iris);
+  --kind-hook: var(--color-fern);
+  --kind-component: var(--color-clay);
+  --kind-interface: var(--color-steel);
+  --kind-type: var(--color-lilac);
+  --kind-variable: var(--color-amber);
+  --kind-class: var(--color-sand);
+
+  --scrim: var(--color-black);
+
+  --accent-react: #61dafb;
+  --accent-vue: #41b883;
+  --accent-svelte: #ff3e00;
+  --accent-astro: #f041ff;
+  --accent-pnpm: #f9ad00;
+  --accent-npm: #cb3837;
+  --accent-bun: #fbf0df;
+
+  --accent-none: #ffffff;
+  --accent-react-router: #f44250;
+  --accent-tanstack-start: #ffd93d;
+  --accent-sveltekit: #ff3e00;
+
+  --accent-anthropic: #cc785c;
+  --accent-openai: #10a37f;
+  --accent-gemini: #4285f4;
+  --accent-ollama: #f5f5f5;
+
+  --accent-chatgpt: #10a37f;
+  --accent-claude: #cc785c;
+  --accent-cursor: #ffffff;
+  --accent-t3-chat: #ec4899;
+}

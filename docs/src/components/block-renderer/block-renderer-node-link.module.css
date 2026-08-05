@@ -1,0 +1,53 @@
+@layer components {
+  .BlockRendererNodeLink {
+    --block-renderer-node-inline-code-color: currentColor;
+    color: var(--brand);
+    text-decoration-line: var(
+      --block-renderer-node-link-text-decoration-line,
+      underline
+    );
+    text-decoration-color: transparent;
+    text-underline-offset: 4px;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
+    border-radius: var(--border-radius-xs);
+    transition:
+      text-decoration-color var(--transition),
+      outline var(--duration-slow);
+
+    @media (hover: hover) {
+      &:hover {
+        text-decoration-color: currentColor;
+      }
+    }
+
+    &:focus-visible {
+      outline-width: var(--spacing-1);
+      outline-color: var(--accent-soft);
+    }
+
+    &[data-inline-code] {
+      --block-renderer-node-link-text-decoration-line: none;
+
+      outline: none;
+
+      @media (hover: hover) {
+        &:hover {
+          --block-renderer-node-inline-code-background-color: var(
+            --surface-stronger
+          );
+        }
+      }
+
+      &:active {
+        --block-renderer-node-inline-code-background-color: var(
+          --surface-strongest
+        );
+      }
+
+      &:focus-visible {
+        --block-renderer-node-inline-code-outline-color: var(--accent-soft);
+      }
+    }
+  }
+}

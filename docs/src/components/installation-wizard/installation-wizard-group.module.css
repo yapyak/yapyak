@@ -1,0 +1,65 @@
+@layer components {
+  .InstallationWizardGroup {
+    --installation-wizard-group-indicator-height: 0;
+    --installation-wizard-group-indicator-width: 0;
+    --installation-wizard-group-indicator-x: 0;
+    --installation-wizard-group-indicator-y: 0;
+    --installation-wizard-group-slide-duration: var(--duration-slow);
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) 0;
+
+    .LabelText {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--foreground-softer);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+    }
+
+    .RadioGroup {
+      position: relative;
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-2);
+      align-items: center;
+
+      .IndicatorBar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: var(--installation-wizard-group-indicator-width);
+        height: var(--installation-wizard-group-indicator-height);
+        pointer-events: none;
+        background-color: var(--surface-strong);
+        border-radius: var(--border-radius-sm);
+        box-shadow: inset 0 0 0 var(--px) var(--ring-strong);
+        opacity: 0;
+        transform: translate(
+          var(--installation-wizard-group-indicator-x),
+          var(--installation-wizard-group-indicator-y)
+        );
+      }
+    }
+
+    &[data-ready] {
+      .IndicatorBar {
+        transition:
+          transform var(--installation-wizard-group-slide-duration)
+          var(--ease-snappy),
+          width var(--installation-wizard-group-slide-duration)
+          var(--ease-snappy),
+          height var(--installation-wizard-group-slide-duration)
+          var(--ease-snappy);
+      }
+    }
+
+    &[data-animating] {
+      .IndicatorBar {
+        opacity: 1;
+      }
+    }
+  }
+}

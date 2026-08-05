@@ -1,0 +1,281 @@
+import type { ContextLevel, Translator } from 'yapyak/translator';
+
+import {
+  TranslatorInvalidResponseError,
+  TranslatorSafetyError,
+  TranslatorTruncatedError,
+  createTranslator,
+} from 'yapyak/translator';
+import {
+  buildSystem,
+  causeToError,
+  fetchWithRetry,
+  parseResponseBody,
+  parseTranslationsBatch,
+  resolveMaxTokens,
+  responseToError,
+} from 'yapyak/translator/internal';
+
+/** Options for {@link gemini}. */
+export type GeminiOptions = {
+  /** The API key. */
+  apiKey: string;
+  /**
+   * The maximum items per API call.
+   *
+   * @defaultValue `15`
+   */
+  batchSize?: number;
+  /**
+   * The maximum parallel API calls.
+   *
+   * @defaultValue `5`
+   */
+  concurrency?: number;
+  /**
+   * The call-site context level.
+   *
+   * @defaultValue `'minimal'`
+   */
+  context?: ContextLevel;
+  /**
+   * The API endpoint.
+   *
+   * @defaultValue `'https://generativelanguage.googleapis.com/v1beta'`
+   */
+  endpoint?: string;
+  /** The translation glossary. */
+  glossary?: Record<string, Record<string, string>>;
+  /** The extra request headers. */
+  headers?: Record<string, string>;
+  /**
+   * The maximum retry attempts.
+   *
+   * @defaultValue `2`
+   */
+  maxRetries?: number;
+  /** The output-token cap. */
+  maxTokens?: number;
+  /**
+   * The model name.
+   *
+   * @defaultValue `'gemini-2.5-flash'`
+   */
+  model?: string;
+  /**
+   * The sampling temperature.
+   *
+   * @defaultValue `0.2`
+   */
+  temperature?: number;
+  /**
+   * The request timeout in milliseconds.
+   *
+   * @defaultValue `30_000`
+   */
+  timeout?: number;
+  /** The voice and tone guidance. */
+  voice?: string;
+};
+
+const DEFAULT_MODEL = 'gemini-2.5-flash';
+const DEFAULT_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta';
+const DEFAULT_TEMPERATURE = 0.2;
+const DEFAULT_TIMEOUT = 30_000;
+const DEFAULT_MAX_RETRIES = 2;
+const DEFAULT_BATCH_SIZE = 15;
+const MAX_TOKENS_CAP = 16_000;
+const MAX_TOKENS_FLOOR = 1024;
+const MAX_TOKENS_PER_ITEM = 96;
+
+/**
+ * Creates a Gemini translator.
+ *
+ * @param options - The options.
+ *
+ * @example
+ * ```ts [yapyak.config.ts]
+ * import { defineConfig } from 'yapyak/config';
+ * import { gemini } from '@yapyak/gemini';
+ *
+ * export default defineConfig({
+ *   translator: gemini({ apiKey: process.env.GEMINI_API_KEY! })
+ * });
+ * ```
+ *
+ * @throws {Error} When `apiKey` is missing or empty.
+ */
+export function gemini(options: GeminiOptions): Translator {
+  if (!options.apiKey) {
+    const received =
+      options.apiKey === undefined ? 'undefined' : 'empty string';
+    throw new Error(
+      `@yapyak/gemini: apiKey is required, received ${received}.`,
+    );
+  }
+  const {
+    apiKey,
+    batchSize = DEFAULT_BATCH_SIZE,
+    concurrency,
+    context,
+    endpoint = DEFAULT_ENDPOINT,
+    glossary,
+    headers: customHeaders,
+    maxRetries = DEFAULT_MAX_RETRIES,
+    maxTokens,
+    model = DEFAULT_MODEL,
+    temperature = DEFAULT_TEMPERATURE,
+    timeout = DEFAULT_TIMEOUT,
+    voice,
+  } = options;
+
+  return createTranslator({
+    batchSize,
+    concurrency,
+    context,
+    id: 'gemini',
+    translate: async (request) => {
+      const { items, signal, sourceLocale, targetLocales } = request;
+      const url = `${endpoint}/models/${model}:generateContent`;
+      const resolvedMaxTokens = resolveMaxTokens({
+        cap: MAX_TOKENS_CAP,
+        floor: MAX_TOKENS_FLOOR,
+        itemCount: items.length,
+        localeCount: targetLocales.length,
+        override: maxTokens,
+        perItem: MAX_TOKENS_PER_ITEM,
+      });
+      const init: RequestInit = {
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: JSON.stringify(items),
+                },
+              ],
+              role: 'user',
+            },
+          ],
+          generationConfig: {
+            maxOutputTokens: resolvedMaxTokens,
+            responseMimeType: 'application/json',
+            temperature,
+          },
+          systemInstruction: {
+            parts: [
+              {
+                text: buildSystem(sourceLocale, targetLocales, {
+                  glossary,
+                  voice,
+                }),
+              },
+            ],
+          },
+        }),
+        headers: {
+          'content-type': 'application/json',
+          'x-goog-api-key': apiKey,
+          ...customHeaders,
+        },
+        method: 'POST',
+      };
+      const fetchOptions: Parameters<typeof fetchWithRetry>[2] = {
+        maxRetries,
+        timeout,
+      };
+      if (signal) {
+        fetchOptions.signal = signal;
+      }
+      let response: Response;
+      try {
+        response = await fetchWithRetry(url, init, fetchOptions);
+      } catch (cause) {
+        throw causeToError(cause, 'gemini');
+      }
+      if (!response.ok) {
+        throw await responseToError(response, 'gemini');
+      }
+      const responseBody = await parseResponseBody<GeminiResponseBody>(
+        response,
+        'gemini',
+        signal,
+      );
+      validateResponse(responseBody);
+      const parts = responseBody.candidates?.[0]?.content?.parts ?? [];
+      const textParts = parts.flatMap((part) =>
+        typeof part.text === 'string'
+          ? [
+              part.text,
+            ]
+          : [],
+      );
+      if (textParts.length === 0) {
+        throw new TranslatorInvalidResponseError(
+          'yapyak gemini: response did not contain a text part.',
+          {
+            vendor: 'gemini',
+          },
+        );
+      }
+      return parseTranslationsBatch(textParts.join(''), 'gemini');
+    },
+  });
+}
+
+type GeminiResponseBody = {
+  candidates?: {
+    content?: {
+      parts?: {
+        text?: string;
+      }[];
+    };
+    finishReason?:
+      | 'STOP'
+      | 'MAX_TOKENS'
+      | 'SAFETY'
+      | 'RECITATION'
+      | 'LANGUAGE'
+      | 'OTHER';
+  }[];
+  promptFeedback?: {
+    blockReason?: string;
+  };
+};
+
+function validateResponse(body: GeminiResponseBody): void {
+  const blockReason = body.promptFeedback?.blockReason;
+  if (blockReason !== undefined) {
+    throw new TranslatorSafetyError(
+      `yapyak gemini: prompt blocked by Gemini safety filter (blockReason='${blockReason}'). Adjust voice or glossary, or split the batch to isolate the offending message.`,
+      {
+        vendor: 'gemini',
+      },
+    );
+  }
+  const reason = body.candidates?.[0]?.finishReason;
+  if (reason === 'MAX_TOKENS') {
+    throw new TranslatorTruncatedError(
+      "yapyak gemini: response truncated by token limit (finishReason='MAX_TOKENS'). Lower batchSize or raise `maxTokens` in the translator options.",
+      {
+        vendor: 'gemini',
+      },
+    );
+  }
+  if (reason === 'SAFETY') {
+    throw new TranslatorSafetyError(
+      "yapyak gemini: response blocked by Gemini safety filter (finishReason='SAFETY'). Adjust voice or glossary, or split the batch to isolate the offending message.",
+      {
+        vendor: 'gemini',
+      },
+    );
+  }
+  if (reason === 'RECITATION') {
+    throw new TranslatorSafetyError(
+      "yapyak gemini: response blocked by Gemini recitation filter (finishReason='RECITATION'). The model refused to reproduce protected content.",
+      {
+        vendor: 'gemini',
+      },
+    );
+  }
+}

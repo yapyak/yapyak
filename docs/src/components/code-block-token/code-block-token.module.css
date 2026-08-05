@@ -1,0 +1,130 @@
+@layer components {
+  .CodeBlockToken {
+    &[data-kind="plain"] {
+      color: inherit;
+    }
+
+    &[data-kind="keyword"] {
+      color: var(--syntax-keyword);
+    }
+
+    &[data-kind="type"] {
+      color: var(--syntax-type);
+    }
+
+    &[data-kind="literal"] {
+      color: var(--syntax-literal);
+    }
+
+    &:is([data-kind="string"], [data-kind="template"]) {
+      color: var(--syntax-string);
+    }
+
+    &[data-kind="number"] {
+      color: var(--syntax-number);
+    }
+
+    &[data-kind="comment"] {
+      font-style: italic;
+      color: var(--foreground-softer);
+    }
+
+    &:is([data-kind="fn-call"], [data-kind="t-call"]) {
+      color: var(--syntax-fn-call);
+    }
+
+    &[data-kind="jsx-tag"] {
+      color: var(--syntax-jsx-tag);
+    }
+
+    &[data-kind="jsx-brace"] {
+      color: var(--syntax-jsx-tag);
+    }
+
+    &[data-kind="punct"] {
+      color: var(--foreground-softer);
+    }
+
+    &[data-kind="spread"] {
+      color: var(--syntax-keyword);
+    }
+
+    &[data-kind="regex"] {
+      color: var(--syntax-string);
+    }
+
+    &[data-kind="decorator"] {
+      color: var(--syntax-fn-call);
+    }
+
+    &[data-kind="t-yapyak"] {
+      color: var(--syntax-string);
+    }
+
+    &[data-kind="t-source"] {
+      color: var(--brand);
+      text-shadow: var(--shadow-brand-glow);
+    }
+
+    &[data-kind="t-placeholder"] {
+      font-style: italic;
+      color: var(--foreground);
+    }
+
+    &[data-kind="t-icu-keyword"] {
+      color: var(--syntax-keyword);
+    }
+
+    &[data-kind="t-icu-key"] {
+      color: var(--syntax-literal);
+    }
+
+    &[data-kind="t-icu-hash"] {
+      color: var(--brand);
+      text-shadow: var(--shadow-brand-glow);
+    }
+
+    &[data-kind="t-tag"] {
+      color: var(--syntax-jsx-tag);
+    }
+
+    &[data-kind="diff-add"] {
+      display: inline;
+      color: var(--brand);
+      background-color: var(--brand-softer);
+    }
+
+    &[data-kind="diff-remove"] {
+      display: inline;
+      color: var(--danger);
+      background-color: color-mix(in oklab, var(--danger) 8%, transparent);
+    }
+
+    &[data-kind="diff-hunk"] {
+      display: inline;
+      font-weight: var(--font-weight-medium);
+      color: var(--syntax-type);
+    }
+
+    &[data-kind="bash-var"] {
+      color: var(--syntax-fn-call);
+    }
+
+    &[data-kind="bash-flag"] {
+      color: var(--syntax-type);
+    }
+
+    &[data-kind="bash-subcommand"] {
+      color: var(--syntax-keyword);
+    }
+
+    &[data-kind="bash-package"] {
+      color: var(--syntax-string);
+    }
+
+    &[data-kind="bash-placeholder"] {
+      font-style: italic;
+      color: var(--syntax-fn-call);
+    }
+  }
+}

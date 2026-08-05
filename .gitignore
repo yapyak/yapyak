@@ -1,0 +1,11 @@
+*.local.*
+*.tsbuildinfo
+.DS_Store
+.env
+.env.local
+.wrangler
+coverage
+dist
+docs/content/reference/manifest.json
+node_modules
+test-results

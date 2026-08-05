@@ -1,0 +1,46 @@
+{
+  "name": "@yapyak/docs-compiler",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./ambient": "./src/ambient.d.ts",
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "default": "./dist/vite.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src/ambient.d.ts"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "pnpm -w vitest --run --project=@yapyak/docs-compiler",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@markdoc/markdoc": "catalog:",
+    "@typescript/typescript6": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "@yapyak/tsdown-config": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "vite": ">=5"
+  },
+  "engines": {
+    "node": ">=22.22"
+  }
+}

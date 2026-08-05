@@ -1,0 +1,43 @@
+@layer components {
+  .PageArticle {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+    padding-top: var(--spacing-8);
+
+    @media (min-width: 1024px) {
+      padding-top: var(--spacing-14);
+    }
+
+    .Header {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-4);
+      align-items: flex-start;
+
+      .TitleHeading {
+        font-size: var(--font-size-3xl);
+        font-weight: var(--font-weight-medium);
+        line-height: var(--line-height-tight);
+        color: var(--foreground);
+        letter-spacing: var(--letter-spacing-tighter);
+      }
+
+      .DescriptionParagraph {
+        font-size: var(--font-size-lg);
+        color: var(--foreground-soft);
+      }
+    }
+
+    .Content {
+      font-size: var(--font-size-md);
+      line-height: var(--line-height-loose);
+      color: var(--foreground-soft);
+      letter-spacing: var(--letter-spacing-tight);
+    }
+
+    .Footer {
+      margin-top: var(--spacing-6);
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@yapyak-examples/vue-vanilla-url",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@yapyak/vue": "workspace:*",
+    "vue": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "catalog:",
+    "@yapyak/vite": "workspace:*",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vue-tsc": "catalog:"
+  }
+}

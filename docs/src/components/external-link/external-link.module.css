@@ -1,0 +1,54 @@
+@layer components {
+  .ExternalLink {
+    --block-renderer-node-inline-code-color: currentColor;
+    display: inline-flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    color: var(--brand);
+    letter-spacing: var(--letter-spacing-tight);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 4px;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
+    border-radius: var(--border-radius-xs);
+    transition:
+      text-decoration-color var(--transition),
+      outline var(--duration-slow);
+
+    .Icon {
+      display: inline-flex;
+      align-items: center;
+      color: var(--foreground-softer);
+    }
+
+    @media (hover: hover) {
+      &:hover {
+        text-decoration-color: currentColor;
+      }
+    }
+
+    &:active {
+      text-decoration-color: currentColor;
+    }
+
+    &:focus-visible {
+      outline-width: var(--spacing-1);
+      outline-color: var(--accent-soft);
+    }
+
+    &[data-size="sm"] {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+    }
+
+    &[data-size="md"] {
+      font-size: var(--font-size-md);
+    }
+
+    &[data-size="lg"] {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-medium);
+    }
+  }
+}

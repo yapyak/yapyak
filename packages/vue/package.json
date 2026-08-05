@@ -1,0 +1,79 @@
+{
+  "name": "@yapyak/vue",
+  "version": "0.0.0",
+  "description": "Vue bindings for yapyak.",
+  "keywords": [
+    "bindings",
+    "i18n",
+    "translation",
+    "vue",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
+  "bugs": "https://github.com/yapyak/yapyak/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yapyak/yapyak.git",
+    "directory": "packages/vue"
+  },
+  "license": "MIT",
+  "author": "Joakim Uhrwing",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./internal": {
+      "types": "./dist/internal.d.ts",
+      "default": "./dist/internal.js"
+    },
+    "./processor": {
+      "types": "./dist/processor.d.ts",
+      "default": "./dist/processor.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "pnpm -w vitest --run --project=@yapyak/vue",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@testing-library/vue": "catalog:",
+    "@types/node": "catalog:",
+    "@vue/compiler-core": "catalog:",
+    "@vue/compiler-sfc": "catalog:",
+    "@yapyak/tsdown-config": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vitest-config": "workspace:*",
+    "happy-dom": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "vue": "catalog:"
+  },
+  "peerDependencies": {
+    "@vue/compiler-core": ">=3.4",
+    "@vue/compiler-sfc": ">=3.4",
+    "vue": ">=3.4",
+    "yapyak": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@vue/compiler-core": {
+      "optional": true
+    },
+    "@vue/compiler-sfc": {
+      "optional": true
+    }
+  },
+  "engines": {
+    "node": ">=22.22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

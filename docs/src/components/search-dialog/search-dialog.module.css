@@ -1,0 +1,34 @@
+@layer components {
+  .SearchDialog {
+    .SearchBar {
+      display: flex;
+      flex: none;
+      gap: var(--spacing-3);
+      align-items: center;
+      padding: var(--spacing-4) var(--spacing-5);
+
+      .SearchIcon {
+        flex: none;
+        font-size: var(--font-size-lg);
+        color: var(--foreground-softer);
+      }
+
+      .SearchInput {
+        flex: 1;
+        min-width: 0;
+        font-size: var(--font-size-md);
+        color: var(--foreground);
+
+        &::placeholder {
+          color: var(--foreground-softer);
+        }
+      }
+    }
+
+    &[data-populated] {
+      .SearchBar {
+        border-bottom: var(--px) solid var(--rule);
+      }
+    }
+  }
+}

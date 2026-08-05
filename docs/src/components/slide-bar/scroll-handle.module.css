@@ -1,0 +1,23 @@
+@layer components {
+  .ScrollHandle {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: var(--scroll-handle-height, 24px);
+    color: var(--foreground-softer);
+
+    &[data-placement="start"] {
+      top: 0;
+
+      .Chevron {
+        transform: rotate(180deg);
+      }
+    }
+
+    &[data-placement="end"] {
+      bottom: 0;
+    }
+  }
+}

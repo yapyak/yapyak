@@ -1,0 +1,36 @@
+{
+  "src/routes/index.tsx": {
+    "apple": "äpple",
+    "At: {when, time, short}": "Klockan: {when, time, short}",
+    "banana": "banan",
+    "Count: {amount, number, integer}": "Antal: {amount, number, integer}",
+    "Dates and times": "Datum och tider",
+    "English": "Engelska",
+    "From the client": "Från klienten",
+    "From the server": "Från servern",
+    "Hello there": "Hej där",
+    "Homonyms": "Homonymer",
+    "Language preview": "Språkförhandsvisning",
+    "Lists": "Listor",
+    "Numbers": "Tal",
+    "Open": {
+      "badge": "Öppen",
+      "button": "Öppna"
+    },
+    "pear": "päron",
+    "Plurals": "Pluralis",
+    "Price: {amount, number, currency EUR}": "Pris: {amount, number, currency EUR}",
+    "Relative time": "Relativ tid",
+    "Rich text": "Formaterad text",
+    "Select": "Val",
+    "Swedish": "Svenska",
+    "Switch language": "Byt språk",
+    "This is the {name} example.": "Detta är {name}-exemplet.",
+    "Total: {amount, number, percent}": "Totalt: {amount, number, percent}",
+    "Translate <b>everything</b> with <link>yapyak</link>.<br/>Even with <b>line breaks</b>.": "Översätt <b>allt</b> med <link>yapyak</link>.<br/>Även med <b>radbrytningar</b>.",
+    "Updated: {when, date, long}": "Uppdaterad: {when, date, long}",
+    "Updated: {when, date, short}": "Uppdaterad: {when, date, short}",
+    "You have {count, plural, one {# message} other {# messages}}": "Du har {count, plural, one {# meddelande} other {# meddelanden}}",
+    "{role, select, admin {Administrator} editor {Editor} other {Viewer}}": "{role, select, admin {Administratör} editor {Redaktör} other {Besökare}}"
+  }
+}

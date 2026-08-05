@@ -1,0 +1,7 @@
+@layer components {
+  .LayoutHeaderStart {
+    display: flex;
+    align-items: center;
+    justify-self: start;
+  }
+}

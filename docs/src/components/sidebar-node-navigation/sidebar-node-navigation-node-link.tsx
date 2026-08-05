@@ -1,0 +1,74 @@
+import type { SidebarLinkNode } from '@yapyak/docs-compiler';
+import type { LinkBaseProps } from '#primitives/link';
+
+import { useLocation } from '@tanstack/react-router';
+import { useEffect, useRef } from 'react';
+
+import { LinkBase } from '#primitives/link';
+
+import styles from './sidebar-node-navigation-node-link.module.css';
+
+export type SidebarNodeNavigationNodeLinkProps = LinkBaseProps & {
+  sidebarNode: SidebarLinkNode;
+};
+
+export function SidebarNodeNavigationNodeLink(
+  props: SidebarNodeNavigationNodeLinkProps,
+) {
+  const { className, sidebarNode, ...restProps } = props;
+  const isDeprecated = sidebarNode.badge?.variant === 'deprecated';
+  const element = useRef<HTMLAnchorElement>(null);
+  const initialPathname = useLocation({
+    select: (location) => location.pathname,
+  });
+  const isActiveOnMountRef = useRef(initialPathname === sidebarNode.href);
+
+  useEffect(() => {
+    const $element = element.current;
+    if (!isActiveOnMountRef.current || $element === null) {
+      return;
+    }
+
+    let isCancelled = false;
+    let frame = 0;
+
+    const scrollToActive = () => {
+      frame = window.requestAnimationFrame(() => {
+        if (!isCancelled) {
+          $element.scrollIntoView({
+            block: 'center',
+          });
+        }
+      });
+    };
+
+    void (async () => {
+      await document.fonts.ready;
+      scrollToActive();
+    })();
+
+    return () => {
+      isCancelled = true;
+      window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  return (
+    <LinkBase
+      {...restProps}
+      activeOptions={{
+        exact: true,
+      }}
+      className={[
+        styles.SidebarNodeNavigationNodeLink,
+        className,
+      ]}
+      data-deprecated={isDeprecated}
+      data-kind="link"
+      ref={element}
+      to={sidebarNode.href}
+    >
+      {sidebarNode.label}
+    </LinkBase>
+  );
+}

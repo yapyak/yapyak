@@ -1,0 +1,59 @@
+@layer components {
+  .Terminal {
+    position: relative;
+    overflow: hidden;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
+    background-color: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-ring-inset);
+    transition: outline var(--duration-slow);
+
+    .Line {
+      display: block;
+      min-height: 1em;
+
+      .Text {
+        color: inherit;
+      }
+
+      .Bold {
+        font-weight: var(--font-weight-semibold);
+        color: var(--foreground);
+      }
+
+      .Dim {
+        color: var(--foreground-softer);
+      }
+
+      .Cyan {
+        color: var(--accent);
+      }
+
+      .Green {
+        color: var(--tip);
+      }
+
+      .Red {
+        color: var(--danger);
+      }
+
+      .Yellow {
+        color: var(--warning);
+      }
+
+      .BarFill {
+        color: var(--accent);
+      }
+
+      .BarEmpty {
+        color: var(--foreground-softer);
+      }
+    }
+
+    &:has(.PreformattedText:focus-visible) {
+      outline-width: 4px;
+      outline-color: var(--accent-soft);
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "@yapyak-examples/svelte-vanilla-local-storage",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "preview": "vite preview",
+    "typecheck": "svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@yapyak/svelte": "workspace:*",
+    "svelte": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "catalog:",
+    "@yapyak/vite": "workspace:*",
+    "svelte-check": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:"
+  }
+}

@@ -1,0 +1,25 @@
+---
+title: Overrides
+order: 5
+---
+
+[`format.in(locale)`](/reference/yapyak/Format) scopes a `format.*` call (or chain) to a forced locale, regardless of the active one. Use it for one-off formatting in a non-active locale.
+
+```ts
+import { format } from 'yapyak';
+
+format.in('sv').number(199, {
+  currency: 'SEK',
+  style: 'currency'
+});
+// output: '199,00 kr'
+```
+
+```ts
+format.in('ja').dateTime(new Date(), { dateStyle: 'long' });
+// output: '2026年6月17日'
+```
+
+`format.in(locale)` returns a `Format` value with the same methods as the top-level `format`. The `locale` argument is typed against your [`Locale`](/reference/yapyak/Locale) union, so an unknown code is a compile-time error.
+
+

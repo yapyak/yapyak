@@ -1,0 +1,100 @@
+{
+  "name": "yapyak",
+  "version": "0.0.0",
+  "description": "i18n that keeps up.",
+  "keywords": [
+    "i18n",
+    "translation",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
+  "bugs": "https://github.com/yapyak/yapyak/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yapyak/yapyak.git",
+    "directory": "packages/yapyak"
+  },
+  "license": "MIT",
+  "author": "Joakim Uhrwing",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./adapter": {
+      "types": "./dist/adapter/index.d.ts",
+      "default": "./dist/adapter/index.js"
+    },
+    "./compiler/internal": {
+      "types": "./dist/compiler/internal.d.ts",
+      "default": "./dist/compiler/internal.js"
+    },
+    "./config": {
+      "types": "./dist/config/index.d.ts",
+      "default": "./dist/config/index.js"
+    },
+    "./config/internal": {
+      "types": "./dist/config/internal.d.ts",
+      "default": "./dist/config/internal.js"
+    },
+    "./internal": {
+      "types": "./dist/internal.d.ts",
+      "default": "./dist/internal.js"
+    },
+    "./processor": {
+      "types": "./dist/processor/index.d.ts",
+      "default": "./dist/processor/index.js"
+    },
+    "./processor/internal": {
+      "types": "./dist/processor/internal.d.ts",
+      "default": "./dist/processor/internal.js"
+    },
+    "./runtime": {
+      "types": "./dist/runtime.d.ts",
+      "default": "./dist/runtime.js"
+    },
+    "./translator": {
+      "types": "./dist/translator/index.d.ts",
+      "default": "./dist/translator/index.js"
+    },
+    "./translator/internal": {
+      "types": "./dist/translator/internal.d.ts",
+      "default": "./dist/translator/internal.js"
+    }
+  },
+  "bin": {
+    "yapyak": "./dist/cli/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "pnpm -w vitest --run --project=yapyak",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "jiti": "catalog:",
+    "magic-string": "catalog:",
+    "picomatch": "catalog:"
+  },
+  "devDependencies": {
+    "@fast-check/vitest": "catalog:",
+    "@types/node": "catalog:",
+    "@types/picomatch": "catalog:",
+    "@typescript/typescript6": "catalog:",
+    "@yapyak/tsdown-config": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vitest-config": "workspace:*",
+    "happy-dom": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vite": "catalog:",
+    "vitest": "catalog:"
+  },
+  "engines": {
+    "node": ">=22.22"
+  }
+}

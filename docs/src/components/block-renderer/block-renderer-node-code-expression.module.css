@@ -1,0 +1,25 @@
+@layer components {
+  .BlockRendererNodeCodeExpression {
+    --block-renderer-node-link-text-decoration-line: none;
+
+    padding: 4px 6px;
+    font-family: var(--font-family-mono);
+    font-size: 0.78em;
+    color: var(--foreground-soft);
+    white-space: nowrap;
+    background-color: var(--surface-strong);
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-ring-inset);
+    transition: background-color var(--transition);
+
+    @media (hover: hover) {
+      &:has(.BlockRendererNodeLink:hover) {
+        background-color: var(--surface-stronger);
+      }
+    }
+
+    &:has(.BlockRendererNodeLink:active) {
+      background-color: var(--surface-strongest);
+    }
+  }
+}

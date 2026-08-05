@@ -1,0 +1,26 @@
+@layer components {
+  .BlockRendererNodeList {
+    padding-left: var(--spacing-5);
+    list-style-position: outside;
+
+    &:is(ul) {
+      list-style-type: disc;
+    }
+
+    &:is(ol) {
+      list-style-type: decimal;
+    }
+
+    &[data-size="sm"] {
+      font-size: var(--font-size-sm);
+    }
+
+    &[data-size="md"] {
+      font-size: var(--font-size-md);
+    }
+
+    &[data-size="lg"] {
+      font-size: var(--font-size-lg);
+    }
+  }
+}

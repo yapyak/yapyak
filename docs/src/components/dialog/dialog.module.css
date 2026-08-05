@@ -1,0 +1,25 @@
+@layer components {
+  .Dialog {
+    position: relative;
+    z-index: var(--z-index-4);
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    width: min(90vw, 640px);
+    max-height: min(60vh, 520px);
+    margin-top: min(120px, 12vh);
+    overflow: hidden;
+    color: var(--foreground);
+    background-color: var(--surface-elevated);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-ring-inset), var(--shadow-overlay);
+    transition:
+      transform var(--duration-slow) var(--ease-snappy),
+      opacity var(--duration-slow) var(--ease-snappy);
+
+    &:is([data-animate="enter"], [data-animate="exit"]) {
+      opacity: 0;
+      transform: translateY(-8px) scale(0.98);
+    }
+  }
+}

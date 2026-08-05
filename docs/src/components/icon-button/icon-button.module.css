@@ -1,0 +1,43 @@
+@layer components {
+  .IconButton {
+    display: inline-flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    padding: var(--spacing-1-5);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--foreground-soft);
+    outline: var(--spacing-2) solid transparent;
+
+    border-radius: var(--border-radius-sm);
+    transition:
+      color var(--transition),
+      outline var(--duration-slow);
+
+    .Icon {
+      display: inline-flex;
+      font-size: 18px;
+    }
+
+    .Text {
+      line-height: 1;
+    }
+
+    &:enabled {
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+        }
+      }
+
+      &:active {
+        color: var(--foreground);
+      }
+
+      &:focus-visible {
+        outline-width: var(--spacing-1);
+        outline-color: var(--accent-soft);
+      }
+    }
+  }
+}

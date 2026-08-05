@@ -1,0 +1,23 @@
+@layer components {
+  .ContentLayoutSidebar {
+    display: none;
+
+    @media (min-width: 1024px) {
+      position: fixed;
+      top: var(--header-height);
+      bottom: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-5);
+      width: calc(var(--layout-sidebar-width) + var(--layout-side-bleed));
+      padding: var(--spacing-5) var(--spacing-4) var(--spacing-5)
+        calc(var(--spacing-3) + var(--layout-side-bleed));
+      overflow-y: auto;
+      scrollbar-color: var(--ring-stronger) transparent;
+      scrollbar-width: thin;
+      background-color: transparent;
+      border-right: var(--px) solid var(--rule);
+    }
+  }
+}

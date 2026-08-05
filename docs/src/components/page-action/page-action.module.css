@@ -1,0 +1,96 @@
+@layer components {
+  .PageAction {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-1);
+    max-width: calc(
+      var(--layout-sidebar-width) -
+      var(--spacing-3) -
+      var(--spacing-4)
+    );
+    padding-top: var(--spacing-5);
+    margin-top: var(--spacing-3);
+    border-top: var(--px) solid var(--rule);
+
+    :is(.PageActionButton, .PageActionLink) {
+      display: flex;
+      gap: var(--spacing-2);
+      align-items: center;
+      padding: var(--spacing-2-5) var(--spacing-3);
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground-soft);
+      text-align: left;
+      outline: var(--spacing-2) solid transparent;
+      outline-offset: calc(var(--px) * -1);
+      background-color: transparent;
+      border-radius: var(--border-radius-sm);
+      transition:
+        color var(--transition),
+        background-color var(--transition),
+        box-shadow var(--transition),
+        outline var(--duration-slow);
+
+      .LeadingIcon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 16px;
+        height: 16px;
+        color: inherit;
+      }
+
+      .LabelText {
+        flex: 1 1 auto;
+        line-height: 1;
+      }
+
+      .TrailingIcon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-left: auto;
+        color: var(--foreground-softer);
+      }
+
+      &:enabled {
+        @media (hover: hover) {
+          &:hover {
+            color: var(--foreground);
+            background-color: var(--surface);
+            box-shadow: var(--shadow-ring-inset);
+          }
+        }
+
+        &:active {
+          color: var(--foreground);
+          background-color: var(--surface-strong);
+          box-shadow: var(--shadow-ring-inset);
+        }
+
+        &:focus-visible {
+          outline-width: var(--spacing-05);
+          outline-color: var(--accent-soft);
+        }
+      }
+
+      &[data-copied] {
+        color: var(--brand);
+      }
+    }
+
+    .ChatButton {
+      &[aria-expanded="true"] {
+        color: var(--foreground);
+        background-color: var(--surface-strong);
+        box-shadow: var(--shadow-ring-inset);
+      }
+    }
+
+    &:first-child {
+      padding-top: 0;
+      margin-top: 0;
+      border-top: 0;
+    }
+  }
+}

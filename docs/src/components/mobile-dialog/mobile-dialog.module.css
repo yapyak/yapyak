@@ -1,0 +1,30 @@
+@layer components {
+  .MobileDialog {
+    --keyboard-inset: 0px;
+
+    position: fixed;
+    inset: var(--header-height) 0 0 0;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--keyboard-inset);
+    overflow: hidden;
+    background-color: var(--canvas);
+    transition: opacity var(--duration-medium) var(--ease-snappy);
+
+    .Content {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform var(--duration-medium) var(--ease-snappy);
+    }
+
+    &:is([data-animate="enter"], [data-animate="exit"]) {
+      opacity: 0;
+
+      .Content {
+        transform: translateY(-8px);
+      }
+    }
+  }
+}

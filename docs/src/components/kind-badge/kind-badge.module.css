@@ -1,0 +1,86 @@
+@layer components {
+  .KindBadge {
+    --kind-badge-color: var(--foreground-soft);
+    --kind-badge-background-color-alpha: 14%;
+    --kind-badge-box-shadow-color-alpha: 4%;
+
+    font-weight: var(--font-weight-semibold);
+    color: var(--kind-badge-color);
+    text-transform: uppercase;
+    letter-spacing: var(--letter-spacing-wide);
+    background-color: color-mix(
+      in oklab,
+      var(--kind-badge-color) var(--kind-badge-background-color-alpha),
+      transparent
+    );
+    border-radius: var(--border-radius-sm);
+    box-shadow: inset 0 0 0 var(--px)
+      color-mix(
+        in oklab,
+        var(--kind-badge-color) var(--kind-badge-box-shadow-color-alpha),
+        transparent
+      );
+
+    &[data-size="sm"] {
+      font-size: var(--font-size-2xs);
+    }
+
+    &[data-size="md"] {
+      font-size: var(--font-size-xs);
+    }
+
+    &[data-size="lg"] {
+      font-size: var(--font-size-sm);
+    }
+
+    &[data-appearance="solid"] {
+      &[data-size="sm"] {
+        padding: var(--spacing-05) var(--spacing-1);
+      }
+
+      &[data-size="md"] {
+        padding: var(--spacing-05) var(--spacing-2);
+      }
+
+      &[data-size="lg"] {
+        padding: var(--spacing-1) var(--spacing-3);
+      }
+    }
+
+    &[data-appearance="plain"] {
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    &[data-variant="function"] {
+      --kind-badge-color: var(--kind-function);
+    }
+
+    &[data-variant="hook"] {
+      --kind-badge-color: var(--kind-hook);
+    }
+
+    &[data-variant="component"] {
+      --kind-badge-color: var(--kind-component);
+    }
+
+    &[data-variant="class"] {
+      --kind-badge-color: var(--kind-class);
+    }
+
+    &[data-variant="interface"] {
+      --kind-badge-color: var(--kind-interface);
+      --kind-badge-background-color-alpha: 12%;
+    }
+
+    &[data-variant="type"] {
+      --kind-badge-color: var(--kind-type);
+      --kind-badge-background-color-alpha: 12%;
+    }
+
+    &[data-variant="variable"] {
+      --kind-badge-color: var(--kind-variable);
+      --kind-badge-background-color-alpha: 12%;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+@layer components {
+  .BlockRendererNodeListItem {
+    display: list-item;
+
+    & + & {
+      margin-top: var(--spacing-3);
+    }
+
+    &::marker {
+      color: var(--foreground-softer);
+    }
+  }
+}

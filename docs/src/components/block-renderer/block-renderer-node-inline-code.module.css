@@ -1,0 +1,25 @@
+@layer components {
+  .BlockRendererNodeInlineCode {
+    padding: 4px 6px;
+    font-family: var(--font-family-mono);
+    font-size: 0.78em;
+    color: var(--block-renderer-node-inline-code-color, var(--foreground-soft));
+    overflow-wrap: var(
+      --block-renderer-node-inline-code-overflow-wrap,
+      break-word
+    );
+    word-break: var(--block-renderer-node-inline-code-word-break, normal);
+    background-color: var(
+      --block-renderer-node-inline-code-background-color,
+      var(--surface-strong)
+    );
+    border-radius: var(--border-radius-sm);
+    box-shadow: var(--shadow-ring-inset);
+    box-decoration-break: clone;
+    outline: var(--spacing-1) solid
+      var(--block-renderer-node-inline-code-outline-color, transparent);
+    transition:
+      background-color var(--transition),
+      outline-color var(--duration-slow);
+  }
+}

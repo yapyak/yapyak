@@ -1,0 +1,34 @@
+@layer components {
+  .BlockRendererNodeTableCell {
+    padding: var(--spacing-3) var(--spacing-4);
+    vertical-align: top;
+    color: var(--foreground-soft);
+    overflow-wrap: break-word;
+    border-right: var(--px) solid var(--rule);
+
+    &:last-child {
+      border-right: 0;
+    }
+
+    &[data-header] {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-medium);
+      color: var(--foreground-softer);
+      text-transform: uppercase;
+      letter-spacing: var(--letter-spacing-wider);
+      white-space: nowrap;
+      border-bottom: var(--px) solid var(--rule);
+    }
+
+    &[data-column="literal"] {
+      --block-renderer-node-inline-code-overflow-wrap: anywhere;
+    }
+
+    &[data-column="identifier"] {
+      --block-renderer-node-inline-code-word-break: keep-all;
+      --block-renderer-node-inline-code-overflow-wrap: normal;
+
+      white-space: nowrap;
+    }
+  }
+}

@@ -1,0 +1,4 @@
+.astro/
+.yapyak/
+dist
+node_modules

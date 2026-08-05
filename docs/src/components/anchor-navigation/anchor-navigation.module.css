@@ -1,0 +1,66 @@
+@layer components {
+  .AnchorNavigation {
+    --indicator-top: 0px;
+    --indicator-height: 0px;
+    --indicator-duration: 0ms;
+
+    display: block;
+
+    .Rail {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-3);
+
+      .Heading {
+        padding: 0 var(--spacing-3);
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--foreground-softer);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wider);
+      }
+
+      .List {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+      }
+
+      .Indicator {
+        position: absolute;
+        top: 0;
+        left: 0;
+        display: none;
+        width: var(--px);
+        height: var(--indicator-height);
+        pointer-events: none;
+        background-color: var(--brand);
+        opacity: 0;
+        transform: translateY(var(--indicator-top));
+        transition:
+          opacity var(--indicator-duration) var(--ease-smooth),
+          transform var(--indicator-duration) var(--ease-smooth),
+          height var(--indicator-duration) var(--ease-smooth);
+        will-change: transform, height;
+      }
+    }
+
+    &[data-indicator] {
+      .Indicator {
+        left: calc((var(--spacing-4) + var(--px)) * -1);
+        display: block;
+      }
+    }
+
+    &[data-active] {
+      .Indicator {
+        opacity: 1;
+      }
+    }
+
+    &[data-animation-enabled] {
+      --indicator-duration: var(--duration-medium);
+    }
+  }
+}

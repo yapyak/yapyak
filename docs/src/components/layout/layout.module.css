@@ -1,0 +1,17 @@
+@layer components {
+  .Layout {
+    --layout-sidebar-width: 240px;
+    --layout-outline-width: 300px;
+    --layout-max-width: 1324px;
+    --layout-side-bleed: max(0px, calc((100vw - var(--layout-max-width)) / 2));
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding-top: var(--header-height);
+
+    @media (min-width: 1324px) {
+      --layout-max-width: 1460px;
+    }
+  }
+}

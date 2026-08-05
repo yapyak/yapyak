@@ -1,0 +1,38 @@
+@layer components {
+  .SlideBar {
+    --scroll-handle-height: 24px;
+    --slide-bar-mask-image-top: black;
+    --slide-bar-mask-image-bottom: black;
+
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+
+    .Content {
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      scroll-padding-block-start: var(--scroll-handle-height);
+      scroll-padding-block-end: var(--scroll-handle-height);
+      scrollbar-width: none;
+      mask-image: linear-gradient(
+        to bottom,
+        var(--slide-bar-mask-image-top) var(--scroll-handle-height),
+        black var(--scroll-handle-height),
+        black calc(100% - var(--scroll-handle-height)),
+        var(--slide-bar-mask-image-bottom)
+          calc(100% - var(--scroll-handle-height))
+      );
+    }
+
+    &[data-with-start-scroll-offset] {
+      --slide-bar-mask-image-top: transparent;
+    }
+
+    &[data-with-end-scroll-offset] {
+      --slide-bar-mask-image-bottom: transparent;
+    }
+  }
+}

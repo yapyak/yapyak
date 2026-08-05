@@ -1,0 +1,41 @@
+@layer components {
+  .SidebarNodeNavigationNodeLink {
+    display: block;
+    padding: var(--spacing-1) var(--spacing-3);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--foreground-soft);
+    white-space: nowrap;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
+    border-radius: var(--border-radius-sm);
+    transition:
+      color var(--transition),
+      outline var(--duration-slow);
+
+    @media (hover: hover) {
+      &:hover {
+        color: var(--foreground);
+      }
+    }
+
+    &:active {
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      color: var(--foreground);
+      outline-width: var(--spacing-1);
+      outline-color: var(--accent-soft);
+    }
+
+    &[data-status="active"] {
+      color: var(--brand);
+    }
+
+    &[data-deprecated] {
+      color: var(--foreground-softer);
+      text-decoration: line-through;
+    }
+  }
+}

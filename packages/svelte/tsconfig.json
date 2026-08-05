@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": [
+      "node",
+      "svelte"
+    ]
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
+  "extends": "@yapyak/typescript-config/library",
+  "include": [
+    "src"
+  ]
+}

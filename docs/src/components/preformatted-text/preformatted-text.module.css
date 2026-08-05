@@ -1,0 +1,32 @@
+@layer components {
+  .PreformattedText {
+    padding: var(--spacing-4);
+    padding-right: var(--preformatted-text-padding-right, var(--spacing-4));
+    overflow-x: auto;
+    font-family: var(--font-family-mono);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-normal);
+    color: var(--foreground-soft);
+    tab-size: 2;
+    scrollbar-color: var(--ring-stronger) transparent;
+    scrollbar-width: thin;
+    mask-image:
+      linear-gradient(
+        to right,
+        transparent 0,
+        black var(--spacing-4),
+        black
+          calc(var(--preformatted-text-mask-image-end, 100%) - var(--spacing-4)),
+        transparent var(--preformatted-text-mask-image-end, 100%)
+      ),
+      linear-gradient(black, black);
+    mask-repeat: no-repeat;
+    mask-position:
+      0 0,
+      0 100%;
+    mask-size:
+      100% calc(100% - var(--spacing-4)),
+      100% var(--spacing-4);
+    mask-composite: add;
+  }
+}

@@ -1,0 +1,86 @@
+@layer components {
+  .BlockRendererNodeDiagnostic {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background-color: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-ring-inset);
+
+    .LineRow {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: var(--spacing-3);
+      align-items: start;
+      padding: var(--spacing-3) var(--spacing-5);
+      overflow-x: auto;
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      line-height: var(--line-height-normal);
+      scrollbar-color: var(--ring-stronger) transparent;
+      scrollbar-width: thin;
+
+      .StatusIcon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--spacing-4);
+        height: var(--spacing-4);
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .BodyStack {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        min-width: 0;
+
+        .Code {
+          font-family: inherit;
+          color: var(--foreground-soft);
+          white-space: pre;
+        }
+
+        .MessageText {
+          font-family: var(--font-family-mono);
+          font-size: var(--font-size-xs);
+          color: var(--foreground-softer);
+          user-select: none;
+        }
+      }
+
+      &:not(:last-child) {
+        border-bottom: var(--px) solid var(--rule);
+      }
+
+      &[data-status] {
+        background-color: color-mix(
+          in oklab,
+          var(--block-renderer-node-diagnostic-color) 3%,
+          transparent
+        );
+
+        .StatusIcon {
+          color: var(--block-renderer-node-diagnostic-color);
+        }
+
+        .MessageText {
+          color: color-mix(
+            in oklab,
+            var(--block-renderer-node-diagnostic-color) 60%,
+            var(--foreground-softer)
+          );
+        }
+      }
+
+      &[data-status="ok"] {
+        --block-renderer-node-diagnostic-color: var(--brand);
+      }
+
+      &[data-status="error"] {
+        --block-renderer-node-diagnostic-color: var(--danger);
+      }
+    }
+  }
+}

@@ -1,0 +1,16 @@
+@layer components {
+  .Backdrop {
+    position: fixed;
+    inset: 0;
+    opacity: 1;
+    transition: opacity var(--duration-slow) var(--ease-snappy);
+
+    &[data-opaque] {
+      background-color: color-mix(in oklab, var(--scrim) 70%, transparent);
+    }
+
+    &:is([data-animate="enter"], [data-animate="exit"]) {
+      opacity: 0;
+    }
+  }
+}

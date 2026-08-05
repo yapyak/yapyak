@@ -1,0 +1,14 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "ignore": [
+    "packages/yapyak/src/compiler/parser/fixture/**",
+    "examples/svelte-sveltekit-*/vite.config.ts"
+  ],
+  "workspaces": {
+    "packages/astro": {
+      "ignoreDependencies": [
+        "@types/estree"
+      ]
+    }
+  }
+}

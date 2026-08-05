@@ -1,0 +1,5 @@
+@layer components {
+  .BlockRendererNodeEmphasis {
+    font-style: italic;
+  }
+}

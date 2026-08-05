@@ -1,0 +1,33 @@
+name: Bug report
+description: Something is broken
+labels:
+  - bug
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: Include what you expected to happen.
+    validations:
+      required: true
+  - type: input
+    id: diagnostic
+    attributes:
+      label: Diagnostic
+      description: If yapyak showed a `YAPnnnn` diagnostic, paste it.
+      placeholder: YAP0021
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: The smallest `t()` call, config, or repository link that shows the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: info
+    attributes:
+      label: Info
+      description: Paste the output of `npx yapyak info`.
+      render: shell
+    validations:
+      required: true

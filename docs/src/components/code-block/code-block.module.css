@@ -1,0 +1,67 @@
+@layer components {
+  .CodeBlock {
+    --code-block-row-height: calc(
+      2 *
+      var(--spacing-4) +
+      var(--font-size-xs) *
+      var(--line-height-normal)
+    );
+
+    position: relative;
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
+    background-color: var(--surface);
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-ring-inset);
+    transition: outline var(--duration-slow);
+
+    .Header {
+      display: flex;
+      gap: var(--spacing-3);
+      align-items: center;
+      min-height: var(--code-block-row-height);
+      padding: var(--spacing-3) var(--spacing-4);
+      border-bottom: var(--px) solid var(--rule);
+
+      .PathText {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-family: var(--font-family-mono);
+        font-size: var(--font-size-xs);
+        color: var(--foreground-soft);
+        white-space: nowrap;
+      }
+    }
+
+    .LabelText {
+      position: absolute;
+      top: var(--spacing-3);
+      left: var(--spacing-4);
+      font-family: var(--font-family-mono);
+      font-size: var(--font-size-xs);
+      color: var(--foreground-softer);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .Code {
+      font-family: inherit;
+    }
+
+    &:has(.PreformattedText:focus-visible) {
+      outline-width: var(--spacing-1);
+      outline-color: var(--accent-soft);
+    }
+
+    &:has(.CopyButton):not(:has(.Header)) {
+      --preformatted-text-mask-image-end: calc(100% - var(--spacing-12));
+      --preformatted-text-padding-right: var(--spacing-14);
+    }
+
+    &[data-bare] {
+      background-color: transparent;
+      border-radius: 0;
+      box-shadow: none;
+    }
+  }
+}

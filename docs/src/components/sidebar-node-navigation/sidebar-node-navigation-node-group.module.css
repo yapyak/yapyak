@@ -1,0 +1,193 @@
+@layer components {
+  .SidebarNodeNavigationNodeGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
+
+    :is(.TitleHeading, .TitleLink) {
+      display: block;
+      padding: 0 var(--spacing-3);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-weight: var(--font-weight-semibold);
+      color: inherit;
+      white-space: nowrap;
+    }
+
+    .TitleLink {
+      transition: color var(--transition);
+
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+        }
+      }
+
+      &:active {
+        color: var(--foreground);
+      }
+    }
+
+    .GroupBar {
+      position: relative;
+      width: 100%;
+
+      :is(.GroupLink, .GroupToggle) {
+        display: block;
+        padding: var(--spacing-1) calc(28px + var(--spacing-3)) var(--spacing-1)
+          var(--spacing-3);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--foreground-soft);
+        text-align: left;
+        white-space: nowrap;
+        outline: var(--spacing-2) solid transparent;
+        outline-offset: calc(var(--px) * -1);
+        border-radius: var(--border-radius-sm);
+        transition:
+          color var(--transition),
+          outline var(--duration-slow);
+
+        &:enabled {
+          @media (hover: hover) {
+            &:hover {
+              color: var(--foreground);
+            }
+          }
+
+          &:active {
+            color: var(--foreground);
+          }
+
+          &:focus-visible {
+            outline-width: var(--spacing-1);
+            outline-color: var(--accent-soft);
+          }
+        }
+      }
+
+      .ToggleButton {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        color: var(--foreground-softer);
+        outline: var(--spacing-2) solid transparent;
+        outline-offset: calc(var(--px) * -1);
+        background-color: transparent;
+        border-radius: var(--border-radius-sm);
+        transform: translateY(-50%);
+        transition:
+          color var(--transition),
+          background-color var(--transition),
+          box-shadow var(--transition),
+          outline var(--duration-slow);
+
+        .Chevron {
+          transform-origin: center;
+          transition: transform var(--transition);
+        }
+
+        &:enabled {
+          @media (hover: hover) {
+            &:hover {
+              color: var(--foreground);
+              background-color: var(--surface);
+              box-shadow: var(--shadow-ring-inset);
+            }
+          }
+
+          &:active {
+            color: var(--foreground);
+            background-color: var(--surface-strong);
+            box-shadow: var(--shadow-ring-inset);
+          }
+
+          &:focus-visible {
+            outline-width: var(--spacing-1);
+            outline-color: var(--accent-soft);
+          }
+        }
+      }
+
+      @media (hover: hover) {
+        &:hover {
+          .ToggleButton {
+            box-shadow: var(--shadow-ring-inset);
+          }
+        }
+      }
+    }
+
+    .List {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-05);
+    }
+
+    &[data-on-path] {
+      > .GroupBar {
+        :is(.GroupLink, .GroupToggle) {
+          color: var(--foreground);
+        }
+      }
+    }
+
+    &[data-active] {
+      > .GroupBar {
+        :is(.GroupLink, .GroupToggle) {
+          color: var(--brand);
+        }
+      }
+    }
+
+    &[data-open] {
+      > .GroupBar {
+        .Chevron {
+          transform: rotate(90deg);
+        }
+      }
+    }
+
+    &[data-depth="0"] {
+      > :is(.TitleHeading, .TitleLink) {
+        font-size: var(--font-size-xs);
+        font-weight: var(--font-weight-semibold);
+        color: var(--foreground-softer);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-wide);
+      }
+
+      > .List {
+        gap: var(--spacing-1);
+      }
+
+      &:not([data-collapsible]):not(:first-child) {
+        padding-top: var(--spacing-5);
+        margin-top: var(--spacing-3);
+        border-top: var(--px) solid var(--rule);
+      }
+    }
+
+    &[data-collapsible] {
+      gap: 0;
+
+      > .List {
+        padding-left: var(--spacing-2);
+        font-size: var(--font-size-xs);
+      }
+    }
+
+    &:not([data-depth="0"]):not([data-collapsible]) {
+      gap: 0;
+
+      > .List {
+        padding-left: var(--spacing-2);
+      }
+    }
+  }
+}

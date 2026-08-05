@@ -1,0 +1,50 @@
+import type { EyebrowBlock } from '@yapyak/docs-compiler';
+import type { BoxProps } from '#primitives/box';
+
+import { Box } from '#primitives/box';
+
+import { ExternalLink } from '../external-link';
+import { KindBadge } from '../kind-badge';
+import styles from './block-renderer-node-eyebrow.module.css';
+
+export type BlockRendererNodeEyebrowProps = BoxProps<'p'> & {
+  block: EyebrowBlock;
+};
+
+export function BlockRendererNodeEyebrow(props: BlockRendererNodeEyebrowProps) {
+  const { block, className, ...restProps } = props;
+
+  return (
+    <Box
+      {...restProps}
+      as="p"
+      className={[
+        styles.BlockRendererNodeEyebrow,
+        className,
+      ]}
+    >
+      <Box
+        as="span"
+        className={styles.Start}
+      >
+        {block.exportKind && <KindBadge variant={block.exportKind} />}
+        {block.module && (
+          <Box
+            as="span"
+            className={styles.ModuleText}
+          >
+            {block.module}
+          </Box>
+        )}
+      </Box>
+      {block.sourceHref && (
+        <ExternalLink
+          href={block.sourceHref}
+          size="sm"
+        >
+          GitHub
+        </ExternalLink>
+      )}
+    </Box>
+  );
+}

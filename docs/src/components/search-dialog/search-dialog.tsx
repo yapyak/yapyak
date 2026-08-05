@@ -1,0 +1,98 @@
+import type { SearchData } from '@yapyak/docs-compiler';
+import type { ChangeEvent, PointerEvent } from 'react';
+import type { DialogProps } from '../dialog';
+
+import { useLayoutEffect, useRef } from 'react';
+import { t } from 'yapyak';
+
+import { useSearch } from '#hooks/use-search';
+import { useSearchNavigation } from '#hooks/use-search-navigation';
+import { Box } from '#primitives/box';
+
+import { Dialog } from '../dialog';
+import { Icon } from '../icon';
+import { SearchEmptyMessage } from '../search-empty-message';
+import styles from './search-dialog.module.css';
+import { SearchDialogListbox } from './search-dialog-listbox';
+
+const LISTBOX_ID = 'search-dialog-listbox';
+
+export type SearchDialogProps = Omit<DialogProps, 'onSelect'> & {
+  searchData: SearchData | undefined;
+};
+
+export function SearchDialog(props: SearchDialogProps) {
+  const { className, searchData, onClose, ...restProps } = props;
+
+  const inputElement = useRef<HTMLInputElement>(null);
+  const handleSelect = useSearchNavigation();
+  const search = useSearch({
+    listboxId: LISTBOX_ID,
+    onSelect: handleSelect,
+    searchData,
+  });
+
+  useLayoutEffect(() => {
+    inputElement.current?.focus();
+  }, []);
+
+  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    search.setQuery(event.target.value);
+  };
+
+  const handleDialogPointerDown = (event: PointerEvent) => {
+    if (
+      event.pointerType === 'mouse' &&
+      event.target !== inputElement.current
+    ) {
+      event.preventDefault();
+    }
+  };
+
+  return (
+    <Dialog
+      {...restProps}
+      aria-label={t('Search...')}
+      className={[
+        styles.SearchDialog,
+        className,
+      ]}
+      data-populated={search.populated}
+      onClose={onClose}
+      onPointerDown={handleDialogPointerDown}
+    >
+      <Box className={styles.SearchBar}>
+        <Icon
+          className={styles.SearchIcon}
+          name="search"
+        />
+        <Box
+          aria-activedescendant={search.activeId}
+          aria-autocomplete="list"
+          aria-controls={LISTBOX_ID}
+          aria-expanded={search.hasResults}
+          aria-label={t('Search...')}
+          as="input"
+          autoComplete="off"
+          className={styles.SearchInput}
+          onChange={handleInputChange}
+          onKeyDown={search.handleInputKeyDown}
+          placeholder={t('Search...')}
+          ref={inputElement}
+          role="combobox"
+          value={search.query}
+        />
+      </Box>
+      {search.hasResults && (
+        <SearchDialogListbox
+          highlightedHref={search.highlightedHref}
+          id={LISTBOX_ID}
+          onHighlightChange={search.setHighlightedHref}
+          onSelect={search.handleSelect}
+          results={search.results}
+        />
+      )}
+      {search.query.length > 0 && !search.hasResults && <SearchEmptyMessage />}
+    </Dialog>
+  );
+}

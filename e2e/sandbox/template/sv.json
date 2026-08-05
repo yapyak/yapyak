@@ -1,0 +1,9 @@
+{
+  "src/app.tsx": {
+    "Hello": "Hej",
+    "Save": "Spara"
+  },
+  "src/cart.tsx": {
+    "Settings": "Laddar..."
+  }
+}

@@ -1,0 +1,29 @@
+@layer components {
+  .ColophonLink {
+    color: var(--foreground);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: var(--spacing-1);
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
+    border-radius: var(--border-radius-xs);
+    transition:
+      text-decoration-color var(--transition),
+      outline var(--duration-slow);
+
+    @media (hover: hover) {
+      &:hover {
+        text-decoration-color: currentColor;
+      }
+    }
+
+    &:active {
+      text-decoration-color: currentColor;
+    }
+
+    &:focus-visible {
+      outline-width: var(--spacing-1);
+      outline-color: var(--accent-soft);
+    }
+  }
+}

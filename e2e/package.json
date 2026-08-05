@@ -1,0 +1,22 @@
+{
+  "name": "@yapyak/e2e",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "test:dev": "pnpm --filter @yapyak-examples/astro-cookie exec astro dev stop && playwright test",
+    "test:prod": "YAPYAK_E2E_MODE=prod playwright test",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@playwright/test": "catalog:",
+    "@types/node": "catalog:",
+    "@yapyak/typescript-config": "workspace:*",
+    "typescript": "catalog:"
+  },
+  "engines": {
+    "node": ">=22.22"
+  }
+}

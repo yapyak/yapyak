@@ -1,0 +1,57 @@
+@layer components {
+  .MobileDialogButton {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--foreground-soft);
+    outline: var(--spacing-2) solid transparent;
+    outline-offset: calc(var(--px) * -1);
+    background-color: transparent;
+    border-radius: var(--border-radius-full);
+    transition:
+      color var(--transition),
+      outline var(--duration-slow);
+
+    .Line {
+      display: block;
+      width: 20px;
+      height: var(--spacing-05);
+      background-color: currentColor;
+      border-radius: var(--border-radius-full);
+      transition:
+        transform var(--duration-medium) var(--ease-snappy),
+        opacity var(--duration-medium) var(--ease-snappy);
+    }
+
+    &:enabled {
+      @media (hover: hover) {
+        &:hover {
+          color: var(--foreground);
+        }
+      }
+
+      &:active {
+        color: var(--foreground);
+      }
+
+      &:focus-visible {
+        outline-width: var(--spacing-1);
+        outline-color: var(--accent-soft);
+      }
+    }
+
+    &[data-open] {
+      .Line:first-child {
+        transform: translateY(4px) rotate(45deg);
+      }
+
+      .Line:last-child {
+        transform: translateY(-4px) rotate(-45deg);
+      }
+    }
+  }
+}
