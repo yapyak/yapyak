@@ -34,7 +34,8 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 }
 ```
 
-![Works with Vite, React, Vue, Svelte, and Astro — SSR on Astro, React Router, SvelteKit, and TanStack Start](docs/public/stack.svg)
+![Works with Vite, React, Vue, Svelte, and Astro — SSR on Astro, React Router, SvelteKit, and TanStack Start](docs/public/stack-dark.svg#gh-dark-mode-only)
+![Works with Vite, React, Vue, Svelte, and Astro — SSR on Astro, React Router, SvelteKit, and TanStack Start](docs/public/stack-light.svg#gh-light-mode-only)
 
 **[Get started → yapyak.dev](https://yapyak.dev/guide/getting-started/installation)**
 
