@@ -29,7 +29,7 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 }
 ```
 
-**Everything else lives at [yapyak.dev](https://yapyak.dev).**
+**For full documentation, visit [yapyak.dev](https://yapyak.dev). For working examples, see [examples/](examples).**
 
 ---
 
