@@ -55,8 +55,10 @@ yapyak is early, and contributions are very welcome.
 
 Bug reports, docs fixes, examples, adapter work, and feedback from real projects all help. If you find yapyak useful, sharing it helps too.
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for local setup and how to land a change.
+
 ---
 
 ## License
 
-MIT
+[MIT](LICENSE)
