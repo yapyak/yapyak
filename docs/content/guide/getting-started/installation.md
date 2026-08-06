@@ -1073,3 +1073,35 @@ This creates `locales/sv.json` and updates the `Locale` literal type. Run it aga
 {% callout variant="tip" %}
 Or create the file by hand. Drop `sv.json` into the folder and yapyak picks it up automatically.
 {% /callout %}
+
+## Your first `t()` call
+
+Pass a source string to [`t()`](/reference/yapyak/t):
+
+```ts
+import { t } from 'yapyak';
+
+t('Save changes');
+```
+
+Save the file. yapyak extracts the source string and writes an empty stub to every locale file:
+
+```json [locales/sv.json]
+{
+  "src/app.tsx": {
+    "Save changes": ""
+  }
+}
+```
+
+Without a [translator](/guide/translating/providers), the stub stays empty and the source string renders. Hand-edit it and the translation renders instead:
+
+```json [locales/sv.json]
+{
+  "src/app.tsx": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+
+[Switch the locale](/guide/switching/switch) to see it. The active locale resets on reload until you configure [`persistence`](/guide/switching/persistence).
