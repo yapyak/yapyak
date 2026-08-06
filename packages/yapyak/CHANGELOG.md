@@ -1,5 +1,13 @@
 # yapyak
 
+## 0.0.2
+
+### Patch Changes
+
+- [`b762202`](https://github.com/yapyak/yapyak/commit/b7622024db3a938ceeeacf2c8c91168c9669aa63) Thanks [@qwuide](https://github.com/qwuide)! - `yapyak add` prints the run command for the package manager that invoked it, instead of always printing `pnpm dev`.
+
+- [`d82fcdb`](https://github.com/yapyak/yapyak/commit/d82fcdbb9013d2c0227fa6c828c953e1ff7111b4) Thanks [@qwuide](https://github.com/qwuide)! - Vite no longer pre-bundles yapyak's runtime modules. The first `vite dev` request stops reloading the page, and React apps stop logging `Invalid hook call` on the first render.
+
 ## 0.0.1
 
 ### Patch Changes
