@@ -36,8 +36,7 @@ description: "Commit messages: the area-prefix form, the closed area table, subj
 
 ### Body
 
-- Add a body iff the why is not visible in the diff; wrap at 72.
-- Never restate a changeset note — `.changeset/*.md` carries the user-facing entry.
+- Never write a body → put the user-facing note in `.changeset/*.md`.
 - Attribution trailers are forbidden — commits carry the author's own identity.
 
 ### Push
