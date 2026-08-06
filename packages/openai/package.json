@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/openai",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "OpenAI translator for yapyak.",
   "keywords": [
     "gpt",

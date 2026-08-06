@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/vue",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Vue bindings for yapyak.",
   "keywords": [
     "bindings",
