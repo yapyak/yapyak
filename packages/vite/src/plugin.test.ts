@@ -1195,15 +1195,36 @@ describe('yapyak', () => {
   });
 
   describe('plugin hooks', () => {
-    it('builds a `config` with `yapyak/runtime` excluded from `optimizeDeps`', () => {
+    it('builds a `config` with `yapyak/runtime` excluded from `optimizeDeps`', async () => {
       const plugin = yapyak();
-      const result = invokeConfig(plugin);
+      const result = await invokeConfig(plugin, root);
       expect(result.optimizeDeps?.exclude).toContain('yapyak/runtime');
     });
 
-    it('builds a `config` with `yapyak/runtime` kept in SSR no-external', () => {
+    it('builds a `config` with the runtime core excluded from `optimizeDeps`', async () => {
       const plugin = yapyak();
-      const result = invokeConfig(plugin);
+      const result = await invokeConfig(plugin, root);
+      expect(result.optimizeDeps?.exclude).toEqual(
+        expect.arrayContaining([
+          'yapyak',
+          'yapyak/internal',
+        ]),
+      );
+    });
+
+    it('builds a `config` with each processor runtime module excluded', async () => {
+      writeFileSync(
+        join(root, 'yapyak.config.ts'),
+        `export default { processors: [{ extensions: ['.tsx'], id: 'react', runtime: { module: '@yapyak/react/internal' } }] };\n`,
+      );
+      const plugin = yapyak();
+      const result = await invokeConfig(plugin, root);
+      expect(result.optimizeDeps?.exclude).toContain('@yapyak/react/internal');
+    });
+
+    it('builds a `config` with `yapyak/runtime` kept in SSR no-external', async () => {
+      const plugin = yapyak();
+      const result = await invokeConfig(plugin, root);
       expect(result.ssr?.noExternal).toBeDefined();
     });
 
@@ -1835,25 +1856,30 @@ function invokeBuildStart(plugin: YapyakPlugin): void {
   (hook as () => void).call(plugin);
 }
 
-function invokeConfig(plugin: YapyakPlugin): {
+async function invokeConfig(
+  plugin: YapyakPlugin,
+  root: string,
+): Promise<{
   optimizeDeps?: {
     exclude?: string[];
   };
   ssr?: {
     noExternal?: unknown;
   };
-} {
+}> {
   const hook = findHook(plugin, 'config');
-  return (
-    hook as () => {
+  return await (
+    hook as (userConfig: { root: string }) => Promise<{
       optimizeDeps?: {
         exclude?: string[];
       };
       ssr?: {
         noExternal?: unknown;
       };
-    }
-  ).call(plugin);
+    }>
+  ).call(plugin, {
+    root,
+  });
 }
 
 function invokeResolveId(plugin: YapyakPlugin, id: string): string | null {

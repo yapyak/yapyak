@@ -1,4 +1,8 @@
 export const RUNTIME_ID = 'yapyak/runtime';
+export const RUNTIME_CORE_IDS: string[] = [
+  'yapyak',
+  'yapyak/internal',
+];
 export const RUNTIME_RESOLVED = '\0yapyak:runtime';
 export const RUNTIME_NO_EXTERNAL: (string | RegExp)[] = [
   'yapyak',

@@ -1,4 +1,6 @@
 import type { Plugin, ResolvedConfig, UserConfig } from 'vite';
+import type { LoadYapyakConfigResult } from 'yapyak/config/internal';
+import type { Processor } from 'yapyak/processor';
 import type { State } from './state';
 
 import { writeRegister } from 'yapyak/compiler/internal';
@@ -6,20 +8,29 @@ import { createFilter, loadYapyakConfig } from 'yapyak/config/internal';
 
 import { createLocaleResolver } from '../locale-resolver';
 import {
+  RUNTIME_CORE_IDS,
   RUNTIME_ID,
   RUNTIME_NO_EXTERNAL,
   isRuntimeExternal,
 } from '../virtual-runtime';
 import { renderLocaleWarning } from './locale-warning';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 export function createConfigPlugin(state: State): Plugin {
+  const loads = new Map<string, Promise<LoadYapyakConfigResult>>();
+
   return {
-    config(): UserConfig {
+    async config(userConfig: UserConfig): Promise<UserConfig> {
+      const result = await loadOnce(
+        loads,
+        resolve(userConfig.root ?? process.cwd()),
+      );
       return {
         optimizeDeps: {
           exclude: [
             RUNTIME_ID,
+            ...RUNTIME_CORE_IDS,
+            ...toRuntimeModules(result.config.processors),
           ],
         },
         ssr: {
@@ -32,7 +43,7 @@ export function createConfigPlugin(state: State): Plugin {
       state.yapyakDir = join(state.projectRoot, '.yapyak');
       state.command = config.command;
       state.logger = config.logger;
-      const result = await loadYapyakConfig(state.projectRoot);
+      const result = await loadOnce(loads, state.projectRoot);
       state.normalized = result.config;
       state.configFile = result.configFile;
       state.filter = createFilter(result.config.include, result.config.exclude);
@@ -83,4 +94,28 @@ export function createConfigPlugin(state: State): Plugin {
     },
     name: 'yapyak:config',
   };
+}
+
+function loadOnce(
+  loads: Map<string, Promise<LoadYapyakConfigResult>>,
+  root: string,
+): Promise<LoadYapyakConfigResult> {
+  const existing = loads.get(root);
+  if (existing === undefined) {
+    const pending = loadYapyakConfig(root);
+    loads.set(root, pending);
+    return pending;
+  }
+  return existing;
+}
+
+function toRuntimeModules(processors: Processor[]): string[] {
+  const modules: string[] = [];
+  for (const processor of processors) {
+    if (processor.runtime === undefined) {
+      continue;
+    }
+    modules.push(processor.runtime.module);
+  }
+  return modules;
 }

@@ -1,3 +1,4 @@
+export type { LoadYapyakConfigResult } from './load';
 export type { NormalizedYapyakConfig } from './normalize';
 
 export { createFilter } from './filter';
