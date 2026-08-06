@@ -1,3 +1,4 @@
+import { resolvePackageManager } from '../package-manager';
 import { color, header } from '../tui';
 import { readFileSync } from 'node:fs';
 import { arch, platform, release } from 'node:os';
@@ -73,14 +74,6 @@ function readOwnVersion(): string {
     directory = dirname(directory);
   }
   return 'unknown';
-}
-
-function resolvePackageManager(): string {
-  const firstToken = process.env.npm_config_user_agent?.split(' ')[0];
-  if (firstToken === undefined || firstToken === '') {
-    return 'unknown';
-  }
-  return firstToken.replace('/', ' ');
 }
 
 function collectPackageEntries(projectRoot: string): PackageEntry[] {

@@ -7,6 +7,7 @@ import {
   validateLocaleCode,
   writeRegister,
 } from '../../compiler/internal';
+import { resolveRunCommand } from '../package-manager';
 import { withProgress } from '../progress';
 import { buildReport } from '../report';
 import { renderTranslationErrors } from '../translation-error';
@@ -110,7 +111,7 @@ export async function add(
 
   if (report.totalMessages === 0) {
     process.stdout.write(
-      `\n  ${color.dim('No source strings found yet — locale files are ready for')} ${color.cyan('pnpm dev')}${color.dim('.')}\n\n`,
+      `\n  ${color.dim('No source strings found yet — locale files are ready for')} ${color.cyan(resolveRunCommand('dev'))}${color.dim('.')}\n\n`,
     );
     return 0;
   }
