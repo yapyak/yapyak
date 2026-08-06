@@ -13,22 +13,66 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      library: ${{ steps.classify.outputs.library }}
+      docs: ${{ steps.classify.outputs.docs }}
+      e2e: ${{ steps.classify.outputs.e2e }}
+      run-ci: ${{ steps.classify.outputs.run-ci }}
+      run-e2e: ${{ steps.classify.outputs.run-e2e }}
+      matrix: ${{ steps.classify.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - id: classify
+        env:
+          BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
+          HEAD: ${{ github.sha }}
+        run: |
+          library=false; docs=false; e2e=false
+          if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] \
+            || ! git fetch --quiet --depth=1 origin "$BASE" \
+            || ! files=$(git diff --name-only "$BASE" "$HEAD"); then
+            library=true
+            files=""
+          fi
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            case "$file" in
+              .github/workflows/*) library=true ;;
+              packages/*) library=true ;;
+              docs/*) docs=true ;;
+              examples/*|e2e/*) e2e=true ;;
+              .changeset/*|.github/*|.agents/*|.claude/*|*.md|LICENSE) ;;
+              *) library=true ;;
+            esac
+          done <<< "$files"
+          run_ci=false; run_e2e=false
+          if [ "$library" = true ] || [ "$docs" = true ] || [ "$e2e" = true ]; then run_ci=true; fi
+          if [ "$library" = true ] || [ "$e2e" = true ]; then run_e2e=true; fi
+          if [ "$library" = true ]; then
+            matrix='{"os":["ubuntu-latest"],"node":["22.22","24"],"include":[{"os":"ubuntu-latest","node":"24","coverage":true},{"os":"windows-latest","node":"24"},{"os":"macos-latest","node":"24"}]}'
+          else
+            matrix='{"os":["ubuntu-latest"],"node":["24"],"include":[{"os":"ubuntu-latest","node":"24","coverage":true}]}'
+          fi
+          {
+            echo "library=$library"
+            echo "docs=$docs"
+            echo "e2e=$e2e"
+            echo "run-ci=$run_ci"
+            echo "run-e2e=$run_e2e"
+            echo "matrix=$matrix"
+          } >> "$GITHUB_OUTPUT"
+
   ci:
+    needs: changes
+    if: needs.changes.outputs.run-ci == 'true'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 25
     strategy:
       fail-fast: false
-      matrix:
-        os: [ubuntu-latest]
-        node: ['22.22', '24']
-        include:
-          - os: ubuntu-latest
-            node: '24'
-            coverage: true
-          - os: windows-latest
-            node: '24'
-          - os: macos-latest
-            node: '24'
+      matrix: ${{ fromJSON(needs.changes.outputs.matrix) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
@@ -62,14 +106,16 @@ jobs:
         with:
           name: coverage-report
           path: coverage
-      - if: runner.os == 'Linux'
+      - if: runner.os == 'Linux' && (needs.changes.outputs.library == 'true' || needs.changes.outputs.docs == 'true')
         run: pnpm --filter @yapyak/docs build
-      - if: runner.os == 'Linux'
+      - if: runner.os == 'Linux' && (needs.changes.outputs.library == 'true' || needs.changes.outputs.e2e == 'true')
         run: pnpm -r --filter "./examples/*" build
       - if: runner.os == 'Linux' && matrix.node == '24'
         run: pnpm knip
 
   e2e:
+    needs: changes
+    if: needs.changes.outputs.run-e2e == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 25
     strategy:
@@ -99,7 +145,7 @@ jobs:
   all-green:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [ci, e2e]
+    needs: [changes, ci, e2e]
     if: always()
     steps:
       - run: test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "false"
