@@ -88,6 +88,7 @@ export function astro(): Processor {
         ];
       }
       const ast = parse(source).ast as AstroRoot;
+      normalizeOffsets(ast, source);
       return [
         fragmentsFromFrontmatter(ast.frontmatter, source),
         ...ast.body.flatMap((node) => fragmentsFromBodyNode(node, source)),
@@ -95,6 +96,92 @@ export function astro(): Processor {
     },
     skipHmrCallback: true,
   });
+}
+
+function normalizeOffsets(root: AstroRoot, source: string): void {
+  if (!hasNonAscii(source)) {
+    return;
+  }
+  remapOffsets(root, buildUtf16Offsets(source));
+}
+
+const HIGHEST_ASCII_CODE = 0x7f;
+
+function hasNonAscii(source: string): boolean {
+  for (let index = 0; index < source.length; index += 1) {
+    if (source.charCodeAt(index) > HIGHEST_ASCII_CODE) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function buildUtf16Offsets(source: string): number[] {
+  const utf16Offsets: number[] = [];
+  let utf16Offset = 0;
+  for (const character of source) {
+    const byteLength = toUtf8Length(character);
+    for (let byte = 0; byte < byteLength; byte += 1) {
+      utf16Offsets.push(utf16Offset);
+    }
+    utf16Offset += character.length;
+  }
+  utf16Offsets.push(utf16Offset);
+  return utf16Offsets;
+}
+
+const HIGHEST_TWO_BYTE_CODE = 0x7_ff;
+
+function toUtf8Length(character: string): number {
+  if (character.length === 2) {
+    return 4;
+  }
+  const code = character.charCodeAt(0);
+  if (code <= HIGHEST_ASCII_CODE) {
+    return 1;
+  }
+  if (code <= HIGHEST_TWO_BYTE_CODE) {
+    return 2;
+  }
+  return 3;
+}
+
+function remapOffsets(node: unknown, utf16Offsets: number[]): void {
+  if (!node || typeof node !== 'object') {
+    return;
+  }
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      remapOffsets(child, utf16Offsets);
+    }
+    return;
+  }
+  const range = node as {
+    end?: unknown;
+    start?: unknown;
+  };
+  if (typeof range.start === 'number') {
+    range.start = utf16OffsetFromByte(utf16Offsets, range.start);
+  }
+  if (typeof range.end === 'number') {
+    range.end = utf16OffsetFromByte(utf16Offsets, range.end);
+  }
+  for (const value of Object.values(node)) {
+    remapOffsets(value, utf16Offsets);
+  }
+}
+
+function utf16OffsetFromByte(
+  utf16Offsets: number[],
+  byteOffset: number,
+): number {
+  const utf16Offset = utf16Offsets[byteOffset];
+  if (utf16Offset === undefined) {
+    throw new Error(
+      `[yapyak] The Astro compiler reported offset ${byteOffset}, which is outside the source file.`,
+    );
+  }
+  return utf16Offset;
 }
 
 function fragmentsFromFrontmatter(

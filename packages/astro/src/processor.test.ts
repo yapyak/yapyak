@@ -333,6 +333,50 @@ describe('astro processor — extract', () => {
     expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
+  it('extracts every `t()` from a template with non-ASCII text', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      `<p>Världen</p><p>{t('Hello')}</p><p>{t('Cancel')}</p>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    const sources = result.messages.map((message) => message.source).sort();
+    expect(sources).toEqual([
+      'Cancel',
+      'Hello',
+    ]);
+  });
+
+  it('extracts every `t()` from a file with non-ASCII frontmatter', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      "const heading = 'Världen';",
+      '---',
+      `<p>{t('Hello')}</p><p>{t('Cancel')}</p>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    const sources = result.messages.map((message) => message.source).sort();
+    expect(sources).toEqual([
+      'Cancel',
+      'Hello',
+    ]);
+  });
+
+  it('extracts `t()` from a template with an astral-plane character', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      `<p>🦬</p><p>{t('Hello')}</p>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    expect(result.messages.map((message) => message.source)).toEqual([
+      'Hello',
+    ]);
+  });
+
   it('extracts `t()` from a mustache with leading and trailing whitespace', () => {
     const source = [
       '---',
