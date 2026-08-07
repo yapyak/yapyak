@@ -531,4 +531,31 @@ describe('astro processor — transform', () => {
     );
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });
+
+  it('replaces `t()` in place when the call shares its expression', () => {
+    const code = runAstroTransform(
+      [
+        '---',
+        "import { t } from 'yapyak';",
+        'const x = 1;',
+        '---',
+        `<p>{t('Hello') + x}</p>`,
+      ].join('\n'),
+    );
+
+    expect(code).toContain(`<p>{'Hello' + x}</p>`);
+  });
+
+  it('elides an expression whose only content is a parenthesized `t()`', () => {
+    const code = runAstroTransform(
+      [
+        '---',
+        "import { t } from 'yapyak';",
+        '---',
+        `<p>{(t('Hello'))}</p>`,
+      ].join('\n'),
+    );
+
+    expect(code).toContain('<p>Hello</p>');
+  });
 });

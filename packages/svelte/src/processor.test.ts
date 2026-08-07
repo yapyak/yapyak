@@ -538,4 +538,31 @@ describe('svelte processor — transform', () => {
     );
     expect(code).not.toMatch(/import \{ locales \}/);
   });
+
+  it('replaces `t()` in place when the call shares its mustache', () => {
+    const source = [
+      '<script lang="ts">',
+      "  import { t } from 'yapyak';",
+      '  const x = 1;',
+      '</script>',
+      '',
+      `<p>{t('Hello') + x}</p>`,
+    ].join('\n');
+    const code = runSvelteTransform(source);
+
+    expect(code).toContain(`<p>{'Hello' + x}</p>`);
+  });
+
+  it('elides a mustache whose only content is a parenthesized `t()`', () => {
+    const source = [
+      '<script lang="ts">',
+      "  import { t } from 'yapyak';",
+      '</script>',
+      '',
+      `<p>{(t('Hello'))}</p>`,
+    ].join('\n');
+    const code = runSvelteTransform(source);
+
+    expect(code).toContain('<p>Hello</p>');
+  });
 });

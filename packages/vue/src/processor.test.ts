@@ -698,4 +698,62 @@ describe('vue processor — transform', () => {
       `<p :title="'&#129452;' + _pick(_catalog_$0)">x</p>`,
     );
   });
+
+  it('replaces `t()` in place when the call shares its attribute', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      'const x = 1;',
+      '</script>',
+      '<template>',
+      `  <p :title="t('Hello') + x">y</p>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source,
+    });
+
+    expect(code).toContain(`<p :title="'Hello' + x">y</p>`);
+  });
+
+  it('replaces every `t()` in place when a mustache holds two calls', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <p>{{ t('Hello') + t('Cancel') }}</p>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source,
+    });
+
+    expect(code).toContain(`<p>{{ 'Hello' + 'Cancel' }}</p>`);
+  });
+
+  it('elides a mustache whose only content is a parenthesized `t()`', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <p>{{ (t('Hello')) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source,
+    });
+
+    expect(code).toContain('<p>Hello</p>');
+  });
 });

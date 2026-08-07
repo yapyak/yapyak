@@ -202,7 +202,9 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
       callSite.paramsExpression = fragmentCall.paramsExpression;
     }
     const elisionContext =
-      fragment.elisionContext ??
+      (isWholeFragment(fragmentCall.node, fragment)
+        ? fragment.elisionContext
+        : undefined) ??
       detectJsxElision(fragmentCall.node, sourceFile, fragment, originalSource);
     if (elisionContext) {
       callSite.elisionContext = elisionContext;
@@ -305,6 +307,16 @@ function createFragmentSourceFile(
     ts.ScriptTarget.ESNext,
     true,
     getScriptKind(fileId, fragment.language),
+  );
+}
+
+const FRAGMENT_PREFIX_RX = /^[\s(]*$/;
+const FRAGMENT_SUFFIX_RX = /^[\s)]*$/;
+
+function isWholeFragment(node: ts.Node, fragment: Fragment): boolean {
+  return (
+    FRAGMENT_PREFIX_RX.test(fragment.code.slice(0, node.getStart())) &&
+    FRAGMENT_SUFFIX_RX.test(fragment.code.slice(node.getEnd()))
   );
 }
 
