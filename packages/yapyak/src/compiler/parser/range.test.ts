@@ -84,6 +84,62 @@ describe('remapRange', () => {
       },
     });
   });
+
+  it('maps a start and an end anchor across the same gapped segments', () => {
+    const gapped: Fragment = {
+      code: "a&&t('Save')",
+      language: 'ts',
+      segments: [
+        {
+          codeLength: 1,
+          sourceOffset: 0,
+        },
+        {
+          codeLength: 1,
+          sourceOffset: 1,
+        },
+        {
+          codeLength: 1,
+          sourceOffset: 6,
+        },
+        {
+          codeLength: 9,
+          sourceOffset: 11,
+        },
+      ],
+      type: 'template-expression',
+    };
+
+    expect(
+      remapRange(
+        {
+          end: {
+            column: 13,
+            line: 1,
+            offset: 12,
+          },
+          start: {
+            column: 4,
+            line: 1,
+            offset: 3,
+          },
+        },
+        gapped,
+        "a&amp;&amp;t('Save')",
+      ),
+    ).toEqual({
+      end: {
+        column: 21,
+        line: 1,
+        offset: 20,
+      },
+      start: {
+        column: 12,
+        line: 1,
+        offset: 11,
+      },
+    });
+  });
 });
 
 describe('toRange', () => {

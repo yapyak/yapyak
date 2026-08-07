@@ -47,6 +47,48 @@ describe('remapPosition', () => {
       offset: 6,
     });
   });
+
+  it('returns the position from the segment holding the offset', () => {
+    const gapped: Fragment = {
+      code: "a&&t('Save')",
+      language: 'ts',
+      segments: [
+        {
+          codeLength: 1,
+          sourceOffset: 0,
+        },
+        {
+          codeLength: 1,
+          sourceOffset: 1,
+        },
+        {
+          codeLength: 1,
+          sourceOffset: 6,
+        },
+        {
+          codeLength: 9,
+          sourceOffset: 11,
+        },
+      ],
+      type: 'template-expression',
+    };
+
+    expect(
+      remapPosition(
+        {
+          column: 3,
+          line: 1,
+          offset: 3,
+        },
+        gapped,
+        "a&amp;&amp;t('Save')",
+      ),
+    ).toEqual({
+      column: 12,
+      line: 1,
+      offset: 11,
+    });
+  });
 });
 
 describe('toPosition', () => {

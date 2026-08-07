@@ -25,22 +25,50 @@ describe('remapOffset', () => {
 
   it('returns the source offset from the segment holding the offset', () => {
     const fragment: Fragment = {
-      code: 'SaveCancel',
+      code: "a&&t('Save')",
       language: 'ts',
       segments: [
         {
-          codeLength: 4,
-          sourceOffset: 10,
+          codeLength: 1,
+          sourceOffset: 0,
         },
         {
-          codeLength: 6,
-          sourceOffset: 100,
+          codeLength: 1,
+          sourceOffset: 1,
+        },
+        {
+          codeLength: 1,
+          sourceOffset: 6,
+        },
+        {
+          codeLength: 9,
+          sourceOffset: 11,
         },
       ],
-      type: 'script',
+      type: 'template-expression',
     };
+    const walked = Array.from(
+      {
+        length: fragment.code.length + 1,
+      },
+      (_element, offset) => remapOffset(offset, fragment),
+    );
 
-    expect(remapOffset(6, fragment)).toBe(102);
+    expect(walked).toEqual([
+      0,
+      1,
+      6,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+    ]);
   });
 
   it('throws when the offset is past the code', () => {

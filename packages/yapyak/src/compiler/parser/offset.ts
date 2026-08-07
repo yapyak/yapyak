@@ -1,10 +1,12 @@
 import type { Fragment } from '../../processor';
 
 export function remapOffset(offset: number, fragment: Fragment): number {
+  const lastIndex = fragment.segments.length - 1;
   let codeOffset = 0;
-  for (const segment of fragment.segments) {
+  for (const [index, segment] of fragment.segments.entries()) {
     const codeEnd = codeOffset + segment.codeLength;
-    if (offset <= codeEnd) {
+    const isLastSegment = index === lastIndex;
+    if (offset < codeEnd || (isLastSegment && offset === codeEnd)) {
       return segment.sourceOffset + offset - codeOffset;
     }
     codeOffset = codeEnd;
