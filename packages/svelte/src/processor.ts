@@ -210,6 +210,14 @@ function fragmentsFromNode(
       undefined,
       enclosingContext,
     );
+    fragments.push(
+      ...fragmentsFromExpression(
+        node.context,
+        source,
+        undefined,
+        enclosingContext,
+      ),
+    );
     if (node.key) {
       fragments.push(
         ...fragmentsFromExpression(

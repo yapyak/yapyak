@@ -108,6 +108,36 @@ describe('svelte processor — extract', () => {
     expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
+  it('extracts `t()` from an `{#each}` object context pattern', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '  let items = [1];',
+        '</script>',
+        "{#each items as { label = t('Save') }}<p>{label}</p>{/each}",
+      ].join('\n'),
+    );
+
+    expect(result.messages.map((message) => message.source)).toContain('Save');
+  });
+
+  it('extracts `t()` from an `{#each}` array context pattern', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '  let items = [1];',
+        '</script>',
+        "{#each items as [first = t('Cancel')]}<p>{first}</p>{/each}",
+      ].join('\n'),
+    );
+
+    expect(result.messages.map((message) => message.source)).toContain(
+      'Cancel',
+    );
+  });
+
   it('extracts `t()` from an `{#each}` block fallback', () => {
     const result = extractSvelte(
       [
@@ -564,5 +594,38 @@ describe('svelte processor — transform', () => {
     const code = runSvelteTransform(source);
 
     expect(code).toContain('<p>Hello</p>');
+  });
+
+  it('elides `t()` in an `{#each}` object context pattern to a string literal', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '  let items = [1];',
+        '</script>',
+        "{#each items as { label = t('Save') }}<p>{label}</p>{/each}",
+      ].join('\n'),
+    );
+
+    expect(code).toContain("{#each items as { label = 'Save' }}");
+  });
+
+  it('rewrites `t()` in an `{#each}` object context pattern to a `_pick` call', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '  let items = [1];',
+        '</script>',
+        "{#each items as { label = t('Save') }}<p>{label}</p>{/each}",
+      ].join('\n'),
+      [
+        'en',
+        'sv',
+      ],
+    );
+
+    expect(code).toContain('{#each items as { label = _pick(_catalog_$0) }}');
+    expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });
 });
