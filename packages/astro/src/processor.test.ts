@@ -444,6 +444,23 @@ describe('astro processor — extract', () => {
       'Settings',
     );
   });
+
+  it('extracts every `t()` from a conditional with an element in the consequent', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      'const flag = true;',
+      '---',
+      `<p>{flag ? <b>{t('Hello')}</b> : t('Cancel')}</p>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    const sources = result.messages.map((message) => message.source).sort();
+
+    expect(sources).toEqual([
+      'Cancel',
+      'Hello',
+    ]);
+  });
 });
 
 describe('astro processor — already-compiled input fallback', () => {
@@ -557,5 +574,39 @@ describe('astro processor — transform', () => {
     );
 
     expect(code).toContain('<p>Hello</p>');
+  });
+
+  it('rewrites every `t()` in a conditional with an element in the consequent', () => {
+    const code = runAstroTransform(
+      [
+        '---',
+        "import { t } from 'yapyak';",
+        'const flag = true;',
+        '---',
+        `<p>{flag ? <b>{t('Hello')}</b> : t('Cancel')}</p>`,
+      ].join('\n'),
+      [
+        'en',
+        'sv',
+      ],
+    );
+
+    expect(code).toContain(
+      '<p>{flag ? <b>{_pick(_catalog_$1)}</b> : _pick(_catalog_$0)}</p>',
+    );
+  });
+
+  it('preserves an element passed as a `t()` placeholder value', () => {
+    const code = runAstroTransform(
+      [
+        '---',
+        "import { t } from 'yapyak';",
+        '---',
+        `<p>{t('Hi {name}', { name: <strong>Save</strong> })}</p>`,
+      ].join('\n'),
+    );
+
+    // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+    expect(code).toContain('<p>{`Hi ${<strong>Save</strong>}`}</p>');
   });
 });

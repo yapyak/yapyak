@@ -8,7 +8,12 @@ import type {
   JSXNamespacedName,
   JSXSpreadAttribute,
 } from 'estree-jsx';
-import type { ElisionContext, Fragment, Processor } from 'yapyak/processor';
+import type {
+  ElisionContext,
+  Fragment,
+  FragmentSegment,
+  Processor,
+} from 'yapyak/processor';
 
 import { parse } from '@astrojs/compiler-rs';
 import {
@@ -364,13 +369,13 @@ function fragmentsFromExpression(
   }
   const embedded: (JSXElement | JSXFragment)[] = [];
   collectJsx(expression, embedded);
-  const code = source.slice(range.start, range.end);
+  const masked = buildFragmentCode(source, range, embedded);
   const fragment: Fragment = {
-    code,
+    code: masked.code,
     elisionContext:
       elisionContext && embedded.length === 0 ? elisionContext : undefined,
     language: 'ts',
-    segments: segmentsFromOffset(code, range.start),
+    segments: masked.segments,
     type: 'template-expression',
   };
   if (enclosingContext) {
@@ -410,4 +415,52 @@ function collectJsx(
   for (const value of Object.values(node)) {
     collectJsx(value, results);
   }
+}
+
+const JSX_PLACEHOLDER = '0';
+
+function buildFragmentCode(
+  source: string,
+  range: OffsetRange,
+  embedded: (JSXElement | JSXFragment)[],
+): Pick<Fragment, 'code' | 'segments'> {
+  const ranges: OffsetRange[] = [];
+  for (const node of embedded) {
+    const embeddedRange = findOffsetRange(node);
+    if (embeddedRange !== undefined) {
+      ranges.push(embeddedRange);
+    }
+  }
+  ranges.sort((a, b) => a.start - b.start);
+  const segments: FragmentSegment[] = [];
+  let code = '';
+  let cursor = range.start;
+  for (const embeddedRange of ranges) {
+    const verbatim = source.slice(cursor, embeddedRange.start);
+    if (verbatim.length > 0) {
+      code += verbatim;
+      segments.push({
+        codeLength: verbatim.length,
+        sourceOffset: cursor,
+      });
+    }
+    code += JSX_PLACEHOLDER;
+    segments.push({
+      codeLength: JSX_PLACEHOLDER.length,
+      sourceOffset: embeddedRange.start,
+    });
+    cursor = embeddedRange.end;
+  }
+  const tail = source.slice(cursor, range.end);
+  if (tail.length > 0) {
+    code += tail;
+    segments.push({
+      codeLength: tail.length,
+      sourceOffset: cursor,
+    });
+  }
+  return {
+    code,
+    segments,
+  };
 }
