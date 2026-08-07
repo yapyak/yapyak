@@ -5,8 +5,23 @@ order: 4
 
 A fixed-locale build ships a single language. It suits a static deploy that serves one language per build, one bundle per locale.
 
-`fixedLocale` is an option on the Vite plugin, not a `yapyak.config.ts` field, because it shapes the bundle at compile time rather than configuring the project:
+`fixedLocale` is a build option, not a `yapyak.config.ts` field, because it shapes the bundle at compile time rather than configuring the project:
 
+{% switch group="framework" %}
+
+{% when value="astro" %}
+```ts [astro.config.ts]
+import { yapyak } from '@yapyak/astro/integration';
+
+export default defineConfig({
+  integrations: [
+    yapyak({ fixedLocale: 'sv' })
+  ]
+});
+```
+{% /when %}
+
+{% else %}
 ```ts [vite.config.ts]
 import { yapyak } from '@yapyak/vite';
 
@@ -16,12 +31,15 @@ export default defineConfig({
   ]
 });
 ```
+{% /else %}
+
+{% /switch %}
 
 The value must be one of your configured locales. yapyak throws at build time if it isn't.
 
 For a CI matrix that builds one bundle per locale, drive it from an environment variable:
 
-```ts [vite.config.ts]
+```ts
 yapyak({ fixedLocale: process.env.YAPYAK_LOCALE })
 ```
 
