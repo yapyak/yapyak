@@ -31,6 +31,7 @@ function runScriptImports(source: string): string {
       },
     ],
     magicString,
+    originalSource: source,
   });
   return magicString.toString();
 }
@@ -155,6 +156,7 @@ describe('transformScriptImports', () => {
         },
       ],
       magicString,
+      originalSource: source,
     });
     expect(magicString.toString()).toBe(source);
   });
@@ -180,6 +182,7 @@ describe('transformScriptImports', () => {
         },
       ],
       magicString,
+      originalSource: first + second,
     });
     expect(magicString.toString()).toBe(`\n${second}`);
   });
@@ -207,6 +210,7 @@ describe('transformScriptImports', () => {
         },
       ],
       magicString,
+      originalSource: source,
     });
     expect(magicString.toString()).toBe('');
   });

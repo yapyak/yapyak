@@ -11,6 +11,7 @@ export type TransformScriptImportsInput = {
   fileId: string;
   fragments: Fragment[];
   magicString: MagicString;
+  originalSource: string;
 };
 
 export function transformScriptImports(
@@ -36,6 +37,7 @@ export function transformScriptImports(
         declarationAst,
         fragment,
         magicString: input.magicString,
+        originalSource: input.originalSource,
         referenceAsts,
       });
     }
@@ -69,6 +71,7 @@ type TransformImportDeclarationInput = {
   declarationAst: ts.SourceFile;
   fragment: Fragment;
   magicString: MagicString;
+  originalSource: string;
   referenceAsts: ts.SourceFile[];
 };
 
@@ -81,8 +84,14 @@ type ImportSpecifier = {
 function transformImportDeclaration(
   input: TransformImportDeclarationInput,
 ): void {
-  const { declaration, declarationAst, fragment, magicString, referenceAsts } =
-    input;
+  const {
+    declaration,
+    declarationAst,
+    fragment,
+    magicString,
+    originalSource,
+    referenceAsts,
+  } = input;
   if (declaration.importClause?.isTypeOnly === true) {
     return;
   }
@@ -130,7 +139,10 @@ function transformImportDeclaration(
     return;
   }
   const specList = remaining.map(renderSpecifier).join(', ');
-  const moduleSpecText = declaration.moduleSpecifier.getText(declarationAst);
+  const moduleSpecText = originalSource.slice(
+    remapOffset(declaration.moduleSpecifier.getStart(declarationAst), fragment),
+    remapOffset(declaration.moduleSpecifier.getEnd(), fragment),
+  );
   magicString.overwrite(
     startInOriginal,
     endInOriginal,

@@ -5,6 +5,7 @@ import type { ParsedCallSite } from '../extract';
 import ts from '@typescript/typescript6';
 
 import { findMatchingBraceIndex } from '../../matching-brace';
+import { remapOffset } from '../../offset';
 import { findFreeIdentifiers } from './identifier';
 import { buildCatalogLiteral, pickLocaleText, toSafeJsString } from './render';
 
@@ -14,6 +15,7 @@ export type RenderCallReplacementInput = {
   locales: string[];
   localsByFactory: Map<string, string>;
   nestedReplacements?: NestedReplacement[];
+  originalSource: string;
   pickLocal: string;
   registerCatalog: (literal: string, id: string) => string;
   singleLocale: boolean;
@@ -42,6 +44,7 @@ export function renderCallReplacement(
     singleLocale: isSingleLocale,
     locales,
     localsByFactory,
+    originalSource,
     pickLocal,
     registerCatalog,
     translations,
@@ -52,7 +55,12 @@ export function renderCallReplacement(
   const { id, placeholders, source } = callSite;
   if (
     isSingleLocale &&
-    isElidable(placeholders, callSite, input.nestedReplacements ?? [])
+    isElidable(
+      placeholders,
+      callSite,
+      input.nestedReplacements ?? [],
+      originalSource,
+    )
   ) {
     const singleLocale = locales[0];
     const targetText = singleLocale
@@ -69,7 +77,12 @@ export function renderCallReplacement(
       return bare;
     }
     return {
-      code: renderEliminated(targetText, callSite, placeholders),
+      code: renderEliminated(
+        targetText,
+        callSite,
+        placeholders,
+        originalSource,
+      ),
       usedFactories: new Set(),
       usesPick: false,
     };
@@ -90,13 +103,13 @@ export function renderCallReplacement(
   const hasPlaceholders = placeholders.length > 0;
   const nested = input.nestedReplacements ?? [];
   const paramsExpressionText = hasPlaceholders
-    ? getParamArgumentText(callSite, nested)
+    ? getParamArgumentText(callSite, nested, originalSource)
     : undefined;
   const localeExpression = callSite.localeExpression;
   const localeText = localeExpression
     ? interpolateNestedReplacements(
-        localeExpression.getText(),
-        localeExpression.getStart() + callSite.fragmentOffset,
+        getSourceText(localeExpression, callSite, originalSource),
+        remapOffset(localeExpression.getStart(), callSite.fragment),
         nested,
       )
     : undefined;
@@ -120,6 +133,7 @@ function isElidable(
   placeholders: Placeholder[],
   callSite: ParsedCallSite,
   nested: NestedReplacement[],
+  originalSource: string,
 ): boolean {
   if (callSite.localeExpression) {
     return false;
@@ -135,7 +149,7 @@ function isElidable(
   if (hasNestedInParams(callSite, nested)) {
     return false;
   }
-  return Boolean(getParamExpressions(callSite));
+  return Boolean(getParamExpressions(callSite, originalSource));
 }
 
 function hasNestedInParams(
@@ -146,8 +160,8 @@ function hasNestedInParams(
   if (!paramsExpression || nested.length === 0) {
     return false;
   }
-  const start = paramsExpression.getStart() + callSite.fragmentOffset;
-  const end = paramsExpression.getEnd() + callSite.fragmentOffset;
+  const start = remapOffset(paramsExpression.getStart(), callSite.fragment);
+  const end = remapOffset(paramsExpression.getEnd(), callSite.fragment);
   for (const replacement of nested) {
     if (replacement.start >= start && replacement.end <= end) {
       return true;
@@ -160,11 +174,12 @@ function renderEliminated(
   source: string,
   callSite: ParsedCallSite,
   placeholders: Placeholder[],
+  originalSource: string,
 ): string {
   if (placeholders.length === 0) {
     return toSafeJsString(source);
   }
-  const expressions = getParamExpressions(callSite);
+  const expressions = getParamExpressions(callSite, originalSource);
   if (!expressions) {
     return toSafeJsString(source);
   }
@@ -173,6 +188,7 @@ function renderEliminated(
 
 function getParamExpressions(
   callSite: ParsedCallSite,
+  originalSource: string,
 ): Map<string, string> | undefined {
   const paramsExpression = callSite.paramsExpression;
   if (!paramsExpression) {
@@ -190,7 +206,7 @@ function getParamExpressions(
     if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.name)) {
       expressionsByParam.set(
         property.name.text,
-        property.initializer.getText(),
+        getSourceText(property.initializer, callSite, originalSource),
       );
       continue;
     }
@@ -304,15 +320,27 @@ function parseKey(inner: string): string | undefined {
 function getParamArgumentText(
   callSite: ParsedCallSite,
   nested: NestedReplacement[],
+  originalSource: string,
 ): string | undefined {
   const paramsExpression = callSite.paramsExpression;
   if (!paramsExpression) {
     return undefined;
   }
   return interpolateNestedReplacements(
-    paramsExpression.getText(),
-    paramsExpression.getStart() + callSite.fragmentOffset,
+    getSourceText(paramsExpression, callSite, originalSource),
+    remapOffset(paramsExpression.getStart(), callSite.fragment),
     nested,
+  );
+}
+
+function getSourceText(
+  node: ts.Node,
+  callSite: ParsedCallSite,
+  originalSource: string,
+): string {
+  return originalSource.slice(
+    remapOffset(node.getStart(), callSite.fragment),
+    remapOffset(node.getEnd(), callSite.fragment),
   );
 }
 

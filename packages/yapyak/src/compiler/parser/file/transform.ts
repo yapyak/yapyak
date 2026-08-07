@@ -174,6 +174,7 @@ export function transformFile(
       locales: request.locales,
       localsByFactory,
       nestedReplacements,
+      originalSource: request.source,
       pickLocal,
       registerCatalog,
       singleLocale: isSingleLocale,
@@ -214,6 +215,7 @@ export function transformFile(
     fileId: request.fileId,
     fragments,
     magicString,
+    originalSource: request.source,
   });
 
   const importSpecs: string[] = [];

@@ -19,7 +19,6 @@ import { resolveBindings } from '../binding';
 import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
 import { toMessageKey } from '../message-key';
-import { remapOffset } from '../offset';
 import { parsePlaceholders } from '../placeholder';
 import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
@@ -56,7 +55,7 @@ export type ExtractFileOptions = {
 
 export type ParsedCallSite = CallSite & {
   context?: string;
-  fragmentOffset: number;
+  fragment: Fragment;
   id: string;
   placeholders: Placeholder[];
   source: string;
@@ -182,7 +181,7 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
 
     const callSite: ParsedCallSite = {
       binding: fragmentCall.binding,
-      fragmentOffset: remapOffset(0, fragment),
+      fragment,
       id,
       node: fragmentCall.node,
       placeholders,
