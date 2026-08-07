@@ -9,7 +9,7 @@ import type {
 import type { LoadedPage } from '../../build';
 import type { SourceUrlConfig } from '../../config';
 import type { PackageContext } from './package-context';
-import type { SymbolIndex, SymbolIndexEntry } from './symbol-index';
+import type { SymbolIndex } from './symbol-index';
 import type {
   ReferenceCallSignature,
   ReferenceExample,
@@ -800,7 +800,7 @@ function tokenizeShapeText(text: string): TypeToken[] {
   match = identifierRx.exec(text);
   while (match !== null) {
     const name = match[0];
-    const entry = currentIndex.get(name);
+    const entry = resolveSymbolLink(currentIndex, name, currentSourceModuleId);
     if (entry !== undefined) {
       if (match.index > lastIndex) {
         tokens.push({
@@ -1331,7 +1331,10 @@ function buildTableHeaderRow(labels: string[]): TableRowBlock {
 function tokensToCodeExpression(tokens: TypeToken[]): CodeExpressionBlock {
   const children: Block[] = [];
   for (const token of tokens) {
-    const entry = token.kind === 'ref' ? resolveModule(token) : undefined;
+    const entry =
+      token.kind === 'ref'
+        ? resolveSymbolLink(currentIndex, token.name, token.module)
+        : undefined;
     if (token.kind === 'ref' && entry !== undefined) {
       currentLinkedNames.add(token.name);
       children.push({
@@ -1356,17 +1359,6 @@ function tokensToCodeExpression(tokens: TypeToken[]): CodeExpressionBlock {
     children,
     kind: 'code-expression',
   };
-}
-
-function resolveModule(token: {
-  module: string;
-  name: string;
-}): SymbolIndexEntry | undefined {
-  const exact = currentIndex.get(`${token.module}::${token.name}`);
-  if (exact !== undefined) {
-    return exact;
-  }
-  return currentIndex.get(token.name);
 }
 
 function resolveExportHref(moduleId: string, segment: string): string {

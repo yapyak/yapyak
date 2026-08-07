@@ -556,6 +556,62 @@ describe('buildSymbolPage', () => {
     const text = collectText(page.blocks);
     expect(text).toContain('unknownThing');
   });
+
+  it('prefers the current module when a parameter type name is ambiguous', () => {
+    const page = buildSymbolPage(
+      functionSymbol({
+        overloads: [
+          {
+            parameters: [
+              {
+                defaultValue: null,
+                description: '',
+                name: 'options',
+                optional: true,
+                shape: 'TranslatorOptions',
+                type: [],
+              },
+            ],
+            returnType: [],
+            signature:
+              'function createTranslator(options?: TranslatorOptions): void',
+            typeParameters: [],
+          },
+        ],
+      }),
+      CONTEXT,
+      {
+        ...SYMBOL_PAGE_INPUT,
+        index: buildSymbolIndex([
+          {
+            callable: false,
+            callableMemberNames: new Set(),
+            href: '/reference/yapyak/translator/TranslatorOptions',
+            hrefsByMemberName: new Map(),
+            moduleId: 'yapyak/translator',
+            name: 'TranslatorOptions',
+            packageSlug: 'yapyak',
+          },
+          {
+            callable: false,
+            callableMemberNames: new Set(),
+            href: '/reference/yapyak/processor/TranslatorOptions',
+            hrefsByMemberName: new Map(),
+            moduleId: 'yapyak/processor',
+            name: 'TranslatorOptions',
+            packageSlug: 'yapyak',
+          },
+        ]),
+        moduleId: 'yapyak/processor',
+      },
+    );
+
+    const hrefs = collectHrefs(page.blocks);
+    expect(hrefs).toContain('/reference/yapyak/processor/TranslatorOptions');
+    expect(hrefs).not.toContain(
+      '/reference/yapyak/translator/TranslatorOptions',
+    );
+  });
 });
 
 describe('buildMethodPage', () => {
