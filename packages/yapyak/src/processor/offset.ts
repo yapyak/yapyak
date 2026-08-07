@@ -1,10 +1,10 @@
 import type { Position, Range } from './type';
 
 /**
- * Converts a byte offset into a 1-based line/column position in `source`.
+ * Converts a string index into a 1-based line/column position in `source`.
  *
  * @param source - The source text.
- * @param offset - The byte offset.
+ * @param offset - The string index.
  */
 export function offsetToOriginalPosition(
   source: string,
@@ -28,11 +28,11 @@ export function offsetToOriginalPosition(
 }
 
 /**
- * Builds a range from two byte offsets in `source`.
+ * Builds a range from two string indices in `source`.
  *
  * @param source - The source text.
- * @param startOffset - The start byte offset, inclusive.
- * @param endOffset - The end byte offset, exclusive.
+ * @param startOffset - The start string index, inclusive.
+ * @param endOffset - The end string index, exclusive.
  */
 export function rangeFromOffsets(
   source: string,

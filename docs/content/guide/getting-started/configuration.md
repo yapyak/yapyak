@@ -206,7 +206,7 @@ For a file format yapyak doesn't ship a processor for, build one with [`createPr
 | `applyImport` | Optional. Controls how imports are injected. |
 | `skipHmrCallback` | Optional. For formats whose compiler can't embed Vite HMR callbacks at module scope. Astro's `.astro` files use it. |
 
-`yapyak/processor` also exports [`offsetToOriginalPosition`](/reference/yapyak/processor/offsetToOriginalPosition) and [`rangeFromOffsets`](/reference/yapyak/processor/rangeFromOffsets) for mapping byte offsets back to `{ line, column }` positions when your parser emits diagnostics.
+`yapyak/processor` also exports [`offsetToOriginalPosition`](/reference/yapyak/processor/offsetToOriginalPosition) and [`rangeFromOffsets`](/reference/yapyak/processor/rangeFromOffsets) for mapping string indices back to `{ line, column }` positions when your parser emits diagnostics. A parser that reports byte offsets converts them first.
 
 ## Translation
 
