@@ -3,7 +3,7 @@ import type { TransformFileRequest } from './transform';
 
 import { describe, expect, it } from 'vitest';
 
-import { createProcessor } from '../../../processor';
+import { createProcessor, segmentsFromOffset } from '../../../processor';
 import { toMessageKey } from '../message-key';
 import { extractFile } from './extract';
 import { transformFile } from './transform';
@@ -1252,7 +1252,7 @@ describe('transformFile', () => {
             {
               code: source,
               language: 'ts',
-              originalOffset: 0,
+              segments: segmentsFromOffset(source, 0),
               type: 'script',
             },
           ];
@@ -1261,7 +1261,10 @@ describe('transformFile', () => {
           {
             code: source.slice(prefix.length),
             language: 'ts',
-            originalOffset: prefix.length,
+            segments: segmentsFromOffset(
+              source.slice(prefix.length),
+              prefix.length,
+            ),
             type: 'script',
           },
         ];

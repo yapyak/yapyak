@@ -11,7 +11,11 @@ import type {
 import type { ElisionContext, Fragment, Processor } from 'yapyak/processor';
 
 import { parse } from '@astrojs/compiler-rs';
-import { createProcessor, rangeFromOffsets } from 'yapyak/processor';
+import {
+  createProcessor,
+  rangeFromOffsets,
+  segmentsFromOffset,
+} from 'yapyak/processor';
 
 const FRONTMATTER_OPEN_RX = /^---\r?\n/;
 const FRONTMATTER_DELIMITER_LENGTH = 3;
@@ -82,7 +86,7 @@ export function astro(): Processor {
           {
             code: source,
             language: 'ts',
-            originalOffset: 0,
+            segments: segmentsFromOffset(source, 0),
             type: 'script',
           },
         ];
@@ -190,10 +194,11 @@ function fragmentsFromFrontmatter(
 ): Fragment {
   const codeStart = frontmatter.start + FRONTMATTER_DELIMITER_LENGTH;
   const codeEnd = frontmatter.end - FRONTMATTER_DELIMITER_LENGTH;
+  const code = source.slice(codeStart, codeEnd);
   return {
-    code: source.slice(codeStart, codeEnd),
+    code,
     language: 'ts',
-    originalOffset: codeStart,
+    segments: segmentsFromOffset(code, codeStart),
     type: 'script',
   };
 }
@@ -359,12 +364,13 @@ function fragmentsFromExpression(
   }
   const embedded: (JSXElement | JSXFragment)[] = [];
   collectJsx(expression, embedded);
+  const code = source.slice(range.start, range.end);
   const fragment: Fragment = {
-    code: source.slice(range.start, range.end),
+    code,
     elisionContext:
       elisionContext && embedded.length === 0 ? elisionContext : undefined,
     language: 'ts',
-    originalOffset: range.start,
+    segments: segmentsFromOffset(code, range.start),
     type: 'template-expression',
   };
   if (enclosingContext) {

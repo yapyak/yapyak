@@ -2,6 +2,7 @@ import type * as ts from '@typescript/typescript6';
 import type { Fragment, Position } from '../../processor';
 
 import { offsetToOriginalPosition } from '../../processor';
+import { remapOffset } from './offset';
 
 export function toPosition(
   sourceFile: ts.SourceFile,
@@ -20,9 +21,9 @@ export function remapPosition(
   fragment: Fragment,
   originalSource: string,
 ): Position {
-  if (fragment.originalOffset === 0) {
+  const absoluteOffset = remapOffset(position.offset, fragment);
+  if (absoluteOffset === position.offset) {
     return position;
   }
-  const absoluteOffset = position.offset + fragment.originalOffset;
   return offsetToOriginalPosition(originalSource, absoluteOffset);
 }

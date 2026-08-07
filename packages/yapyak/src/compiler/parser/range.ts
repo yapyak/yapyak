@@ -15,9 +15,6 @@ export function remapRange(
   fragment: Fragment,
   originalSource: string,
 ): Range {
-  if (fragment.originalOffset === 0) {
-    return range;
-  }
   return {
     end: remapPosition(range.end, fragment, originalSource),
     start: remapPosition(range.start, fragment, originalSource),

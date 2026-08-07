@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { createProcessor } from './create';
+import { segmentsFromOffset } from './offset';
 
 describe('createProcessor', () => {
   it('returns a processor carrying id and extensions', () => {
@@ -50,7 +51,7 @@ describe('createProcessor', () => {
         {
           code: source,
           language: 'ts',
-          originalOffset: 0,
+          segments: segmentsFromOffset(source, 0),
           type: 'script',
         },
       ],
@@ -61,7 +62,7 @@ describe('createProcessor', () => {
       {
         code: 'let x = 1;',
         language: 'ts',
-        originalOffset: 0,
+        segments: segmentsFromOffset('let x = 1;', 0),
         type: 'script',
       },
     ]);

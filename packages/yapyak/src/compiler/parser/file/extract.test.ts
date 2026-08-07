@@ -3,6 +3,7 @@ import type { ExtractFileResult } from './extract';
 
 import { describe, expect, it } from 'vitest';
 
+import { segmentsFromOffset } from '../../../processor';
 import { extractFile } from './extract';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -72,14 +73,14 @@ describe('extractFile', () => {
         {
           code: "import { t } from 'yapyak';",
           language: 'ts',
-          originalOffset: 0,
+          segments: segmentsFromOffset("import { t } from 'yapyak';", 0),
           type: 'script',
         },
         {
           code: "t('Save changes')",
           enclosingElement: 'button',
           language: 'ts',
-          originalOffset: 28,
+          segments: segmentsFromOffset("t('Save changes')", 28),
           snippet: `<button>{t('Save changes')}</button>`,
           type: 'template-expression',
         },

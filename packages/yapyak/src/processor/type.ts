@@ -27,6 +27,14 @@ export type ElisionContext = {
 };
 
 /**
+ * The fragment segment. Maps one run of fragment code back to the source file it was taken from.
+ */
+export type FragmentSegment = {
+  codeLength: number;
+  sourceOffset: number;
+};
+
+/**
  * The fragment.
  */
 export type Fragment = {
@@ -36,7 +44,7 @@ export type Fragment = {
   snippet?: string;
   type: 'script' | 'template-expression';
   language: 'js' | 'ts';
-  originalOffset: number;
+  segments: FragmentSegment[];
 };
 
 /**

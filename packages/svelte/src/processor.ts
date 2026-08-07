@@ -2,7 +2,11 @@ import type * as SvelteCompiler from 'svelte/compiler';
 import type { AST } from 'svelte/compiler';
 import type { Fragment, Processor } from 'yapyak/processor';
 
-import { createProcessor, rangeFromOffsets } from 'yapyak/processor';
+import {
+  createProcessor,
+  rangeFromOffsets,
+  segmentsFromOffset,
+} from 'yapyak/processor';
 
 import { createRequire } from 'node:module';
 
@@ -96,11 +100,12 @@ function fragmentsFromScript(script: AST.Script, source: string): Fragment[] {
   if (typeof start !== 'number' || typeof end !== 'number') {
     return [];
   }
+  const code = source.slice(start, end);
   return [
     {
-      code: source.slice(start, end),
+      code,
       language: getScriptLang(script),
-      originalOffset: start,
+      segments: segmentsFromOffset(code, start),
       type: 'script',
     },
   ];
@@ -475,7 +480,7 @@ function fragmentsFromExpression(
   const fragment: Fragment = {
     code,
     language: 'ts',
-    originalOffset: start,
+    segments: segmentsFromOffset(code, start),
     type: 'template-expression',
   };
   if (elisionContext) {

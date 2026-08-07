@@ -1,6 +1,7 @@
 import MagicString from 'magic-string';
 import { describe, expect, it } from 'vitest';
 
+import { segmentsFromOffset } from '../../../../processor';
 import { extractFile } from '../extract';
 import { transformFile } from '../transform';
 import { transformScriptImports } from './script-import';
@@ -25,7 +26,7 @@ function runScriptImports(source: string): string {
       {
         code: source,
         language: 'ts',
-        originalOffset: 0,
+        segments: segmentsFromOffset(source, 0),
         type: 'script',
       },
     ],
@@ -149,7 +150,7 @@ describe('transformScriptImports', () => {
         {
           code: source,
           language: 'ts',
-          originalOffset: 0,
+          segments: segmentsFromOffset(source, 0),
           type: 'template-expression',
         },
       ],
@@ -168,13 +169,13 @@ describe('transformScriptImports', () => {
         {
           code: first,
           language: 'ts',
-          originalOffset: 0,
+          segments: segmentsFromOffset(first, 0),
           type: 'script',
         },
         {
           code: second,
           language: 'ts',
-          originalOffset: first.length,
+          segments: segmentsFromOffset(second, first.length),
           type: 'script',
         },
       ],
@@ -195,13 +196,13 @@ describe('transformScriptImports', () => {
         {
           code: importLine,
           language: 'ts',
-          originalOffset: 0,
+          segments: segmentsFromOffset(importLine, 0),
           type: 'script',
         },
         {
           code: usage,
           language: 'ts',
-          originalOffset: importLine.length,
+          segments: segmentsFromOffset(usage, importLine.length),
           type: 'script',
         },
       ],

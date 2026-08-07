@@ -3,6 +3,7 @@ import type { Fragment } from '../../processor';
 import ts from '@typescript/typescript6';
 import { describe, expect, it } from 'vitest';
 
+import { segmentsFromOffset } from '../../processor';
 import { remapRange, toRange } from './range';
 
 function makeNode(source: string): {
@@ -26,14 +27,14 @@ function makeNode(source: string): {
 }
 
 const fragment: Fragment = {
-  code: '',
+  code: 'Hello',
   language: 'ts',
-  originalOffset: 0,
+  segments: segmentsFromOffset('Hello', 0),
   type: 'script',
 };
 
 describe('remapRange', () => {
-  it('returns the range unchanged when the fragment originalOffset is zero', () => {
+  it('returns the range unchanged when the fragment starts at offset zero', () => {
     const range = {
       end: {
         column: 5,
@@ -46,7 +47,7 @@ describe('remapRange', () => {
         offset: 0,
       },
     };
-    expect(remapRange(range, fragment, 'source')).toEqual(range);
+    expect(remapRange(range, fragment, 'Hello')).toEqual(range);
   });
 
   it('builds a range with both endpoints remapped when offset is non-zero', () => {
@@ -65,9 +66,10 @@ describe('remapRange', () => {
       },
       {
         ...fragment,
-        originalOffset: 6,
+        code: 'World',
+        segments: segmentsFromOffset('World', 6),
       },
-      'first\nsecond',
+      'Hello\nWorld',
     );
     expect(result).toEqual({
       end: {

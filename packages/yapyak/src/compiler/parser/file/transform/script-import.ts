@@ -4,6 +4,7 @@ import type { Fragment } from '../../../../processor';
 import ts from '@typescript/typescript6';
 
 import { YAPYAK_MODULE } from '../../binding';
+import { remapOffset } from '../../offset';
 import { getScriptKind } from '../../script-kind';
 
 export type TransformScriptImportsInput = {
@@ -48,8 +49,8 @@ function parseFragmentReferenceAst(
   let postTransformCode: string;
   try {
     postTransformCode = input.magicString.slice(
-      fragment.originalOffset,
-      fragment.originalOffset + fragment.code.length,
+      remapOffset(0, fragment),
+      remapOffset(fragment.code.length, fragment),
     );
   } catch {
     return undefined;
@@ -89,9 +90,11 @@ function transformImportDeclaration(
   if (!namedBindings) {
     return;
   }
-  const startInOriginal =
-    declaration.getStart(declarationAst) + fragment.originalOffset;
-  const endInOriginal = declaration.getEnd() + fragment.originalOffset;
+  const startInOriginal = remapOffset(
+    declaration.getStart(declarationAst),
+    fragment,
+  );
+  const endInOriginal = remapOffset(declaration.getEnd(), fragment);
   if (ts.isNamespaceImport(namedBindings)) {
     const localName = namedBindings.name.text;
     if (countReferences(referenceAsts, localName) === 0) {

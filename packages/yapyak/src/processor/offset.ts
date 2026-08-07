@@ -1,4 +1,4 @@
-import type { Position, Range } from './type';
+import type { FragmentSegment, Position, Range } from './type';
 
 /**
  * Converts a string index into a 1-based line/column position in `source`.
@@ -43,4 +43,33 @@ export function rangeFromOffsets(
     end: offsetToOriginalPosition(source, endOffset),
     start: offsetToOriginalPosition(source, startOffset),
   };
+}
+
+/**
+ * Builds the segments for a fragment code run.
+ *
+ * @remarks
+ * Applies only when the fragment code is a verbatim run of the source file.
+ *
+ * @param code - The fragment code.
+ * @param sourceOffset - The string index in the source file the code starts at.
+ *
+ * @example
+ * ```ts
+ * import { segmentsFromOffset } from 'yapyak/processor';
+ *
+ * segmentsFromOffset("t('Save changes')", 42);
+ * // output: [{ codeLength: 17, sourceOffset: 42 }]
+ * ```
+ */
+export function segmentsFromOffset(
+  code: string,
+  sourceOffset: number,
+): FragmentSegment[] {
+  return [
+    {
+      codeLength: code.length,
+      sourceOffset,
+    },
+  ];
 }

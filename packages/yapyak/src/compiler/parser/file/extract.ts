@@ -13,11 +13,13 @@ import type { Placeholder } from '../placeholder';
 
 import ts from '@typescript/typescript6';
 
+import { segmentsFromOffset } from '../../../processor';
 import { parseArguments } from '../argument';
 import { resolveBindings } from '../binding';
 import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
 import { toMessageKey } from '../message-key';
+import { remapOffset } from '../offset';
 import { parsePlaceholders } from '../placeholder';
 import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
@@ -28,7 +30,7 @@ const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
   {
     code: source,
     language: 'ts',
-    originalOffset: 0,
+    segments: segmentsFromOffset(source, 0),
     type: 'script',
   },
 ];
@@ -180,7 +182,7 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
 
     const callSite: ParsedCallSite = {
       binding: fragmentCall.binding,
-      fragmentOffset: fragment.originalOffset,
+      fragmentOffset: remapOffset(0, fragment),
       id,
       node: fragmentCall.node,
       placeholders,
@@ -346,9 +348,6 @@ function remapDiagnostic(
   fragment: Fragment,
   originalSource: string,
 ): Diagnostic {
-  if (fragment.originalOffset === 0) {
-    return diagnostic;
-  }
   return {
     ...diagnostic,
     range: remapRange(diagnostic.range, fragment, originalSource),

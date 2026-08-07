@@ -3,6 +3,7 @@ import type { ComponentHook, Fragment } from '../../../../processor';
 import MagicString from 'magic-string';
 import { describe, expect, it } from 'vitest';
 
+import { segmentsFromOffset } from '../../../../processor';
 import { extractFile } from '../extract';
 import { injectComponentHooks } from './component-hook';
 
@@ -12,7 +13,7 @@ function buildFragment(source: string): Fragment {
   return {
     code: source,
     language: 'ts',
-    originalOffset: 0,
+    segments: segmentsFromOffset(source, 0),
     type: 'script',
   };
 }

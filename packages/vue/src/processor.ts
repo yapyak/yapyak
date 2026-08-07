@@ -12,7 +12,11 @@ import type * as VueSfc from '@vue/compiler-sfc';
 import type { SFCScriptBlock } from '@vue/compiler-sfc';
 import type { Fragment, Processor } from 'yapyak/processor';
 
-import { createProcessor, rangeFromOffsets } from 'yapyak/processor';
+import {
+  createProcessor,
+  rangeFromOffsets,
+  segmentsFromOffset,
+} from 'yapyak/processor';
 
 import { createRequire } from 'node:module';
 
@@ -110,7 +114,7 @@ function toScriptFragment(block: SFCScriptBlock): Fragment {
   return {
     code: block.content,
     language: block.lang === 'ts' || block.lang === 'typescript' ? 'ts' : 'js',
-    originalOffset: block.loc.start.offset,
+    segments: segmentsFromOffset(block.content, block.loc.start.offset),
     type: 'script',
   };
 }
@@ -179,7 +183,7 @@ function fragmentsFromInterpolation(
       ),
     },
     language: 'ts',
-    originalOffset: mustache.codeOffset,
+    segments: segmentsFromOffset(mustache.code, mustache.codeOffset),
     type: 'template-expression',
   };
   if (enclosingContext) {
@@ -223,7 +227,10 @@ function fragmentsFromDirective(
   const fragment: Fragment = {
     code: expression.content,
     language: 'ts',
-    originalOffset: expression.loc.start.offset,
+    segments: segmentsFromOffset(
+      expression.content,
+      expression.loc.start.offset,
+    ),
     type: 'template-expression',
   };
   const attributeName = readVBindAttributeName(prop);

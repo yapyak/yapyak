@@ -3,6 +3,7 @@ import type { Fragment } from '../../processor';
 import ts from '@typescript/typescript6';
 import { describe, expect, it } from 'vitest';
 
+import { segmentsFromOffset } from '../../processor';
 import { remapPosition, toPosition } from './position';
 
 function makeSourceFile(source: string): ts.SourceFile {
@@ -12,12 +13,12 @@ function makeSourceFile(source: string): ts.SourceFile {
 const fragment: Fragment = {
   code: '',
   language: 'ts',
-  originalOffset: 0,
+  segments: segmentsFromOffset('', 0),
   type: 'script',
 };
 
 describe('remapPosition', () => {
-  it('returns the position unchanged when the fragment originalOffset is zero', () => {
+  it('returns the position unchanged when the fragment starts at offset zero', () => {
     const position = {
       column: 1,
       line: 1,
@@ -36,7 +37,7 @@ describe('remapPosition', () => {
       },
       {
         ...fragment,
-        originalOffset: 6,
+        segments: segmentsFromOffset('', 6),
       },
       original,
     );

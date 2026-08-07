@@ -13,6 +13,7 @@ import type {
 
 import MagicString from 'magic-string';
 
+import { segmentsFromOffset } from '../../../processor';
 import { YAPYAK_INTERNAL_MODULE } from '../binding';
 import { resolveProcessor } from '../processor';
 import { renderCallReplacement } from './transform/call-replacement';
@@ -65,7 +66,7 @@ const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
   {
     code: source,
     language: 'ts',
-    originalOffset: 0,
+    segments: segmentsFromOffset(source, 0),
     type: 'script',
   },
 ];

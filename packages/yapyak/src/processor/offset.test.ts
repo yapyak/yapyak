@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { offsetToOriginalPosition, rangeFromOffsets } from './offset';
+import {
+  offsetToOriginalPosition,
+  rangeFromOffsets,
+  segmentsFromOffset,
+} from './offset';
 
 describe('offsetToOriginalPosition', () => {
   it('returns the position on line 1 when the offset precedes the first newline', () => {
@@ -50,5 +54,34 @@ describe('rangeFromOffsets', () => {
         offset: 0,
       },
     });
+  });
+});
+
+describe('segmentsFromOffset', () => {
+  it('builds one segment spanning the whole code', () => {
+    expect(segmentsFromOffset('Save changes', 42)).toEqual([
+      {
+        codeLength: 12,
+        sourceOffset: 42,
+      },
+    ]);
+  });
+
+  it('builds one segment anchored at offset zero', () => {
+    expect(segmentsFromOffset('Save', 0)).toEqual([
+      {
+        codeLength: 4,
+        sourceOffset: 0,
+      },
+    ]);
+  });
+
+  it('builds a segment of length zero for empty code', () => {
+    expect(segmentsFromOffset('', 7)).toEqual([
+      {
+        codeLength: 0,
+        sourceOffset: 7,
+      },
+    ]);
   });
 });

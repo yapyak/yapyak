@@ -4,6 +4,7 @@ export type {
   ComponentHook,
   ElisionContext,
   Fragment,
+  FragmentSegment,
   ParseFragmentsFn,
   Position,
   Processor,
@@ -12,4 +13,8 @@ export type {
 } from './type';
 
 export { createProcessor } from './create';
-export { offsetToOriginalPosition, rangeFromOffsets } from './offset';
+export {
+  offsetToOriginalPosition,
+  rangeFromOffsets,
+  segmentsFromOffset,
+} from './offset';

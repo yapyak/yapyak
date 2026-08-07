@@ -4,6 +4,7 @@ import type { ParsedCallSite } from '../extract';
 
 import ts from '@typescript/typescript6';
 
+import { remapOffset } from '../../offset';
 import { getScriptKind } from '../../script-kind';
 import { extractPrologueDirectives } from './directive';
 
@@ -40,7 +41,7 @@ export function injectComponentHooks(input: InjectComponentHooksInput): void {
     walkForInjectionTargets(
       sourceFile,
       sourceFile,
-      fragment.originalOffset,
+      remapOffset(0, fragment),
       input.callSites,
       componentHook.namePattern,
       insertionPositions,
