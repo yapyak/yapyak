@@ -10,7 +10,7 @@ import type {
 } from '@vue/compiler-core';
 import type * as VueSfc from '@vue/compiler-sfc';
 import type { SFCScriptBlock } from '@vue/compiler-sfc';
-import type { Fragment, Processor } from 'yapyak/processor';
+import type { Fragment, FragmentSegment, Processor } from 'yapyak/processor';
 
 import {
   createProcessor,
@@ -227,9 +227,10 @@ function fragmentsFromDirective(
   const fragment: Fragment = {
     code: expression.content,
     language: 'ts',
-    segments: segmentsFromOffset(
-      expression.content,
+    segments: segmentsFromDecoded(
+      source,
       expression.loc.start.offset,
+      expression.content,
     ),
     type: 'template-expression',
   };
@@ -252,6 +253,76 @@ function fragmentsFromDirective(
   return [
     fragment,
   ];
+}
+
+const HIGHEST_SINGLE_UNIT_CODE_POINT = 0xff_ff;
+
+function segmentsFromDecoded(
+  source: string,
+  sourceStart: number,
+  decoded: string,
+): FragmentSegment[] {
+  const segments: FragmentSegment[] = [];
+  let sourceIndex = sourceStart;
+  let decodedIndex = 0;
+  let runStart = sourceStart;
+  let runLength = 0;
+  while (decodedIndex < decoded.length) {
+    const entity = readEntity(source, sourceIndex, decoded, decodedIndex);
+    if (entity === undefined) {
+      runLength += 1;
+      sourceIndex += 1;
+      decodedIndex += 1;
+      continue;
+    }
+    if (runLength > 0) {
+      segments.push({
+        codeLength: runLength,
+        sourceOffset: runStart,
+      });
+    }
+    const codePoint = decoded.codePointAt(decodedIndex);
+    const codeLength =
+      codePoint !== undefined && codePoint > HIGHEST_SINGLE_UNIT_CODE_POINT
+        ? 2
+        : 1;
+    segments.push({
+      codeLength,
+      sourceOffset: sourceIndex,
+    });
+    sourceIndex += entity.length;
+    decodedIndex += codeLength;
+    runStart = sourceIndex;
+    runLength = 0;
+  }
+  if (runLength > 0) {
+    segments.push({
+      codeLength: runLength,
+      sourceOffset: runStart,
+    });
+  }
+  return segments;
+}
+
+const ENTITY_RX = /^&(?:#\d+|#[Xx][\dA-Fa-f]+|[A-Za-z][\dA-Za-z]*);/;
+
+function readEntity(
+  source: string,
+  sourceIndex: number,
+  decoded: string,
+  decodedIndex: number,
+): string | undefined {
+  if (source[sourceIndex] !== '&') {
+    return undefined;
+  }
+  const match = ENTITY_RX.exec(source.slice(sourceIndex));
+  if (match === null) {
+    return undefined;
+  }
+  if (decoded.startsWith(match[0], decodedIndex)) {
+    return undefined;
+  }
+  return match[0];
 }
 
 function readVBindAttributeName(prop: DirectiveNode): string | undefined {

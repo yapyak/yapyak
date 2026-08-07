@@ -359,6 +359,26 @@ describe('vue processor — extract', () => {
     expect(result.messages).toHaveLength(1);
     expect(result.messages[0]?.source).toBe('Save');
   });
+
+  it('extracts every `t()` from a directive holding an HTML entity', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      'const a = 1;',
+      'const b = 2;',
+      '</script>',
+      '<template>',
+      `  <p :title="a &lt; b ? t('Save') : t('Cancel')">x</p>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    const sources = result.messages.map((message) => message.source).sort();
+
+    expect(sources).toEqual([
+      'Cancel',
+      'Save',
+    ]);
+  });
 });
 
 describe('vue processor — transform', () => {
@@ -625,5 +645,57 @@ describe('vue processor — transform', () => {
       ].join('\n'),
     });
     expect(code).not.toMatch(/import \{ format \}/);
+  });
+
+  it('rewrites every `t()` in a directive holding an HTML entity', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      'const a = 1;',
+      'const b = 2;',
+      '</script>',
+      '<template>',
+      `  <p :title="a &lt; b ? t('Save') : t('Cancel')">x</p>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({
+      locales: [
+        'en',
+        'sv',
+      ],
+      source,
+      translations: {
+        sv: {},
+      },
+    });
+
+    expect(code).toContain(
+      `<p :title="a &lt; b ? _pick(_catalog_$0) : _pick(_catalog_$1)">x</p>`,
+    );
+  });
+
+  it('rewrites `t()` in a directive holding an astral-plane entity', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <p :title="'&#129452;' + t('Save')">x</p>`,
+      '</template>',
+    ].join('\n');
+    const code = runVueTransform({
+      locales: [
+        'en',
+        'sv',
+      ],
+      source,
+      translations: {
+        sv: {},
+      },
+    });
+
+    expect(code).toContain(
+      `<p :title="'&#129452;' + _pick(_catalog_$0)">x</p>`,
+    );
   });
 });
