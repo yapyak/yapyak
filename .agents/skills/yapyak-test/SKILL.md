@@ -377,6 +377,8 @@ Closed set of fixture data. No invented strings.
 'café'                         Unicode NFC-normalization tests — typed in NFD in the test, asserted in NFC
 '🦬'                            astral-plane character — surrogate-pair and 4-byte UTF-8 offset tests
 'a &lt; b'                     HTML entity in template scaffolding — decoded-vs-raw offset tests
+'a &lt b'                      HTML entity without its semicolon — decoded-vs-raw offset tests
+'&#38 x'                       numeric reference without its semicolon — decoded-vs-raw offset tests
 '{count, plural, one {# objekt}}'                                   M1 regression — plural target with `other` dropped
 '{count, plural, one {# objekt} few {# objekt} many {# objekt} other {# objekt}}' locale-extra plural categories
 '{theme, select, dark {Mörkt} other {System}}'                       M1 select regression — domain branch dropped

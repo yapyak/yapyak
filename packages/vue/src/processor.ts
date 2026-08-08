@@ -306,7 +306,7 @@ function segmentsFromDecoded(
   return segments;
 }
 
-const ENTITY_RX = /^&(?:#\d+|#[Xx][\dA-Fa-f]+|[A-Za-z][\dA-Za-z]*);/;
+const ENTITY_RX = /^&(?:#\d+|#[Xx][\dA-Fa-f]+|[A-Za-z][\dA-Za-z]*);?/;
 
 function readEntity(
   source: string,
