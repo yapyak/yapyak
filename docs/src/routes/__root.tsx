@@ -21,6 +21,7 @@ import { Layout } from '#components/layout';
 import { LogoLink } from '#components/logo-link';
 import { MobileBar } from '#components/mobile-bar';
 import { Navigation } from '#components/navigation';
+import { OptionMenuTrigger } from '#components/option-menu-trigger';
 import {
   OptionProvider,
   buildPrepaintScript,
@@ -140,6 +141,8 @@ function Component() {
           </Navigation>
         </Layout.Header.Center>
         <Layout.Header.End>
+          <OptionMenuTrigger group="framework" />
+          <OptionMenuTrigger group="packageManager" />
           <SearchDialogTrigger shortcut="mod+k" />
           <IconLink
             aria-label={t('View on GitHub')}
