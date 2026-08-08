@@ -18,10 +18,6 @@
       box-shadow var(--transition),
       outline var(--duration-slow);
 
-    .LabelText {
-      line-height: 1;
-    }
-
     .Chevron {
       display: inline-flex;
       margin-left: auto;

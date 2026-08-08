@@ -1,0 +1,17 @@
+@layer components {
+  .OptionMenuButtonOption {
+    --prepaint-display: flex;
+
+    display: none;
+    gap: var(--spacing-2);
+    align-items: center;
+
+    .LabelText {
+      line-height: 1;
+    }
+
+    &[data-active] {
+      display: flex;
+    }
+  }
+}

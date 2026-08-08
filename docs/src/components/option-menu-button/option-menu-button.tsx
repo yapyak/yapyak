@@ -1,5 +1,4 @@
 import type { ButtonBaseProps } from '#primitives/button';
-import type { SwatchAccent } from '../swatch';
 
 import { t } from 'yapyak';
 
@@ -7,16 +6,23 @@ import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
 import { Icon } from '../icon';
-import { Swatch } from '../swatch';
 import styles from './option-menu-button.module.css';
+import { OptionMenuButtonOption } from './option-menu-button-option';
+
+type OptionMenuButtonItem = {
+  label: string;
+  value: string;
+};
 
 export type OptionMenuButtonProps = ButtonBaseProps & {
-  accent: SwatchAccent;
+  group: string;
   label: string;
+  options: OptionMenuButtonItem[];
+  value: string;
 };
 
 export function OptionMenuButton(props: OptionMenuButtonProps) {
-  const { accent, children, className, label, ...restProps } = props;
+  const { className, group, label, options, value, ...restProps } = props;
 
   return (
     <ButtonBase
@@ -29,13 +35,15 @@ export function OptionMenuButton(props: OptionMenuButtonProps) {
         className,
       ]}
     >
-      <Swatch accent={accent} />
-      <Box
-        as="span"
-        className={styles.LabelText}
-      >
-        {children}
-      </Box>
+      {options.map((option) => (
+        <OptionMenuButtonOption
+          active={option.value === value}
+          group={group}
+          key={option.value}
+          label={option.label}
+          value={option.value}
+        />
+      ))}
       <Box
         aria-hidden={true}
         as="span"

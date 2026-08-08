@@ -1,5 +1,3 @@
-import type { SwatchAccent } from '../swatch';
-
 import { filterVisibleOptions } from '#lib/adapter';
 
 import { MenuTrigger } from '../menu';
@@ -28,11 +26,6 @@ export function OptionMenuTrigger(props: OptionMenuTriggerProps) {
     return null;
   }
 
-  const activeOption = options.find((option) => option.value === activeValue);
-  if (activeOption === undefined) {
-    return null;
-  }
-
   const handleChange = (value: string) => {
     set(groupId, value);
   };
@@ -52,11 +45,11 @@ export function OptionMenuTrigger(props: OptionMenuTriggerProps) {
       {(triggerProps) => (
         <OptionMenuButton
           {...triggerProps}
-          accent={activeValue as SwatchAccent}
+          group={groupId}
           label={group.label}
-        >
-          {activeOption.label}
-        </OptionMenuButton>
+          options={options}
+          value={activeValue}
+        />
       )}
     </MenuTrigger>
   );
