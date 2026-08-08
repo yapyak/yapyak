@@ -5,6 +5,9 @@ order: 2
 
 yapyak's save loop runs during development. New `t()` calls appear; their translations appear in the running browser a second or two later.
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx [src/components/empty-cart.tsx]
 import { t } from 'yapyak';
 
@@ -12,6 +15,41 @@ export function EmptyCart() {
   return <p>{t('Your cart is empty')}</p>;
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue [src/components/empty-cart.vue]
+<script setup lang="ts">
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <p>{{ t('Your cart is empty') }}</p>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [src/components/empty-cart.svelte]
+<script lang="ts">
+  import { t } from 'yapyak';
+</script>
+
+<p>{t('Your cart is empty')}</p>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [src/components/empty-cart.astro]
+---
+import { t } from 'yapyak';
+---
+
+<p>{t('Your cart is empty')}</p>
+```
+{% /when %}
+
+{% /switch %}
 
 See [How it works](/guide/getting-started/how-it-works) for the full step sequence and [HMR](/guide/advanced/hmr) for the hot-replace mechanics. This page covers the translator's role in that loop.
 
