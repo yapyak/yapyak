@@ -86,20 +86,24 @@ export function astro(): Processor {
     parseSource: (source) => {
       const ast = parse(source).ast as AstroRoot;
       if (ast.frontmatter.end === ast.frontmatter.start) {
-        return [
-          {
-            code: source,
-            language: 'ts',
-            segments: segmentsFromOffset(source, 0),
-            type: 'script',
-          },
-        ];
+        return {
+          fragments: [
+            {
+              code: source,
+              language: 'ts',
+              segments: segmentsFromOffset(source, 0),
+              type: 'script',
+            },
+          ],
+        };
       }
       normalizeOffsets(ast, source);
-      return [
-        fragmentsFromFrontmatter(ast.frontmatter, source),
-        ...ast.body.flatMap((node) => fragmentsFromBodyNode(node, source)),
-      ];
+      return {
+        fragments: [
+          fragmentsFromFrontmatter(ast.frontmatter, source),
+          ...ast.body.flatMap((node) => fragmentsFromBodyNode(node, source)),
+        ],
+      };
     },
     skipHmrCallback: true,
   });

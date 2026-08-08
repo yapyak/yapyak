@@ -25,14 +25,16 @@ import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';
 import { basename, extname } from 'node:path';
 
-const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => [
-  {
-    code: source,
-    language: 'ts',
-    segments: segmentsFromOffset(source, 0),
-    type: 'script',
-  },
-];
+const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => ({
+  fragments: [
+    {
+      code: source,
+      language: 'ts',
+      segments: segmentsFromOffset(source, 0),
+      type: 'script',
+    },
+  ],
+});
 
 export type Location = {
   callSiteContext: CallSiteContext;
@@ -73,7 +75,7 @@ export function extractFile(
   options?: ExtractFileOptions,
 ): ExtractFileResult {
   const processor = resolveProcessor(fileId, source, options?.processors ?? []);
-  const fragments = (processor.parseSource ?? DEFAULT_PARSE_SOURCE)(source);
+  const { fragments } = (processor.parseSource ?? DEFAULT_PARSE_SOURCE)(source);
 
   const diagnostics: Diagnostic[] = [];
   const callSites: ParsedCallSite[] = [];

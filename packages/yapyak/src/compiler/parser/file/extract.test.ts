@@ -69,22 +69,24 @@ describe('extractFile', () => {
         '.vue',
       ],
       id: 'template',
-      parseSource: () => [
-        {
-          code: "import { t } from 'yapyak';",
-          language: 'ts',
-          segments: segmentsFromOffset("import { t } from 'yapyak';", 0),
-          type: 'script',
-        },
-        {
-          code: "t('Save changes')",
-          enclosingElement: 'button',
-          language: 'ts',
-          segments: segmentsFromOffset("t('Save changes')", 28),
-          snippet: `<button>{t('Save changes')}</button>`,
-          type: 'template-expression',
-        },
-      ],
+      parseSource: () => ({
+        fragments: [
+          {
+            code: "import { t } from 'yapyak';",
+            language: 'ts',
+            segments: segmentsFromOffset("import { t } from 'yapyak';", 0),
+            type: 'script',
+          },
+          {
+            code: "t('Save changes')",
+            enclosingElement: 'button',
+            language: 'ts',
+            segments: segmentsFromOffset("t('Save changes')", 28),
+            snippet: `<button>{t('Save changes')}</button>`,
+            type: 'template-expression',
+          },
+        ],
+      }),
     };
     const result = extractFile(
       'src/a.vue',

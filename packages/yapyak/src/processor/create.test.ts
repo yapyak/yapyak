@@ -47,25 +47,29 @@ describe('createProcessor', () => {
         '.foo',
       ],
       id: 'foo',
-      parseSource: (source) => [
+      parseSource: (source) => ({
+        fragments: [
+          {
+            code: source,
+            language: 'ts',
+            segments: segmentsFromOffset(source, 0),
+            type: 'script',
+          },
+        ],
+      }),
+    });
+
+    const result = processor.parseSource?.('let x = 1;');
+    expect(result).toEqual({
+      fragments: [
         {
-          code: source,
+          code: 'let x = 1;',
           language: 'ts',
-          segments: segmentsFromOffset(source, 0),
+          segments: segmentsFromOffset('let x = 1;', 0),
           type: 'script',
         },
       ],
     });
-
-    const fragments = processor.parseSource?.('let x = 1;');
-    expect(fragments).toEqual([
-      {
-        code: 'let x = 1;',
-        language: 'ts',
-        segments: segmentsFromOffset('let x = 1;', 0),
-        type: 'script',
-      },
-    ]);
   });
 
   it('refuses construction when id is empty', () => {

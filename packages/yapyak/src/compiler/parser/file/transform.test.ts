@@ -1248,26 +1248,30 @@ describe('transformFile', () => {
       parseSource: (source) => {
         const prefix = '<padding>\n';
         if (!source.startsWith(prefix)) {
-          return [
+          return {
+            fragments: [
+              {
+                code: source,
+                language: 'ts',
+                segments: segmentsFromOffset(source, 0),
+                type: 'script',
+              },
+            ],
+          };
+        }
+        return {
+          fragments: [
             {
-              code: source,
+              code: source.slice(prefix.length),
               language: 'ts',
-              segments: segmentsFromOffset(source, 0),
+              segments: segmentsFromOffset(
+                source.slice(prefix.length),
+                prefix.length,
+              ),
               type: 'script',
             },
-          ];
-        }
-        return [
-          {
-            code: source.slice(prefix.length),
-            language: 'ts',
-            segments: segmentsFromOffset(
-              source.slice(prefix.length),
-              prefix.length,
-            ),
-            type: 'script',
-          },
-        ];
+          ],
+        };
       },
     };
 

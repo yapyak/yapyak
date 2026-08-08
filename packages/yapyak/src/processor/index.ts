@@ -6,6 +6,7 @@ export type {
   Fragment,
   FragmentSegment,
   ParseSourceFn,
+  ParseSourceResult,
   Position,
   Processor,
   Range,

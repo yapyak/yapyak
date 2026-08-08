@@ -62,14 +62,16 @@ const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
   }
   magicString.appendRight(prologueEnd, `${importStatement}\n`);
 };
-const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => [
-  {
-    code: source,
-    language: 'ts',
-    segments: segmentsFromOffset(source, 0),
-    type: 'script',
-  },
-];
+const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => ({
+  fragments: [
+    {
+      code: source,
+      language: 'ts',
+      segments: segmentsFromOffset(source, 0),
+      type: 'script',
+    },
+  ],
+});
 const FACTORY_ORDER = [
   'literal',
   'placeholder',
@@ -100,7 +102,7 @@ export function transformFile(
     request.source,
     request.processors ?? [],
   );
-  const fragments = (processor.parseSource ?? DEFAULT_PARSE_SOURCE)(
+  const { fragments } = (processor.parseSource ?? DEFAULT_PARSE_SOURCE)(
     request.source,
   );
   const isSingleLocale = request.locales.length === 1;

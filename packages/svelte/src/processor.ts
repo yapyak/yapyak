@@ -60,7 +60,9 @@ export function svelte(): Processor {
       if (ast.fragment != null) {
         fragments.push(...fragmentsFromAst(ast.fragment, source));
       }
-      return fragments;
+      return {
+        fragments,
+      };
     },
     runtime: {
       module: '@yapyak/svelte/internal',

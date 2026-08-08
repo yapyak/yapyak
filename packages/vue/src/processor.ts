@@ -84,7 +84,9 @@ export function vue(): Processor {
           ...fragmentsFromTemplate(descriptor.template.ast, source),
         );
       }
-      return fragments;
+      return {
+        fragments,
+      };
     },
     runtime: {
       module: '@yapyak/vue/internal',
