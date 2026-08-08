@@ -272,9 +272,9 @@ summary: [One-line present-tense, no period, max 80 chars]
 
 **Body — pick one shape by subsystem (first match wins):**
 
-- `PARSER` / `CONTEXT` / `RICHTEXT` / `PROCESSOR` → Shape A
+- `PARSER` / `CONTEXT` / `RICHTEXT` → Shape A
 - `CATALOG` / `PLACEHOLDER` → Shape B
-- `RUNTIME` / `PERSISTENCE` / `LOCALE` / `TRANSLATE` / `FORMAT` → Shape C
+- `RUNTIME` / `PERSISTENCE` / `LOCALE` / `TRANSLATE` / `FORMAT` / `PROCESSOR` → Shape C
 
 #### Shape A: Source-code violations
 
@@ -328,7 +328,7 @@ t('You have {count, plural, one {# msg} other {# msgs}}', { count: 1 })
 
 #### Shape C: Runtime/environment issues
 
-For diagnostics where the fix is configuration or environment, not source code (runtime, persistence, locale state, translate, format, tracker).
+For diagnostics where the fix is configuration or environment, not source code (runtime, persistence, locale state, translate, format, tracker), and for parser reports where the fix is the file's own syntax rather than a `t()` pattern (processor).
 
 ```md
 [1-2 sentences: what happened and why.]
