@@ -526,6 +526,35 @@ describe('astro processor — extract', () => {
       'Hello',
     ]);
   });
+
+  it('records a diagnostic when the compiler cannot parse the template', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      "<p>{t('Hello')</p>",
+    ].join('\n');
+    const result = extractAstro(source);
+
+    expect(result.diagnostics[0]?.code).toBe('YAP0048');
+    expect(result.diagnostics[0]?.severity).toBe('error');
+  });
+
+  it('records a diagnostic range in string indices when non-ASCII text precedes the error', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      "<p>Världen {t('Hello')</p>",
+    ].join('\n');
+    const result = extractAstro(source);
+
+    expect(result.diagnostics[0]?.range.start).toEqual({
+      column: 24,
+      line: 4,
+      offset: 59,
+    });
+  });
 });
 
 describe('astro processor — already-compiled input fallback', () => {
@@ -569,6 +598,17 @@ describe('astro processor — already-compiled input fallback', () => {
       'sv',
     ]);
     expect(code).toMatch(/^import \{ pick as _pick \} from 'yapyak\/internal'/);
+  });
+
+  it('records no diagnostic for already-compiled input', () => {
+    const result = extractAstro(
+      [
+        "import { t } from 'yapyak';",
+        "const heading = t('Hello');",
+      ].join('\n'),
+    );
+
+    expect(result.diagnostics).toHaveLength(0);
   });
 });
 

@@ -1,3 +1,4 @@
+import type { DiagnosticLabel, DiagnosticMessage } from '@astrojs/compiler-rs';
 import type {
   Expression,
   JSXAttribute,
@@ -13,6 +14,8 @@ import type {
   Fragment,
   FragmentSegment,
   Processor,
+  ProcessorDiagnostic,
+  Range,
 } from 'yapyak/processor';
 
 import { parse } from '@astrojs/compiler-rs';
@@ -84,7 +87,8 @@ export function astro(): Processor {
     ],
     id: 'astro',
     parseSource: (source) => {
-      const ast = parse(source).ast as AstroRoot;
+      const result = parse(source);
+      const ast = result.ast as AstroRoot;
       if (ast.frontmatter.end === ast.frontmatter.start) {
         return {
           fragments: [
@@ -97,8 +101,15 @@ export function astro(): Processor {
           ],
         };
       }
-      normalizeOffsets(ast, source);
+      normalizeOffsets(
+        {
+          ast,
+          diagnostics: result.diagnostics,
+        },
+        source,
+      );
       return {
+        diagnostics: toProcessorDiagnostics(result.diagnostics, source),
         fragments: [
           fragmentsFromFrontmatter(ast.frontmatter, source),
           ...ast.body.flatMap((node) => fragmentsFromBodyNode(node, source)),
@@ -109,11 +120,11 @@ export function astro(): Processor {
   });
 }
 
-function normalizeOffsets(root: AstroRoot, source: string): void {
+function normalizeOffsets(parsed: object, source: string): void {
   if (!hasNonAscii(source)) {
     return;
   }
-  remapOffsets(root, buildUtf16Offsets(source));
+  remapOffsets(parsed, buildUtf16Offsets(source));
 }
 
 const HIGHEST_ASCII_CODE = 0x7f;
@@ -193,6 +204,31 @@ function utf16OffsetFromByte(
     );
   }
   return utf16Offset;
+}
+
+function toProcessorDiagnostics(
+  diagnostics: DiagnosticMessage[],
+  source: string,
+): ProcessorDiagnostic[] {
+  const result: ProcessorDiagnostic[] = [];
+  for (const diagnostic of diagnostics) {
+    if (diagnostic.severity !== 'error') {
+      continue;
+    }
+    result.push({
+      message: diagnostic.text,
+      range: toLabelRange(diagnostic.labels, source),
+    });
+  }
+  return result;
+}
+
+function toLabelRange(labels: DiagnosticLabel[], source: string): Range {
+  const label = labels[0];
+  if (label === undefined) {
+    return rangeFromOffsets(source, 0, 0);
+  }
+  return rangeFromOffsets(source, label.start, label.end);
 }
 
 function fragmentsFromFrontmatter(
