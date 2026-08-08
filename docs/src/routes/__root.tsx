@@ -28,11 +28,23 @@ import { RouteAnnouncer } from '#components/route-announcer';
 import { SearchDialogTrigger } from '#components/search-dialog-trigger';
 import { StatusView } from '#components/status-view';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
+import { useStripOptionSearch } from '#hooks/use-strip-option-search';
 import { buildPrepaintScript } from '#lib/option';
 
 import { doc } from 'virtual:docs-compiler';
 
+export type OptionSearch = Record<string, string>;
+
 export const Route = createRootRoute({
+  validateSearch(search: Record<string, unknown>): OptionSearch {
+    const next: OptionSearch = {};
+    for (const [key, value] of Object.entries(search)) {
+      if (typeof value === 'string') {
+        next[key] = value;
+      }
+    }
+    return next;
+  },
   head() {
     return {
       links: [
@@ -93,6 +105,7 @@ export const Route = createRootRoute({
 
 function Component() {
   useScrollRestoration();
+  useStripOptionSearch();
 
   const [mobileMode, setMobileMode] = useState<MobileMode>('closed');
   const isMobileDialogOpen = mobileMode !== 'closed';
