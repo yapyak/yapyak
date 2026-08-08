@@ -11,10 +11,12 @@ import { HeroDemo } from './hero-demo';
 export type HeroProps = BoxProps<'section'> & {
   description: string;
   heading: string;
+  initialFramework?: string;
 };
 
 export function Hero(props: HeroProps) {
-  const { className, description, heading, ...restProps } = props;
+  const { className, description, heading, initialFramework, ...restProps } =
+    props;
 
   return (
     <Box
@@ -60,7 +62,7 @@ export function Hero(props: HeroProps) {
           {t('Open source. Use any LLM. No vendor lock-in.')}
         </Box>
       </Box>
-      <HeroDemo />
+      <HeroDemo initialFramework={initialFramework} />
     </Box>
   );
 }
