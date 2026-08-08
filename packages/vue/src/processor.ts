@@ -68,7 +68,7 @@ export function vue(): Processor {
       '.vue',
     ],
     id: 'vue',
-    parseFragments: (source) => {
+    parseSource: (source) => {
       const compiler = loadCompiler();
       const { descriptor } = compiler.parse(source);
       const fragments: Fragment[] = [];

@@ -41,13 +41,13 @@ describe('createProcessor', () => {
     ]);
   });
 
-  it('preserves the provided parseFragments hook', () => {
+  it('preserves the provided parseSource hook', () => {
     const processor = createProcessor({
       extensions: [
         '.foo',
       ],
       id: 'foo',
-      parseFragments: (source) => [
+      parseSource: (source) => [
         {
           code: source,
           language: 'ts',
@@ -57,7 +57,7 @@ describe('createProcessor', () => {
       ],
     });
 
-    const fragments = processor.parseFragments?.('let x = 1;');
+    const fragments = processor.parseSource?.('let x = 1;');
     expect(fragments).toEqual([
       {
         code: 'let x = 1;',

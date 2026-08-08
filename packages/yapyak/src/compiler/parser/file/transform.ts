@@ -1,7 +1,7 @@
 import type { SourceMap } from 'magic-string';
 import type {
   ApplyImportFn,
-  ParseFragmentsFn,
+  ParseSourceFn,
   Processor,
 } from '../../../processor';
 import type { Diagnostic } from '../diagnostic';
@@ -62,7 +62,7 @@ const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
   }
   magicString.appendRight(prologueEnd, `${importStatement}\n`);
 };
-const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
+const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => [
   {
     code: source,
     language: 'ts',
@@ -100,7 +100,7 @@ export function transformFile(
     request.source,
     request.processors ?? [],
   );
-  const fragments = (processor.parseFragments ?? DEFAULT_PARSE_FRAGMENTS)(
+  const fragments = (processor.parseSource ?? DEFAULT_PARSE_SOURCE)(
     request.source,
   );
   const isSingleLocale = request.locales.length === 1;

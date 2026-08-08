@@ -20,8 +20,8 @@ describe('vanillaProcessor', () => {
     ]);
   });
 
-  it('refuses to declare a parseFragments hook — the transform default applies', () => {
-    expect(vanillaProcessor.parseFragments).toBeUndefined();
+  it('refuses to declare a parseSource hook — the transform default applies', () => {
+    expect(vanillaProcessor.parseSource).toBeUndefined();
   });
 
   it('refuses to declare an applyImport hook — the transform default applies', () => {

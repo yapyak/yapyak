@@ -5,7 +5,7 @@ export type {
   ElisionContext,
   Fragment,
   FragmentSegment,
-  ParseFragmentsFn,
+  ParseSourceFn,
   Position,
   Processor,
   Range,

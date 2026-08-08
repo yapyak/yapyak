@@ -10,7 +10,7 @@ function makeProcessor(id: string, extensions: string[]): Processor {
     applyImport: () => {},
     extensions,
     id,
-    parseFragments: () => [],
+    parseSource: () => [],
   };
 }
 

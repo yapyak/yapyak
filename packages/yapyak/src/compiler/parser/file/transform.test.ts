@@ -1245,7 +1245,7 @@ describe('transformFile', () => {
         '.pad',
       ],
       id: 'pad',
-      parseFragments: (source) => {
+      parseSource: (source) => {
         const prefix = '<padding>\n';
         if (!source.startsWith(prefix)) {
           return [

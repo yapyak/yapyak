@@ -83,7 +83,7 @@ export function astro(): Processor {
       '.astro',
     ],
     id: 'astro',
-    parseFragments: (source) => {
+    parseSource: (source) => {
       const ast = parse(source).ast as AstroRoot;
       if (ast.frontmatter.end === ast.frontmatter.start) {
         return [

@@ -1,7 +1,7 @@
 import type {
   ElisionContext,
   Fragment,
-  ParseFragmentsFn,
+  ParseSourceFn,
   Processor,
   Range,
 } from '../../../processor';
@@ -25,7 +25,7 @@ import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';
 import { basename, extname } from 'node:path';
 
-const DEFAULT_PARSE_FRAGMENTS: ParseFragmentsFn = (source) => [
+const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => [
   {
     code: source,
     language: 'ts',
@@ -73,9 +73,7 @@ export function extractFile(
   options?: ExtractFileOptions,
 ): ExtractFileResult {
   const processor = resolveProcessor(fileId, source, options?.processors ?? []);
-  const fragments = (processor.parseFragments ?? DEFAULT_PARSE_FRAGMENTS)(
-    source,
-  );
+  const fragments = (processor.parseSource ?? DEFAULT_PARSE_SOURCE)(source);
 
   const diagnostics: Diagnostic[] = [];
   const callSites: ParsedCallSite[] = [];

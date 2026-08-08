@@ -44,7 +44,7 @@ export function svelte(): Processor {
       '.svelte',
     ],
     id: 'svelte',
-    parseFragments: (source) => {
+    parseSource: (source) => {
       const compiler = loadCompiler();
       const ast = compiler.parse(source, {
         modern: true,

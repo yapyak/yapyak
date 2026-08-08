@@ -65,7 +65,7 @@ export type ApplyImportFn = (
  *
  * @param source - The source text.
  */
-export type ParseFragmentsFn = (source: string) => Fragment[];
+export type ParseSourceFn = (source: string) => Fragment[];
 
 /**
  * The component hook.
@@ -107,8 +107,8 @@ export type Processor = {
   extensions: string[];
   /** The stable identifier. */
   id: string;
-  /** The fragment-extraction function. */
-  parseFragments?(source: string): Fragment[];
+  /** The source-parsing function. */
+  parseSource?(source: string): Fragment[];
   /** The runtime wiring. */
   runtime?: Runtime;
   /** Whether to skip the HMR-dispose callback. */

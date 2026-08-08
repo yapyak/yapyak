@@ -1,4 +1,4 @@
-import type { ApplyImportFn, ParseFragmentsFn, Processor } from './type';
+import type { ApplyImportFn, ParseSourceFn, Processor } from './type';
 
 /** Input for {@link createProcessor}. */
 export type CreateProcessorInput = {
@@ -13,8 +13,8 @@ export type CreateProcessorInput = {
    * Convention: lowercase suffix matching the package name.
    */
   id: string;
-  /** The fragment-extraction function. */
-  parseFragments?: ParseFragmentsFn;
+  /** The source-parsing function. */
+  parseSource?: ParseSourceFn;
   /** The runtime wiring. */
   runtime?: Processor['runtime'];
   /** Whether to skip the HMR-dispose callback. */
@@ -54,8 +54,8 @@ export function createProcessor(input: CreateProcessorInput): Processor {
   if (input.applyImport !== undefined) {
     processor.applyImport = input.applyImport;
   }
-  if (input.parseFragments !== undefined) {
-    processor.parseFragments = input.parseFragments;
+  if (input.parseSource !== undefined) {
+    processor.parseSource = input.parseSource;
   }
   if (input.runtime !== undefined) {
     processor.runtime = input.runtime;

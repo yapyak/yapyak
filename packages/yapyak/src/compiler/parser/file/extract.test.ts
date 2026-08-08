@@ -69,7 +69,7 @@ describe('extractFile', () => {
         '.vue',
       ],
       id: 'template',
-      parseFragments: () => [
+      parseSource: () => [
         {
           code: "import { t } from 'yapyak';",
           language: 'ts',
