@@ -1570,4 +1570,46 @@ describe('transformFile', () => {
       expect(code).toContain("import '@yapyak/module-only/internal';");
     });
   });
+
+  it('refuses a fragment whose segments do not cover the code', () => {
+    const source =
+      "import { t } from 'yapyak';\nexport const x = t('Hello');\n";
+    const processor: Processor = createProcessor({
+      extensions: [
+        '.vue',
+      ],
+      id: 'template',
+      parseSource: () => ({
+        fragments: [
+          {
+            code: source,
+            language: 'ts',
+            segments: [
+              {
+                codeLength: 5,
+                sourceOffset: 0,
+              },
+            ],
+            type: 'script',
+          },
+        ],
+      }),
+    });
+    const extracted = extractFile('src/a.ts', source);
+
+    expect(() =>
+      transformFile({
+        extracted,
+        fileId: 'src/a.vue',
+        locales: [
+          'en',
+        ],
+        processors: [
+          processor,
+        ],
+        source,
+        translations: {},
+      }),
+    ).toThrow('Processor "template"');
+  });
 });

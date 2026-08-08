@@ -19,6 +19,7 @@ import { parseArguments } from '../argument';
 import { resolveBindings } from '../binding';
 import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
+import { validateFragments } from '../fragment';
 import { toMessageKey } from '../message-key';
 import { parsePlaceholders } from '../placeholder';
 import { resolveProcessor } from '../processor';
@@ -79,6 +80,12 @@ export function extractFile(
   const { diagnostics: parserDiagnostics, fragments } = (
     processor.parseSource ?? DEFAULT_PARSE_SOURCE
   )(source);
+  validateFragments({
+    fileId,
+    fragments,
+    processorId: processor.id,
+    source,
+  });
 
   const diagnostics: Diagnostic[] = [];
   if (parserDiagnostics) {

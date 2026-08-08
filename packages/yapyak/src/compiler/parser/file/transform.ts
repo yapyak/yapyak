@@ -15,6 +15,7 @@ import MagicString from 'magic-string';
 
 import { segmentsFromOffset } from '../../../processor';
 import { YAPYAK_INTERNAL_MODULE } from '../binding';
+import { validateFragments } from '../fragment';
 import { resolveProcessor } from '../processor';
 import { renderCallReplacement } from './transform/call-replacement';
 import { injectComponentHooks } from './transform/component-hook';
@@ -105,6 +106,12 @@ export function transformFile(
   const { fragments } = (processor.parseSource ?? DEFAULT_PARSE_SOURCE)(
     request.source,
   );
+  validateFragments({
+    fileId: request.fileId,
+    fragments,
+    processorId: processor.id,
+    source: request.source,
+  });
   const isSingleLocale = request.locales.length === 1;
   const isDev = request.dev === true;
   const runtime = processor.runtime;

@@ -139,6 +139,39 @@ describe('extractFile', () => {
     expect(result.diagnostics[0]?.message).toContain('Unexpected token');
   });
 
+  it('refuses a fragment whose segments do not cover the code', () => {
+    const source = "import { t } from 'yapyak';";
+    const processor: Processor = {
+      extensions: [
+        '.vue',
+      ],
+      id: 'template',
+      parseSource: () => ({
+        fragments: [
+          {
+            code: source,
+            language: 'ts',
+            segments: [
+              {
+                codeLength: 5,
+                sourceOffset: 0,
+              },
+            ],
+            type: 'script',
+          },
+        ],
+      }),
+    };
+
+    expect(() =>
+      extractFile('src/a.vue', source, {
+        processors: [
+          processor,
+        ],
+      }),
+    ).toThrow('Processor "template"');
+  });
+
   it('returns stable ids across runs', () => {
     const first = extractFixture('call', 'simple.ts');
     const second = extractFixture('call', 'simple.ts');
