@@ -377,6 +377,71 @@ describe('astro processor — extract', () => {
     ]);
   });
 
+  it('extracts every `t()` from a file with a BOM before the frontmatter', () => {
+    const source = [
+      '\uFEFF---',
+      "import { t } from 'yapyak';",
+      '---',
+      `<p>{t('Hello')}</p><p>{t('Cancel')}</p>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    const sources = result.messages.map((message) => message.source).sort();
+
+    expect(sources).toEqual([
+      'Cancel',
+      'Hello',
+    ]);
+  });
+
+  it('extracts every `t()` from a file with a newline before the frontmatter', () => {
+    const source = [
+      '',
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      `<p>{t('Hello')}</p><p>{t('Cancel')}</p>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    const sources = result.messages.map((message) => message.source).sort();
+
+    expect(sources).toEqual([
+      'Cancel',
+      'Hello',
+    ]);
+  });
+
+  it('extracts every `t()` from a file with whitespace before the frontmatter', () => {
+    const source = [
+      '  ---',
+      "import { t } from 'yapyak';",
+      '---',
+      `<p>{t('Hello')}</p><p>{t('Cancel')}</p>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    const sources = result.messages.map((message) => message.source).sort();
+
+    expect(sources).toEqual([
+      'Cancel',
+      'Hello',
+    ]);
+  });
+
+  it('extracts every `t()` from a file with a space after the opening fence', () => {
+    const source = [
+      '--- ',
+      "import { t } from 'yapyak';",
+      '---',
+      `<p>{t('Hello')}</p><p>{t('Cancel')}</p>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    const sources = result.messages.map((message) => message.source).sort();
+
+    expect(sources).toEqual([
+      'Cancel',
+      'Hello',
+    ]);
+  });
+
   it('extracts `t()` from a mustache with leading and trailing whitespace', () => {
     const source = [
       '---',
@@ -608,5 +673,42 @@ describe('astro processor — transform', () => {
 
     // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
     expect(code).toContain('<p>{`Hi ${<strong>Save</strong>}`}</p>');
+  });
+
+  it('rewrites `t()` in a file with a BOM before the frontmatter', () => {
+    const code = runAstroTransform(
+      [
+        '\uFEFF---',
+        "import { t } from 'yapyak';",
+        '---',
+        `<p>{t('Hello')}</p>`,
+      ].join('\n'),
+      [
+        'en',
+        'sv',
+      ],
+    );
+
+    expect(code).toContain(
+      "---\nimport { pick as _pick } from 'yapyak/internal';",
+    );
+    expect(code).toContain('<p>{_pick(_catalog_$0)}</p>');
+  });
+
+  it('rewrites `t()` in a file with a space after the closing fence', () => {
+    const code = runAstroTransform(
+      [
+        '---',
+        "import { t } from 'yapyak';",
+        '--- ',
+        `<p>{t('Hello')}</p>`,
+      ].join('\n'),
+      [
+        'en',
+        'sv',
+      ],
+    );
+
+    expect(code).toContain('<p>{_pick(_catalog_$0)}</p>');
   });
 });

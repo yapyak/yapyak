@@ -22,8 +22,7 @@ import {
   segmentsFromOffset,
 } from 'yapyak/processor';
 
-const FRONTMATTER_OPEN_RX = /^---\r?\n/;
-const FRONTMATTER_DELIMITER_LENGTH = 3;
+const FRONTMATTER_DELIMITER = '---';
 
 type AstroRoot = {
   body: BodyNode[];
@@ -71,12 +70,11 @@ type BodyNode = AstroComment | AstroDoctype | JSXElement['children'][number];
 export function astro(): Processor {
   return createProcessor({
     applyImport: (magicString, source, importStatement) => {
-      const match = FRONTMATTER_OPEN_RX.exec(source);
-      if (match !== null) {
-        magicString.appendRight(
-          match.index + match[0].length,
-          `${importStatement}\n`,
-        );
+      const frontmatter = (parse(source).ast as AstroRoot).frontmatter;
+      if (frontmatter.end > frontmatter.start) {
+        const fenceStart = source.indexOf(FRONTMATTER_DELIMITER);
+        const fenceLineEnd = source.indexOf('\n', fenceStart) + 1;
+        magicString.appendRight(fenceLineEnd, `${importStatement}\n`);
         return;
       }
       magicString.prepend(`${importStatement}\n`);
@@ -86,7 +84,8 @@ export function astro(): Processor {
     ],
     id: 'astro',
     parseFragments: (source) => {
-      if (!FRONTMATTER_OPEN_RX.test(source)) {
+      const ast = parse(source).ast as AstroRoot;
+      if (ast.frontmatter.end === ast.frontmatter.start) {
         return [
           {
             code: source,
@@ -96,7 +95,6 @@ export function astro(): Processor {
           },
         ];
       }
-      const ast = parse(source).ast as AstroRoot;
       normalizeOffsets(ast, source);
       return [
         fragmentsFromFrontmatter(ast.frontmatter, source),
@@ -197,8 +195,9 @@ function fragmentsFromFrontmatter(
   frontmatter: AstroFrontmatter,
   source: string,
 ): Fragment {
-  const codeStart = frontmatter.start + FRONTMATTER_DELIMITER_LENGTH;
-  const codeEnd = frontmatter.end - FRONTMATTER_DELIMITER_LENGTH;
+  const fenceStart = source.indexOf(FRONTMATTER_DELIMITER, frontmatter.start);
+  const codeStart = fenceStart + FRONTMATTER_DELIMITER.length;
+  const codeEnd = frontmatter.end - FRONTMATTER_DELIMITER.length;
   const code = source.slice(codeStart, codeEnd);
   return {
     code,
