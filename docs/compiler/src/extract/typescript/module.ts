@@ -29,7 +29,7 @@ export function extractModule(input: ExtractModuleInput): ReferenceModule {
       symbols.push(symbol);
     }
   }
-  symbols.sort((left, right) => left.name.localeCompare(right.name));
+  symbols.sort((a, b) => a.name.localeCompare(b.name));
 
   return {
     description: getModuleDescription(entryFile),

@@ -149,16 +149,14 @@ function printDiagnosticGroup(
   process.stdout.write(`  ${symbol.cross} ${colorize(label)}\n\n`);
   const sorted = [
     ...diagnostics,
-  ].sort((leftDiagnostic, rightDiagnostic) => {
-    if (leftDiagnostic.fileId !== rightDiagnostic.fileId) {
-      return leftDiagnostic.fileId < rightDiagnostic.fileId ? -1 : 1;
+  ].sort((a, b) => {
+    if (a.fileId !== b.fileId) {
+      return a.fileId < b.fileId ? -1 : 1;
     }
-    if (leftDiagnostic.code !== rightDiagnostic.code) {
-      return leftDiagnostic.code < rightDiagnostic.code ? -1 : 1;
+    if (a.code !== b.code) {
+      return a.code < b.code ? -1 : 1;
     }
-    return (
-      leftDiagnostic.range.start.offset - rightDiagnostic.range.start.offset
-    );
+    return a.range.start.offset - b.range.start.offset;
   });
   let lastFileId = '';
   for (const diagnostic of sorted) {

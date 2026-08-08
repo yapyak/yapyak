@@ -126,7 +126,7 @@ function collectPackageEntries(projectRoot: string): PackageEntry[] {
       });
     }
   }
-  return entries.sort((left, right) => (left.name < right.name ? -1 : 1));
+  return entries.sort((a, b) => (a.name < b.name ? -1 : 1));
 }
 
 function findInstalledVersion(
