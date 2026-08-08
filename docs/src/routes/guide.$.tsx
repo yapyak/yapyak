@@ -19,6 +19,12 @@ export const Route = createFileRoute('/guide/$')({
     }
     const { page } = loaderData;
     return {
+      links: [
+        {
+          href: page.href,
+          rel: 'canonical',
+        },
+      ],
       meta: [
         {
           title: getPageTitle(page),

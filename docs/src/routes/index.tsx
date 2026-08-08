@@ -5,6 +5,16 @@ import { FeatureSection } from '#components/feature-section';
 import { Hero } from '#components/hero';
 
 export const Route = createFileRoute('/')({
+  head() {
+    return {
+      links: [
+        {
+          href: '/',
+          rel: 'canonical',
+        },
+      ],
+    };
+  },
   component: Component,
   staticData: {
     fadeBorder: true,
