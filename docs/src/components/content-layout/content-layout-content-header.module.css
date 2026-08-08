@@ -33,6 +33,7 @@
     @media (min-width: 1024px) {
       right: var(--layout-side-bleed);
       left: calc(var(--layout-side-bleed) + var(--layout-sidebar-width));
+      grid-template-columns: 1fr;
     }
 
     @media (min-width: 1324px) {
