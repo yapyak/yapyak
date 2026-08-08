@@ -1,92 +1,39 @@
 @layer components {
   .SearchDialogButton {
     display: inline-flex;
-    gap: var(--spacing-2);
+    flex: none;
     align-items: center;
-    padding: var(--spacing-2-5) var(--spacing-3);
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-medium);
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     color: var(--foreground-soft);
     outline: var(--spacing-2) solid transparent;
     outline-offset: calc(var(--px) * -1);
     background-color: transparent;
-    border-radius: var(--border-radius-sm);
-    box-shadow: var(--shadow-ring-inset);
+    border-radius: var(--border-radius-full);
     transition:
       color var(--transition),
-      background-color var(--transition),
-      box-shadow var(--transition),
       outline var(--duration-slow);
-
-    .SearchIcon {
-      color: var(--foreground-softer);
-    }
-
-    .LabelText {
-      line-height: 1;
-    }
-
-    .ShortcutText {
-      padding: var(--spacing-05) var(--spacing-1);
-      margin-block: calc(var(--spacing-05) * -1);
-      font-size: var(--font-size-xs);
-      line-height: 1;
-      color: var(--foreground-softer);
-      background-color: var(--surface-strong);
-      border-radius: var(--border-radius-sm);
-    }
 
     &:enabled {
       @media (hover: hover) {
         &:hover {
           color: var(--foreground);
-          background-color: var(--surface);
         }
       }
 
       &:active {
         color: var(--foreground);
-        background-color: var(--surface-strong);
+      }
+
+      &:focus-visible {
+        outline-width: var(--spacing-1);
+        outline-color: var(--accent-soft);
       }
     }
 
     &[aria-expanded="true"] {
       color: var(--foreground);
-      background-color: var(--surface-strong);
-    }
-
-    &:focus-visible {
-      outline-width: 4px;
-      outline-color: var(--accent-soft);
-    }
-
-    &[data-variant="icon"] {
-      justify-content: center;
-      width: 44px;
-      height: 44px;
-      padding: 0;
-      border-radius: var(--border-radius-full);
-      box-shadow: none;
-
-      .SearchIcon {
-        color: currentColor;
-      }
-
-      &:enabled {
-        @media (hover: hover) {
-          &:hover {
-            background-color: transparent;
-          }
-        }
-
-        &:active {
-          background-color: transparent;
-        }
-      }
-
-      &[aria-expanded="true"] {
-        background-color: transparent;
-      }
     }
   }
 }

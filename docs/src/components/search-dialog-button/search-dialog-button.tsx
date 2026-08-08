@@ -2,54 +2,29 @@ import type { ButtonBaseProps } from '#primitives/button';
 
 import { t } from 'yapyak';
 
-import { Box } from '#primitives/box';
 import { ButtonBase } from '#primitives/button';
 
 import { Icon } from '../icon';
 import styles from './search-dialog-button.module.css';
 
-export type SearchDialogButtonVariant = 'default' | 'icon';
-
-export type SearchDialogButtonProps = ButtonBaseProps & {
-  variant?: SearchDialogButtonVariant;
-};
+export type SearchDialogButtonProps = ButtonBaseProps;
 
 export function SearchDialogButton(props: SearchDialogButtonProps) {
-  const { className, variant = 'default', ...restProps } = props;
-  const isIcon = variant === 'icon';
+  const { className, ...restProps } = props;
 
   return (
     <ButtonBase
       {...restProps}
-      aria-label={isIcon ? t('Search') : undefined}
+      aria-label={t('Search')}
       className={[
         styles.SearchDialogButton,
         className,
       ]}
-      data-variant={variant}
     >
       <Icon
-        className={styles.SearchIcon}
         name="search"
-        size={isIcon ? '20' : undefined}
+        size="20"
       />
-      {!isIcon && (
-        <>
-          <Box
-            as="span"
-            className={styles.LabelText}
-          >
-            {t('Search')}
-          </Box>
-          <Box
-            aria-hidden={true}
-            as="span"
-            className={styles.ShortcutText}
-          >
-            ⌘K
-          </Box>
-        </>
-      )}
     </ButtonBase>
   );
 }
