@@ -1,7 +1,7 @@
 import type MagicString from 'magic-string';
 
 /**
- * The position. Locates a point in source by line, column, and byte offset (1-based).
+ * The position. Locates a point in the source file by 1-based line and column and a 0-based string-index offset.
  */
 export type Position = {
   column: number;
