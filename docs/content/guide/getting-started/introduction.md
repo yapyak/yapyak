@@ -13,6 +13,9 @@ The runtime has no dependencies, built on the platform's `Intl` API. About 5 KB 
 
 You write the source string directly in the code that uses it:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx [src/components/empty-cart.tsx]
 import { t } from 'yapyak';
 
@@ -20,9 +23,47 @@ export function EmptyCart() {
   return <p>{t('Your cart is empty')}</p>;
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue [src/components/empty-cart.vue]
+<script setup lang="ts">
+import { t } from 'yapyak';
+</script>
+
+<template>
+  <p>{{ t('Your cart is empty') }}</p>
+</template>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [src/components/empty-cart.svelte]
+<script lang="ts">
+  import { t } from 'yapyak';
+</script>
+
+<p>{t('Your cart is empty')}</p>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [src/components/empty-cart.astro]
+---
+import { t } from 'yapyak';
+---
+
+<p>{t('Your cart is empty')}</p>
+```
+{% /when %}
+
+{% /switch %}
 
 When you save, yapyak adds the message to your locale files as an *empty stub*. The source string is the key:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```json [locales/sv.json]
 {
   "src/components/empty-cart.tsx": {
@@ -30,6 +71,39 @@ When you save, yapyak adds the message to your locale files as an *empty stub*. 
   }
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```json [locales/sv.json]
+{
+  "src/components/empty-cart.vue": {
+    "Your cart is empty": ""
+  }
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```json [locales/sv.json]
+{
+  "src/components/empty-cart.svelte": {
+    "Your cart is empty": ""
+  }
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```json [locales/sv.json]
+{
+  "src/components/empty-cart.astro": {
+    "Your cart is empty": ""
+  }
+}
+```
+{% /when %}
+
+{% /switch %}
 
 If you rename or move the source file, yapyak finds the translations again under the new path. Deleting a component and bringing it back later restores the translations from before. Copying markup to a new file brings the translations along. The compiler refuses to write a locale file in a state that would silently clear a translation still in use.
 
@@ -60,6 +134,9 @@ Requests go directly from your machine to the model. There is no yapyak service 
 
 When you save, yapyak collects new messages and batches them into as few requests as possible. One request carries multiple messages and every locale, so related text gets translated together. The returned translations are written to your locale files:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```json [locales/sv.json]
 {
   "src/components/empty-cart.tsx": {
@@ -67,6 +144,39 @@ When you save, yapyak collects new messages and batches them into as few request
   }
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```json [locales/sv.json]
+{
+  "src/components/empty-cart.vue": {
+    "Your cart is empty": "Din kundvagn är tom"
+  }
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```json [locales/sv.json]
+{
+  "src/components/empty-cart.svelte": {
+    "Your cart is empty": "Din kundvagn är tom"
+  }
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```json [locales/sv.json]
+{
+  "src/components/empty-cart.astro": {
+    "Your cart is empty": "Din kundvagn är tom"
+  }
+}
+```
+{% /when %}
+
+{% /switch %}
 
 Vite HMR updates the running app with the translated text.
 
@@ -76,12 +186,39 @@ Because yapyak is a compiler, it reads the code around each message and sends it
 
 Take a button:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx [src/components/save-button.tsx]
 <button onClick={save}>{t('Save changes')}</button>
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue [src/components/save-button.vue]
+<button @click="save">{{ t('Save changes') }}</button>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [src/components/save-button.svelte]
+<button onclick={save}>{t('Save changes')}</button>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [src/components/save-button.astro]
+<button>{t('Save changes')}</button>
+```
+{% /when %}
+
+{% /switch %}
 
 With the request, yapyak sends the enclosing component, the element, and the surrounding code:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```ts
 {
   source: 'Save changes',
@@ -92,6 +229,48 @@ With the request, yapyak sends the enclosing component, the element, and the sur
   }
 }
 ```
+{% /when %}
+
+{% when value="vue" %}
+```ts
+{
+  source: 'Save changes',
+  context: {
+    enclosingComponent: 'SaveButton',
+    enclosingElement: 'button',
+    snippet: '<button @click="save">{{ t(\'Save changes\') }}</button>'
+  }
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```ts
+{
+  source: 'Save changes',
+  context: {
+    enclosingComponent: 'SaveButton',
+    enclosingElement: 'button',
+    snippet: "<button onclick={save}>{t('Save changes')}</button>"
+  }
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```ts
+{
+  source: 'Save changes',
+  context: {
+    enclosingComponent: 'SaveButton',
+    enclosingElement: 'button',
+    snippet: "<button>{t('Save changes')}</button>"
+  }
+}
+```
+{% /when %}
+
+{% /switch %}
 
 The element alone tells the model this is a button, so it reaches for a concise imperative instead of a description.
 
@@ -101,9 +280,33 @@ You choose how much of it reaches the model, down to nothing at all.
 
 yapyak uses ICU MessageFormat for the moving parts of a message: counts, plurals, dates. You write it inline, as the source string:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx
 <p>{t('You have {count, plural, one {# message} other {# messages}}', { count })}</p>
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue
+<p>{{ t('You have {count, plural, one {# message} other {# messages}}', { count }) }}</p>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte
+<p>{t('You have {count, plural, one {# message} other {# messages}}', { count })}</p>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro
+<p>{t('You have {count, plural, one {# message} other {# messages}}', { count })}</p>
+```
+{% /when %}
+
+{% /switch %}
 
 The message is the string in the call, not a key pointing into a separate file. TypeScript derives the parameter types from that string itself, so a missing or wrong parameter is an error as you type, with no codegen and no declaration file to keep in step.
 
@@ -157,7 +360,7 @@ Put together, these become a different way to handle i18n. Three things follow.
 
 With a translator configured, translation happens during the *save loop*. A new message is extracted, sent to the model, and written to your locale files. The translated text shows up in the browser while you are still working on the component, so layout problems surface while you build, not after release. Take this component:
 
-```tsx
+```html
 <div>
   <h2>Save your recovery key</h2>
   <p>You will need this key if you forget your master password.</p>
@@ -171,7 +374,7 @@ With a translator configured, translation happens during the *save loop*. A new 
 
 In English the buttons fit in a dialog or on a mobile screen. In German:
 
-```tsx
+```html
 <div>
   <h2>Speichern Sie Ihren Wiederherstellungsschlüssel</h2>
   <p>Sie benötigen diesen Schlüssel, wenn Sie Ihr Master-Passwort vergessen.</p>
@@ -189,9 +392,33 @@ The first button is much longer, enough to break a dialog footer or a mobile lay
 
 Models are already good at interface copy. What separates good from reliable is the context a translator would ask for: where the message appears, the code around it, your glossary and voice, and the translations already in the project. yapyak gives the model that, and it does what a good translator would: pick the right words, and reuse the ones you already chose. Take a button:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx [src/components/delete-account.tsx]
 <button onClick={deleteAccount}>{t('Delete account')}</button>
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue [src/components/delete-account.vue]
+<button @click="deleteAccount">{{ t('Delete account') }}</button>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [src/components/delete-account.svelte]
+<button onclick={deleteAccount}>{t('Delete account')}</button>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [src/components/delete-account.astro]
+<button>{t('Delete account')}</button>
+```
+{% /when %}
+
+{% /switch %}
 
 `Delete` has two good Swedish forms, `Ta bort` and `Radera`. Because the project already settled on `Ta bort`, this comes back as `Ta bort konto`, not `Radera konto`. Terminology holds as the locale file fills in.
 
