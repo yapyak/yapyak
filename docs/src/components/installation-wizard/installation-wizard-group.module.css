@@ -57,6 +57,9 @@
     }
 
     &[data-animating] {
+      --installation-wizard-option-background-color: transparent;
+      --installation-wizard-option-ring-color: transparent;
+
       .IndicatorBar {
         opacity: 1;
       }

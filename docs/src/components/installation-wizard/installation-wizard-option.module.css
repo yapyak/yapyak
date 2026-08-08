@@ -14,16 +14,17 @@
     background-color: transparent;
     border-radius: var(--border-radius-sm);
     box-shadow: inset 0 0 0 var(--px) transparent;
-    transition:
-      color var(--transition),
-      background-color var(--transition),
-      box-shadow var(--transition);
+    transition: color var(--transition);
 
     @media (hover: hover) {
       &:hover:not([data-checked]) {
         color: var(--foreground);
         background-color: var(--surface);
         box-shadow: var(--shadow-ring-inset);
+        transition:
+          color var(--transition),
+          background-color var(--transition),
+          box-shadow var(--transition);
       }
     }
 
@@ -39,8 +40,12 @@
 
     &[data-checked] {
       color: var(--foreground);
-      background-color: var(--surface-strong);
-      box-shadow: inset 0 0 0 var(--px) var(--ring-strong);
+      background-color: var(
+        --installation-wizard-option-background-color,
+        var(--surface-strong)
+      );
+      box-shadow: inset 0 0 0 var(--px)
+        var(--installation-wizard-option-ring-color, var(--ring-strong));
     }
   }
 }
