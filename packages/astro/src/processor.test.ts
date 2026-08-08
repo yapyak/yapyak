@@ -527,6 +527,23 @@ describe('astro processor — extract', () => {
     ]);
   });
 
+  it('extracts every `t()` from a frontmatter JSX element', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      "const banner = <p>{t('Hello')}</p>;",
+      '---',
+      `<p>{t('Save')}</p>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    const sources = result.messages.map((message) => message.source).sort();
+
+    expect(sources).toEqual([
+      'Hello',
+      'Save',
+    ]);
+  });
+
   it('records a diagnostic when the compiler cannot parse the template', () => {
     const source = [
       '---',
@@ -733,6 +750,24 @@ describe('astro processor — transform', () => {
       "---\nimport { pick as _pick } from 'yapyak/internal';",
     );
     expect(code).toContain('<p>{_pick(_catalog_$0)}</p>');
+  });
+
+  it('rewrites `t()` in a frontmatter JSX element to a `_pick` call', () => {
+    const code = runAstroTransform(
+      [
+        '---',
+        "import { t } from 'yapyak';",
+        "const banner = <p>{t('Hello')}</p>;",
+        '---',
+        '<Fragment>{banner}</Fragment>',
+      ].join('\n'),
+      [
+        'en',
+        'sv',
+      ],
+    );
+
+    expect(code).toContain('const banner = <p>{_pick(_catalog_$0)}</p>;');
   });
 
   it('rewrites `t()` in a file with a space after the closing fence', () => {

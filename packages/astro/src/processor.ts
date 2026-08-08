@@ -241,7 +241,7 @@ function fragmentsFromFrontmatter(
   const code = source.slice(codeStart, codeEnd);
   return {
     code,
-    language: 'ts',
+    language: 'tsx',
     segments: segmentsFromOffset(code, codeStart),
     type: 'script',
   };
