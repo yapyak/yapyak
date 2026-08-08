@@ -30,6 +30,24 @@ function persistOption(groupId: string, value: string): void {
   } catch {}
 }
 
+function coerceAdapter(
+  options: Record<string, string>,
+  registry: OptionsRegistry,
+): boolean {
+  const framework = options.framework ?? registry.framework?.default ?? '';
+  const valid = filterAdaptersByFramework(framework).map(
+    (adapter) => adapter.value,
+  );
+  const current = options.adapter;
+  if (current !== undefined && valid.includes(current)) {
+    return false;
+  }
+  const fallback = valid[0] ?? registry.adapter?.default ?? 'none';
+  options.adapter = fallback;
+  persistOption('adapter', fallback);
+  return true;
+}
+
 export type OptionProviderProps = PropsWithChildren;
 
 export function OptionProvider(props: OptionProviderProps) {
@@ -52,7 +70,8 @@ export function OptionProvider(props: OptionProviderProps) {
           hasChanged = true;
         }
       }
-      return hasChanged ? next : previous;
+      const hasCoerced = coerceAdapter(next, registry);
+      return hasChanged || hasCoerced ? next : previous;
     });
     document.getElementById(OPTION_PREPAINT_STYLE_ID)?.remove();
   }, [
@@ -78,15 +97,7 @@ export function OptionProvider(props: OptionProviderProps) {
         [groupId]: value,
       };
       if (groupId === 'framework') {
-        const currentAdapter = previous.adapter ?? registry.adapter?.default;
-        const valid = filterAdaptersByFramework(value).map(
-          (adapter) => adapter.value,
-        );
-        if (currentAdapter === undefined || !valid.includes(currentAdapter)) {
-          const fallback = valid[0] ?? registry.adapter?.default ?? 'none';
-          next.adapter = fallback;
-          persistOption('adapter', fallback);
-        }
+        coerceAdapter(next, registry);
       }
       return next;
     });
