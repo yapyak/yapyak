@@ -4,7 +4,11 @@ import type { PropsWithChildren } from 'react';
 import { useEffect, useState } from 'react';
 
 import { filterAdaptersByFramework } from '#lib/adapter';
-import { OPTION_PREPAINT_STYLE_ID, OPTION_STORAGE_PREFIX } from '#lib/option';
+import {
+  OPTION_PREPAINT_STYLE_ID,
+  OPTION_STORAGE_PREFIX,
+  readStoredOptions,
+} from '#lib/option';
 
 import { OptionContext } from './option-context';
 import { doc } from 'virtual:docs-compiler';
@@ -36,19 +40,14 @@ export function OptionProvider(props: OptionProviderProps) {
   );
 
   useEffect(() => {
-    const stored = window.__yapyakOptions ?? {};
+    const stored = readStoredOptions(registry);
     setState((previous) => {
       let hasChanged = false;
       const next = {
         ...previous,
       };
       for (const [groupId, value] of Object.entries(stored)) {
-        if (
-          groupId in registry &&
-          typeof value === 'string' &&
-          value !== '' &&
-          next[groupId] !== value
-        ) {
+        if (next[groupId] !== value) {
           next[groupId] = value;
           hasChanged = true;
         }

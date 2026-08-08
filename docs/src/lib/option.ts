@@ -3,11 +3,21 @@ import type { OptionsRegistry } from '@yapyak/docs-compiler';
 export const OPTION_STORAGE_PREFIX = 'yapyak.option.';
 export const OPTION_PREPAINT_STYLE_ID = 'yapyak-options-prepaint';
 
-declare global {
-  // biome-ignore lint/style/useConsistentTypeDefinitions: yap yap yap
-  interface Window {
-    __yapyakOptions?: Record<string, string>;
+export function readStoredOptions(
+  registry: OptionsRegistry,
+): Record<string, string> {
+  const stored: Record<string, string> = {};
+  for (const groupId of Object.keys(registry)) {
+    try {
+      const value = window.localStorage.getItem(
+        `${OPTION_STORAGE_PREFIX}${groupId}`,
+      );
+      if (value !== null && value !== '') {
+        stored[groupId] = value;
+      }
+    } catch {}
   }
+  return stored;
 }
 
 export function buildPrepaintScript(registry: OptionsRegistry): string {
@@ -24,7 +34,6 @@ export function buildPrepaintScript(registry: OptionsRegistry): string {
     '    if (v) stored[g] = v;',
     '  } catch(e) {}',
     '});',
-    'window.__yapyakOptions = stored;',
     'var rules = [];',
     'Object.keys(stored).forEach(function(g) {',
     '  var v = stored[g];',
