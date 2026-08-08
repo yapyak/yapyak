@@ -142,6 +142,50 @@ describe('transformScriptImports', () => {
     expect(runScriptImports(source)).toBe(source);
   });
 
+  it('preserves a named import when the local appears outside every fragment', () => {
+    const script = "import { t } from 'yapyak';\n";
+    const source = `${script}{t('Hello')}\n`;
+    const magicString = new MagicString(source);
+    transformScriptImports({
+      fileId: 'src/a.tsx',
+      fragments: [
+        {
+          code: script,
+          language: 'ts',
+          segments: segmentsFromOffset(script, 0),
+          type: 'script',
+        },
+      ],
+      magicString,
+      originalSource: source,
+    });
+
+    expect(magicString.toString()).toContain("import { t } from 'yapyak';");
+  });
+
+  it('preserves a namespace import when the namespace local appears outside every fragment', () => {
+    const script = "import * as yapyak from 'yapyak';\n";
+    const source = `${script}{yapyak.t('Hello')}\n`;
+    const magicString = new MagicString(source);
+    transformScriptImports({
+      fileId: 'src/a.tsx',
+      fragments: [
+        {
+          code: script,
+          language: 'ts',
+          segments: segmentsFromOffset(script, 0),
+          type: 'script',
+        },
+      ],
+      magicString,
+      originalSource: source,
+    });
+
+    expect(magicString.toString()).toContain(
+      "import * as yapyak from 'yapyak';",
+    );
+  });
+
   it('skips a `template-expression` fragment', () => {
     const source = "import { t } from 'yapyak';";
     const magicString = new MagicString(source);

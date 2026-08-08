@@ -36,6 +36,7 @@ export function transformScriptImports(
         declaration,
         declarationAst,
         fragment,
+        fragments: input.fragments,
         magicString: input.magicString,
         originalSource: input.originalSource,
         referenceAsts,
@@ -48,13 +49,8 @@ function parseFragmentReferenceAst(
   input: TransformScriptImportsInput,
   fragment: Fragment,
 ): ts.SourceFile | undefined {
-  let postTransformCode: string;
-  try {
-    postTransformCode = input.magicString.slice(
-      remapOffset(0, fragment),
-      remapOffset(fragment.code.length, fragment),
-    );
-  } catch {
+  const postTransformCode = sliceEmittedFragment(fragment, input.magicString);
+  if (postTransformCode === undefined) {
     return undefined;
   }
   return ts.createSourceFile(
@@ -66,10 +62,25 @@ function parseFragmentReferenceAst(
   );
 }
 
+function sliceEmittedFragment(
+  fragment: Fragment,
+  magicString: MagicString,
+): string | undefined {
+  try {
+    return magicString.slice(
+      remapOffset(0, fragment),
+      remapOffset(fragment.code.length, fragment),
+    );
+  } catch {
+    return undefined;
+  }
+}
+
 type TransformImportDeclarationInput = {
   declaration: ts.ImportDeclaration;
   declarationAst: ts.SourceFile;
   fragment: Fragment;
+  fragments: Fragment[];
   magicString: MagicString;
   originalSource: string;
   referenceAsts: ts.SourceFile[];
@@ -88,6 +99,7 @@ function transformImportDeclaration(
     declaration,
     declarationAst,
     fragment,
+    fragments,
     magicString,
     originalSource,
     referenceAsts,
@@ -106,7 +118,11 @@ function transformImportDeclaration(
   const endInOriginal = remapOffset(declaration.getEnd(), fragment);
   if (ts.isNamespaceImport(namedBindings)) {
     const localName = namedBindings.name.text;
-    if (countReferences(referenceAsts, localName) === 0) {
+    if (
+      countReferences(referenceAsts, localName) === 0 &&
+      countOutsideReferences(magicString, fragments, localName, 'namespace') ===
+        0
+    ) {
       magicString.remove(startInOriginal, endInOriginal);
     }
     return;
@@ -126,7 +142,10 @@ function transformImportDeclaration(
       });
       continue;
     }
-    if (countReferences(referenceAsts, localName) > 0) {
+    if (
+      countReferences(referenceAsts, localName) > 0 ||
+      countOutsideReferences(magicString, fragments, localName, 'call') > 0
+    ) {
       remaining.push({
         imported: importedName,
         local: localName,
@@ -174,6 +193,35 @@ function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
     result.push(statement);
   }
   return result;
+}
+
+function countOutsideReferences(
+  magicString: MagicString,
+  fragments: Fragment[],
+  name: string,
+  usage: 'call' | 'namespace',
+): number {
+  let count = countMatches(magicString.toString(), name, usage);
+  for (const fragment of fragments) {
+    const emitted = sliceEmittedFragment(fragment, magicString);
+    if (emitted !== undefined) {
+      count -= countMatches(emitted, name, usage);
+    }
+  }
+  return count;
+}
+
+function countMatches(
+  text: string,
+  name: string,
+  usage: 'call' | 'namespace',
+): number {
+  const suffix = usage === 'call' ? String.raw`\s*\(` : String.raw`\s*[.(]`;
+  const nameRx = new RegExp(
+    `(?<![\\w$])${name.replaceAll('$', '\\$')}${suffix}`,
+    'g',
+  );
+  return text.match(nameRx)?.length ?? 0;
 }
 
 function countReferences(referenceAsts: ts.SourceFile[], name: string): number {
