@@ -193,6 +193,19 @@ describe('svelte processor — extract', () => {
     expect(result.messages.map((message) => message.source)).toContain('Hello');
   });
 
+  it('extracts `t()` from a `{#snippet}` parameter default', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "{#snippet greet(label = t('Save'))}<p>{label}</p>{/snippet}",
+      ].join('\n'),
+    );
+
+    expect(result.messages.map((message) => message.source)).toContain('Save');
+  });
+
   it('extracts `t()` from an `{@html}` tag', () => {
     const result = extractSvelte(
       [
@@ -626,6 +639,37 @@ describe('svelte processor — transform', () => {
     );
 
     expect(code).toContain('{#each items as { label = _pick(_catalog_$0) }}');
+    expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
+  });
+
+  it('elides `t()` in a `{#snippet}` parameter default to a string literal', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "{#snippet greet(label = t('Save'))}<p>{label}</p>{/snippet}",
+      ].join('\n'),
+    );
+
+    expect(code).toContain("{#snippet greet(label = 'Save')}");
+  });
+
+  it('rewrites `t()` in a `{#snippet}` parameter default to a `_pick` call', () => {
+    const code = runSvelteTransform(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "{#snippet greet(label = t('Save'))}<p>{label}</p>{/snippet}",
+      ].join('\n'),
+      [
+        'en',
+        'sv',
+      ],
+    );
+
+    expect(code).toContain('{#snippet greet(label = _pick(_catalog_$0))}');
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });
 });

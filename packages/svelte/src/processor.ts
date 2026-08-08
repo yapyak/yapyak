@@ -269,7 +269,19 @@ function fragmentsFromNode(
     return fragments;
   }
   if (node.type === 'SnippetBlock') {
-    return fragmentsFromAst(node.body, source, enclosingContext);
+    const fragments: Fragment[] = [];
+    for (const parameter of node.parameters) {
+      fragments.push(
+        ...fragmentsFromExpression(
+          parameter,
+          source,
+          undefined,
+          enclosingContext,
+        ),
+      );
+    }
+    fragments.push(...fragmentsFromAst(node.body, source, enclosingContext));
+    return fragments;
   }
   if (isElementLike(node)) {
     return fragmentsFromElement(node, source);
