@@ -248,9 +248,25 @@ function fragmentsFromNode(
         ...fragmentsFromAst(node.pending, source, enclosingContext),
       );
     }
+    fragments.push(
+      ...fragmentsFromExpression(
+        node.value,
+        source,
+        undefined,
+        enclosingContext,
+      ),
+    );
     if (node.then !== null) {
       fragments.push(...fragmentsFromAst(node.then, source, enclosingContext));
     }
+    fragments.push(
+      ...fragmentsFromExpression(
+        node.error,
+        source,
+        undefined,
+        enclosingContext,
+      ),
+    );
     if (node.catch !== null) {
       fragments.push(...fragmentsFromAst(node.catch, source, enclosingContext));
     }

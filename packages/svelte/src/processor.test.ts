@@ -168,6 +168,36 @@ describe('svelte processor — extract', () => {
     );
   });
 
+  it('extracts `t()` from an `{#await}` then pattern', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '  let p = Promise.resolve(0);',
+        '</script>',
+        "{#await p then { label = t('Save') }}<p>{label}</p>{/await}",
+      ].join('\n'),
+    );
+
+    expect(result.messages.map((message) => message.source)).toContain('Save');
+  });
+
+  it('extracts `t()` from an `{#await}` catch pattern', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '  let p = Promise.resolve(0);',
+        '</script>',
+        "{#await p}x{:then v}done{:catch { label = t('Cancel') }}<p>{label}</p>{/await}",
+      ].join('\n'),
+    );
+
+    expect(result.messages.map((message) => message.source)).toContain(
+      'Cancel',
+    );
+  });
+
   it('extracts `t()` from a `{#key}` block', () => {
     const result = extractSvelte(
       [
