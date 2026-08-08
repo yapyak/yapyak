@@ -51,13 +51,25 @@ YAPYAK_LOCALE=sv pnpm build
 
 yapyak compiles every `t()` call to the fixed-locale value. With `fixedLocale: 'sv'`:
 
+{% switch group="framework" %}
+
+{% when value="vue" %}
+```vue
+<button>{{ t('Save changes') }}</button>
+```
+{% /when %}
+
+{% else %}
 ```tsx
 <button>{t('Save changes')}</button>
 ```
+{% /else %}
+
+{% /switch %}
 
 compiles to:
 
-```tsx
+```html
 <button>Spara ändringar</button>
 ```
 
