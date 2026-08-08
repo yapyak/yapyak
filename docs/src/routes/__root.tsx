@@ -22,15 +22,13 @@ import { LogoLink } from '#components/logo-link';
 import { MobileBar } from '#components/mobile-bar';
 import { Navigation } from '#components/navigation';
 import { OptionMenuTrigger } from '#components/option-menu-trigger';
-import {
-  OptionProvider,
-  buildPrepaintScript,
-} from '#components/option-provider';
+import { OptionProvider } from '#components/option-provider';
 import { Root } from '#components/root';
 import { RouteAnnouncer } from '#components/route-announcer';
 import { SearchDialogTrigger } from '#components/search-dialog-trigger';
 import { StatusView } from '#components/status-view';
 import { useScrollRestoration } from '#hooks/use-scroll-restoration';
+import { buildPrepaintScript } from '#lib/option';
 
 import { doc } from 'virtual:docs-compiler';
 

@@ -4,12 +4,9 @@ import type { PropsWithChildren } from 'react';
 import { useEffect, useState } from 'react';
 
 import { filterAdaptersByFramework } from '#lib/adapter';
+import { OPTION_PREPAINT_STYLE_ID, OPTION_STORAGE_PREFIX } from '#lib/option';
 
 import { OptionContext } from './option-context';
-import {
-  OPTION_PREPAINT_STYLE_ID,
-  OPTION_STORAGE_PREFIX,
-} from './option-storage';
 import { doc } from 'virtual:docs-compiler';
 
 function getDefaults(registry: OptionsRegistry) {
