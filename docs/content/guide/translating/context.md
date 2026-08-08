@@ -39,9 +39,33 @@ A [disambiguation](/guide/writing/homonyms) from `t.as(context, source)` is sent
 
 For this call:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```tsx [src/components/file-menu.tsx]
 <button onClick={openFile}>{t('Open')}</button>
 ```
+{% /when %}
+
+{% when value="vue" %}
+```vue [src/components/file-menu.vue]
+<button @click="openFile">{{ t('Open') }}</button>
+```
+{% /when %}
+
+{% when value="svelte" %}
+```svelte [src/components/file-menu.svelte]
+<button onclick={openFile}>{t('Open')}</button>
+```
+{% /when %}
+
+{% when value="astro" %}
+```astro [src/components/file-menu.astro]
+<button>{t('Open')}</button>
+```
+{% /when %}
+
+{% /switch %}
 
 The request carries:
 
@@ -59,6 +83,9 @@ Enough for the model to translate `Open` as the imperative verb on a button rath
 
 The same call at `context: 'rich'` adds a `snippet`:
 
+{% switch group="framework" %}
+
+{% when value="react" %}
 ```ts
 {
   source: 'Open',
@@ -67,8 +94,44 @@ The same call at `context: 'rich'` adds a `snippet`:
   snippet: "<button onClick={openFile}>{t('Open')}</button>"
 }
 ```
+{% /when %}
 
-The model sees the handler name and any sibling markup, which is usually enough to nail down meaning the component name alone misses.
+{% when value="vue" %}
+```ts
+{
+  source: 'Open',
+  component: 'FileMenu',
+  element: 'button',
+  snippet: '<button @click="openFile">{{ t(\'Open\') }}</button>'
+}
+```
+{% /when %}
+
+{% when value="svelte" %}
+```ts
+{
+  source: 'Open',
+  component: 'FileMenu',
+  element: 'button',
+  snippet: "<button onclick={openFile}>{t('Open')}</button>"
+}
+```
+{% /when %}
+
+{% when value="astro" %}
+```ts
+{
+  source: 'Open',
+  component: 'FileMenu',
+  element: 'button',
+  snippet: "<button>{t('Open')}</button>"
+}
+```
+{% /when %}
+
+{% /switch %}
+
+The model sees the code around the call, which is usually enough to nail down meaning the component name alone misses.
 
 ## Privacy
 
