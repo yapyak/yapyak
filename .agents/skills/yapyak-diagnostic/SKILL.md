@@ -126,6 +126,7 @@ Format: `<SUBSYSTEM>_<EVENT>` in SCREAMING_SNAKE_CASE.
 | `TRANSLATE` | Auto-translate runtime |
 | `FORMAT` | `Intl.*Format` runtime fallbacks (currency, unit, time zone) |
 | `RICHTEXT` | Rich-text `<tag>` markup validation in source strings |
+| `PROCESSOR` | File-level parse failures a framework processor reports |
 
 ### Documentation URLs
 
@@ -271,7 +272,7 @@ summary: [One-line present-tense, no period, max 80 chars]
 
 **Body — pick one shape by subsystem (first match wins):**
 
-- `PARSER` / `CONTEXT` / `RICHTEXT` → Shape A
+- `PARSER` / `CONTEXT` / `RICHTEXT` / `PROCESSOR` → Shape A
 - `CATALOG` / `PLACEHOLDER` → Shape B
 - `RUNTIME` / `PERSISTENCE` / `LOCALE` / `TRANSLATE` / `FORMAT` → Shape C
 

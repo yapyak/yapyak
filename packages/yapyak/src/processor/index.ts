@@ -9,6 +9,7 @@ export type {
   ParseSourceResult,
   Position,
   Processor,
+  ProcessorDiagnostic,
   Range,
   Runtime,
 } from './type';

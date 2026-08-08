@@ -61,9 +61,18 @@ export type ApplyImportFn = (
 ) => void;
 
 /**
- * The source parse result.
+ * The processor diagnostic. Reports a problem the processor's parser found in the source file.
+ */
+export type ProcessorDiagnostic = {
+  message: string;
+  range: Range;
+};
+
+/**
+ * The source parse result. A processor without parser diagnostics returns only the fragments.
  */
 export type ParseSourceResult = {
+  diagnostics?: ProcessorDiagnostic[];
   fragments: Fragment[];
 };
 

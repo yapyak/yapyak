@@ -201,7 +201,7 @@ For a file format yapyak doesn't ship a processor for, build one with [`createPr
 |---|---|
 | `id` | A stable, non-empty identifier. |
 | `extensions` | The file extensions to claim. |
-| `parseSource` | Optional. Splits your format into TypeScript-readable fragments. |
+| `parseSource` | Optional. Splits your format into TypeScript-readable fragments and reports the parser's diagnostics. |
 | `runtime` | Optional. The runtime module yapyak wires into compiled output. |
 | `applyImport` | Optional. Controls how imports are injected. |
 | `skipHmrCallback` | Optional. For formats whose compiler can't embed Vite HMR callbacks at module scope. Astro's `.astro` files use it. |

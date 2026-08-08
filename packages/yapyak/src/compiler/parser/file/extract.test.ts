@@ -3,7 +3,7 @@ import type { ExtractFileResult } from './extract';
 
 import { describe, expect, it } from 'vitest';
 
-import { segmentsFromOffset } from '../../../processor';
+import { rangeFromOffsets, segmentsFromOffset } from '../../../processor';
 import { extractFile } from './extract';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -102,6 +102,41 @@ describe('extractFile', () => {
       enclosingElement: 'button',
       snippet: `<button>{t('Save changes')}</button>`,
     });
+  });
+
+  it('records a `YAP0048` diagnostic from the processor', () => {
+    const source = "import { t } from 'yapyak';";
+    const processor: Processor = {
+      extensions: [
+        '.vue',
+      ],
+      id: 'template',
+      parseSource: () => ({
+        diagnostics: [
+          {
+            message: 'Unexpected token',
+            range: rangeFromOffsets(source, 0, 6),
+          },
+        ],
+        fragments: [
+          {
+            code: source,
+            language: 'ts',
+            segments: segmentsFromOffset(source, 0),
+            type: 'script',
+          },
+        ],
+      }),
+    };
+    const result = extractFile('src/a.vue', source, {
+      processors: [
+        processor,
+      ],
+    });
+
+    expect(result.diagnostics[0]?.code).toBe('YAP0048');
+    expect(result.diagnostics[0]?.severity).toBe('error');
+    expect(result.diagnostics[0]?.message).toContain('Unexpected token');
   });
 
   it('returns stable ids across runs', () => {

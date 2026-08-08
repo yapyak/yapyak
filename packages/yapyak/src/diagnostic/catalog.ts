@@ -256,6 +256,12 @@ export const YAP_COMPILE = {
     }): string =>
       `Branch "${branch}" in \`{${name}}\` is not a ${kind} keyword.`,
   },
+  PROCESSOR_PARSE_ERROR: {
+    code: 'YAP0048',
+    hint: (): string => 'Fix the reported syntax so the file can be processed.',
+    message: ({ text }: { text: string }): string =>
+      `The file does not parse: "${text}".`,
+  },
 } as const;
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap

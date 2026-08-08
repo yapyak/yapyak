@@ -31,6 +31,12 @@ Things the compiler caught while looking at the `t()` call itself.
 - [`YAP0005`](/reference/diagnostics/YAP0005): Extra parameter
 - [`YAP0006`](/reference/diagnostics/YAP0006): Dynamic parameters
 
+### Processor: file parsing
+
+Problems a framework processor found while parsing the file itself.
+
+- [`YAP0048`](/reference/diagnostics/YAP0048): Parse error
+
 ### Placeholder: ICU validation
 
 Things the compiler caught inside an ICU placeholder (`{name}`, `{count, plural, ...}`, etc.).

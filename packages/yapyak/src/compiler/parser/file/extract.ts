@@ -13,6 +13,7 @@ import type { Placeholder } from '../placeholder';
 
 import ts from '@typescript/typescript6';
 
+import { buildDiagnostic } from '../../../diagnostic';
 import { segmentsFromOffset } from '../../../processor';
 import { parseArguments } from '../argument';
 import { resolveBindings } from '../binding';
@@ -75,9 +76,28 @@ export function extractFile(
   options?: ExtractFileOptions,
 ): ExtractFileResult {
   const processor = resolveProcessor(fileId, source, options?.processors ?? []);
-  const { fragments } = (processor.parseSource ?? DEFAULT_PARSE_SOURCE)(source);
+  const { diagnostics: parserDiagnostics, fragments } = (
+    processor.parseSource ?? DEFAULT_PARSE_SOURCE
+  )(source);
 
   const diagnostics: Diagnostic[] = [];
+  if (parserDiagnostics) {
+    for (const parserDiagnostic of parserDiagnostics) {
+      diagnostics.push(
+        buildDiagnostic(
+          'PROCESSOR_PARSE_ERROR',
+          {
+            text: parserDiagnostic.message,
+          },
+          {
+            fileId,
+            range: parserDiagnostic.range,
+            severity: 'error',
+          },
+        ),
+      );
+    }
+  }
   const callSites: ParsedCallSite[] = [];
   const messagesById = new Map<string, ExtractedMessage>();
 
