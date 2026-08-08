@@ -1,6 +1,8 @@
 import type { Framework } from '#lib/hero-demo';
 import type { BoxProps } from '#primitives/box';
 
+import { useEffect, useState } from 'react';
+
 import { FRAMEWORK_DEFINITIONS } from '#lib/hero-demo';
 import { tokenize } from '#lib/tokenize';
 import { Box } from '#primitives/box';
@@ -40,6 +42,16 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
     FRAMEWORK_DEFINITIONS[activeIndex] ?? FRAMEWORK_DEFINITIONS[0];
   const code = buildCode(framework, source);
   const tokens = tokenize(code, activeFrameworkDefinition.language);
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      setIsReady(true);
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+    };
+  }, []);
 
   return (
     <Box
@@ -48,6 +60,7 @@ export function HeroDemoEditor(props: HeroDemoEditorProps) {
         styles.HeroDemoEditor,
         className,
       ]}
+      data-ready={isReady}
       data-saving={saving}
       style={{
         '--demo-editor-tab-index': activeIndex,

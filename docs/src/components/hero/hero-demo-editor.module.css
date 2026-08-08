@@ -25,7 +25,14 @@
         pointer-events: none;
         background-color: var(--brand);
         transform: translateX(calc(var(--demo-editor-tab-index) * 100%));
-        transition: transform var(--duration-medium) var(--ease-snappy);
+      }
+    }
+
+    &[data-ready] {
+      .TabRow {
+        .TabIndicatorBar {
+          transition: transform var(--duration-medium) var(--ease-snappy);
+        }
       }
     }
 
