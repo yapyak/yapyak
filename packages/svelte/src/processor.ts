@@ -1,6 +1,11 @@
 import type * as SvelteCompiler from 'svelte/compiler';
 import type { AST } from 'svelte/compiler';
-import type { Fragment, Processor } from 'yapyak/processor';
+import type {
+  Fragment,
+  Processor,
+  ProcessorDiagnostic,
+  Range,
+} from 'yapyak/processor';
 
 import {
   createProcessor,
@@ -46,9 +51,19 @@ export function svelte(): Processor {
     id: 'svelte',
     parseSource: (source) => {
       const compiler = loadCompiler();
-      const ast = compiler.parse(source, {
-        modern: true,
-      });
+      let ast: AST.Root;
+      try {
+        ast = compiler.parse(source, {
+          modern: true,
+        });
+      } catch (error) {
+        return {
+          diagnostics: [
+            toProcessorDiagnostic(error, source),
+          ],
+          fragments: [],
+        };
+      }
       const fragments: Fragment[] = [];
 
       if (ast.instance != null) {
@@ -86,6 +101,36 @@ function loadCompiler(): typeof SvelteCompiler {
       },
     );
   }
+}
+
+function toProcessorDiagnostic(
+  error: unknown,
+  source: string,
+): ProcessorDiagnostic {
+  const message = error instanceof Error ? error.message : String(error);
+  const newlineIndex = message.indexOf('\n');
+  return {
+    message: newlineIndex === -1 ? message : message.slice(0, newlineIndex),
+    range: toPositionRange(
+      (
+        error as {
+          position?: unknown;
+        }
+      ).position,
+      source,
+    ),
+  };
+}
+
+function toPositionRange(position: unknown, source: string): Range {
+  if (
+    Array.isArray(position) &&
+    typeof position[0] === 'number' &&
+    typeof position[1] === 'number'
+  ) {
+    return rangeFromOffsets(source, position[0], position[1]);
+  }
+  return rangeFromOffsets(source, 0, 0);
 }
 
 function fragmentsFromScript(script: AST.Script, source: string): Fragment[] {

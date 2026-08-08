@@ -236,6 +236,22 @@ describe('svelte processor — extract', () => {
     expect(result.messages.map((message) => message.source)).toContain('Save');
   });
 
+  it('records a diagnostic when the compiler cannot parse the file', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        "<p>{t('Hello')</p>",
+      ].join('\n'),
+    );
+
+    expect(result.diagnostics[0]?.code).toBe('YAP0048');
+    expect(result.diagnostics[0]?.severity).toBe('error');
+    expect(result.diagnostics[0]?.message).not.toContain('svelte.dev');
+    expect(result.diagnostics[0]?.range.start.offset).toBe(73);
+  });
+
   it('extracts `t()` from an `{@html}` tag', () => {
     const result = extractSvelte(
       [
