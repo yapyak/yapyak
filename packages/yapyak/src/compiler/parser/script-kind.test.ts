@@ -12,6 +12,10 @@ describe('getScriptKind', () => {
     expect(getScriptKind('src/a.jsx', 'ts')).toBe(ts.ScriptKind.JSX);
   });
 
+  it('returns `TSX` when the fragment language is `tsx`', () => {
+    expect(getScriptKind('src/a.astro', 'tsx')).toBe(ts.ScriptKind.TSX);
+  });
+
   it('returns `JS` when the fragment language is `js`', () => {
     expect(getScriptKind('src/a.ts', 'js')).toBe(ts.ScriptKind.JS);
   });

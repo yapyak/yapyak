@@ -12,6 +12,9 @@ export function getScriptKind(
   if (fileId.endsWith('.jsx')) {
     return ts.ScriptKind.JSX;
   }
+  if (language === 'tsx') {
+    return ts.ScriptKind.TSX;
+  }
   if (language === 'js') {
     return ts.ScriptKind.JS;
   }

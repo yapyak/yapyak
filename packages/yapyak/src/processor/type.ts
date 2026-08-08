@@ -43,7 +43,7 @@ export type Fragment = {
   enclosingElement?: string;
   snippet?: string;
   type: 'script' | 'template-expression';
-  language: 'js' | 'ts';
+  language: 'js' | 'ts' | 'tsx';
   segments: FragmentSegment[];
 };
 
