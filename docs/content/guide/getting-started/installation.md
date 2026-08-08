@@ -290,6 +290,8 @@ Add the yapyak plugin to your build config:
 {% switch group="framework" %}
 
 {% when value="react" %}
+{% switch group="adapter" %}
+{% when value="none" %}
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -299,6 +301,31 @@ export default defineConfig({
   plugins: [react(), yapyak()]
 });
 ```
+{% /when %}
+{% when value="react-router" %}
+```ts [vite.config.ts]
+import { defineConfig } from 'vite';
+import { reactRouter } from '@react-router/dev/vite';
+import { yapyak } from '@yapyak/vite';
+
+export default defineConfig({
+  plugins: [reactRouter(), yapyak()]
+});
+```
+{% /when %}
+{% when value="tanstack-start" %}
+```ts [vite.config.ts]
+import { defineConfig } from 'vite';
+import { tanstackStart } from '@tanstack/react-start/plugin/vite';
+import react from '@vitejs/plugin-react';
+import { yapyak } from '@yapyak/vite';
+
+export default defineConfig({
+  plugins: [tanstackStart(), react(), yapyak()]
+});
+```
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="vue" %}
@@ -314,6 +341,8 @@ export default defineConfig({
 {% /when %}
 
 {% when value="svelte" %}
+{% switch group="adapter" %}
+{% when value="none" %}
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
@@ -323,6 +352,19 @@ export default defineConfig({
   plugins: [svelte(), yapyak()]
 });
 ```
+{% /when %}
+{% when value="sveltekit" %}
+```ts [vite.config.ts]
+import { defineConfig } from 'vite';
+import { sveltekit } from '@sveltejs/kit/vite';
+import { yapyak } from '@yapyak/vite';
+
+export default defineConfig({
+  plugins: [sveltekit(), yapyak()]
+});
+```
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="astro" %}
@@ -363,7 +405,6 @@ Create `yapyak.config.ts`:
 
 {% when value="react" %}
 {% switch group="adapter" %}
-
 {% when value="none" %}
 {% switch group="translator" %}
 {% when value="none" %}
@@ -437,7 +478,6 @@ export default defineConfig({
 {% /when %}
 {% /switch %}
 {% /when %}
-
 {% when value="react-router" %}
 {% switch group="translator" %}
 {% when value="none" %}
@@ -516,7 +556,6 @@ export default defineConfig({
 {% /when %}
 {% /switch %}
 {% /when %}
-
 {% when value="tanstack-start" %}
 {% switch group="translator" %}
 {% when value="none" %}
@@ -590,7 +629,6 @@ export default defineConfig({
 {% /when %}
 {% /switch %}
 {% /when %}
-
 {% /switch %}
 {% /when %}
 
@@ -670,7 +708,6 @@ export default defineConfig({
 
 {% when value="svelte" %}
 {% switch group="adapter" %}
-
 {% when value="none" %}
 {% switch group="translator" %}
 {% when value="none" %}
@@ -744,7 +781,6 @@ export default defineConfig({
 {% /when %}
 {% /switch %}
 {% /when %}
-
 {% when value="sveltekit" %}
 {% switch group="translator" %}
 {% when value="none" %}
@@ -823,7 +859,6 @@ export default defineConfig({
 {% /when %}
 {% /switch %}
 {% /when %}
-
 {% /switch %}
 {% /when %}
 
@@ -912,7 +947,6 @@ export default defineConfig({
 
 {% when value="react" %}
 {% switch group="adapter" %}
-
 {% when value="react-router" %}
 Register yapyak's middleware in your root route, and read the locale through [`useLocale()`](/reference/react/useLocale) for `<html lang>`:
 
@@ -940,7 +974,6 @@ export default function Root() {
 On React Router 7.9 through 7.x, middleware is opt-in. Enable it with `future: { v8_middleware: true }` in `react-router.config.ts`. On v8, middleware is default.
 {% /callout %}
 {% /when %}
-
 {% when value="tanstack-start" %}
 Register yapyak's middleware in your start entry, and read the locale through [`useLocale()`](/reference/react/useLocale) in your root route for `<html lang>`:
 
@@ -967,13 +1000,11 @@ function Root() {
 }
 ```
 {% /when %}
-
 {% /switch %}
 {% /when %}
 
 {% when value="svelte" %}
 {% switch group="adapter" %}
-
 {% when value="sveltekit" %}
 Register the SvelteKit handle:
 
@@ -999,7 +1030,6 @@ Replace `<html lang>` with yapyak's placeholder:
 ```
 
 {% /when %}
-
 {% /switch %}
 {% /when %}
 
