@@ -17,6 +17,7 @@ import { IconLink } from '../icon-link';
 import { MobileDialog } from '../mobile-dialog';
 import { MobileDialogButton } from '../mobile-dialog-button';
 import { MobileNavigation } from '../mobile-navigation';
+import { OptionMenuTrigger } from '../option-menu-trigger';
 import { SearchDialogListbox } from '../search-dialog';
 import { SearchEmptyMessage } from '../search-empty-message';
 import styles from './mobile-bar.module.css';
@@ -162,6 +163,10 @@ export function MobileBar(props: MobileBarProps) {
               <>
                 <MobileNavigation />
                 <MobileDialog.Footer>
+                  <Box className={styles.OptionBar}>
+                    <OptionMenuTrigger group="framework" />
+                    <OptionMenuTrigger group="packageManager" />
+                  </Box>
                   <IconLink
                     aria-label={t('View on GitHub')}
                     href="https://github.com/yapyak/yapyak"

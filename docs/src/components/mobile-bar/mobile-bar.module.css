@@ -80,4 +80,11 @@
       display: none;
     }
   }
+
+  .OptionBar {
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    min-width: 0;
+  }
 }
