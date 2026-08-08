@@ -186,6 +186,41 @@ describe('transformScriptImports', () => {
     );
   });
 
+  it('preserves a named import when overlapping fragments hold a call-shaped string', () => {
+    const declaration = "import { t } from 'yapyak';\n";
+    const outer = "x = ['call t( now'];\n";
+    const inner = "'call t( now'";
+    const source = `${declaration}${outer}t('left')\n`;
+    const magicString = new MagicString(source);
+    transformScriptImports({
+      fileId: 'src/a.tsx',
+      fragments: [
+        {
+          code: declaration,
+          language: 'ts',
+          segments: segmentsFromOffset(declaration, 0),
+          type: 'script',
+        },
+        {
+          code: outer,
+          language: 'ts',
+          segments: segmentsFromOffset(outer, declaration.length),
+          type: 'template-expression',
+        },
+        {
+          code: inner,
+          language: 'ts',
+          segments: segmentsFromOffset(inner, source.indexOf(inner)),
+          type: 'template-expression',
+        },
+      ],
+      magicString,
+      originalSource: source,
+    });
+
+    expect(magicString.toString()).toContain("import { t } from 'yapyak';");
+  });
+
   it('skips a `template-expression` fragment', () => {
     const source = "import { t } from 'yapyak';";
     const magicString = new MagicString(source);

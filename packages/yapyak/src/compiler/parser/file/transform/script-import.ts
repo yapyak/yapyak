@@ -120,8 +120,12 @@ function transformImportDeclaration(
     const localName = namedBindings.name.text;
     if (
       countReferences(referenceAsts, localName) === 0 &&
-      countOutsideReferences(magicString, fragments, localName, 'namespace') ===
-        0
+      countOutsideReferences(
+        originalSource,
+        fragments,
+        localName,
+        'namespace',
+      ) === 0
     ) {
       magicString.remove(startInOriginal, endInOriginal);
     }
@@ -144,7 +148,7 @@ function transformImportDeclaration(
     }
     if (
       countReferences(referenceAsts, localName) > 0 ||
-      countOutsideReferences(magicString, fragments, localName, 'call') > 0
+      countOutsideReferences(originalSource, fragments, localName, 'call') > 0
     ) {
       remaining.push({
         imported: importedName,
@@ -196,19 +200,58 @@ function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
 }
 
 function countOutsideReferences(
-  magicString: MagicString,
+  originalSource: string,
   fragments: Fragment[],
   name: string,
   usage: 'call' | 'namespace',
 ): number {
-  let count = countMatches(magicString.toString(), name, usage);
-  for (const fragment of fragments) {
-    const emitted = sliceEmittedFragment(fragment, magicString);
-    if (emitted !== undefined) {
-      count -= countMatches(emitted, name, usage);
-    }
+  let count = 0;
+  for (const region of uncoveredSourceRegions(originalSource, fragments)) {
+    count += countMatches(region, name, usage);
   }
   return count;
+}
+
+type SourceSpan = {
+  end: number;
+  start: number;
+};
+
+function uncoveredSourceRegions(
+  originalSource: string,
+  fragments: Fragment[],
+): string[] {
+  const spans: SourceSpan[] = [];
+  for (const fragment of fragments) {
+    const span = toSourceSpan(fragment);
+    if (span !== undefined) {
+      spans.push(span);
+    }
+  }
+  spans.sort((a, b) => a.start - b.start);
+  const regions: string[] = [];
+  let cursor = 0;
+  for (const span of spans) {
+    if (span.start > cursor) {
+      regions.push(originalSource.slice(cursor, span.start));
+    }
+    cursor = Math.max(cursor, span.end);
+  }
+  if (cursor < originalSource.length) {
+    regions.push(originalSource.slice(cursor));
+  }
+  return regions;
+}
+
+function toSourceSpan(fragment: Fragment): SourceSpan | undefined {
+  try {
+    return {
+      end: remapOffset(fragment.code.length, fragment),
+      start: remapOffset(0, fragment),
+    };
+  } catch {
+    return undefined;
+  }
 }
 
 function countMatches(
