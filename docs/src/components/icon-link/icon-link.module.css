@@ -1,14 +1,15 @@
 @layer components {
   .IconLink {
     display: inline-flex;
+    flex: none;
     align-items: center;
     justify-content: center;
-    width: 20px;
-    height: 20px;
+    width: 44px;
+    height: 44px;
     font-size: 20px;
     color: var(--foreground-soft);
     outline: var(--spacing-2) solid transparent;
-    outline-offset: var(--spacing-1);
+    outline-offset: calc(var(--px) * -1);
     border-radius: var(--border-radius-full);
     transition:
       color var(--transition),
