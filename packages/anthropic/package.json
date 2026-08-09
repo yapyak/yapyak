@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/anthropic",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Anthropic translator for yapyak.",
   "keywords": [
     "anthropic",

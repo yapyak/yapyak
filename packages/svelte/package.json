@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/svelte",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Svelte bindings for yapyak.",
   "keywords": [
     "bindings",
