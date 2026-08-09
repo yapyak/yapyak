@@ -7,7 +7,7 @@ import ts from '@typescript/typescript6';
 import { findMatchingBraceIndex } from '../../matching-brace';
 import { remapOffset } from '../../offset';
 import { findFreeIdentifiers } from './identifier';
-import { buildCatalogLiteral, pickLocaleText, toSafeJsString } from './render';
+import { buildVariantsLiteral, pickLocaleText, toSafeJsString } from './render';
 
 export type RenderCallReplacementInput = {
   callSite: ParsedCallSite;
@@ -17,7 +17,7 @@ export type RenderCallReplacementInput = {
   nestedReplacements?: NestedReplacement[];
   originalSource: string;
   pickLocal: string;
-  registerCatalog: (literal: string, id: string) => string;
+  registerVariants: (literal: string, id: string) => string;
   singleLocale: boolean;
   translations: Record<string, Record<string, string>>;
 };
@@ -46,7 +46,7 @@ export function renderCallReplacement(
     localsByFactory,
     originalSource,
     pickLocal,
-    registerCatalog,
+    registerVariants,
     translations,
   } = input;
   if (callSite.source === '') {
@@ -88,7 +88,7 @@ export function renderCallReplacement(
     };
   }
   const usedFactories = new Set<string>();
-  const catalog = buildCatalogLiteral(
+  const variants = buildVariantsLiteral(
     {
       defaultLocale,
       id,
@@ -99,7 +99,7 @@ export function renderCallReplacement(
     usedFactories,
     localsByFactory,
   );
-  const catalogIdentifier = registerCatalog(catalog, id);
+  const variantsIdentifier = registerVariants(variants, id);
   const hasPlaceholders = placeholders.length > 0;
   const nested = input.nestedReplacements ?? [];
   const paramsExpressionText = hasPlaceholders
@@ -114,7 +114,7 @@ export function renderCallReplacement(
       )
     : undefined;
   const args: string[] = [
-    catalogIdentifier,
+    variantsIdentifier,
   ];
   if (paramsExpressionText || localeText) {
     args.push(paramsExpressionText ?? 'undefined');

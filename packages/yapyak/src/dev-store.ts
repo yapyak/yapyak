@@ -1,15 +1,13 @@
-import type { Template } from './template';
+import type { Variants } from './translation';
 
 import { registerHotDispose } from './hot-dispose';
 
-type Catalog = Record<string, string | Template>;
-
-const catalogs = new Map<string, Catalog>();
-const pendingPatches = new Map<string, Map<string, string | Template>>();
+const variantsByKey = new Map<string, Variants>();
+const pendingPatchesByKey = new Map<string, Map<string, Variants[string]>>();
 const subscribers = new Set<() => void>();
 let version = 0;
 
-function makeKey(fileId: string, id: string): string {
+function toStoreKey(fileId: string, id: string): string {
   return `${fileId}\0${id}`;
 }
 
@@ -20,53 +18,53 @@ function runSubscribers(): void {
   }
 }
 
-export function registerCatalog(
+export function registerVariants(
   fileId: string,
   id: string,
-  initial: Catalog,
-): Catalog {
-  const key = makeKey(fileId, id);
-  const existing = catalogs.get(key);
+  initial: Variants,
+): Variants {
+  const key = toStoreKey(fileId, id);
+  const existing = variantsByKey.get(key);
   if (existing) {
     return existing;
   }
-  const catalog: Catalog = {
+  const variants: Variants = {
     ...initial,
   };
-  const pending = pendingPatches.get(key);
+  const pending = pendingPatchesByKey.get(key);
   if (pending) {
     for (const [pendingLocale, pendingValue] of pending) {
       if (pendingValue === '') {
-        delete catalog[pendingLocale];
+        delete variants[pendingLocale];
       } else {
-        catalog[pendingLocale] = pendingValue;
+        variants[pendingLocale] = pendingValue;
       }
     }
-    pendingPatches.delete(key);
+    pendingPatchesByKey.delete(key);
   }
-  catalogs.set(key, catalog);
-  return catalog;
+  variantsByKey.set(key, variants);
+  return variants;
 }
 
-export function setCatalogEntry(
+export function setVariant(
   fileId: string,
   id: string,
   locale: string,
-  value: string | Template,
+  value: Variants[string],
 ): void {
-  const key = makeKey(fileId, id);
-  const catalog = catalogs.get(key);
-  if (catalog) {
+  const key = toStoreKey(fileId, id);
+  const variants = variantsByKey.get(key);
+  if (variants) {
     if (value === '') {
-      delete catalog[locale];
+      delete variants[locale];
     } else {
-      catalog[locale] = value;
+      variants[locale] = value;
     }
   } else {
-    let pending = pendingPatches.get(key);
+    let pending = pendingPatchesByKey.get(key);
     if (!pending) {
       pending = new Map();
-      pendingPatches.set(key, pending);
+      pendingPatchesByKey.set(key, pending);
     }
     pending.set(locale, value);
   }
@@ -76,15 +74,15 @@ export function setCatalogEntry(
 export function invalidateFile(fileId: string): void {
   const prefix = `${fileId}\0`;
   let isDirty = false;
-  for (const key of catalogs.keys()) {
+  for (const key of variantsByKey.keys()) {
     if (key.startsWith(prefix)) {
-      catalogs.delete(key);
+      variantsByKey.delete(key);
       isDirty = true;
     }
   }
-  for (const key of pendingPatches.keys()) {
+  for (const key of pendingPatchesByKey.keys()) {
     if (key.startsWith(prefix)) {
-      pendingPatches.delete(key);
+      pendingPatchesByKey.delete(key);
       isDirty = true;
     }
   }
@@ -110,8 +108,8 @@ export function getDevVersion(): number {
 }
 
 export function resetDevStore(): void {
-  catalogs.clear();
-  pendingPatches.clear();
+  variantsByKey.clear();
+  pendingPatchesByKey.clear();
   subscribers.clear();
   version = 0;
 }

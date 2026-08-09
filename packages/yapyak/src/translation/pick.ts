@@ -4,7 +4,7 @@ import { defaultLocale, getLocale, getLocaleFallbackChain } from '../locale';
 import { interpret } from '../template';
 import { runTrackers } from '../tracker';
 
-type Variants = Record<string, string | Template>;
+export type Variants = Record<string, string | Template>;
 
 type PickOptions = {
   locale?: string;

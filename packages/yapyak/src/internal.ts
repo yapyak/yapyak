@@ -5,8 +5,8 @@ export {
   autoSubscribeDev,
   getDevVersion,
   invalidateFile,
-  registerCatalog,
-  setCatalogEntry,
+  registerVariants,
+  setVariant,
   subscribeDev,
 } from './dev-store';
 export { applyPatches } from './hmr-patch';

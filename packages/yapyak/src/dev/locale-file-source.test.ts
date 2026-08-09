@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { registerCatalog, resetDevStore } from '../dev-store';
+import { registerVariants, resetDevStore } from '../dev-store';
 import { runTrackers } from '../tracker';
 import { registerLocaleFileSource } from './locale-file-source';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
@@ -31,13 +31,13 @@ function writeLocaleFile(
 }
 
 describe('registerLocaleFileSource', () => {
-  it('syncs the catalog with the locale file on the first tracker run', () => {
+  it('syncs the variants with the locale file on the first tracker run', () => {
     const path = writeLocaleFile('sv', {
       'src/a.tsx': {
         Hello: 'Hej',
       },
     });
-    const catalog = registerCatalog('src/a.tsx', '["Hello",null]', {
+    const variants = registerVariants('src/a.tsx', '["Hello",null]', {
       en: 'Hello',
     });
     registerLocaleFileSource({
@@ -46,19 +46,19 @@ describe('registerLocaleFileSource', () => {
 
     runTrackers();
 
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       en: 'Hello',
       sv: 'Hej',
     });
   });
 
-  it('syncs the catalog again when the locale file changes', () => {
+  it('syncs the variants again when the locale file changes', () => {
     const path = writeLocaleFile('sv', {
       'src/a.tsx': {
         Hello: 'Hej',
       },
     });
-    const catalog = registerCatalog('src/a.tsx', '["Hello",null]', {
+    const variants = registerVariants('src/a.tsx', '["Hello",null]', {
       en: 'Hello',
     });
     registerLocaleFileSource({
@@ -73,16 +73,16 @@ describe('registerLocaleFileSource', () => {
     });
     runTrackers();
 
-    expect(catalog['sv']).toBe('Hejsan');
+    expect(variants['sv']).toBe('Hejsan');
   });
 
-  it('drops the catalog entry when the locale file empties the value', () => {
+  it('drops the variant when the locale file empties the value', () => {
     const path = writeLocaleFile('sv', {
       'src/a.tsx': {
         Hello: 'Hej',
       },
     });
-    const catalog = registerCatalog('src/a.tsx', '["Hello",null]', {
+    const variants = registerVariants('src/a.tsx', '["Hello",null]', {
       en: 'Hello',
     });
     registerLocaleFileSource({
@@ -97,18 +97,18 @@ describe('registerLocaleFileSource', () => {
     });
     runTrackers();
 
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       en: 'Hello',
     });
   });
 
-  it('preserves the catalog when the locale file turns corrupt', () => {
+  it('preserves the variants when the locale file turns corrupt', () => {
     const path = writeLocaleFile('sv', {
       'src/a.tsx': {
         Hello: 'Hej',
       },
     });
-    const catalog = registerCatalog('src/a.tsx', '["Hello",null]', {
+    const variants = registerVariants('src/a.tsx', '["Hello",null]', {
       en: 'Hello',
     });
     registerLocaleFileSource({
@@ -119,11 +119,11 @@ describe('registerLocaleFileSource', () => {
     writeFileSync(path, '{ broken');
     runTrackers();
 
-    expect(catalog['sv']).toBe('Hej');
+    expect(variants['sv']).toBe('Hej');
   });
 
   it('skips a locale file that does not exist', () => {
-    const catalog = registerCatalog('src/a.tsx', '["Hello",null]', {
+    const variants = registerVariants('src/a.tsx', '["Hello",null]', {
       en: 'Hello',
     });
     registerLocaleFileSource({
@@ -132,12 +132,12 @@ describe('registerLocaleFileSource', () => {
 
     runTrackers();
 
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       en: 'Hello',
     });
   });
 
-  it('holds pending patches for a catalog that registers after the sync', () => {
+  it('holds pending patches for variants that register after the sync', () => {
     const path = writeLocaleFile('sv', {
       'src/a.tsx': {
         Hello: 'Hej',
@@ -148,11 +148,11 @@ describe('registerLocaleFileSource', () => {
     });
     runTrackers();
 
-    const catalog = registerCatalog('src/a.tsx', '["Hello",null]', {
+    const variants = registerVariants('src/a.tsx', '["Hello",null]', {
       en: 'Hello',
     });
 
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       en: 'Hello',
       sv: 'Hej',
     });

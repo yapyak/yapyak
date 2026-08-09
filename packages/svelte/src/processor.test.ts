@@ -684,7 +684,7 @@ describe('svelte processor — transform', () => {
       ],
     );
 
-    expect(code).toContain('{#each items as { label = _pick(_catalog_$0) }}');
+    expect(code).toContain('{#each items as { label = _pick(_variants_$0) }}');
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });
 
@@ -715,7 +715,7 @@ describe('svelte processor — transform', () => {
       ],
     );
 
-    expect(code).toContain('{#snippet greet(label = _pick(_catalog_$0))}');
+    expect(code).toContain('{#snippet greet(label = _pick(_variants_$0))}');
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });
 });

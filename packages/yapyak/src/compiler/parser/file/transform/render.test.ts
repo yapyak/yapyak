@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { parseTemplate } from '../../../../template';
 import {
-  buildCatalogLiteral,
+  buildVariantsLiteral,
   isStaticTemplate,
   pickLocaleText,
   renderLocaleKey,
@@ -127,10 +127,10 @@ describe('isStaticTemplate', () => {
   });
 });
 
-describe('buildCatalogLiteral', () => {
+describe('buildVariantsLiteral', () => {
   it('builds a single-locale catalog entry as a string-only object', () => {
     const usedFactories = new Set<string>();
-    const result = buildCatalogLiteral(
+    const result = buildVariantsLiteral(
       {
         defaultLocale: 'en',
         id: 'Save',
@@ -149,7 +149,7 @@ describe('buildCatalogLiteral', () => {
 
   it('builds a multi-locale catalog entry with picked translations', () => {
     const usedFactories = new Set<string>();
-    const result = buildCatalogLiteral(
+    const result = buildVariantsLiteral(
       {
         defaultLocale: 'en',
         id: 'Save',
@@ -172,7 +172,7 @@ describe('buildCatalogLiteral', () => {
 
   it('emits factory invocations for a placeholder-bearing source', () => {
     const usedFactories = new Set<string>();
-    const result = buildCatalogLiteral(
+    const result = buildVariantsLiteral(
       {
         defaultLocale: 'en',
         id: 'Hi {name}',
@@ -191,7 +191,7 @@ describe('buildCatalogLiteral', () => {
 
   it('holds every used factory in the supplied set after rendering placeholders', () => {
     const usedFactories = new Set<string>();
-    buildCatalogLiteral(
+    buildVariantsLiteral(
       {
         defaultLocale: 'en',
         id: 'Hi {name}',

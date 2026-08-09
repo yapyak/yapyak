@@ -48,8 +48,8 @@ export type TransformFileResult = {
 
 const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
-const CATALOG_PREFIX = '_catalog';
-const REGISTER_CATALOG_LOCAL = '_registerCatalog';
+const VARIANTS_PREFIX = '_variants';
+const REGISTER_VARIANTS_LOCAL = '_registerVariants';
 const REGISTER_LOCALE_FILE_SOURCE_LOCAL = '_registerLocaleFileSource';
 const INVALIDATE_FILE_LOCAL = '_invalidateFile';
 const USE_YAPYAK_LOCAL = '_useYapyak';
@@ -122,8 +122,8 @@ export function transformFile(
 
   const pickLocal = findFreePickLocal(request.source);
   const localsByFactory = findFreeFactoryLocals(request.source);
-  const registerCatalogLocal = isDev
-    ? findFreeIdentifier(request.source, REGISTER_CATALOG_LOCAL)
+  const registerVariantsLocal = isDev
+    ? findFreeIdentifier(request.source, REGISTER_VARIANTS_LOCAL)
     : '';
   const localeFilePaths = isDev ? request.localeFilePaths : undefined;
   const registerLocaleFileSourceLocal =
@@ -142,22 +142,22 @@ export function transformFile(
 
   let hasUsedPick = false;
   const usedFactories = new Set<string>();
-  const catalogsByKey = new Map<string, CatalogEntry>();
-  let nextCatalogIndex = 0;
-  const registerCatalog = (literal: string, id: string): string => {
+  const variantsByKey = new Map<string, VariantsEntry>();
+  let nextVariantsIndex = 0;
+  const registerVariants = (literal: string, id: string): string => {
     const key = isDev ? id : literal;
-    const existing = catalogsByKey.get(key);
+    const existing = variantsByKey.get(key);
     if (existing) {
       return existing.identifier;
     }
     while (
-      hasIdentifier(request.source, `${CATALOG_PREFIX}_$${nextCatalogIndex}`)
+      hasIdentifier(request.source, `${VARIANTS_PREFIX}_$${nextVariantsIndex}`)
     ) {
-      nextCatalogIndex += 1;
+      nextVariantsIndex += 1;
     }
-    const identifier = `${CATALOG_PREFIX}_$${nextCatalogIndex}`;
-    nextCatalogIndex += 1;
-    catalogsByKey.set(key, {
+    const identifier = `${VARIANTS_PREFIX}_$${nextVariantsIndex}`;
+    nextVariantsIndex += 1;
+    variantsByKey.set(key, {
       id,
       identifier,
       literal,
@@ -192,7 +192,7 @@ export function transformFile(
       nestedReplacements,
       originalSource: request.source,
       pickLocal,
-      registerCatalog,
+      registerVariants,
       singleLocale: isSingleLocale,
       translations: request.translations,
     });
@@ -252,7 +252,7 @@ export function transformFile(
   const skipHmrCallback = processor.skipHmrCallback === true;
   const allImportSpecs = importSpecs.slice();
   if (isDev) {
-    allImportSpecs.push(`registerCatalog as ${registerCatalogLocal}`);
+    allImportSpecs.push(`registerVariants as ${registerVariantsLocal}`);
     if (!skipHmrCallback) {
       allImportSpecs.push(`invalidateFile as ${invalidateFileLocal}`);
     }
@@ -262,7 +262,7 @@ export function transformFile(
       `import { ${allImportSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
     );
   }
-  if (localeFilePaths !== undefined && catalogsByKey.size > 0) {
+  if (localeFilePaths !== undefined && variantsByKey.size > 0) {
     injectionLines.push(
       `import { registerLocaleFileSource as ${registerLocaleFileSourceLocal} } from '${YAPYAK_DEV_MODULE}';`,
       `${registerLocaleFileSourceLocal}(${JSON.stringify(localeFilePaths)});`,
@@ -280,10 +280,10 @@ export function transformFile(
   } else if (runtime !== undefined && isDev) {
     injectionLines.push(`import '${runtime.module}';`);
   }
-  for (const entry of catalogsByKey.values()) {
+  for (const entry of variantsByKey.values()) {
     if (isDev) {
       injectionLines.push(
-        `const ${entry.identifier} = ${registerCatalogLocal}(${JSON.stringify(request.fileId)}, ${JSON.stringify(entry.id)}, ${entry.literal});`,
+        `const ${entry.identifier} = ${registerVariantsLocal}(${JSON.stringify(request.fileId)}, ${JSON.stringify(entry.id)}, ${entry.literal});`,
       );
     } else {
       injectionLines.push(`const ${entry.identifier} = ${entry.literal};`);
@@ -323,7 +323,7 @@ export function transformFile(
   };
 }
 
-type CatalogEntry = {
+type VariantsEntry = {
   id: string;
   identifier: string;
   literal: string;

@@ -4,9 +4,9 @@ import {
   autoSubscribeDev,
   getDevVersion,
   invalidateFile,
-  registerCatalog,
+  registerVariants,
   resetDevStore,
-  setCatalogEntry,
+  setVariant,
   subscribeDev,
 } from './dev-store';
 
@@ -27,25 +27,25 @@ afterEach(() => {
   resetDevStore();
 });
 
-describe('registerCatalog', () => {
+describe('registerVariants', () => {
   it('returns the initial catalog when no entry exists', () => {
-    const catalog = registerCatalog('src/a.tsx', 'Save', {
+    const variants = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
 
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       en: 'Save',
       sv: 'Spara',
     });
   });
 
   it('returns the bound catalog on a repeat call', () => {
-    const first = registerCatalog('src/a.tsx', 'Save', {
+    const first = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
-    const second = registerCatalog('src/a.tsx', 'Save', {
+    const second = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
@@ -54,12 +54,12 @@ describe('registerCatalog', () => {
   });
 
   it('preserves prior entries when a repeat call runs', () => {
-    registerCatalog('src/a.tsx', 'Save', {
+    registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara ändringar');
-    const rebound = registerCatalog('src/a.tsx', 'Save', {
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara ändringar');
+    const rebound = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
@@ -67,20 +67,20 @@ describe('registerCatalog', () => {
     expect(rebound.sv).toBe('Spara ändringar');
   });
 
-  it('folds a buffered entry into a later registerCatalog', () => {
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
-    const catalog = registerCatalog('src/a.tsx', 'Save', {
+  it('folds a buffered entry into a later registerVariants', () => {
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara');
+    const variants = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
 
-    expect(catalog.sv).toBe('Spara');
+    expect(variants.sv).toBe('Spara');
   });
 
   it('holds distinct catalogs for distinct ids within one file', () => {
-    const save = registerCatalog('src/a.tsx', 'Save', {
+    const save = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
-    const cancel = registerCatalog('src/a.tsx', 'Cancel', {
+    const cancel = registerVariants('src/a.tsx', 'Cancel', {
       en: 'Cancel',
     });
 
@@ -88,10 +88,10 @@ describe('registerCatalog', () => {
   });
 
   it('holds distinct catalogs for distinct file ids', () => {
-    const fromA = registerCatalog('src/a.tsx', 'Save', {
+    const fromA = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
-    const fromB = registerCatalog('src/b.tsx', 'Save', {
+    const fromB = registerVariants('src/b.tsx', 'Save', {
       en: 'Save',
     });
 
@@ -99,56 +99,56 @@ describe('registerCatalog', () => {
   });
 });
 
-describe('setCatalogEntry', () => {
+describe('setVariant', () => {
   it('writes a locale value into a bound catalog in place', () => {
-    const catalog = registerCatalog('src/a.tsx', 'Save', {
+    const variants = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
 
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara ändringar');
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara ändringar');
 
-    expect(catalog.sv).toBe('Spara ändringar');
+    expect(variants.sv).toBe('Spara ändringar');
   });
 
   it('preserves catalog identity when writing an entry', () => {
-    const catalog = registerCatalog('src/a.tsx', 'Save', {
+    const variants = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
 
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara');
 
-    expect(catalog).toBe(
-      registerCatalog('src/a.tsx', 'Save', {
+    expect(variants).toBe(
+      registerVariants('src/a.tsx', 'Save', {
         en: 'Save',
       }),
     );
   });
 
   it('clears the locale key when the value is empty', () => {
-    const catalog = registerCatalog('src/a.tsx', 'Save', {
+    const variants = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
 
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', '');
+    setVariant('src/a.tsx', 'Save', 'sv', '');
 
-    expect(Object.hasOwn(catalog, 'sv')).toBe(false);
-    expect(catalog.en).toBe('Save');
+    expect(Object.hasOwn(variants, 'sv')).toBe(false);
+    expect(variants.en).toBe('Save');
   });
 
-  it('refuses to write an empty buffered entry into a later registerCatalog', () => {
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', '');
-    const catalog = registerCatalog('src/a.tsx', 'Save', {
+  it('refuses to write an empty buffered entry into a later registerVariants', () => {
+    setVariant('src/a.tsx', 'Save', 'sv', '');
+    const variants = registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
       sv: 'Spara',
     });
 
-    expect(Object.hasOwn(catalog, 'sv')).toBe(false);
+    expect(Object.hasOwn(variants, 'sv')).toBe(false);
   });
 
   it('writes a `Template` value into a bound catalog', () => {
-    const catalog = registerCatalog('src/a.tsx', 'Hi {name}', {
+    const variants = registerVariants('src/a.tsx', 'Hi {name}', {
       en: 'Hi {name}',
     });
     const template = [
@@ -159,49 +159,49 @@ describe('setCatalogEntry', () => {
       },
     ];
 
-    setCatalogEntry('src/a.tsx', 'Hi {name}', 'sv', template as never);
+    setVariant('src/a.tsx', 'Hi {name}', 'sv', template as never);
 
-    expect(catalog.sv).toBe(template);
+    expect(variants.sv).toBe(template);
   });
 
   it('holds a buffered entry when no catalog is bound', () => {
-    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
-    const catalog = registerCatalog('src/a.tsx', 'Loading...', {
+    setVariant('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
+    const variants = registerVariants('src/a.tsx', 'Loading...', {
       en: 'Loading...',
     });
 
-    expect(catalog.sv).toBe('Laddar...');
+    expect(variants.sv).toBe('Laddar...');
   });
 
   it('folds repeat buffered entries for one locale to the latest value', () => {
-    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Spara');
-    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
-    const catalog = registerCatalog('src/a.tsx', 'Loading...', {
+    setVariant('src/a.tsx', 'Loading...', 'sv', 'Spara');
+    setVariant('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
+    const variants = registerVariants('src/a.tsx', 'Loading...', {
       en: 'Loading...',
     });
 
-    expect(catalog.sv).toBe('Laddar...');
+    expect(variants.sv).toBe('Laddar...');
   });
 
   it('preserves distinct buffered locales for one id', () => {
-    setCatalogEntry('src/a.tsx', 'Cancel', 'sv', 'Avbryt');
-    setCatalogEntry('src/a.tsx', 'Cancel', 'fi', 'Peruuta');
-    const catalog = registerCatalog('src/a.tsx', 'Cancel', {
+    setVariant('src/a.tsx', 'Cancel', 'sv', 'Avbryt');
+    setVariant('src/a.tsx', 'Cancel', 'fi', 'Peruuta');
+    const variants = registerVariants('src/a.tsx', 'Cancel', {
       en: 'Cancel',
     });
 
-    expect(catalog.sv).toBe('Avbryt');
-    expect(catalog.fi).toBe('Peruuta');
+    expect(variants.sv).toBe('Avbryt');
+    expect(variants.fi).toBe('Peruuta');
   });
 
   it('notifies subscribers when writing to a bound catalog', () => {
-    registerCatalog('src/a.tsx', 'Save', {
+    registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
     const subscriber = vi.fn();
     subscribeDev(subscriber);
 
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(subscriber).toHaveBeenCalledOnce();
   });
@@ -210,7 +210,7 @@ describe('setCatalogEntry', () => {
     const subscriber = vi.fn();
     subscribeDev(subscriber);
 
-    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
+    setVariant('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
 
     expect(subscriber).toHaveBeenCalledOnce();
   });
@@ -218,16 +218,16 @@ describe('setCatalogEntry', () => {
 
 describe('invalidateFile', () => {
   it('clears every catalog for the file id', () => {
-    registerCatalog('src/a.tsx', 'Save', {
+    registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
-    registerCatalog('src/a.tsx', 'Cancel', {
+    registerVariants('src/a.tsx', 'Cancel', {
       en: 'Cancel',
     });
 
     invalidateFile('src/a.tsx');
 
-    const rebound = registerCatalog('src/a.tsx', 'Save', {
+    const rebound = registerVariants('src/a.tsx', 'Save', {
       en: 'Hello',
     });
     expect(rebound).toEqual({
@@ -236,37 +236,37 @@ describe('invalidateFile', () => {
   });
 
   it('preserves catalogs for other file ids', () => {
-    const fromB = registerCatalog('src/b.tsx', 'Save', {
+    const fromB = registerVariants('src/b.tsx', 'Save', {
       en: 'Save',
     });
-    registerCatalog('src/a.tsx', 'Save', {
+    registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
 
     invalidateFile('src/a.tsx');
 
     expect(
-      registerCatalog('src/b.tsx', 'Save', {
+      registerVariants('src/b.tsx', 'Save', {
         en: 'World',
       }),
     ).toBe(fromB);
   });
 
   it('clears buffered entries for the file id', () => {
-    setCatalogEntry('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
+    setVariant('src/a.tsx', 'Loading...', 'sv', 'Laddar...');
 
     invalidateFile('src/a.tsx');
 
-    const catalog = registerCatalog('src/a.tsx', 'Loading...', {
+    const variants = registerVariants('src/a.tsx', 'Loading...', {
       en: 'Loading...',
     });
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       en: 'Loading...',
     });
   });
 
   it('notifies subscribers when entries are cleared', () => {
-    registerCatalog('src/a.tsx', 'Save', {
+    registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
     const subscriber = vi.fn();
@@ -278,7 +278,7 @@ describe('invalidateFile', () => {
   });
 
   it('refuses to notify when no catalog matches the file id', () => {
-    registerCatalog('src/a.tsx', 'Save', {
+    registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
     const subscriber = vi.fn();
@@ -295,7 +295,7 @@ describe('autoSubscribeDev', () => {
     const subscriber = vi.fn();
     autoSubscribeDev(makeMeta(), subscriber);
 
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(subscriber).toHaveBeenCalledOnce();
   });
@@ -315,7 +315,7 @@ describe('autoSubscribeDev', () => {
     const unsubscribe = dispose.mock.calls[0]?.[0];
     expect(unsubscribe).toBeTypeOf('function');
     unsubscribe?.();
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara');
     expect(subscriber).not.toHaveBeenCalled();
   });
 });
@@ -333,7 +333,7 @@ describe('subscribeDev', () => {
     subscribeDev(first);
     subscribeDev(second);
 
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(first).toHaveBeenCalledOnce();
     expect(second).toHaveBeenCalledOnce();
@@ -344,7 +344,7 @@ describe('subscribeDev', () => {
     const unsubscribe = subscribeDev(subscriber);
 
     unsubscribe();
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(subscriber).not.toHaveBeenCalled();
   });
@@ -358,13 +358,13 @@ describe('getDevVersion', () => {
   it('yields a new version when an entry fires', () => {
     const before = getDevVersion();
 
-    setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+    setVariant('src/a.tsx', 'Save', 'sv', 'Spara');
 
     expect(getDevVersion()).toBe(before + 1);
   });
 
   it('yields a new version when invalidation fires for a known file id', () => {
-    registerCatalog('src/a.tsx', 'Save', {
+    registerVariants('src/a.tsx', 'Save', {
       en: 'Save',
     });
     const before = getDevVersion();

@@ -31,7 +31,7 @@ describe('useYapyak', () => {
     vi.stubEnv('DEV', false);
     vi.resetModules();
     const { useYapyak: prodUseYapyak } = await import('./use-yapyak');
-    const { setCatalogEntry } = await import('yapyak/internal');
+    const { setVariant } = await import('yapyak/internal');
     let renderCount = 0;
     renderHook(() => {
       renderCount += 1;
@@ -39,7 +39,7 @@ describe('useYapyak', () => {
     });
     const before = renderCount;
     act(() => {
-      setCatalogEntry('src/a.tsx', 'Save', 'sv', 'Spara');
+      setVariant('src/a.tsx', 'Save', 'sv', 'Spara');
     });
 
     expect(renderCount).toBe(before);

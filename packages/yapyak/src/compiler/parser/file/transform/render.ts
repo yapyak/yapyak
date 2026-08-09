@@ -10,7 +10,7 @@ export type PickLocaleTextInput = {
   translations: Record<string, Record<string, string>>;
 };
 
-export type BuildCatalogLiteralInput = {
+export type BuildVariantsLiteralInput = {
   defaultLocale: string;
   id: string;
   locales: string[];
@@ -96,8 +96,8 @@ export function isStaticTemplate(template: Template): boolean {
   return true;
 }
 
-export function buildCatalogLiteral(
-  input: BuildCatalogLiteralInput,
+export function buildVariantsLiteral(
+  input: BuildVariantsLiteralInput,
   usedFactories: Set<string>,
   localsByFactory: Map<string, string>,
 ): string {

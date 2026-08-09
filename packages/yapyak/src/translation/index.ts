@@ -1,3 +1,4 @@
+export type { Variants } from './pick';
 export type { RichTextNode } from './rich-text';
 export type { TFn, TParams, TReturn } from './t';
 

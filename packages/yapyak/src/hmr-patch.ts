@@ -1,6 +1,6 @@
 import type { Template } from './template';
 
-import { setCatalogEntry } from './dev-store';
+import { setVariant } from './dev-store';
 
 export type Patch = {
   fileId: string;
@@ -11,6 +11,6 @@ export type Patch = {
 
 export function applyPatches(event: { patches: Patch[] }): void {
   for (const patch of event.patches) {
-    setCatalogEntry(patch.fileId, patch.id, patch.locale, patch.value);
+    setVariant(patch.fileId, patch.id, patch.locale, patch.value);
   }
 }

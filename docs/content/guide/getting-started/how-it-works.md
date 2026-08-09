@@ -363,23 +363,23 @@ import {
   placeholder as _placeholder
 } from 'yapyak/internal';
 
-const _catalog_$0 = {
+const _variants_$0 = {
   en: 'Save',
   sv: 'Spara'
 };
 
-const _catalog_$1 = {
+const _variants_$1 = {
   en: [_literal('Hi '), _placeholder('name')],
   sv: [_literal('Hej '), _placeholder('name')]
 };
 
-_pick(_catalog_$0);
+_pick(_variants_$0);
 
-_pick(_catalog_$0);
+_pick(_variants_$0);
 
-_pick(_catalog_$1, { name });
+_pick(_variants_$1, { name });
 
-_pick(_catalog_$1, { name });
+_pick(_variants_$1, { name });
 ```
 
 Identical calls share one catalog object, and the factory imports fold into a

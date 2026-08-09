@@ -2,7 +2,7 @@ import type { Template } from './template';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { registerCatalog, resetDevStore } from './dev-store';
+import { registerVariants, resetDevStore } from './dev-store';
 import { applyPatches } from './hmr-patch';
 
 describe('applyPatches', () => {
@@ -11,7 +11,7 @@ describe('applyPatches', () => {
   });
 
   it('writes a single patch into the registered catalog entry', () => {
-    const catalog = registerCatalog('file.ts', 'msg1', {
+    const variants = registerVariants('file.ts', 'msg1', {
       en: 'Hello',
     });
     applyPatches({
@@ -24,17 +24,17 @@ describe('applyPatches', () => {
         },
       ],
     });
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       en: 'Hello',
       sv: 'Hej',
     });
   });
 
   it('writes multiple patches across catalogs in one call', () => {
-    const a = registerCatalog('a.ts', 'm1', {
+    const a = registerVariants('a.ts', 'm1', {
       en: 'A',
     });
-    const b = registerCatalog('b.ts', 'm2', {
+    const b = registerVariants('b.ts', 'm2', {
       en: 'B',
     });
     applyPatches({
@@ -74,17 +74,17 @@ describe('applyPatches', () => {
         },
       ],
     });
-    const catalog = registerCatalog('late.ts', 'msg', {
+    const variants = registerVariants('late.ts', 'msg', {
       en: 'Hello',
     });
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       en: 'Hello',
       sv: 'Hej',
     });
   });
 
   it('clears a locale when its patched value is an empty string', () => {
-    const catalog = registerCatalog('file.ts', 'msg', {
+    const variants = registerVariants('file.ts', 'msg', {
       en: 'Hello',
       sv: 'Hej',
     });
@@ -98,7 +98,7 @@ describe('applyPatches', () => {
         },
       ],
     });
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       en: 'Hello',
     });
   });
@@ -114,7 +114,7 @@ describe('applyPatches', () => {
         name: 'name',
       },
     ];
-    const catalog = registerCatalog('file.ts', 'msg', {});
+    const variants = registerVariants('file.ts', 'msg', {});
     applyPatches({
       patches: [
         {
@@ -125,7 +125,7 @@ describe('applyPatches', () => {
         },
       ],
     });
-    expect(catalog).toEqual({
+    expect(variants).toEqual({
       sv: template,
     });
   });

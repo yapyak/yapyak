@@ -26,7 +26,7 @@ describe('renderCallReplacement', () => {
       localsByFactory: new Map(),
       originalSource: source,
       pickLocal: '_pick',
-      registerCatalog: (literal) => literal,
+      registerVariants: (literal) => literal,
       singleLocale: true,
       translations: {},
     });
@@ -48,7 +48,7 @@ describe('renderCallReplacement', () => {
       localsByFactory: new Map(),
       originalSource: source,
       pickLocal: '_pick',
-      registerCatalog: (literal) => literal,
+      registerVariants: (literal) => literal,
       singleLocale: true,
       translations: {},
     });
@@ -74,7 +74,7 @@ describe('renderCallReplacement', () => {
       localsByFactory: new Map(),
       originalSource: source,
       pickLocal: '_pick',
-      registerCatalog: (literal) => literal,
+      registerVariants: (literal) => literal,
       singleLocale: true,
       translations: {},
     });
@@ -99,9 +99,9 @@ describe('renderCallReplacement', () => {
       localsByFactory: new Map(),
       originalSource: source,
       pickLocal: '_pick',
-      registerCatalog: (literal, id) => {
+      registerVariants: (literal, id) => {
         registered = literal;
-        return `_catalog_${id}`;
+        return `_variants_${id}`;
       },
       singleLocale: false,
       translations: {
@@ -135,7 +135,7 @@ describe('renderCallReplacement', () => {
       localsByFactory: new Map(),
       originalSource: source,
       pickLocal: '_pick',
-      registerCatalog: (_literal, id) => `_catalog_${id}`,
+      registerVariants: (_literal, id) => `_variants_${id}`,
       singleLocale: false,
       translations: {
         sv: {
@@ -143,7 +143,7 @@ describe('renderCallReplacement', () => {
         },
       },
     });
-    expect(result?.code).toMatch(/^_pick\(_catalog_/);
+    expect(result?.code).toMatch(/^_pick\(_variants_/);
     expect(result?.code).toContain("{ name: 'Alex' }");
   });
 });

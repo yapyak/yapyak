@@ -424,8 +424,8 @@ describe('vue processor — transform', () => {
         sv: {},
       },
     });
-    expect(code).toMatch(/_pick\(_catalog_\$\d+\)/);
-    expect(code).toContain("_catalog_$0 = { en: 'Hello', sv: 'Hello' }");
+    expect(code).toMatch(/_pick\(_variants_\$\d+\)/);
+    expect(code).toContain("_variants_$0 = { en: 'Hello', sv: 'Hello' }");
     expect(code).toMatch(/import \{ pick as _pick \} from 'yapyak\/internal'/);
   });
 
@@ -670,7 +670,7 @@ describe('vue processor — transform', () => {
     });
 
     expect(code).toContain(
-      `<p :title="a &lt; b ? _pick(_catalog_$0) : _pick(_catalog_$1)">x</p>`,
+      `<p :title="a &lt; b ? _pick(_variants_$0) : _pick(_variants_$1)">x</p>`,
     );
   });
 
@@ -697,7 +697,7 @@ describe('vue processor — transform', () => {
     });
 
     expect(code).toContain(
-      `<p :title="a &lt b ? _pick(_catalog_$0) : _pick(_catalog_$1)">x</p>`,
+      `<p :title="a &lt b ? _pick(_variants_$0) : _pick(_variants_$1)">x</p>`,
     );
   });
 
@@ -721,7 +721,7 @@ describe('vue processor — transform', () => {
       },
     });
 
-    expect(code).toContain(`<p :title="'&#38 x' + _pick(_catalog_$0)">x</p>`);
+    expect(code).toContain(`<p :title="'&#38 x' + _pick(_variants_$0)">x</p>`);
   });
 
   it('rewrites `t()` in a directive holding an astral-plane entity', () => {
@@ -745,7 +745,7 @@ describe('vue processor — transform', () => {
     });
 
     expect(code).toContain(
-      `<p :title="'&#129452;' + _pick(_catalog_$0)">x</p>`,
+      `<p :title="'&#129452;' + _pick(_variants_$0)">x</p>`,
     );
   });
 

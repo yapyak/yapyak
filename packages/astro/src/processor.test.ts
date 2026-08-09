@@ -714,7 +714,7 @@ describe('astro processor — transform', () => {
     );
 
     expect(code).toContain(
-      '<p>{flag ? <b>{_pick(_catalog_$1)}</b> : _pick(_catalog_$0)}</p>',
+      '<p>{flag ? <b>{_pick(_variants_$1)}</b> : _pick(_variants_$0)}</p>',
     );
   });
 
@@ -749,7 +749,7 @@ describe('astro processor — transform', () => {
     expect(code).toContain(
       "---\nimport { pick as _pick } from 'yapyak/internal';",
     );
-    expect(code).toContain('<p>{_pick(_catalog_$0)}</p>');
+    expect(code).toContain('<p>{_pick(_variants_$0)}</p>');
   });
 
   it('rewrites `t()` in a frontmatter JSX element to a `_pick` call', () => {
@@ -767,7 +767,7 @@ describe('astro processor — transform', () => {
       ],
     );
 
-    expect(code).toContain('const banner = <p>{_pick(_catalog_$0)}</p>;');
+    expect(code).toContain('const banner = <p>{_pick(_variants_$0)}</p>;');
   });
 
   it('rewrites `t()` in a file with a space after the closing fence', () => {
@@ -784,6 +784,6 @@ describe('astro processor — transform', () => {
       ],
     );
 
-    expect(code).toContain('<p>{_pick(_catalog_$0)}</p>');
+    expect(code).toContain('<p>{_pick(_variants_$0)}</p>');
   });
 });

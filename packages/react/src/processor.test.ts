@@ -120,7 +120,7 @@ describe('react processor', () => {
         '}',
       ].join('\n'),
     });
-    expect(code).not.toMatch(/_registerCatalog/);
+    expect(code).not.toMatch(/_registerVariants/);
     expect(code).not.toMatch(/_invalidateFile/);
   });
 });
