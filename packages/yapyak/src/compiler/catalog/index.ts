@@ -15,6 +15,7 @@ export { findContextDiagnostics } from './context-diagnostic';
 export {
   CorruptLocaleFileError,
   CorruptOrphanCacheError,
+  buildPatches,
   detectRenames,
   discoverLocales,
   findTranslation,

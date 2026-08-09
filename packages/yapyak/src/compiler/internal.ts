@@ -24,6 +24,7 @@ export {
   CorruptLocaleFileError,
   CorruptOrphanCacheError,
   autoTranslate,
+  buildPatches,
   detectRenames,
   discoverLocales,
   findContextDiagnostics,
