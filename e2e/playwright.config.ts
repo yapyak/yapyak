@@ -2,12 +2,23 @@ import type { ExampleOptions } from './src/test';
 
 import { defineConfig, devices } from '@playwright/test';
 
+import { fileURLToPath } from 'node:url';
+
 type Mode = 'dev' | 'prod';
+
+type SaveLoop = {
+  fileId: string;
+  sourceAnchor: string;
+  sourceInsertion: string;
+  sourcePath: string;
+  ssrHtml: boolean;
+};
 
 type Example = {
   name: string;
   persistence: ExampleOptions['persistence'];
   port: number;
+  saveLoop?: SaveLoop;
   serve: 'preview' | 'start';
   switchLocaleOnServer: boolean;
 };
@@ -25,6 +36,14 @@ const EXAMPLES: Example[] = [
     name: 'astro-cookie',
     persistence: 'cookie',
     port: 5301,
+    saveLoop: {
+      fileId: 'src/pages/index.astro',
+      sourceAnchor: "<h2>{t('Dates and times')}</h2>",
+      sourceInsertion:
+        "<h2>{t('Dates and times')}</h2><p>{t('Probe from the save loop')}</p>",
+      sourcePath: 'src/pages/index.astro',
+      ssrHtml: true,
+    },
     serve: 'preview',
     switchLocaleOnServer: false,
   },
@@ -39,6 +58,14 @@ const EXAMPLES: Example[] = [
     name: 'react-react-router-cookie',
     persistence: 'cookie',
     port: 5302,
+    saveLoop: {
+      fileId: 'app/routes/home.tsx',
+      sourceAnchor: "<h2>{t('Dates and times')}</h2>",
+      sourceInsertion:
+        "<h2>{t('Dates and times')}</h2><p>{t('Probe from the save loop')}</p>",
+      sourcePath: 'app/routes/home.tsx',
+      ssrHtml: true,
+    },
     serve: 'start',
     switchLocaleOnServer: true,
   },
@@ -53,6 +80,14 @@ const EXAMPLES: Example[] = [
     name: 'react-tanstack-start-cookie',
     persistence: 'cookie',
     port: 5304,
+    saveLoop: {
+      fileId: 'src/routes/index.tsx',
+      sourceAnchor: "<h2>{t('Dates and times')}</h2>",
+      sourceInsertion:
+        "<h2>{t('Dates and times')}</h2><p>{t('Probe from the save loop')}</p>",
+      sourcePath: 'src/routes/index.tsx',
+      ssrHtml: true,
+    },
     serve: 'preview',
     switchLocaleOnServer: true,
   },
@@ -88,6 +123,14 @@ const EXAMPLES: Example[] = [
     name: 'svelte-sveltekit-cookie',
     persistence: 'cookie',
     port: 5307,
+    saveLoop: {
+      fileId: 'src/routes/+page.svelte',
+      sourceAnchor: '<h2>{t("Dates and times")}</h2>',
+      sourceInsertion:
+        '<h2>{t("Dates and times")}</h2><p>{t("Probe from the save loop")}</p>',
+      sourcePath: 'src/routes/+page.svelte',
+      ssrHtml: true,
+    },
     serve: 'preview',
     switchLocaleOnServer: true,
   },
@@ -102,6 +145,14 @@ const EXAMPLES: Example[] = [
     name: 'svelte-vanilla-cookie',
     persistence: 'cookie',
     port: 5314,
+    saveLoop: {
+      fileId: 'src/app.svelte',
+      sourceAnchor: '<h2>{t("Dates and times")}</h2>',
+      sourceInsertion:
+        '<h2>{t("Dates and times")}</h2><p>{t("Probe from the save loop")}</p>',
+      sourcePath: 'src/app.svelte',
+      ssrHtml: false,
+    },
     serve: 'preview',
     switchLocaleOnServer: false,
   },
@@ -123,6 +174,14 @@ const EXAMPLES: Example[] = [
     name: 'vue-vanilla-cookie',
     persistence: 'cookie',
     port: 5316,
+    saveLoop: {
+      fileId: 'src/app.vue',
+      sourceAnchor: "<h2>{{ t('Dates and times') }}</h2>",
+      sourceInsertion:
+        "<h2>{{ t('Dates and times') }}</h2><p>{{ t('Probe from the save loop') }}</p>",
+      sourcePath: 'src/app.vue',
+      ssrHtml: false,
+    },
     serve: 'preview',
     switchLocaleOnServer: false,
   },
@@ -144,6 +203,12 @@ const EXAMPLES: Example[] = [
 
 function resolvePort(example: Example): number {
   return MODE === 'prod' ? example.port + PROD_PORT_OFFSET : example.port;
+}
+
+function toExamplePath(example: Example, relativePath: string): string {
+  return fileURLToPath(
+    new URL(`../examples/${example.name}/${relativePath}`, import.meta.url),
+  );
 }
 
 function resolveCommand(example: Example): string {
@@ -170,6 +235,37 @@ export default defineConfig<ExampleOptions>({
         switchLocaleOnServer: example.switchLocaleOnServer,
       },
     })),
+    ...(MODE === 'dev'
+      ? EXAMPLES.flatMap((example) =>
+          example.saveLoop === undefined
+            ? []
+            : [
+                {
+                  dependencies: [
+                    example.name,
+                  ],
+                  name: `${example.name}-save-loop`,
+                  testMatch: 'example-save-loop.spec.ts',
+                  use: {
+                    ...devices['Desktop Chrome'],
+                    allowHydrationMismatch: true,
+                    baseURL: `http://localhost:${resolvePort(example)}`,
+                    catalogFileId: example.saveLoop.fileId,
+                    catalogPath: toExamplePath(example, 'locales/sv.json'),
+                    persistence: example.persistence,
+                    sourceAnchor: example.saveLoop.sourceAnchor,
+                    sourceInsertion: example.saveLoop.sourceInsertion,
+                    sourcePath: toExamplePath(
+                      example,
+                      example.saveLoop.sourcePath,
+                    ),
+                    ssrHtml: example.saveLoop.ssrHtml,
+                    switchLocaleOnServer: example.switchLocaleOnServer,
+                  },
+                },
+              ],
+        )
+      : []),
     ...(MODE === 'dev'
       ? [
           {
