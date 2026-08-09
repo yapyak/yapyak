@@ -1,5 +1,13 @@
 # @yapyak/astro
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [[`3019f62`](https://github.com/yapyak/yapyak/commit/3019f627b66265c100454f9e7c86439e903fbf81), [`ddcdba5`](https://github.com/yapyak/yapyak/commit/ddcdba5e2b9f2a0c85840bb9c4be74125fbdb57d)]:
+  - @yapyak/vite@0.0.6
+  - yapyak@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes

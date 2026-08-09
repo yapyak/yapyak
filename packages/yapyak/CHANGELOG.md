@@ -1,5 +1,11 @@
 # yapyak
 
+## 0.0.6
+
+### Patch Changes
+
+- [`ddcdba5`](https://github.com/yapyak/yapyak/commit/ddcdba5e2b9f2a0c85840bb9c4be74125fbdb57d) Thanks [@qwuide](https://github.com/qwuide)! - Read locale files from disk at render time in dev-time SSR via the new `yapyak/dev` subpath. Server-rendered pages now pick up locale file edits on the next request instead of serving stale translations until the dev server restarts.
+
 ## 0.0.5
 
 ## 0.0.4

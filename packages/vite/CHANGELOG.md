@@ -1,5 +1,16 @@
 # @yapyak/vite
 
+## 0.0.6
+
+### Patch Changes
+
+- [`3019f62`](https://github.com/yapyak/yapyak/commit/3019f627b66265c100454f9e7c86439e903fbf81) Thanks [@qwuide](https://github.com/qwuide)! - Invalidate every module graph — including the client — when a locale file changes, instead of force-reloading server environments. Reloaded pages no longer hydrate with stale cached translations, and Astro's dev server no longer breaks on locale file saves.
+
+- [`ddcdba5`](https://github.com/yapyak/yapyak/commit/ddcdba5e2b9f2a0c85840bb9c4be74125fbdb57d) Thanks [@qwuide](https://github.com/qwuide)! - Read locale files from disk at render time in dev-time SSR via the new `yapyak/dev` subpath. Server-rendered pages now pick up locale file edits on the next request instead of serving stale translations until the dev server restarts.
+
+- Updated dependencies [[`ddcdba5`](https://github.com/yapyak/yapyak/commit/ddcdba5e2b9f2a0c85840bb9c4be74125fbdb57d)]:
+  - yapyak@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes
