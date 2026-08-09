@@ -1,5 +1,16 @@
 # @yapyak/svelte
 
+## 0.0.4
+
+### Patch Changes
+
+- [`3cbb9e9`](https://github.com/yapyak/yapyak/commit/3cbb9e930bc1787c0630c29366789ecf9ca5d2af) Thanks [@qwuide](https://github.com/qwuide)! - Fix the dev server failing to start with `js_parse_error: Unexpected token`.
+
+  The package shipped its runtime entries as TypeScript source, which Vite's dependency optimizer compiles with no TypeScript step. It now ships compiled JavaScript, built with `svelte-package`.
+
+- Updated dependencies []:
+  - yapyak@0.0.4
+
 ## 0.0.3
 
 ### Patch Changes
