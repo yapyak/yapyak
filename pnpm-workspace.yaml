@@ -24,6 +24,7 @@ updateConfig:
     - typescript
 
 catalog:
+  '@arethetypeswrong/cli': 0.18.5
   '@arethetypeswrong/core': 0.18.5
   '@astrojs/check': 0.9.9
   '@astrojs/compiler-rs': 0.3.1

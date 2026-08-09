@@ -41,11 +41,12 @@
     "!dist/**/*.test.*"
   ],
   "scripts": {
-    "build": "svelte-package --input src --output dist --tsconfig tsconfig.build.json",
+    "build": "svelte-package --input src --output dist --tsconfig tsconfig.build.json && publint && attw --pack . --profile esm-only --ignore-rules internal-resolution-error",
     "test": "pnpm -w vitest --run --project=@yapyak/svelte",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@arethetypeswrong/cli": "catalog:",
     "@sveltejs/package": "catalog:",
     "@sveltejs/vite-plugin-svelte": "catalog:",
     "@testing-library/svelte": "catalog:",
@@ -53,6 +54,7 @@
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vitest-config": "workspace:*",
     "happy-dom": "catalog:",
+    "publint": "catalog:",
     "svelte": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",

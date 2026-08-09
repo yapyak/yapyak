@@ -222,6 +222,7 @@ A package whose `src` carries `.svelte` or `.svelte.ts` files builds with `@svel
 - Exclude the compiled tests from `files`: `"!dist/**/*.test.*"`.
 - Add the `svelte` export condition beside `types` and `default`, pointing into `dist`.
 - Ship no TypeScript — `vite-plugin-svelte` prebundles Svelte libraries in dev by default and compiles them with no TypeScript step, so a published `.svelte.ts` is a parse error in every consumer.
+- Chain `publint` and `attw` onto the `build` script. `tsdown` runs both on its own; `svelte-package` runs neither.
 
 ```jsonc
 // ✓
