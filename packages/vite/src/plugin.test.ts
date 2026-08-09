@@ -386,6 +386,65 @@ describe('yapyak', () => {
       );
     });
 
+    it('reloads the server environments when a locale file is edited', async () => {
+      writeFileSync(localePath, '{}');
+      const plugin = yapyak();
+      await invokeConfigResolved(plugin, root, 'serve');
+      invokeBuildStart(plugin);
+
+      vi.useFakeTimers();
+      const server = createMockServer(createMockWatcher());
+      const sourceFile = join(root, 'src', 'a.tsx');
+      const sourceModule: MockModule = {
+        file: sourceFile,
+        importers: new Set(),
+        url: '/src/a.tsx',
+      };
+      const ssrSend = vi.fn();
+      const ssrInvalidate = vi.fn();
+      const clientSend = vi.fn();
+      server.environments.ssr = {
+        hot: {
+          send: ssrSend,
+        },
+        moduleGraph: {
+          getModulesByFile: (file: string) =>
+            file === sourceFile
+              ? new Set([
+                  sourceModule,
+                ])
+              : undefined,
+          invalidateModule: ssrInvalidate,
+        },
+        name: 'ssr',
+      };
+      server.environments.client = {
+        ...createMockEnvironment('client'),
+        hot: {
+          send: clientSend,
+        },
+      };
+      invokeConfigureServer(plugin, server);
+      const watcher = server.watcher;
+
+      writeFileSync(
+        localePath,
+        JSON.stringify({
+          'src/a.tsx': {
+            Hello: 'Hej',
+          },
+        }),
+      );
+      watcher.emit('change', localePath);
+      await vi.advanceTimersByTimeAsync(60);
+
+      expect(ssrInvalidate).toHaveBeenCalledWith(sourceModule);
+      expect(ssrSend).toHaveBeenCalledWith({
+        type: 'full-reload',
+      });
+      expect(clientSend).not.toHaveBeenCalled();
+    });
+
     it('emits a `full-reload` for a `skipHmrCallback` processor file and refuses to emit a patch', async () => {
       writeFileSync(localePath, '{}');
       writeFileSync(
@@ -1935,6 +1994,7 @@ interface MockWatcher extends EventEmitter {
 
 type MockModule = {
   file: string | null;
+  importers?: Set<MockModule>;
   url: string;
 };
 
@@ -1945,6 +2005,7 @@ type MockMessage = {
 };
 
 type MockServer = {
+  environments: Record<string, MockEnvironment>;
   moduleGraph: {
     getModuleById: (id: string) => MockModule | undefined;
     getModulesByFile: (file: string) => Set<MockModule> | undefined;
@@ -1960,6 +2021,30 @@ type MockServer = {
   };
 };
 
+type MockEnvironment = {
+  hot: {
+    send: (message: MockMessage) => void;
+  };
+  moduleGraph: {
+    getModulesByFile: (file: string) => Set<MockModule> | undefined;
+    invalidateModule: (mod: MockModule) => void;
+  };
+  name: string;
+};
+
+function createMockEnvironment(name: string): MockEnvironment {
+  return {
+    hot: {
+      send: () => {},
+    },
+    moduleGraph: {
+      getModulesByFile: () => undefined,
+      invalidateModule: () => {},
+    },
+    name,
+  };
+}
+
 function createMockWatcher(): MockWatcher {
   const emitter = new EventEmitter() as MockWatcher;
   emitter.add = () => {};
@@ -1969,6 +2054,10 @@ function createMockWatcher(): MockWatcher {
 function createMockServer(watcher: MockWatcher): MockServer {
   const idToModuleMap = new Map<unknown, MockModule>();
   return {
+    environments: {
+      client: createMockEnvironment('client'),
+      ssr: createMockEnvironment('ssr'),
+    },
     moduleGraph: {
       getModuleById: (id: string) => idToModuleMap.get(id),
       getModulesByFile: (file: string) => {

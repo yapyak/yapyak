@@ -16,6 +16,7 @@ import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { Patch } from 'yapyak/internal';
 import type { State } from './state';
 
+import { isRunnableDevEnvironment } from 'vite';
 import {
   CorruptLocaleFileError,
   YAP_RUNTIME,
@@ -124,6 +125,7 @@ export function createDevServerPlugin(state: State): Plugin {
           }
           const allPatches: Patch[] = [];
           const filesToReload = new Set<string>();
+          const patchedFiles = new Set<string>();
           const skipHmrExtensions = getNormalized(state)
             .processors.filter(
               (processor) => processor.skipHmrCallback === true,
@@ -139,6 +141,7 @@ export function createDevServerPlugin(state: State): Plugin {
             previousLocaleData.set(locale, after);
             const localePatches = buildPatches(before, after, locale);
             for (const patch of localePatches) {
+              patchedFiles.add(join(state.projectRoot, patch.fileId));
               if (
                 skipHmrExtensions.some((extension) =>
                   patch.fileId.endsWith(extension),
@@ -155,6 +158,7 @@ export function createDevServerPlugin(state: State): Plugin {
             return;
           }
           getResolver(state).invalidateData();
+          reloadServerEnvironments(server, patchedFiles);
           for (const file of filesToReload) {
             server.ws.send({
               path: file,
@@ -319,6 +323,60 @@ export function createDevServerPlugin(state: State): Plugin {
     },
     name: 'yapyak:dev-server',
   };
+}
+
+function reloadServerEnvironments(
+  server: ViteDevServer,
+  files: Set<string>,
+): void {
+  for (const environment of Object.values(server.environments)) {
+    if (environment.name === 'client') {
+      continue;
+    }
+    const affected = new Set<EnvironmentModuleNode>();
+    for (const file of files) {
+      for (const module of environment.moduleGraph.getModulesByFile(file) ??
+        []) {
+        collectWithImporters(module, affected);
+      }
+    }
+    if (affected.size === 0) {
+      continue;
+    }
+    for (const module of affected) {
+      environment.moduleGraph.invalidateModule(module);
+    }
+    environment.hot.send({
+      type: 'full-reload',
+    });
+    if (!isRunnableDevEnvironment(environment)) {
+      continue;
+    }
+    for (const module of affected) {
+      if (module.file === null) {
+        continue;
+      }
+      const evaluated = environment.runner.evaluatedModules.getModulesByFile(
+        module.file,
+      );
+      for (const node of evaluated ?? []) {
+        environment.runner.evaluatedModules.invalidateModule(node);
+      }
+    }
+  }
+}
+
+function collectWithImporters(
+  module: EnvironmentModuleNode,
+  seen: Set<EnvironmentModuleNode>,
+): void {
+  if (seen.has(module)) {
+    return;
+  }
+  seen.add(module);
+  for (const importer of module.importers) {
+    collectWithImporters(importer, seen);
+  }
 }
 
 function reloadAllModules(server: ViteDevServer): void {
