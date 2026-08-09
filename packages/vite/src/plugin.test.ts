@@ -386,7 +386,7 @@ describe('yapyak', () => {
       );
     });
 
-    it('reloads the server environments when a locale file is edited', async () => {
+    it('invalidates every module graph when a locale file is edited', async () => {
       writeFileSync(localePath, '{}');
       const plugin = yapyak();
       await invokeConfigResolved(plugin, root, 'serve');
@@ -403,6 +403,7 @@ describe('yapyak', () => {
       const ssrSend = vi.fn();
       const ssrInvalidate = vi.fn();
       const clientSend = vi.fn();
+      const clientInvalidate = vi.fn();
       server.environments.ssr = {
         hot: {
           send: ssrSend,
@@ -419,10 +420,19 @@ describe('yapyak', () => {
         name: 'ssr',
       };
       server.environments.client = {
-        ...createMockEnvironment('client'),
         hot: {
           send: clientSend,
         },
+        moduleGraph: {
+          getModulesByFile: (file: string) =>
+            file === sourceFile
+              ? new Set([
+                  sourceModule,
+                ])
+              : undefined,
+          invalidateModule: clientInvalidate,
+        },
+        name: 'client',
       };
       invokeConfigureServer(plugin, server);
       const watcher = server.watcher;
@@ -439,9 +449,8 @@ describe('yapyak', () => {
       await vi.advanceTimersByTimeAsync(60);
 
       expect(ssrInvalidate).toHaveBeenCalledWith(sourceModule);
-      expect(ssrSend).toHaveBeenCalledWith({
-        type: 'full-reload',
-      });
+      expect(clientInvalidate).toHaveBeenCalledWith(sourceModule);
+      expect(ssrSend).not.toHaveBeenCalled();
       expect(clientSend).not.toHaveBeenCalled();
     });
 

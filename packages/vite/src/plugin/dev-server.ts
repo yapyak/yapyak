@@ -14,7 +14,6 @@ import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { Patch } from 'yapyak/internal';
 import type { State } from './state';
 
-import { isRunnableDevEnvironment } from 'vite';
 import {
   CorruptLocaleFileError,
   YAP_RUNTIME,
@@ -156,7 +155,7 @@ export function createDevServerPlugin(state: State): Plugin {
             return;
           }
           getResolver(state).invalidateData();
-          reloadServerEnvironments(server, patchedFiles);
+          invalidateEnvironments(server, patchedFiles);
           for (const file of filesToReload) {
             server.ws.send({
               path: file,
@@ -323,14 +322,11 @@ export function createDevServerPlugin(state: State): Plugin {
   };
 }
 
-function reloadServerEnvironments(
+function invalidateEnvironments(
   server: ViteDevServer,
   files: Set<string>,
 ): void {
   for (const environment of Object.values(server.environments)) {
-    if (environment.name === 'client') {
-      continue;
-    }
     const affected = new Set<EnvironmentModuleNode>();
     for (const file of files) {
       for (const module of environment.moduleGraph.getModulesByFile(file) ??
@@ -338,28 +334,8 @@ function reloadServerEnvironments(
         collectWithImporters(module, affected);
       }
     }
-    if (affected.size === 0) {
-      continue;
-    }
     for (const module of affected) {
       environment.moduleGraph.invalidateModule(module);
-    }
-    environment.hot.send({
-      type: 'full-reload',
-    });
-    if (!isRunnableDevEnvironment(environment)) {
-      continue;
-    }
-    for (const module of affected) {
-      if (module.file === null) {
-        continue;
-      }
-      const evaluated = environment.runner.evaluatedModules.getModulesByFile(
-        module.file,
-      );
-      for (const node of evaluated ?? []) {
-        environment.runner.evaluatedModules.invalidateModule(node);
-      }
     }
   }
 }
