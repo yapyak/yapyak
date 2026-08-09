@@ -14,13 +14,13 @@ import type { Placeholder } from '../placeholder';
 import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../../diagnostic';
+import { toMessageKey } from '../../../message-key';
 import { segmentsFromOffset } from '../../../processor';
 import { parseArguments } from '../argument';
 import { resolveBindings } from '../binding';
 import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
 import { validateFragments } from '../fragment';
-import { toMessageKey } from '../message-key';
 import { parsePlaceholders } from '../placeholder';
 import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';

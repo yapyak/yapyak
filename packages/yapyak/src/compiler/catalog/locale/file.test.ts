@@ -3,8 +3,8 @@ import type { LocaleFile } from './file';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { toMessageKey } from '../../../message-key';
 import { resetWarn, setWarn } from '../../../warn';
-import { toMessageKey } from '../../parser';
 import { stringifyCanonical } from '../canonical';
 import {
   CorruptLocaleFileError,

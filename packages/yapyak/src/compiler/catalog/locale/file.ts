@@ -3,7 +3,7 @@ import type { LocaleContext } from './context';
 import type { OrphanCache } from './orphan';
 
 import { YAP_COMPILE, warnDiagnostic } from '../../../diagnostic';
-import { toMessageKey } from '../../parser/message-key';
+import { toMessageKey } from '../../../message-key';
 import { compareKeys, stringifyCanonical } from '../canonical';
 import { writeEachAtomic } from './atomic';
 import { stripBom } from './bom';

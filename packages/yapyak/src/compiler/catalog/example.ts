@@ -1,7 +1,7 @@
 import type { TranslationExample } from '../../translator';
 import type { LocaleData, OrphanCache } from './locale';
 
-import { fromMessageKey, toMessageKey } from '../parser';
+import { fromMessageKey, toMessageKey } from '../../message-key';
 import { toVariants } from './locale';
 
 export type ExtractExamplesInput = {

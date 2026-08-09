@@ -2,7 +2,7 @@ import type { ExtractedMessage, Location } from '../parser';
 
 import { describe, expect, it } from 'vitest';
 
-import { toMessageKey } from '../parser';
+import { toMessageKey } from '../../message-key';
 import { findContextDiagnostics } from './context-diagnostic';
 
 function makeLocation(fileId = 'src/a.tsx', context?: string): Location {

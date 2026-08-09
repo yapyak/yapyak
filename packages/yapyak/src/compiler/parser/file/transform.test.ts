@@ -3,8 +3,8 @@ import type { TransformFileRequest } from './transform';
 
 import { describe, expect, it } from 'vitest';
 
+import { toMessageKey } from '../../../message-key';
 import { createProcessor, segmentsFromOffset } from '../../../processor';
-import { toMessageKey } from '../message-key';
 import { extractFile } from './extract';
 import { transformFile } from './transform';
 

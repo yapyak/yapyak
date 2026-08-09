@@ -14,7 +14,7 @@ import type {
   TranslationParityResult,
 } from './locale';
 
-import { toMessageKey } from '../parser';
+import { toMessageKey } from '../../message-key';
 import { extractExamples } from './example';
 import {
   findTranslation,

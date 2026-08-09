@@ -19,6 +19,7 @@ export type {
 } from './parser';
 
 export { YAP_COMPILE, YAP_RUNTIME, getDocsUrl } from '../diagnostic';
+export { fromMessageKey, toMessageKey } from '../message-key';
 export { parseTemplate } from '../template';
 export {
   CorruptLocaleFileError,
@@ -45,9 +46,4 @@ export {
   writeRegister,
 } from './catalog';
 export { walkSourceFiles } from './io';
-export {
-  extractFile,
-  fromMessageKey,
-  toMessageKey,
-  transformFile,
-} from './parser';
+export { extractFile, transformFile } from './parser';

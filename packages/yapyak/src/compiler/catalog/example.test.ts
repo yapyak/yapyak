@@ -2,7 +2,7 @@ import type { LocaleData, OrphanCache } from './locale';
 
 import { describe, expect, it } from 'vitest';
 
-import { toMessageKey } from '../parser';
+import { toMessageKey } from '../../message-key';
 import { extractExamples } from './example';
 
 const emptyOrphans: OrphanCache = {};
