@@ -50,6 +50,24 @@ type TransformHookResult = {
 
 type TransformHook = (code: string, id: string) => TransformHookResult;
 
+function buildContext(
+  consumer: 'client' | 'server',
+  addWatchFile?: () => void,
+): ThisParameterType<TransformHook> {
+  return {
+    ...(addWatchFile === undefined
+      ? {}
+      : {
+          addWatchFile,
+        }),
+    environment: {
+      config: {
+        consumer,
+      },
+    },
+  } as ThisParameterType<TransformHook>;
+}
+
 type WatchChangeHook = (
   id: string,
   change: {
@@ -74,7 +92,7 @@ describe('createTransformPlugin', () => {
       const transform = plugin.transform as TransformHook;
 
       const result = transform.call(
-        {} as ThisParameterType<TransformHook>,
+        buildContext('client'),
         `import { t } from 'yapyak';\nt('Hello');\n`,
         '\0virtual:something',
       );
@@ -88,7 +106,7 @@ describe('createTransformPlugin', () => {
       const transform = plugin.transform as TransformHook;
 
       const result = transform.call(
-        {} as ThisParameterType<TransformHook>,
+        buildContext('client'),
         `import { t } from 'yapyak';\nt('Hello');\n`,
         '/project/src/a.tsx?raw',
       );
@@ -103,7 +121,7 @@ describe('createTransformPlugin', () => {
       const transform = plugin.transform as TransformHook;
 
       const result = transform.call(
-        {} as ThisParameterType<TransformHook>,
+        buildContext('client'),
         `import { t } from 'yapyak';\nt('Hello');\n`,
         '/project/src/a.tsx',
       );
@@ -117,7 +135,7 @@ describe('createTransformPlugin', () => {
       const transform = plugin.transform as TransformHook;
 
       const result = transform.call(
-        {} as ThisParameterType<TransformHook>,
+        buildContext('client'),
         'const value = 1;\n',
         '/project/src/a.tsx',
       );
@@ -131,7 +149,7 @@ describe('createTransformPlugin', () => {
       const transform = plugin.transform as TransformHook;
 
       const result = transform.call(
-        {} as ThisParameterType<TransformHook>,
+        buildContext('client'),
         `import { locales } from 'yapyak';\nconst value = locales;\n`,
         '/project/src/a.tsx',
       );
@@ -145,7 +163,7 @@ describe('createTransformPlugin', () => {
       const transform = plugin.transform as TransformHook;
 
       const result = transform.call(
-        {} as ThisParameterType<TransformHook>,
+        buildContext('client'),
         `import { t } from 'yapyak';\nt('Hello');\n`,
         '/project/src/a.tsx',
       );
@@ -160,7 +178,7 @@ describe('createTransformPlugin', () => {
       const transform = plugin.transform as TransformHook;
 
       const result = transform.call(
-        {} as ThisParameterType<TransformHook>,
+        buildContext('client'),
         `import { t } from 'yapyak';\nt('Hello');\n`,
         '/project/src/a.tsx?v=1',
       );
@@ -186,13 +204,49 @@ describe('createTransformPlugin', () => {
       const transform = plugin.transform as TransformHook;
 
       const result = transform.call(
-        {} as ThisParameterType<TransformHook>,
+        buildContext('client'),
         `import { t } from 'yapyak';\nexport const a = () => t('Hello');\nexport const b = () => t('World');\n`,
         '/project/src/a.tsx',
       );
 
       expect(result?.code).toContain('Hej');
       expect(result?.code).toContain('Världen');
+    });
+
+    it('emits a locale file source when serving a server environment', () => {
+      const state = buildState('/project');
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+
+      const result = transform.call(
+        buildContext('server'),
+        `import { t } from 'yapyak';\nt('Hello');\n`,
+        '/project/src/a.tsx',
+      );
+
+      expect(result?.code).toContain(
+        `import { registerLocaleFileSource as _registerLocaleFileSource } from 'yapyak/dev';`,
+      );
+      expect(result?.code).toContain(
+        JSON.stringify({
+          en: join('/project', 'locales', 'en.json'),
+          sv: join('/project', 'locales', 'sv.json'),
+        }),
+      );
+    });
+
+    it('emits no locale file source when serving a client environment', () => {
+      const state = buildState('/project');
+      const plugin = createTransformPlugin(state);
+      const transform = plugin.transform as TransformHook;
+
+      const result = transform.call(
+        buildContext('client'),
+        `import { t } from 'yapyak';\nt('Hello');\n`,
+        '/project/src/a.tsx',
+      );
+
+      expect(result?.code).not.toContain('registerLocaleFileSource');
     });
 
     it('registers every locale file as a watch file when building', () => {
@@ -203,9 +257,7 @@ describe('createTransformPlugin', () => {
       const addWatchFile = vi.fn();
 
       transform.call(
-        {
-          addWatchFile,
-        } as ThisParameterType<TransformHook>,
+        buildContext('client', addWatchFile),
         `import { t } from 'yapyak';\nt('Hello');\n`,
         '/project/src/a.tsx',
       );
@@ -225,9 +277,7 @@ describe('createTransformPlugin', () => {
       const addWatchFile = vi.fn();
 
       transform.call(
-        {
-          addWatchFile,
-        } as ThisParameterType<TransformHook>,
+        buildContext('client', addWatchFile),
         `import { t } from 'yapyak';\nt('Hello');\n`,
         '/project/src/a.tsx',
       );

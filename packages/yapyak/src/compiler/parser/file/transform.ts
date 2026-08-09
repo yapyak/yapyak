@@ -14,7 +14,7 @@ import type {
 import MagicString from 'magic-string';
 
 import { segmentsFromOffset } from '../../../processor';
-import { YAPYAK_INTERNAL_MODULE } from '../binding';
+import { YAPYAK_DEV_MODULE, YAPYAK_INTERNAL_MODULE } from '../binding';
 import { validateFragments } from '../fragment';
 import { resolveProcessor } from '../processor';
 import { renderCallReplacement } from './transform/call-replacement';
@@ -32,6 +32,7 @@ export type TransformFileRequest = {
   dev?: boolean;
   extracted: ExtractFileResult;
   fileId: string;
+  localeFilePaths?: Record<string, string>;
   locales: string[];
   processors?: Processor[];
   source: string;
@@ -49,6 +50,7 @@ const PICK_EXPORT = 'pick';
 const PICK_LOCAL = '_pick';
 const CATALOG_PREFIX = '_catalog';
 const REGISTER_CATALOG_LOCAL = '_registerCatalog';
+const REGISTER_LOCALE_FILE_SOURCE_LOCAL = '_registerLocaleFileSource';
 const INVALIDATE_FILE_LOCAL = '_invalidateFile';
 const USE_YAPYAK_LOCAL = '_useYapyak';
 const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
@@ -123,6 +125,11 @@ export function transformFile(
   const registerCatalogLocal = isDev
     ? findFreeIdentifier(request.source, REGISTER_CATALOG_LOCAL)
     : '';
+  const localeFilePaths = isDev ? request.localeFilePaths : undefined;
+  const registerLocaleFileSourceLocal =
+    localeFilePaths === undefined
+      ? ''
+      : findFreeIdentifier(request.source, REGISTER_LOCALE_FILE_SOURCE_LOCAL);
   const invalidateFileLocal = isDev
     ? findFreeIdentifier(request.source, INVALIDATE_FILE_LOCAL)
     : '';
@@ -253,6 +260,12 @@ export function transformFile(
   if (allImportSpecs.length > 0) {
     injectionLines.push(
       `import { ${allImportSpecs.join(', ')} } from '${YAPYAK_INTERNAL_MODULE}';`,
+    );
+  }
+  if (localeFilePaths !== undefined && catalogsByKey.size > 0) {
+    injectionLines.push(
+      `import { registerLocaleFileSource as ${registerLocaleFileSourceLocal} } from '${YAPYAK_DEV_MODULE}';`,
+      `${registerLocaleFileSourceLocal}(${JSON.stringify(localeFilePaths)});`,
     );
   }
   if (runtime?.componentHook !== undefined) {

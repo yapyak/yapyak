@@ -51,6 +51,7 @@ function runTransform(input: {
   fileId?: string;
   processors?: Processor[];
   dev?: boolean;
+  localeFilePaths?: Record<string, string>;
 }): string {
   const fileId = input.fileId ?? 'src/a.tsx';
   const extracted = extractFile(fileId, input.source, {
@@ -66,6 +67,9 @@ function runTransform(input: {
   };
   if (input.dev !== undefined) {
     request.dev = input.dev;
+  }
+  if (input.localeFilePaths !== undefined) {
+    request.localeFilePaths = input.localeFilePaths;
   }
   return transformFile(request).code;
 }
@@ -1353,6 +1357,48 @@ describe('transformFile', () => {
       expect(code).toMatch(
         /_registerCatalog\("src\/a\.tsx", "\[\\"Hello\\",null\]"/,
       );
+    });
+
+    it('emits a `registerLocaleFileSource` call when `localeFilePaths` is set', () => {
+      const code = runTransform({
+        dev: true,
+        localeFilePaths: {
+          en: '/project/locales/en.json',
+          sv: '/project/locales/sv.json',
+        },
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
+      });
+      expect(code).toContain(
+        "import { registerLocaleFileSource as _registerLocaleFileSource } from 'yapyak/dev';",
+      );
+      expect(code).toContain(
+        '_registerLocaleFileSource({"en":"/project/locales/en.json","sv":"/project/locales/sv.json"});',
+      );
+    });
+
+    it('emits no `registerLocaleFileSource` call when dev is off', () => {
+      const code = runTransform({
+        localeFilePaths: {
+          sv: '/project/locales/sv.json',
+        },
+        locales: [
+          'en',
+          'sv',
+        ],
+        source:
+          "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
+        translations: {
+          sv: {
+            Hello: 'Hej',
+          },
+        },
+      });
+      expect(code).not.toContain('registerLocaleFileSource');
     });
 
     it('emits an `invalidateFile` disposer when dev is on', () => {

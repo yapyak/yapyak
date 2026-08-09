@@ -74,11 +74,26 @@ export function createTransformPlugin(state: State): Plugin {
         localeData: getResolver(state).getLocaleData(),
         locales,
       });
+      let localeFilePaths: Record<string, string> | undefined;
+      if (
+        state.command === 'serve' &&
+        this.environment.config.consumer === 'server'
+      ) {
+        const localesDir = join(
+          state.projectRoot,
+          getNormalized(state).localesDir,
+        );
+        localeFilePaths = {};
+        for (const locale of locales) {
+          localeFilePaths[locale] = join(localesDir, `${locale}.json`);
+        }
+      }
       const result = transformFile({
         defaultLocale: getResolver(state).getProjectLocales().defaultLocale,
         dev: state.command === 'serve',
         extracted,
         fileId,
+        localeFilePaths,
         locales,
         processors: getNormalized(state).processors,
         source: code,
