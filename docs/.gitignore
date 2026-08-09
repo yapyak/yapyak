@@ -1,5 +1,6 @@
 .tanstack
 .yapyak/
+content/reference/manifest.json
 dist
 node_modules
 src/routeTree.gen.ts
