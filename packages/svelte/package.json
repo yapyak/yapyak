@@ -22,14 +22,14 @@
   "type": "module",
   "exports": {
     ".": {
-      "types": "./src/index.ts",
-      "svelte": "./src/index.ts",
-      "default": "./src/index.ts"
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./internal": {
-      "types": "./src/internal.ts",
-      "svelte": "./src/internal.ts",
-      "default": "./src/internal.ts"
+      "types": "./dist/internal.d.ts",
+      "svelte": "./dist/internal.js",
+      "default": "./dist/internal.js"
     },
     "./processor": {
       "types": "./dist/processor.d.ts",
@@ -38,24 +38,22 @@
   },
   "files": [
     "dist",
-    "src",
-    "!src/**/*.test.ts"
+    "!dist/**/*.test.*"
   ],
   "scripts": {
-    "build": "tsdown",
+    "build": "svelte-package --input src --output dist --tsconfig tsconfig.build.json",
     "test": "pnpm -w vitest --run --project=@yapyak/svelte",
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
+    "@sveltejs/package": "catalog:",
     "@sveltejs/vite-plugin-svelte": "catalog:",
     "@testing-library/svelte": "catalog:",
     "@types/node": "catalog:",
-    "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vitest-config": "workspace:*",
     "happy-dom": "catalog:",
     "svelte": "catalog:",
-    "tsdown": "catalog:",
     "typescript": "catalog:",
     "vite": "catalog:",
     "vitest": "catalog:"

@@ -1,6 +1,6 @@
 ---
 name: yapyak-package
-description: "Packaging: `package.json`, `exports`, dependencies, the `tsdown` build, scope tiers, README convention. Use when editing package config, exports, or the build."
+description: "Packaging: `package.json`, `exports`, dependencies, the `tsdown` and `svelte-package` builds, scope tiers, README convention. Use when editing package config, exports, or the build."
 ---
 
 ### TypeScript config
@@ -109,7 +109,7 @@ Add a new external dep with `pnpm add <pkg>` in the consuming package — `catal
 
 ### Build — `tsdown`
 
-Library packages use `tsdown` (rolldown-powered). One `tsdown.config.ts` per package. Always config file, no CLI form.
+Library packages use `tsdown` (rolldown-powered), except packages carrying `.svelte` source — see § Build — `svelte-package`. One `tsdown.config.ts` per package. Always config file, no CLI form.
 
 ```jsonc
 // package.json
@@ -209,6 +209,45 @@ A regular npm dependency never goes in `neverBundle`.
 #### File order in `tsdown.config.ts`
 
 Top-level keys are alphabetical. Inside `entry`, `src/index.ts` first, then alphabetical.
+
+### Build — `svelte-package`
+
+A package whose `src` carries `.svelte` or `.svelte.ts` files builds with `@sveltejs/package` — rolldown compiles neither extension.
+
+- `svelte-package` owns `dist/` alone. Never run it and `tsdown` into one output directory.
+- Set the `build` script to `svelte-package --input src --output dist --tsconfig tsconfig.build.json`.
+- Add `tsconfig.build.json` extending `./tsconfig.json` with `isolatedDeclarations: false`. `svelte2tsx` generates the component shims that emit `.d.ts`, and generated code satisfies no declaration rule; `tsc --noEmit` keeps the flag on for the hand-written source.
+- Hand-write `<component>.svelte.d.ts` beside a component carrying a `generics` attribute. `svelte-package` prefers it over the generated file.
+- Set `preprocess: vitePreprocess({ script: true })` in `svelte.config.js`. Without `script: true` the emitted `.svelte` files keep their TypeScript.
+- Exclude the compiled tests from `files`: `"!dist/**/*.test.*"`.
+- Add the `svelte` export condition beside `types` and `default`, pointing into `dist`.
+- Ship no TypeScript — `vite-plugin-svelte` prebundles Svelte libraries in dev by default and compiles them with no TypeScript step, so a published `.svelte.ts` is a parse error in every consumer.
+
+```jsonc
+// ✓
+{
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "svelte": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  }
+}
+```
+
+```jsonc
+// ✗ prebundling meets TypeScript
+{
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "svelte": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  }
+}
+```
 
 ### Package README convention
 

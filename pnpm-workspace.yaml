@@ -39,6 +39,7 @@ catalog:
   '@react-router/serve': 8.2.0
   '@sveltejs/adapter-node': 5.5.7
   '@sveltejs/kit': 2.70.1
+  '@sveltejs/package': 2.5.8
   '@sveltejs/vite-plugin-svelte': 7.2.0
   '@tanstack/react-router': 1.170.18
   '@tanstack/react-start': 1.168.32
