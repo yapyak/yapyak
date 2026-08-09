@@ -1,5 +1,16 @@
 # @yapyak/vite
 
+## 0.0.5
+
+### Patch Changes
+
+- [`0a642a7`](https://github.com/yapyak/yapyak/commit/0a642a79fda9329607e8589dfd122280cda1198f) Thanks [@qwuide](https://github.com/qwuide)! - Fix server-rendered pages keeping the source string after a translation arrives.
+
+  The dev server refreshed its own catalog and patched the browser, but left the server environments holding the module they had evaluated before the translation landed. Server-rendered apps kept the untranslated string until the dev server restarted.
+
+- Updated dependencies []:
+  - yapyak@0.0.5
+
 ## 0.0.4
 
 ### Patch Changes
