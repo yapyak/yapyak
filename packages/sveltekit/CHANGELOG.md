@@ -1,5 +1,12 @@
 # @yapyak/sveltekit
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies [[`ddcdba5`](https://github.com/yapyak/yapyak/commit/ddcdba5e2b9f2a0c85840bb9c4be74125fbdb57d)]:
+  - yapyak@0.0.6
+
 ## 0.0.5
 
 ### Patch Changes
