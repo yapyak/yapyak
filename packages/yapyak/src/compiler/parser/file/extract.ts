@@ -5,23 +5,23 @@ import type {
   Processor,
   Range,
 } from '../../../processor';
+import type { Placeholder } from '../../placeholder';
 import type { Binding, Scope } from '../binding';
 import type { CallSite } from '../call';
 import type { CallSiteContext } from '../call-site-context';
 import type { Diagnostic } from '../diagnostic';
-import type { Placeholder } from '../placeholder';
 
 import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../../diagnostic';
 import { toMessageKey } from '../../../message-key';
 import { segmentsFromOffset } from '../../../processor';
+import { parsePlaceholders } from '../../placeholder';
 import { parseArguments } from '../argument';
 import { resolveBindings } from '../binding';
 import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
 import { validateFragments } from '../fragment';
-import { parsePlaceholders } from '../placeholder';
 import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
 import { getScriptKind } from '../script-kind';

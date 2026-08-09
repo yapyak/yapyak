@@ -1,10 +1,11 @@
 import type { Template } from '../../../template';
-import type { Diagnostic, ExtractedMessage, Placeholder } from '../../parser';
+import type { Diagnostic, ExtractedMessage } from '../../parser';
+import type { Placeholder } from '../../placeholder';
 import type { LocaleFile, ParseEntryError } from './file';
 
 import { buildDiagnostic } from '../../../diagnostic';
 import { parseTemplate } from '../../../template';
-import { parsePlaceholders } from '../../parser';
+import { parsePlaceholders } from '../../placeholder';
 import { stripBom } from './bom';
 import { findTranslation, parseEntry } from './file';
 import { isPlainObject } from './plain-object';

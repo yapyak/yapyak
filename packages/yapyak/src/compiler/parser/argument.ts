@@ -1,13 +1,13 @@
 import type { Range } from '../../processor';
+import type { TemplateDiagnostic } from '../placeholder';
 import type { CallSite } from './call';
 import type { Diagnostic } from './diagnostic';
-import type { TemplateDiagnostic } from './placeholder';
 import type { TagIssue } from './tag';
 
 import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../diagnostic';
-import { parsePlaceholders } from './placeholder';
+import { parsePlaceholders } from '../placeholder';
 import { toRange } from './range';
 import { validateRichTextTags } from './tag';
 

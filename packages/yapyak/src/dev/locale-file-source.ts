@@ -1,6 +1,6 @@
-import type { LocaleFile } from '../compiler/catalog/locale/file';
+import type { LocaleFile } from '../compiler/catalog/locale';
 
-import { readLocaleFile } from '../compiler/catalog/locale/file';
+import { readLocaleFile } from '../compiler/catalog/locale';
 import { applyPatches } from '../hmr-patch';
 import { buildPatches } from '../patch';
 import { registerTracker } from '../tracker';

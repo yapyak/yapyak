@@ -1,6 +1,6 @@
-import type { Placeholder, TemplateDiagnostic } from '../../template';
+import type { Placeholder, TemplateDiagnostic } from '../template';
 
-import { extractPlaceholders, parseTemplate } from '../../template';
+import { extractPlaceholders, parseTemplate } from '../template';
 
 export type { Placeholder, TemplateDiagnostic };
 

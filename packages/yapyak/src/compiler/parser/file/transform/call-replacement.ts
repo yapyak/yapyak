@@ -1,5 +1,5 @@
 import type { Range } from '../../../../processor';
-import type { Placeholder } from '../../placeholder';
+import type { Placeholder } from '../../../placeholder';
 import type { ParsedCallSite } from '../extract';
 
 import ts from '@typescript/typescript6';
