@@ -1,8 +1,8 @@
 import type { LocaleFile } from '../compiler/catalog/locale/file';
 
 import { readLocaleFile } from '../compiler/catalog/locale/file';
-import { buildPatches } from '../compiler/catalog/locale/patch';
 import { applyPatches } from '../hmr-patch';
+import { buildPatches } from '../patch';
 import { registerTracker } from '../tracker';
 import { statSync } from 'node:fs';
 

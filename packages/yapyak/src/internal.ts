@@ -15,6 +15,7 @@ export {
   resetLocale,
   subscribeLocale,
 } from './locale';
+export { buildPatches } from './patch';
 export { buildRuntimeMock } from './runtime-mock';
 export {
   count,

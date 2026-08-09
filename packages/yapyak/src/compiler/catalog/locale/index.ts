@@ -36,7 +36,6 @@ export {
   getDefaultYapyakDir,
   readOrphans,
 } from './orphan';
-export { buildPatches } from './patch';
 export { writeRegister } from './register';
 export {
   validateIcuPairs,

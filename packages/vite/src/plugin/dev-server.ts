@@ -17,7 +17,6 @@ import type { State } from './state';
 import {
   CorruptLocaleFileError,
   YAP_RUNTIME,
-  buildPatches,
   detectRenames,
   getDocsUrl,
   migrateLocales,
@@ -27,6 +26,7 @@ import {
   validateLocaleCode,
   writeRegister,
 } from 'yapyak/compiler/internal';
+import { buildPatches } from 'yapyak/internal';
 
 import { isCandidateId } from './candidate-id';
 import { renderErrorDiagnostics } from './error-diagnostic';

@@ -1,9 +1,9 @@
-import type { Patch } from '../../../hmr-patch';
-import type { Template } from '../../../template';
-import type { CatalogEntry, LocaleFile } from './file';
+import type { CatalogEntry, LocaleFile } from './compiler/catalog/locale';
+import type { Patch } from './hmr-patch';
+import type { Template } from './template';
 
-import { toMessageKey } from '../../../message-key';
-import { parseTemplate } from '../../../template';
+import { toMessageKey } from './message-key';
+import { parseTemplate } from './template';
 
 export function buildPatches(
   before: LocaleFile,
