@@ -6,6 +6,7 @@ import { tokenizeHtml } from './html';
 import { tokenizeJson } from './json';
 import { markJsxAttributes } from './jsx-attribute';
 import { splitJsxBrackets } from './jsx-bracket';
+import { markJsxMustaches } from './jsx-mustache';
 import { reclassifyJsxText } from './jsx-text';
 import { mergePlainTokens } from './plain-token';
 import { expandSourcePlaceholders } from './source-placeholder';
@@ -67,6 +68,7 @@ export function tokenize(code: string, language: Language) {
   applyTypePositions(tokens);
   markTaggedTemplates(tokens);
   reclassifyJsxText(tokens);
+  markJsxMustaches(tokens);
   markJsxAttributes(tokens);
   const vueExpanded =
     language === 'vue' ? expandVueAttributeBindings(tokens, tokenize) : tokens;

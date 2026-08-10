@@ -42,7 +42,7 @@
     }
 
     &[data-kind="jsx-brace"] {
-      color: var(--syntax-jsx-tag);
+      color: var(--syntax-jsx-brace);
     }
 
     &[data-kind="punct"] {
