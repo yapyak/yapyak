@@ -5,6 +5,7 @@ import { tokenizeDiff } from './diff';
 import { tokenizeHtml } from './html';
 import { tokenizeJson } from './json';
 import { markJsxAttributes } from './jsx-attribute';
+import { splitJsxBrackets } from './jsx-bracket';
 import { reclassifyJsxText } from './jsx-text';
 import { mergePlainTokens } from './plain-token';
 import { expandSourcePlaceholders } from './source-placeholder';
@@ -26,7 +27,7 @@ export function tokenize(code: string, language: Language) {
     return tokenizeBash(code);
   }
   if (language === 'html') {
-    return tokenizeHtml(code);
+    return splitJsxBrackets(tokenizeHtml(code));
   }
   if (language === 'yaml') {
     return tokenizeYaml(code);
@@ -76,5 +77,5 @@ export function tokenize(code: string, language: Language) {
   );
   const icuExpanded = expandSourcePlaceholders(templateExpanded);
   const tagExpanded = expandSourceTags(icuExpanded);
-  return mergePlainTokens(tagExpanded);
+  return splitJsxBrackets(mergePlainTokens(tagExpanded));
 }
