@@ -116,7 +116,7 @@ export function tokenizeHtml(code: string) {
     const attribute = /^[A-Za-z_:@][\w:.-]*/.exec(code.slice(index));
     if (attribute) {
       tokens.push({
-        kind: 'fn-call',
+        kind: 'jsx-attribute',
         value: attribute[0],
       });
       index += attribute[0].length;

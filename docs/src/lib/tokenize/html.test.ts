@@ -32,8 +32,8 @@ describe('tokenizeHtml', () => {
     expect(types('<a href="Hello">')).toContain('string');
   });
 
-  it('returns a `fn-call` token for an attribute name', () => {
-    expect(types('<a href="World">')).toContain('fn-call');
+  it('returns a `jsx-attribute` token for an attribute name', () => {
+    expect(types('<a href="World">')).toContain('jsx-attribute');
   });
 
   it('returns a `punct` token for an attribute `=`', () => {

@@ -24,6 +24,7 @@ export type TokenKind =
   | 'comment'
   | 'fn-call'
   | 'jsx-tag'
+  | 'jsx-attribute'
   | 'jsx-brace'
   | 'punct'
   | 'spread'

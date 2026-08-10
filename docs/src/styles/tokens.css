@@ -162,6 +162,7 @@
   --syntax-fn-call: var(--color-iris);
   --syntax-type: var(--color-steel);
   --syntax-jsx-tag: var(--color-steel);
+  --syntax-jsx-attribute: var(--color-sky);
   --syntax-literal: var(--color-amber);
   --syntax-number: var(--color-amber);
   --syntax-string: var(--color-sand);

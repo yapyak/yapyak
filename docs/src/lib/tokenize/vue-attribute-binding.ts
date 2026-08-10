@@ -26,6 +26,7 @@ export function expandVueAttributeBindings(
         if (
           identifier !== undefined &&
           (identifier.kind === 'fn-call' ||
+            identifier.kind === 'jsx-attribute' ||
             identifier.kind === 'plain' ||
             identifier.kind === 'keyword')
         ) {

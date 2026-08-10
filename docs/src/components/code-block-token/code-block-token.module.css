@@ -37,6 +37,10 @@
       color: var(--syntax-jsx-tag);
     }
 
+    &[data-kind="jsx-attribute"] {
+      color: var(--syntax-jsx-attribute);
+    }
+
     &[data-kind="jsx-brace"] {
       color: var(--syntax-jsx-tag);
     }
