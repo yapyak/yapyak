@@ -26,56 +26,56 @@ updateConfig:
 catalog:
   '@arethetypeswrong/cli': 0.18.5
   '@arethetypeswrong/core': 0.18.5
-  '@astrojs/check': 0.9.9
-  '@astrojs/compiler-rs': 0.3.1
-  '@astrojs/node': 11.0.2
-  '@biomejs/biome': 2.5.5
+  '@astrojs/check': 0.9.10
+  '@astrojs/compiler-rs': 0.3.2
+  '@astrojs/node': 11.0.3
+  '@biomejs/biome': 2.5.7
   '@changesets/changelog-github': 0.7.0
   '@changesets/cli': 2.31.1
   '@fast-check/vitest': 0.4.1
-  '@markdoc/markdoc': 0.5.8
-  '@playwright/test': 1.61.1
-  '@react-router/dev': 8.2.0
-  '@react-router/node': 8.2.0
-  '@react-router/serve': 8.2.0
+  '@markdoc/markdoc': 0.5.9
+  '@playwright/test': 1.62.1
+  '@react-router/dev': 8.3.0
+  '@react-router/node': 8.3.0
+  '@react-router/serve': 8.3.0
   '@sveltejs/adapter-node': 5.5.7
-  '@sveltejs/kit': 2.70.1
+  '@sveltejs/kit': 2.70.2
   '@sveltejs/package': 2.5.8
   '@sveltejs/vite-plugin-svelte': 7.2.0
   '@tanstack/react-router': 1.170.18
-  '@tanstack/react-start': 1.168.32
+  '@tanstack/react-start': 1.168.35
   '@testing-library/react': 16.3.2
   '@testing-library/svelte': 5.4.2
   '@testing-library/vue': 8.1.0
   '@types/estree': 1.0.9
   '@types/estree-jsx': 1.0.5
-  '@types/node': 26.1.1
+  '@types/node': 26.1.2
   '@types/picomatch': 4.0.3
-  '@types/react': 19.2.17
-  '@types/react-dom': 19.2.3
+  '@types/react': 19.2.18
+  '@types/react-dom': 19.2.4
   '@typescript/typescript6': 6.0.2
-  '@vitejs/plugin-react': 6.0.3
+  '@vitejs/plugin-react': 6.0.5
   '@vitejs/plugin-vue': 6.0.8
   '@vitest/coverage-v8': 4.1.10
   '@vue/compiler-core': 3.5.40
   '@vue/compiler-sfc': 3.5.40
-  astro: 7.1.3
-  'happy-dom': 20.11.0
+  astro: 7.1.6
+  'happy-dom': 20.11.1
   isbot: 5.2.1
   jiti: 2.7.0
-  knip: 6.27.0
-  'magic-string': 1.0.0
+  knip: 6.31.0
+  'magic-string': 1.1.0
   picomatch: 4.0.5
-  publint: 0.3.21
-  react: 19.2.7
-  react-dom: 19.2.7
-  react-router: 8.2.0
-  svelte: 5.56.7
-  svelte-check: 4.7.3
-  tsdown: 0.22.12
+  publint: 0.3.23
+  react: 19.2.8
+  react-dom: 19.2.8
+  react-router: 8.3.0
+  svelte: 5.56.8
+  svelte-check: 4.7.4
+  tsdown: 0.22.14
   typescript: 6.0.3
-  vite: 8.1.5
+  vite: 8.2.0
   vitest: 4.1.10
   vue: 3.5.40
-  vue-tsc: 3.3.7
-  wrangler: 4.112.0
+  vue-tsc: 3.3.9
+  wrangler: 4.118.0
