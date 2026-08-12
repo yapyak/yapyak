@@ -79,6 +79,26 @@ export const Route = createRootRoute({
           property: 'og:description',
         },
         {
+          content: 'https://yapyak.dev/banner.png',
+          property: 'og:image',
+        },
+        {
+          content: 'yapyak - i18n that keeps up.',
+          property: 'og:image:alt',
+        },
+        {
+          content: '640',
+          property: 'og:image:height',
+        },
+        {
+          content: 'image/png',
+          property: 'og:image:type',
+        },
+        {
+          content: '1280',
+          property: 'og:image:width',
+        },
+        {
           content: 'website',
           property: 'og:type',
         },
@@ -93,6 +113,14 @@ export const Route = createRootRoute({
         {
           content: 'For Vite apps that move at the speed of save.',
           name: 'twitter:description',
+        },
+        {
+          content: 'https://yapyak.dev/banner.png',
+          name: 'twitter:image',
+        },
+        {
+          content: 'yapyak - i18n that keeps up.',
+          name: 'twitter:image:alt',
         },
       ],
     };
