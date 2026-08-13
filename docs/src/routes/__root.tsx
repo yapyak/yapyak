@@ -79,7 +79,7 @@ export const Route = createRootRoute({
           property: 'og:description',
         },
         {
-          content: 'https://yapyak.dev/banner.png',
+          content: 'https://yapyak.dev/social-card.png',
           property: 'og:image',
         },
         {
@@ -115,7 +115,7 @@ export const Route = createRootRoute({
           name: 'twitter:description',
         },
         {
-          content: 'https://yapyak.dev/banner.png',
+          content: 'https://yapyak.dev/social-card.png',
           name: 'twitter:image',
         },
         {
