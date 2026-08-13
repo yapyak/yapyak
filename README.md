@@ -29,8 +29,6 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 }
 ```
 
-![Demo: a t() call is saved, translated into de.json, and pushed to the browser over HMR.](docs/public/demo.gif)
-
 **For full documentation, visit [yapyak.dev](https://yapyak.dev). For working examples, see [examples/](examples).**
 
 ## Demo
