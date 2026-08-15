@@ -1,7 +1,7 @@
 import type { Logger } from 'vite';
 import type { Diagnostic, ExtractFileResult } from 'yapyak/compiler/internal';
 
-import { getDocsUrl } from 'yapyak/compiler/internal';
+import { YAP_COMPILE, getDocsUrl } from 'yapyak/compiler/internal';
 
 export function renderErrorDiagnostics(
   logger: Logger,
@@ -9,6 +9,9 @@ export function renderErrorDiagnostics(
 ): Diagnostic[] {
   const errors: Diagnostic[] = [];
   for (const diagnostic of result.diagnostics) {
+    if (diagnostic.code === YAP_COMPILE.PROCESSOR_PARSE_ERROR.code) {
+      continue;
+    }
     if (diagnostic.severity === 'error') {
       errors.push(diagnostic);
       continue;

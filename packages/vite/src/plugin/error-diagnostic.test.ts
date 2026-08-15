@@ -140,6 +140,37 @@ describe('renderErrorDiagnostics', () => {
     );
   });
 
+  it('returns no diagnostic for a processor parse error, leaving it to the framework plugin', () => {
+    const logger = buildLogger();
+    const errorDiagnostics = renderErrorDiagnostics(
+      logger,
+      buildResult([
+        {
+          code: 'YAP0048',
+          fileId: 'src/a.svelte',
+          message: 'The file does not parse: "Unexpected token".',
+          range: {
+            end: {
+              column: 5,
+              line: 1,
+              offset: 5,
+            },
+            start: {
+              column: 1,
+              line: 1,
+              offset: 0,
+            },
+          },
+          severity: 'error',
+        },
+      ]),
+    );
+
+    expect(errorDiagnostics).toHaveLength(0);
+    expect(logger.error).not.toHaveBeenCalled();
+    expect(logger.warn).not.toHaveBeenCalled();
+  });
+
   it('returns the error-severity diagnostics for callers to fail the build on', () => {
     const logger = buildLogger();
     const errorDiagnostics = renderErrorDiagnostics(
