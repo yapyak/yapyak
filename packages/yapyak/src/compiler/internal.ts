@@ -28,6 +28,7 @@ export {
   detectRenames,
   discoverLocales,
   findContextDiagnostics,
+  findEntryRange,
   findTranslation,
   getDefaultYapyakDir,
   migrateLocales,

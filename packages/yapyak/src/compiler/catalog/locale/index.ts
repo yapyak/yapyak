@@ -17,6 +17,7 @@ export type { TranslationParityResult } from './validate';
 export { validateLocaleCode } from './code';
 export { readLocaleData } from './data';
 export { discoverLocales } from './discover';
+export { findEntryRange } from './entry-range';
 export {
   CorruptLocaleFileError,
   findTranslation,

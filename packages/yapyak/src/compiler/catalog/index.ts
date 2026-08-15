@@ -17,6 +17,7 @@ export {
   CorruptOrphanCacheError,
   detectRenames,
   discoverLocales,
+  findEntryRange,
   findTranslation,
   getDefaultYapyakDir,
   migrateLocales,
