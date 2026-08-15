@@ -8,6 +8,7 @@ import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../diagnostic';
 import { parsePlaceholders } from '../placeholder';
+import { classifyParamKeys } from './param-key';
 import { toRange } from './range';
 import { validateRichTextTags } from './tag';
 
@@ -374,30 +375,43 @@ function validateParams(input: ValidateParamsInput): void {
     return;
   }
 
-  const providedKeys = new Set(params.keys);
-  for (const key of placeholderKeys) {
-    if (!providedKeys.has(key)) {
-      diagnostics.push(
-        buildDiagnostic(
-          'PARSER_MISSING_PARAM',
-          {
-            key,
-            mode: 'add-key',
-          },
-          {
-            fileId,
-            range: params.range,
-            severity: 'error',
-          },
-        ),
-      );
-    }
+  const { extra, missing, renames } = classifyParamKeys(
+    placeholderKeys,
+    params.keys,
+  );
+  for (const rename of renames) {
+    diagnostics.push(
+      buildDiagnostic(
+        'PARSER_PARAM_MISSPELLED',
+        {
+          key: rename.from,
+          placeholder: rename.to,
+        },
+        {
+          fileId,
+          range: params.range,
+          severity: 'error',
+        },
+      ),
+    );
   }
-  const placeholderSet = new Set(placeholderKeys);
-  for (const key of params.keys) {
-    if (placeholderSet.has(key)) {
-      continue;
-    }
+  for (const key of missing) {
+    diagnostics.push(
+      buildDiagnostic(
+        'PARSER_MISSING_PARAM',
+        {
+          key,
+          mode: 'add-key',
+        },
+        {
+          fileId,
+          range: params.range,
+          severity: 'error',
+        },
+      ),
+    );
+  }
+  for (const key of extra) {
     diagnostics.push(
       buildDiagnostic(
         'PARSER_EXTRA_PARAM',

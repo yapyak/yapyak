@@ -146,6 +146,24 @@ describe('parseArguments', () => {
       expect(yap0005?.[0]?.message).toContain('age');
     });
 
+    it('emits YAP0049 for a misspelled param', () => {
+      const [parsed] = parseAll('diagnostic', 'yap0049-misspelled-param.ts');
+      const yap0049 = parsed?.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YAP0049',
+      );
+      expect(yap0049).toHaveLength(1);
+      expect(yap0049?.[0]?.message).toContain('conut');
+      expect(yap0049?.[0]?.hint).toContain('count');
+    });
+
+    it('emits no YAP0004 for a misspelled param', () => {
+      const [parsed] = parseAll('diagnostic', 'yap0049-misspelled-param.ts');
+      const codes = parsed?.diagnostics.map((diagnostic) => diagnostic.code);
+
+      expect(codes).not.toContain('YAP0004');
+      expect(codes).not.toContain('YAP0005');
+    });
+
     it('emits YAP0006 for spread params', () => {
       const [parsed] = parseAll('diagnostic', 'yap0006-spread-param.ts');
       expect(parsed?.params?.kind).toBe('spread');

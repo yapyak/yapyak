@@ -262,6 +262,24 @@ export const YAP_COMPILE = {
     message: ({ text }: { text: string }): string =>
       `The file does not parse: "${text}".`,
   },
+  PARSER_PARAM_MISSPELLED: {
+    code: 'YAP0049',
+    hint: ({
+      key,
+      placeholder,
+    }: {
+      key: string;
+      placeholder: string;
+    }): string => `Rename \`${key}\` to \`${placeholder}\`.`,
+    message: ({
+      key,
+      placeholder,
+    }: {
+      key: string;
+      placeholder: string;
+    }): string =>
+      `Params key \`${key}\` does not match placeholder \`{${placeholder}}\`.`,
+  },
 } as const;
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap
