@@ -280,7 +280,12 @@ export function validateIcuPairs(
       continue;
     }
     const sourceByName = buildPlaceholderIndex(parsedSource.placeholders);
+    const seen = new Set<string>();
     for (const location of message.locations) {
+      if (seen.has(location.fileId)) {
+        continue;
+      }
+      seen.add(location.fileId);
       const target = findTranslation(
         localeFile[location.fileId]?.[message.source],
         message.context,

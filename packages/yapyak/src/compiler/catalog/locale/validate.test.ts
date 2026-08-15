@@ -317,6 +317,41 @@ describe('validateIcuPairs', () => {
     ).toBe(true);
   });
 
+  it('emits no second YAP0011 when one file holds the same message twice', () => {
+    const messages = [
+      makeMessage('Hi {name}', [
+        makeLocation(),
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        'Hi {name}': 'Hej där',
+      },
+    };
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    expect(diagnostics).toHaveLength(1);
+  });
+
+  it('emits YAP0011 for every file that holds the same message', () => {
+    const messages = [
+      makeMessage('Hi {name}', [
+        makeLocation('src/a.tsx'),
+        makeLocation('src/b.tsx'),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        'Hi {name}': 'Hej där',
+      },
+      'src/b.tsx': {
+        'Hi {name}': 'Hej där',
+      },
+    };
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    expect(diagnostics).toHaveLength(2);
+  });
+
   it('emits YAP0012 when the translation has an extra placeholder', () => {
     const messages = [
       makeMessage('Hello', [
