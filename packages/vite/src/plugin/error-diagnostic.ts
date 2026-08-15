@@ -21,6 +21,12 @@ export function renderErrorDiagnostics(
   return errors;
 }
 
+export function hasParseFailure(result: ExtractFileResult): boolean {
+  return result.diagnostics.some(
+    (diagnostic) => diagnostic.code === YAP_COMPILE.PROCESSOR_PARSE_ERROR.code,
+  );
+}
+
 export function formatDiagnostic(diagnostic: Diagnostic): string {
   const location = `${diagnostic.fileId}:${diagnostic.range.start.line}:${diagnostic.range.start.column}`;
   return `[yapyak] ${diagnostic.code} ${location}: ${diagnostic.message}\nSee ${getDocsUrl(diagnostic.code)}`;

@@ -29,7 +29,7 @@ import {
 import { buildPatches } from 'yapyak/internal';
 
 import { isCandidateId } from './candidate-id';
-import { renderErrorDiagnostics } from './error-diagnostic';
+import { hasParseFailure, renderErrorDiagnostics } from './error-diagnostic';
 import { resolveExtraction } from './extraction';
 import { toFileId } from './file-id';
 import { isLocaleFile } from './locale-file';
@@ -87,6 +87,9 @@ export function createDevServerPlugin(state: State): Plugin {
             }
             const result = resolveExtraction(state, fileId, code);
             renderErrorDiagnostics(state.logger, result);
+            if (hasParseFailure(result)) {
+              continue;
+            }
             if (result.messages.length > 0) {
               state.messagesByFile.set(fileId, result.messages);
             } else {
@@ -273,6 +276,9 @@ export function createDevServerPlugin(state: State): Plugin {
       const { defaultLocale, locales } = getResolver(state).getProjectLocales();
       const result = resolveExtraction(state, fileId, code);
       renderErrorDiagnostics(state.logger, result);
+      if (hasParseFailure(result)) {
+        return undefined;
+      }
       const before = state.messagesByFile.get(fileId) ?? [];
       const after = result.messages;
       if (areMessagesEqual(before, after)) {

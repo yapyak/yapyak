@@ -3,7 +3,11 @@ import type { ExtractFileResult } from 'yapyak/compiler/internal';
 
 import { describe, expect, it, vi } from 'vitest';
 
-import { formatDiagnostic, renderErrorDiagnostics } from './error-diagnostic';
+import {
+  formatDiagnostic,
+  hasParseFailure,
+  renderErrorDiagnostics,
+} from './error-diagnostic';
 
 function buildLogger(): Logger {
   return {
@@ -216,6 +220,62 @@ describe('renderErrorDiagnostics', () => {
     );
     expect(errorDiagnostics).toHaveLength(1);
     expect(errorDiagnostics[0]?.code).toBe('YAP0001');
+  });
+});
+
+describe('hasParseFailure', () => {
+  it('returns true for a processor parse error', () => {
+    expect(
+      hasParseFailure(
+        buildResult([
+          {
+            code: 'YAP0048',
+            fileId: 'src/a.svelte',
+            message: 'The file does not parse: "Unexpected token".',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+            severity: 'error',
+          },
+        ]),
+      ),
+    ).toBe(true);
+  });
+
+  it('returns false for another diagnostic', () => {
+    expect(
+      hasParseFailure(
+        buildResult([
+          {
+            code: 'YAP0001',
+            fileId: 'src/a.tsx',
+            message: 'Hello',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+            severity: 'error',
+          },
+        ]),
+      ),
+    ).toBe(false);
   });
 });
 
