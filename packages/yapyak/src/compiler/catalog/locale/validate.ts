@@ -1,14 +1,15 @@
 import type { Template } from '../../../template';
 import type { Diagnostic, ExtractedMessage } from '../../parser';
 import type { Placeholder } from '../../placeholder';
-import type { LocaleFile, ParseEntryError } from './file';
+import type { ParseEntryError } from './file';
 
 import { buildDiagnostic } from '../../../diagnostic';
 import { parseTemplate } from '../../../template';
 import { classifyNames } from '../../name';
 import { findMalformedIssue, parsePlaceholders } from '../../placeholder';
 import { stripBom } from './bom';
-import { findTranslation, parseEntry } from './file';
+import { findEntryRange } from './entry-range';
+import { findTranslation, parseEntry, parseLocaleFile } from './file';
 import { isPlainObject } from './plain-object';
 import { isUnsafeKey } from './unsafe-key';
 import { existsSync, readFileSync } from 'node:fs';
@@ -252,12 +253,26 @@ export function validateTranslationParity(
   };
 }
 
-export function validateIcuPairs(
-  fileId: string,
-  locale: string,
-  localeFile: LocaleFile,
-  messages: ExtractedMessage[],
-): Diagnostic[] {
+export type ValidateIcuPairsInput = {
+  content: string;
+  fileId: string;
+  locale: string;
+  messages: ExtractedMessage[];
+};
+
+export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
+  const { fileId, locale, messages } = input;
+  const content = stripBom(input.content);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return [];
+  }
+  if (!isPlainObject(parsed)) {
+    return [];
+  }
+  const localeFile = parseLocaleFile(parsed);
   const diagnostics: Diagnostic[] = [];
   const categoriesCache = new Map<Intl.PluralRulesOptions['type'], string[]>();
   const resolveCategories = (
@@ -295,7 +310,13 @@ export function validateIcuPairs(
       }
       const diagnosticContext = {
         fileId,
-        range: location.range,
+        range:
+          findEntryRange(
+            content,
+            location.fileId,
+            message.source,
+            message.context,
+          ) ?? STUB_RANGE,
         severity: 'error' as const,
       };
       const parsedTarget = parsePlaceholders(target);

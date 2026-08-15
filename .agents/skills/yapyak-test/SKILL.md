@@ -395,6 +395,7 @@ Closed set of fixture data. No invented strings.
 'You have {count, plural, one {# msg} other\t{# msgs}}'              type-level whitespace regression — tab before the `other` body
 'You have {count, plural, one {# msg} other\n{# msgs}}'              type-level whitespace regression — newline before the `other` body
 'You have {count,\n plural, one {# msg} other {# msgs}}'             type-level whitespace regression — newline after the placeholder name
+'Öppna {name}'                                                       context-variant target carrying a placeholder the source lacks — locale-file range tests
 ```
 
 If a test does not exercise one of these edge cases, use the regular pool strings.

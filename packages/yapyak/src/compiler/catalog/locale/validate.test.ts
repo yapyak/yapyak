@@ -1,5 +1,6 @@
 import type { ExtractedMessage, Location } from '../../parser';
 import type { LocaleFile } from './file';
+import type { ValidateIcuPairsInput } from './validate';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -41,6 +42,19 @@ function makeMessage(source: string, locations: Location[]): ExtractedMessage {
     locations,
     placeholders: [],
     source,
+  };
+}
+
+function makeIcuPairsInput(
+  locale: string,
+  localeFile: LocaleFile,
+  messages: ExtractedMessage[],
+): ValidateIcuPairsInput {
+  return {
+    content: JSON.stringify(localeFile, null, 2),
+    fileId: `${locale}.json`,
+    locale,
+    messages,
   };
 }
 
@@ -243,7 +257,7 @@ describe('validateIcuPairs', () => {
       },
     };
     expect(
-      validateIcuPairs('sv.json', 'sv', localeFile, messages),
+      validateIcuPairs(makeIcuPairsInput('sv', localeFile, messages)),
     ).toHaveLength(0);
   });
 
@@ -259,7 +273,7 @@ describe('validateIcuPairs', () => {
       },
     };
     expect(
-      validateIcuPairs('sv.json', 'sv', localeFile, messages),
+      validateIcuPairs(makeIcuPairsInput('sv', localeFile, messages)),
     ).toHaveLength(0);
   });
 
@@ -277,7 +291,7 @@ describe('validateIcuPairs', () => {
     };
 
     expect(
-      validateIcuPairs('sv.json', 'sv', localeFile, messages),
+      validateIcuPairs(makeIcuPairsInput('sv', localeFile, messages)),
     ).toHaveLength(0);
   });
 
@@ -296,7 +310,7 @@ describe('validateIcuPairs', () => {
     };
 
     expect(
-      validateIcuPairs('pl.json', 'pl', localeFile, messages),
+      validateIcuPairs(makeIcuPairsInput('pl', localeFile, messages)),
     ).toHaveLength(0);
   });
 
@@ -311,10 +325,66 @@ describe('validateIcuPairs', () => {
         'Hi {name}': 'Hej där',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0011'),
     ).toBe(true);
+  });
+
+  it('emits a range that covers the translation in the locale file', () => {
+    const messages = [
+      makeMessage('Hi {name}', [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        Cancel: 'Avbryt',
+        'Hi {name}': 'Hej',
+      },
+    };
+    const input = makeIcuPairsInput('sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(input);
+
+    expect(
+      input.content.slice(
+        diagnostics[0]?.range.start.offset,
+        diagnostics[0]?.range.end.offset,
+      ),
+    ).toBe('"Hej"');
+  });
+
+  it('emits a range that covers the context variant in the locale file', () => {
+    const messages = [
+      {
+        context: 'button',
+        id: 'Open',
+        locations: [
+          makeLocation(),
+        ],
+        placeholders: [],
+        source: 'Open',
+      },
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        Open: {
+          badge: 'Öppen',
+          button: 'Öppna {name}',
+        },
+      },
+    };
+    const input = makeIcuPairsInput('sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(input);
+
+    expect(
+      input.content.slice(
+        diagnostics[0]?.range.start.offset,
+        diagnostics[0]?.range.end.offset,
+      ),
+    ).toBe('"Öppna {name}"');
   });
 
   it('emits no second YAP0011 when one file holds the same message twice', () => {
@@ -329,7 +399,9 @@ describe('validateIcuPairs', () => {
         'Hi {name}': 'Hej där',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
     expect(diagnostics).toHaveLength(1);
   });
 
@@ -348,7 +420,9 @@ describe('validateIcuPairs', () => {
         'Hi {name}': 'Hej där',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
     expect(diagnostics).toHaveLength(2);
   });
 
@@ -363,7 +437,9 @@ describe('validateIcuPairs', () => {
         Hello: 'Hej {name}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0012'),
     ).toBe(true);
@@ -380,9 +456,9 @@ describe('validateIcuPairs', () => {
         'Hi {name}': 'Hej {name',
       },
     };
-    const codes = validateIcuPairs('sv.json', 'sv', localeFile, messages).map(
-      (diagnostic) => diagnostic.code,
-    );
+    const codes = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    ).map((diagnostic) => diagnostic.code);
 
     expect(codes).toEqual([
       'YAP0050',
@@ -400,7 +476,9 @@ describe('validateIcuPairs', () => {
         'You have {count} messages': 'Du har {conut} meddelanden',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
 
     expect(diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
       'YAP0051',
@@ -422,7 +500,7 @@ describe('validateIcuPairs', () => {
     };
 
     expect(
-      validateIcuPairs('sv.json', 'sv', localeFile, messages)
+      validateIcuPairs(makeIcuPairsInput('sv', localeFile, messages))
         .map((diagnostic) => diagnostic.code)
         .sort(),
     ).toEqual([
@@ -444,7 +522,7 @@ describe('validateIcuPairs', () => {
     };
 
     expect(
-      validateIcuPairs('sv.json', 'sv', localeFile, messages),
+      validateIcuPairs(makeIcuPairsInput('sv', localeFile, messages)),
     ).toHaveLength(0);
   });
 
@@ -460,7 +538,9 @@ describe('validateIcuPairs', () => {
           '{count, select, one {# sak} other {# saker}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0010'),
     ).toBe(true);
@@ -478,7 +558,9 @@ describe('validateIcuPairs', () => {
           'Du har {count, plural, one {# objekt}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0008'),
     ).toBe(true);
@@ -497,7 +579,9 @@ describe('validateIcuPairs', () => {
         [source]: '{theme, select, dark {Mörkt} other {System}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0038'),
     ).toBe(true);
@@ -515,7 +599,9 @@ describe('validateIcuPairs', () => {
         [source]: 'Du har {count, plural, en {# objekt} other {# objekt}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
 
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
@@ -535,7 +621,9 @@ describe('validateIcuPairs', () => {
           'Du har {count, plural, one {# objekt} few {# objekt} other {# objekt}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
 
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
@@ -555,7 +643,9 @@ describe('validateIcuPairs', () => {
         [source]: '{count, selectordinal, two {#nd} other {#th}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
 
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
@@ -575,7 +665,9 @@ describe('validateIcuPairs', () => {
         [source]: '{theme, select, dark {Mörkt} other {System}}',
       },
     };
-    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('sv', localeFile, messages),
+    );
 
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),

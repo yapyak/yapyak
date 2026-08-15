@@ -5,11 +5,11 @@ import type { MissingEntry } from '../report';
 import {
   YAP_COMPILE,
   findContextDiagnostics,
-  readLocaleFile,
   validateIcuPairs,
 } from '../../compiler/internal';
 import { buildReport } from '../report';
 import { color, header, symbol } from '../tui';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export function check(config: Config, projectRoot: string): number {
@@ -42,9 +42,16 @@ export function check(config: Config, projectRoot: string): number {
     if (hasParseFailure) {
       continue;
     }
-    const localeFile = readLocaleFile(localeFilePath);
+    if (!existsSync(localeFilePath)) {
+      continue;
+    }
     allDiagnostics.push(
-      ...validateIcuPairs(fileId, locale, localeFile, report.messages),
+      ...validateIcuPairs({
+        content: readFileSync(localeFilePath, 'utf-8'),
+        fileId,
+        locale,
+        messages: report.messages,
+      }),
     );
   }
 
