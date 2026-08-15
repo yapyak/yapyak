@@ -10,7 +10,12 @@ import type {
 } from '@vue/compiler-core';
 import type * as VueSfc from '@vue/compiler-sfc';
 import type { SFCScriptBlock } from '@vue/compiler-sfc';
-import type { Fragment, FragmentSegment, Processor } from 'yapyak/processor';
+import type {
+  Fragment,
+  FragmentSegment,
+  Processor,
+  ProcessorDiagnostic,
+} from 'yapyak/processor';
 
 import {
   createProcessor,
@@ -70,7 +75,11 @@ export function vue(): Processor {
     id: 'vue',
     parseSource: (source) => {
       const compiler = loadCompiler();
-      const { descriptor } = compiler.parse(source);
+      const { descriptor, errors } = compiler.parse(source, {
+        templateParseOptions: {
+          prefixIdentifiers: false,
+        },
+      });
       const fragments: Fragment[] = [];
 
       if (descriptor.script !== null) {
@@ -85,6 +94,7 @@ export function vue(): Processor {
         );
       }
       return {
+        diagnostics: toProcessorDiagnostics(errors, source),
         fragments,
       };
     },
@@ -92,6 +102,20 @@ export function vue(): Processor {
       module: '@yapyak/vue/internal',
       register: 'registerLocale',
     },
+  });
+}
+
+function toProcessorDiagnostics(
+  errors: VueSfc.SFCParseResult['errors'],
+  source: string,
+): ProcessorDiagnostic[] {
+  return errors.map((error) => {
+    const location = 'loc' in error ? error.loc : undefined;
+    const start = location?.start.offset ?? 0;
+    return {
+      message: error.message,
+      range: rangeFromOffsets(source, start, location?.end.offset ?? start),
+    };
   });
 }
 

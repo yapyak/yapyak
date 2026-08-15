@@ -379,6 +379,51 @@ describe('vue processor — extract', () => {
       'Save',
     ]);
   });
+
+  it('emits YAP0048 when the file does not parse', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      '  <div>',
+      `    <h1>{{ t('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+
+    expect(result.diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
+      'YAP0048',
+    ]);
+  });
+
+  it('emits no diagnostic when the file parses', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <h1>{{ t('Hello') }}</h1>`,
+      '</template>',
+    ].join('\n');
+
+    expect(extractVue(source).diagnostics).toHaveLength(0);
+  });
+
+  it('emits no diagnostic for a plural whose branches close the mustache', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <p>{{ t('You have {count, plural, one {# item} other {# items}}', { count: 3 }) }}</p>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+
+    expect(result.diagnostics).toHaveLength(0);
+    expect(result.messages).toHaveLength(1);
+  });
 });
 
 describe('vue processor — transform', () => {
