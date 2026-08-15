@@ -5,7 +5,7 @@ import type { LocaleFile, ParseEntryError } from './file';
 
 import { buildDiagnostic } from '../../../diagnostic';
 import { parseTemplate } from '../../../template';
-import { parsePlaceholders } from '../../placeholder';
+import { findMalformedIssue, parsePlaceholders } from '../../placeholder';
 import { stripBom } from './bom';
 import { findTranslation, parseEntry } from './file';
 import { isPlainObject } from './plain-object';
@@ -274,8 +274,11 @@ export function validateIcuPairs(
     return categories;
   };
   for (const message of messages) {
-    const sourcePlaceholders = parsePlaceholders(message.source).placeholders;
-    const sourceByName = buildPlaceholderIndex(sourcePlaceholders);
+    const parsedSource = parsePlaceholders(message.source);
+    if (findMalformedIssue(parsedSource.issues) !== undefined) {
+      continue;
+    }
+    const sourceByName = buildPlaceholderIndex(parsedSource.placeholders);
     for (const location of message.locations) {
       const target = findTranslation(
         localeFile[location.fileId]?.[message.source],
@@ -284,13 +287,26 @@ export function validateIcuPairs(
       if (target === undefined || target === '') {
         continue;
       }
-      const targetPlaceholders = parsePlaceholders(target).placeholders;
-      const targetByName = buildPlaceholderIndex(targetPlaceholders);
       const diagnosticContext = {
         fileId,
         range: location.range,
         severity: 'error' as const,
       };
+      const parsedTarget = parsePlaceholders(target);
+      const malformedIssue = findMalformedIssue(parsedTarget.issues);
+      if (malformedIssue !== undefined) {
+        diagnostics.push(
+          buildDiagnostic(
+            'PLACEHOLDER_MALFORMED_IN_TARGET',
+            {
+              detail: malformedIssue.message,
+            },
+            diagnosticContext,
+          ),
+        );
+        continue;
+      }
+      const targetByName = buildPlaceholderIndex(parsedTarget.placeholders);
 
       for (const [name, placeholder] of sourceByName) {
         if (!targetByName.has(name)) {

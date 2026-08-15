@@ -280,6 +280,13 @@ export const YAP_COMPILE = {
     }): string =>
       `Params key \`${key}\` does not match placeholder \`{${placeholder}}\`.`,
   },
+  PLACEHOLDER_MALFORMED_IN_TARGET: {
+    code: 'YAP0050',
+    hint: (): string =>
+      'Fix the ICU syntax in the locale file. Every `{` needs a matching `}`.',
+    message: ({ detail }: { detail: string }): string =>
+      `The translation does not parse: ${detail}.`,
+  },
 } as const;
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap

@@ -334,6 +334,43 @@ describe('validateIcuPairs', () => {
     ).toBe(true);
   });
 
+  it('emits YAP0050 when the translation does not parse', () => {
+    const messages = [
+      makeMessage('Hi {name}', [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        'Hi {name}': 'Hej {name',
+      },
+    };
+    const codes = validateIcuPairs('sv.json', 'sv', localeFile, messages).map(
+      (diagnostic) => diagnostic.code,
+    );
+
+    expect(codes).toEqual([
+      'YAP0050',
+    ]);
+  });
+
+  it('emits no YAP0012 when the source does not parse', () => {
+    const messages = [
+      makeMessage('Hi {name', [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        'Hi {name': 'Hej {name}',
+      },
+    };
+
+    expect(
+      validateIcuPairs('sv.json', 'sv', localeFile, messages),
+    ).toHaveLength(0);
+  });
+
   it('emits YAP0010 when a placeholder kind differs between source and target', () => {
     const messages = [
       makeMessage('{count, plural, one {# item} other {# items}}', [
