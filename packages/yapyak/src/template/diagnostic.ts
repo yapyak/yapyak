@@ -33,4 +33,9 @@ export type TemplateDiagnostic =
       name: string;
       range: TemplateRange;
       kind: 'invalid-name';
+    }
+  | {
+      currency: string;
+      range: TemplateRange;
+      kind: 'unsupported-currency';
     };

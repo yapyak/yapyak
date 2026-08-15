@@ -313,6 +313,13 @@ export const YAP_COMPILE = {
       source: string;
     }): string => `No \`t()\` call in ${pathKey} uses the source "${source}".`,
   },
+  PLACEHOLDER_CURRENCY_UNSUPPORTED: {
+    code: 'YAP0054',
+    hint: ({ currency }: { currency: string }): string =>
+      `Replace "${currency}" with an ISO 4217 code or leave it and yapyak renders "<value> ${currency}".`,
+    message: ({ currency }: { currency: string }): string =>
+      `Currency code "${currency}" is not one \`Intl.NumberFormat\` knows.`,
+  },
 } as const;
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap

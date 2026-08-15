@@ -404,52 +404,65 @@ describe('parseTemplate', () => {
       ]);
     });
 
-    it('emits malformed for a lowercase currency code', () => {
+    it('emits unsupported-currency for a lowercase code', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency eur}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
-          kind: 'malformed',
-          message: 'Unsupported currency code "eur".',
+          currency: 'eur',
+          kind: 'unsupported-currency',
         }),
       );
     });
 
-    it('emits malformed for a two-letter currency code', () => {
+    it('emits unsupported-currency for a two-letter code', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency EU}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
-          kind: 'malformed',
-          message: expect.stringContaining('Unsupported currency code "EU"'),
+          currency: 'EU',
+          kind: 'unsupported-currency',
         }),
       );
     });
 
-    it('emits malformed for a four-letter currency code', () => {
+    it('emits unsupported-currency for a four-letter code', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency EURO}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
-          kind: 'malformed',
-          message: expect.stringContaining('Unsupported currency code "EURO"'),
+          currency: 'EURO',
+          kind: 'unsupported-currency',
         }),
       );
     });
 
-    it('emits malformed for a currency code with digits', () => {
+    it('emits unsupported-currency for a code with digits', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency US1}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
-          kind: 'malformed',
-          message: expect.stringContaining('Unsupported currency code "US1"'),
+          currency: 'US1',
+          kind: 'unsupported-currency',
         }),
       );
     });
 
-    it('emits malformed for an unknown ISO 4217 code', () => {
+    it('parses the currency even when the code is unsupported', () => {
+      const { template } = parseTemplate('{cost, number, currency XYZ}');
+      const node = template[0];
+      expect(node?.kind).toBe('number');
+      if (node?.kind !== 'number') {
+        return;
+      }
+      expect(node.options).toMatchObject({
+        currency: 'XYZ',
+        style: 'currency',
+      });
+    });
+
+    it('emits unsupported-currency for an unknown ISO 4217 code', () => {
       const { diagnostics } = parseTemplate('{cost, number, currency XYZ}');
       expect(diagnostics).toContainEqual(
         expect.objectContaining({
-          kind: 'malformed',
-          message: expect.stringContaining('Unsupported currency code "XYZ"'),
+          currency: 'XYZ',
+          kind: 'unsupported-currency',
         }),
       );
     });

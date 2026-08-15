@@ -684,11 +684,10 @@ function resolveNumberOptions(
     if (currencyCode !== '') {
       if (!isCurrency(currencyCode)) {
         context.diagnostics.push({
-          kind: 'malformed',
-          message: `Unsupported currency code "${currencyCode}".`,
+          currency: currencyCode,
+          kind: 'unsupported-currency',
           range: input.bodyRange,
         });
-        return {};
       }
       return {
         currency: currencyCode,

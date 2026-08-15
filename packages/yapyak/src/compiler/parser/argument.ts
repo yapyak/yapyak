@@ -176,6 +176,18 @@ function toIcuDiagnostic(
     range: context.range,
     severity: 'error' as const,
   };
+  if (issue.kind === 'unsupported-currency') {
+    return buildDiagnostic(
+      'PLACEHOLDER_CURRENCY_UNSUPPORTED',
+      {
+        currency: issue.currency,
+      },
+      {
+        ...diagnosticContext,
+        severity: 'warning',
+      },
+    );
+  }
   if (issue.kind === 'missing-other') {
     return buildDiagnostic(
       'PLACEHOLDER_MISSING_OTHER',

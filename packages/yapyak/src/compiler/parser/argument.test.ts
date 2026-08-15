@@ -258,6 +258,18 @@ describe('parseArguments', () => {
       ]);
     });
 
+    it('emits YAP0054 for an unsupported currency code', () => {
+      const parsed = parseInline(
+        "export const x = t('Price: {amount, number, currency BTC}', { amount: 1 });",
+      );
+
+      expect(parsed.diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
+        'YAP0054',
+      ]);
+      expect(parsed.diagnostics[0]?.severity).toBe('warning');
+      expect(parsed.diagnostics[0]?.message).toContain('BTC');
+    });
+
     it('emits YAP0008 for plural without other branch', () => {
       const [parsed] = parseAll('diagnostic', 'yap0008-invalid-plural.ts');
       const yap0008 = parsed?.diagnostics.filter(
