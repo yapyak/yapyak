@@ -17,6 +17,7 @@ export type {
   ExtractedMessage,
   TransformFileResult,
 } from './parser';
+export type { ParsedMessage, Placeholder } from './placeholder';
 
 export { YAP_COMPILE, YAP_RUNTIME, getDocsUrl } from '../diagnostic';
 export { fromMessageKey, toMessageKey } from '../message-key';
@@ -48,3 +49,4 @@ export {
 } from './catalog';
 export { walkSourceFiles } from './io';
 export { extractFile, transformFile } from './parser';
+export { parsePlaceholders } from './placeholder';
