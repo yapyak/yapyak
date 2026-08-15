@@ -223,6 +223,41 @@ describe('parseArguments', () => {
       expect(yap0007[0]?.severity).toBe('error');
     });
 
+    it('emits YAP0052 for a placeholder name holding a space', () => {
+      const [parsed] = parseAll(
+        'diagnostic',
+        'yap0052-invalid-placeholder-name.ts',
+      );
+      const yap0052 = parsed?.diagnostics.filter(
+        (diagnostic) => diagnostic.code === 'YAP0052',
+      );
+      expect(yap0052).toHaveLength(1);
+      expect(yap0052?.[0]?.severity).toBe('error');
+      expect(yap0052?.[0]?.message).toContain('first name');
+    });
+
+    it('emits no YAP0004 when the placeholder name is invalid', () => {
+      const [parsed] = parseAll(
+        'diagnostic',
+        'yap0052-invalid-placeholder-name.ts',
+      );
+      expect(parsed?.diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
+        'YAP0052',
+      ]);
+    });
+
+    it('emits no YAP0005 when the params hold the invalid name', () => {
+      const parsed = parseAll(
+        'diagnostic',
+        'yap0052-invalid-placeholder-name.ts',
+      );
+      expect(
+        parsed[1]?.diagnostics.map((diagnostic) => diagnostic.code),
+      ).toEqual([
+        'YAP0052',
+      ]);
+    });
+
     it('emits YAP0008 for plural without other branch', () => {
       const [parsed] = parseAll('diagnostic', 'yap0008-invalid-plural.ts');
       const yap0008 = parsed?.diagnostics.filter(

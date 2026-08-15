@@ -111,7 +111,9 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   const { issues, placeholders } = parsePlaceholders(source);
   const placeholderKeys = placeholders.map((placeholder) => placeholder.name);
   const hasPlaceholders = placeholderKeys.length > 0;
-  const isSourceMalformed = findMalformedIssue(issues) !== undefined;
+  const isSourceInvalid =
+    findMalformedIssue(issues) !== undefined ||
+    issues.some((issue) => issue.kind === 'invalid-name');
 
   for (const issue of issues) {
     diagnostics.push(
@@ -135,7 +137,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   if (paramsExpression) {
     params = parseParams(paramsExpression, sourceFile);
   }
-  if (!isSourceMalformed && (hasPlaceholders || paramsExpression)) {
+  if (!isSourceInvalid && (hasPlaceholders || paramsExpression)) {
     validateParams({
       callSite,
       diagnostics,
@@ -188,6 +190,15 @@ function toIcuDiagnostic(
       'PLACEHOLDER_MALFORMED',
       {
         detail: issue.message,
+      },
+      diagnosticContext,
+    );
+  }
+  if (issue.kind === 'invalid-name') {
+    return buildDiagnostic(
+      'PLACEHOLDER_NAME_INVALID',
+      {
+        name: issue.name,
       },
       diagnosticContext,
     );

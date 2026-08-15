@@ -294,6 +294,13 @@ export const YAP_COMPILE = {
     message: ({ source, target }: { source: string; target: string }): string =>
       `Placeholder \`{${target}}\` in the translation does not match \`{${source}}\` in the source.`,
   },
+  PLACEHOLDER_NAME_INVALID: {
+    code: 'YAP0052',
+    hint: (): string =>
+      'Start the name with a letter or underscore and continue with letters, digits, or underscores.',
+    message: ({ name }: { name: string }): string =>
+      `Placeholder name \`${name}\` is not a valid identifier.`,
+  },
 } as const;
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap

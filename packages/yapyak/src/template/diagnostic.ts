@@ -28,4 +28,9 @@ export type TemplateDiagnostic =
       name: string;
       range: TemplateRange;
       kind: 'unsupported';
+    }
+  | {
+      name: string;
+      range: TemplateRange;
+      kind: 'invalid-name';
     };

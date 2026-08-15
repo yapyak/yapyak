@@ -567,6 +567,51 @@ describe('parseTemplate', () => {
       );
     });
 
+    it('emits invalid-name for a placeholder name holding a space', () => {
+      const { diagnostics } = parseTemplate('Hi {a b}');
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          kind: 'invalid-name',
+          name: 'a b',
+        }),
+      );
+    });
+
+    it('emits invalid-name for a placeholder name holding a hyphen', () => {
+      const { diagnostics } = parseTemplate('Hi {a-b}');
+      expect(diagnostics[0]?.kind).toBe('invalid-name');
+    });
+
+    it('emits invalid-name for a placeholder name starting with a digit', () => {
+      const { diagnostics } = parseTemplate('Hi {1a}');
+      expect(diagnostics[0]?.kind).toBe('invalid-name');
+    });
+
+    it('emits invalid-name for an ICU argument name holding a space', () => {
+      const { diagnostics } = parseTemplate('{a b, plural, other {x}}');
+      expect(diagnostics).toContainEqual(
+        expect.objectContaining({
+          kind: 'invalid-name',
+          name: 'a b',
+        }),
+      );
+    });
+
+    it('emits no invalid-name for a placeholder name holding an underscore', () => {
+      const { diagnostics } = parseTemplate('Hi {a_b}');
+      expect(diagnostics).toHaveLength(0);
+    });
+
+    it('emits no invalid-name for a placeholder name padded with spaces', () => {
+      const { diagnostics } = parseTemplate('Hi { name }');
+      expect(diagnostics).toHaveLength(0);
+    });
+
+    it('emits no invalid-name for a placeholder name holding a letter outside ASCII', () => {
+      const { diagnostics } = parseTemplate('Hi {café}');
+      expect(diagnostics).toHaveLength(0);
+    });
+
     it('emits malformed for a placeholder name containing an unbalanced brace', () => {
       const { diagnostics } = parseTemplate('{a{b}}');
       expect(diagnostics).toContainEqual(

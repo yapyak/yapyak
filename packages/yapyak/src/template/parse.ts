@@ -17,6 +17,7 @@ import { isCurrency } from '../formatting';
 const APOSTROPHE_ESCAPE_RX = /'[#'<>{}]/;
 const PLURAL_OFFSET_RX = /\boffset:\d+/;
 const EXACT_MATCH_RX = /^=\d+$/;
+const PLACEHOLDER_NAME_RX = /^[\p{L}_][\p{L}\p{N}_]*$/u;
 
 const KNOWN_PLURAL_KEYWORDS = new Set([
   'few',
@@ -361,6 +362,14 @@ function emitNameDiagnostic(
     context.diagnostics.push({
       kind: 'malformed',
       message: `placeholder name contains an unbalanced brace: "${name}"`,
+      range: tokenRange,
+    });
+    return;
+  }
+  if (!PLACEHOLDER_NAME_RX.test(name)) {
+    context.diagnostics.push({
+      kind: 'invalid-name',
+      name,
       range: tokenRange,
     });
   }
