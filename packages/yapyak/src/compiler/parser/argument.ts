@@ -7,8 +7,8 @@ import type { TagIssue } from './tag';
 import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../diagnostic';
+import { classifyNames } from '../name';
 import { findMalformedIssue, parsePlaceholders } from '../placeholder';
-import { classifyParamKeys } from './param-key';
 import { toRange } from './range';
 import { validateRichTextTags } from './tag';
 
@@ -376,7 +376,7 @@ function validateParams(input: ValidateParamsInput): void {
     return;
   }
 
-  const { extra, missing, renames } = classifyParamKeys(
+  const { extra, missing, renames } = classifyNames(
     placeholderKeys,
     params.keys,
   );

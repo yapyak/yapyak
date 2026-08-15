@@ -287,6 +287,13 @@ export const YAP_COMPILE = {
     message: ({ detail }: { detail: string }): string =>
       `The translation does not parse: ${detail}.`,
   },
+  PLACEHOLDER_MISSPELLED_IN_TARGET: {
+    code: 'YAP0051',
+    hint: ({ source, target }: { source: string; target: string }): string =>
+      `Rename \`{${target}}\` to \`{${source}}\` in the translation.`,
+    message: ({ source, target }: { source: string; target: string }): string =>
+      `Placeholder \`{${target}}\` in the translation does not match \`{${source}}\` in the source.`,
+  },
 } as const;
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap

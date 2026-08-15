@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
-import { classifyParamKeys } from './param-key';
+import { classifyNames } from './name';
 
-describe('classifyParamKeys', () => {
-  it('returns no differences when every key matches', () => {
+describe('classifyNames', () => {
+  it('returns no differences when every name matches', () => {
     expect(
-      classifyParamKeys(
+      classifyNames(
         [
           'name',
         ],
@@ -21,16 +21,16 @@ describe('classifyParamKeys', () => {
   });
 
   it('returns no differences for two empty arrays', () => {
-    expect(classifyParamKeys([], [])).toEqual({
+    expect(classifyNames([], [])).toEqual({
       extra: [],
       missing: [],
       renames: [],
     });
   });
 
-  it('returns a missing key when params holds no keys', () => {
+  it('returns a missing name when the actual list is empty', () => {
     expect(
-      classifyParamKeys(
+      classifyNames(
         [
           'name',
         ],
@@ -45,9 +45,9 @@ describe('classifyParamKeys', () => {
     });
   });
 
-  it('returns an extra key when the source holds no placeholders', () => {
+  it('returns an extra name when the expected list is empty', () => {
     expect(
-      classifyParamKeys(
+      classifyNames(
         [],
         [
           'author',
@@ -62,9 +62,9 @@ describe('classifyParamKeys', () => {
     });
   });
 
-  it('returns a rename for a misspelled key', () => {
+  it('returns a rename for a misspelled name', () => {
     expect(
-      classifyParamKeys(
+      classifyNames(
         [
           'count',
         ],
@@ -84,9 +84,9 @@ describe('classifyParamKeys', () => {
     });
   });
 
-  it('returns a rename for a key missing one character', () => {
+  it('returns a rename for a name missing one character', () => {
     expect(
-      classifyParamKeys(
+      classifyNames(
         [
           'amount',
         ],
@@ -102,9 +102,9 @@ describe('classifyParamKeys', () => {
     ]);
   });
 
-  it('returns a rename and a missing key for two placeholders', () => {
+  it('returns a rename and a missing name for two expected names', () => {
     expect(
-      classifyParamKeys(
+      classifyNames(
         [
           'author',
           'count',
@@ -127,9 +127,9 @@ describe('classifyParamKeys', () => {
     });
   });
 
-  it('returns no rename when the keys are unrelated', () => {
+  it('returns no rename when the names are unrelated', () => {
     expect(
-      classifyParamKeys(
+      classifyNames(
         [
           'name',
         ],
@@ -148,9 +148,9 @@ describe('classifyParamKeys', () => {
     });
   });
 
-  it('returns no rename for a placeholder shorter than three characters', () => {
+  it('returns no rename for a name shorter than three characters', () => {
     expect(
-      classifyParamKeys(
+      classifyNames(
         [
           'id',
         ],
@@ -161,9 +161,9 @@ describe('classifyParamKeys', () => {
     ).toEqual([]);
   });
 
-  it('returns one rename per key', () => {
+  it('returns one rename per name', () => {
     expect(
-      classifyParamKeys(
+      classifyNames(
         [
           'count',
           'amount',

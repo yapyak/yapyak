@@ -354,6 +354,48 @@ describe('validateIcuPairs', () => {
     ]);
   });
 
+  it('emits YAP0051 when a placeholder is misspelled in the translation', () => {
+    const messages = [
+      makeMessage('You have {count} messages', [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        'You have {count} messages': 'Du har {conut} meddelanden',
+      },
+    };
+    const diagnostics = validateIcuPairs('sv.json', 'sv', localeFile, messages);
+
+    expect(diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
+      'YAP0051',
+    ]);
+    expect(diagnostics[0]?.message).toContain('conut');
+    expect(diagnostics[0]?.hint).toContain('count');
+  });
+
+  it('emits YAP0011 when the translation holds no near match', () => {
+    const messages = [
+      makeMessage('Hi {name}', [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        'Hi {name}': 'Hej {author}',
+      },
+    };
+
+    expect(
+      validateIcuPairs('sv.json', 'sv', localeFile, messages)
+        .map((diagnostic) => diagnostic.code)
+        .sort(),
+    ).toEqual([
+      'YAP0011',
+      'YAP0012',
+    ]);
+  });
+
   it('emits no YAP0012 when the source does not parse', () => {
     const messages = [
       makeMessage('Hi {name', [

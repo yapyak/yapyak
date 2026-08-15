@@ -5,6 +5,7 @@ import type { LocaleFile, ParseEntryError } from './file';
 
 import { buildDiagnostic } from '../../../diagnostic';
 import { parseTemplate } from '../../../template';
+import { classifyNames } from '../../name';
 import { findMalformedIssue, parsePlaceholders } from '../../placeholder';
 import { stripBom } from './bom';
 import { findTranslation, parseEntry } from './file';
@@ -309,18 +310,6 @@ export function validateIcuPairs(
       const targetByName = buildPlaceholderIndex(parsedTarget.placeholders);
 
       for (const [name, placeholder] of sourceByName) {
-        if (!targetByName.has(name)) {
-          diagnostics.push(
-            buildDiagnostic(
-              'PLACEHOLDER_MISSING_IN_TARGET',
-              {
-                name,
-              },
-              diagnosticContext,
-            ),
-          );
-          continue;
-        }
         const targetPlaceholder = targetByName.get(name);
         if (targetPlaceholder && targetPlaceholder.kind !== placeholder.kind) {
           diagnostics.push(
@@ -336,18 +325,47 @@ export function validateIcuPairs(
           );
         }
       }
-      for (const name of targetByName.keys()) {
-        if (!sourceByName.has(name)) {
-          diagnostics.push(
-            buildDiagnostic(
-              'PLACEHOLDER_MISSING_IN_SOURCE',
-              {
-                name,
-              },
-              diagnosticContext,
-            ),
-          );
-        }
+      const names = classifyNames(
+        [
+          ...sourceByName.keys(),
+        ],
+        [
+          ...targetByName.keys(),
+        ],
+      );
+      for (const rename of names.renames) {
+        diagnostics.push(
+          buildDiagnostic(
+            'PLACEHOLDER_MISSPELLED_IN_TARGET',
+            {
+              source: rename.to,
+              target: rename.from,
+            },
+            diagnosticContext,
+          ),
+        );
+      }
+      for (const name of names.missing) {
+        diagnostics.push(
+          buildDiagnostic(
+            'PLACEHOLDER_MISSING_IN_TARGET',
+            {
+              name,
+            },
+            diagnosticContext,
+          ),
+        );
+      }
+      for (const name of names.extra) {
+        diagnostics.push(
+          buildDiagnostic(
+            'PLACEHOLDER_MISSING_IN_SOURCE',
+            {
+              name,
+            },
+            diagnosticContext,
+          ),
+        );
       }
       const sourceBranchesByName = extractBranchesByName(message.source);
       const targetBranchesByName = extractBranchesByName(target);

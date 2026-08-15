@@ -1,38 +1,38 @@
-type ParamRenameEntry = {
+type RenameEntry = {
   from: string;
   to: string;
 };
 
-export type ClassifyParamKeysResult = {
+export type ClassifyNamesResult = {
   extra: string[];
   missing: string[];
-  renames: ParamRenameEntry[];
+  renames: RenameEntry[];
 };
 
 const MINIMUM_CANDIDATE_LENGTH = 3;
 
-export function classifyParamKeys(
-  placeholderKeys: string[],
-  providedKeys: string[],
-): ClassifyParamKeysResult {
-  const providedSet = new Set(providedKeys);
-  const placeholderSet = new Set(placeholderKeys);
-  const unmatched = placeholderKeys.filter((key) => !providedSet.has(key));
+export function classifyNames(
+  expected: string[],
+  actual: string[],
+): ClassifyNamesResult {
+  const actualSet = new Set(actual);
+  const expectedSet = new Set(expected);
+  const unmatched = expected.filter((name) => !actualSet.has(name));
   const extra: string[] = [];
-  const renames: ParamRenameEntry[] = [];
+  const renames: RenameEntry[] = [];
 
-  for (const key of providedKeys) {
-    if (placeholderSet.has(key)) {
+  for (const name of actual) {
+    if (expectedSet.has(name)) {
       continue;
     }
-    const candidate = findSpellingCandidate(key, unmatched);
+    const candidate = findSpellingCandidate(name, unmatched);
     if (candidate === undefined) {
-      extra.push(key);
+      extra.push(name);
       continue;
     }
     unmatched.splice(unmatched.indexOf(candidate), 1);
     renames.push({
-      from: key,
+      from: name,
       to: candidate,
     });
   }
