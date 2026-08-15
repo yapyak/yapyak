@@ -1,5 +1,14 @@
 # @yapyak/vue
 
+## 0.0.7
+
+### Patch Changes
+
+- [`a1281e8`](https://github.com/yapyak/yapyak/commit/a1281e87f70e4c028ed4b5d8778c72eeedb7b3c1) Thanks [@qwuide](https://github.com/qwuide)! - Report a `.vue` file that does not parse. The processor read the descriptor from `@vue/compiler-sfc` and dropped the errors beside it, so a file with a missing end tag was extracted for whatever the compiler could recover and the rest of its messages were treated as removed. Such a file now reports YAP0048, which makes `yapyak check` fail on it and keeps the dev server from moving its translations into the orphan cache while the syntax is broken.
+
+- Updated dependencies [[`28e2993`](https://github.com/yapyak/yapyak/commit/28e2993e0f59cdf7ed5484081c3e02e1cf5bcbd8), [`1f0fe13`](https://github.com/yapyak/yapyak/commit/1f0fe130ac5c64646145cf4a8388959fe29640f5), [`e00d698`](https://github.com/yapyak/yapyak/commit/e00d698ff0c565e685e76a98f8d7433fa8fd36ab), [`89660e1`](https://github.com/yapyak/yapyak/commit/89660e16d182ca681b437fc29cb8ed56467c60a1)]:
+  - yapyak@0.0.7
+
 ## 0.0.6
 
 ### Patch Changes

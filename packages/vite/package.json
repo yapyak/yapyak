@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/vite",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Vite plugin for yapyak.",
   "keywords": [
     "i18n",

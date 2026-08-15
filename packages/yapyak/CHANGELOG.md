@@ -1,5 +1,17 @@
 # yapyak
 
+## 0.0.7
+
+### Patch Changes
+
+- [`28e2993`](https://github.com/yapyak/yapyak/commit/28e2993e0f59cdf7ed5484081c3e02e1cf5bcbd8) Thanks [@qwuide](https://github.com/qwuide)! - Report a misspelled placeholder in a translation as one diagnostic instead of two. A placeholder that matches nothing in the source but closely resembles one now reports YAP0051 with the rename, where it previously reported YAP0011 for the source placeholder with no counterpart and YAP0012 for the translation placeholder with no counterpart. Both of those still report on their own when the names resemble nothing.
+
+- [`1f0fe13`](https://github.com/yapyak/yapyak/commit/1f0fe130ac5c64646145cf4a8388959fe29640f5) Thanks [@qwuide](https://github.com/qwuide)! - Stop reporting params problems when the source string is malformed. An unclosed brace left the placeholder set unknown, and every params key was reported as extra, so the fix in the hint was to delete a correct parameter instead of closing the brace. The malformed source is now the only diagnostic for that call, and params are validated again as soon as the string parses.
+
+- [`e00d698`](https://github.com/yapyak/yapyak/commit/e00d698ff0c565e685e76a98f8d7433fa8fd36ab) Thanks [@qwuide](https://github.com/qwuide)! - Report a misspelled params key as one diagnostic instead of two. A key that matches no placeholder but closely resembles one now reports YAP0049 with the rename, where it previously reported YAP0004 for the placeholder without a value and YAP0005 for the key without a placeholder. The candidate is picked with the rule TypeScript uses for its own spelling suggestions, so both tools name the same key.
+
+- [`89660e1`](https://github.com/yapyak/yapyak/commit/89660e16d182ca681b437fc29cb8ed56467c60a1) Thanks [@qwuide](https://github.com/qwuide)! - Report a translation that does not parse. A locale file value with broken ICU syntax used to be read as a value with no placeholders, so every placeholder in the source was reported as missing from a translation that in fact holds them, and a value that was only braces was accepted without a word. Such a value now reports YAP0050 and the placeholder checks are skipped for that entry. A source string that does not parse skips those checks too, instead of reporting the translation as having placeholders the source lacks.
+
 ## 0.0.6
 
 ### Patch Changes
