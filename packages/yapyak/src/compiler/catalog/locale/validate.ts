@@ -4,6 +4,7 @@ import type { Placeholder } from '../../placeholder';
 import type { ParseEntryError } from './file';
 
 import { buildDiagnostic } from '../../../diagnostic';
+import { toMessageKey } from '../../../message-key';
 import { parseTemplate } from '../../../template';
 import { classifyNames } from '../../name';
 import { findMalformedIssue, parsePlaceholders } from '../../placeholder';
@@ -251,6 +252,78 @@ export function validateTranslationParity(
     issues,
     ok: issues.length === 0,
   };
+}
+
+export type ValidateEntryUsageInput = {
+  content: string;
+  fileId: string;
+  messages: ExtractedMessage[];
+  sourceFileIds: string[];
+};
+
+export function validateEntryUsage(
+  input: ValidateEntryUsageInput,
+): Diagnostic[] {
+  const content = stripBom(input.content);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(content);
+  } catch {
+    return [];
+  }
+  if (!isPlainObject(parsed)) {
+    return [];
+  }
+  const localeFile = parseLocaleFile(parsed);
+  const keysByFile = new Map<string, Set<string>>();
+  for (const message of input.messages) {
+    const key = toMessageKey(message.source, message.context);
+    for (const location of message.locations) {
+      let keys = keysByFile.get(location.fileId);
+      if (keys === undefined) {
+        keys = new Set();
+        keysByFile.set(location.fileId, keys);
+      }
+      keys.add(key);
+    }
+  }
+  const known = new Set(input.sourceFileIds);
+  const diagnostics: Diagnostic[] = [];
+  for (const [pathKey, entries] of Object.entries(localeFile)) {
+    if (!known.has(pathKey)) {
+      continue;
+    }
+    const keys = keysByFile.get(pathKey) ?? new Set<string>();
+    for (const [source, entry] of Object.entries(entries)) {
+      const contexts =
+        typeof entry === 'string'
+          ? [
+              undefined,
+            ]
+          : Object.keys(entry);
+      for (const context of contexts) {
+        if (keys.has(toMessageKey(source, context))) {
+          continue;
+        }
+        diagnostics.push(
+          buildDiagnostic(
+            'CATALOG_ENTRY_UNUSED',
+            {
+              pathKey,
+              source,
+            },
+            {
+              fileId: input.fileId,
+              range:
+                findEntryRange(content, pathKey, source, context) ?? STUB_RANGE,
+              severity: 'warning',
+            },
+          ),
+        );
+      }
+    }
+  }
+  return diagnostics;
 }
 
 export type ValidateIcuPairsInput = {

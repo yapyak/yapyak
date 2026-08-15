@@ -5,6 +5,7 @@ import type { ValidateIcuPairsInput } from './validate';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
+  validateEntryUsage,
   validateIcuPairs,
   validateLocaleFile,
   validateTranslationParity,
@@ -241,6 +242,133 @@ describe('validateLocaleFile', () => {
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0015'),
     ).toBe(true);
+  });
+});
+
+describe('validateEntryUsage', () => {
+  it('emits YAP0053 for an entry no `t()` call uses', () => {
+    const messages = [
+      makeMessage('Hello', [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        Cancel: 'Avbryt',
+        Hello: 'Hej',
+      },
+    };
+    const diagnostics = validateEntryUsage({
+      content: JSON.stringify(localeFile, null, 2),
+      fileId: 'sv.json',
+      messages,
+      sourceFileIds: [
+        'src/a.tsx',
+      ],
+    });
+
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0]?.code).toBe('YAP0053');
+    expect(diagnostics[0]?.severity).toBe('warning');
+    expect(diagnostics[0]?.message).toContain('Cancel');
+  });
+
+  it('emits no diagnostics when every entry has a message', () => {
+    const messages = [
+      makeMessage('Hello', [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
+    };
+
+    expect(
+      validateEntryUsage({
+        content: JSON.stringify(localeFile, null, 2),
+        fileId: 'sv.json',
+        messages,
+        sourceFileIds: [
+          'src/a.tsx',
+        ],
+      }),
+    ).toHaveLength(0);
+  });
+
+  it('emits no diagnostics for a file that is not in the source file list', () => {
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        Hello: 'Hej',
+      },
+    };
+
+    expect(
+      validateEntryUsage({
+        content: JSON.stringify(localeFile, null, 2),
+        fileId: 'sv.json',
+        messages: [],
+        sourceFileIds: [],
+      }),
+    ).toHaveLength(0);
+  });
+
+  it('emits YAP0053 for a context variant no `t.as()` call uses', () => {
+    const messages = [
+      {
+        context: 'button',
+        id: 'Open',
+        locations: [
+          makeLocation(),
+        ],
+        placeholders: [],
+        source: 'Open',
+      },
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        Open: {
+          badge: 'Öppen',
+          button: 'Öppna',
+        },
+      },
+    };
+    const diagnostics = validateEntryUsage({
+      content: JSON.stringify(localeFile, null, 2),
+      fileId: 'sv.json',
+      messages,
+      sourceFileIds: [
+        'src/a.tsx',
+      ],
+    });
+
+    expect(diagnostics).toHaveLength(1);
+    expect(diagnostics[0]?.code).toBe('YAP0053');
+  });
+
+  it('emits a range that covers the unused translation', () => {
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        Cancel: 'Avbryt',
+      },
+    };
+    const content = JSON.stringify(localeFile, null, 2);
+    const diagnostics = validateEntryUsage({
+      content,
+      fileId: 'sv.json',
+      messages: [],
+      sourceFileIds: [
+        'src/a.tsx',
+      ],
+    });
+
+    expect(
+      content.slice(
+        diagnostics[0]?.range.start.offset,
+        diagnostics[0]?.range.end.offset,
+      ),
+    ).toBe('"Avbryt"');
   });
 });
 

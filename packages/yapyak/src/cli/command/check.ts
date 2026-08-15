@@ -5,6 +5,7 @@ import type { MissingEntry } from '../report';
 import {
   YAP_COMPILE,
   findContextDiagnostics,
+  validateEntryUsage,
   validateIcuPairs,
 } from '../../compiler/internal';
 import { buildReport } from '../report';
@@ -45,12 +46,19 @@ export function check(config: Config, projectRoot: string): number {
     if (!existsSync(localeFilePath)) {
       continue;
     }
+    const content = readFileSync(localeFilePath, 'utf-8');
     allDiagnostics.push(
       ...validateIcuPairs({
-        content: readFileSync(localeFilePath, 'utf-8'),
+        content,
         fileId,
         locale,
         messages: report.messages,
+      }),
+      ...validateEntryUsage({
+        content,
+        fileId,
+        messages: report.messages,
+        sourceFileIds: report.sourceFileIds,
       }),
     );
   }

@@ -39,6 +39,7 @@ type Report = {
   messages: ExtractedMessage[];
   missing: MissingEntry[];
   perLocale: Record<string, LocaleStats>;
+  sourceFileIds: string[];
   totalMessages: number;
 };
 
@@ -71,12 +72,20 @@ export function buildReport(input: BuildReportInput): Report {
 
   const messages: ExtractedMessage[] = [];
   const diagnostics: Diagnostic[] = [];
+  const sourceFileIds: string[] = [];
   for (const file of sourceFiles) {
     const result = extractFile(file.fileId, file.code, {
       processors: input.processors,
     });
     messages.push(...result.messages);
     diagnostics.push(...result.diagnostics);
+    const parsed = !result.diagnostics.some(
+      (diagnostic) =>
+        diagnostic.code === YAP_COMPILE.PROCESSOR_PARSE_ERROR.code,
+    );
+    if (parsed) {
+      sourceFileIds.push(file.fileId);
+    }
   }
 
   const keysByFile: Record<string, Set<string>> = {};
@@ -196,6 +205,7 @@ export function buildReport(input: BuildReportInput): Report {
     messages,
     missing,
     perLocale,
+    sourceFileIds,
     totalMessages,
   };
 }

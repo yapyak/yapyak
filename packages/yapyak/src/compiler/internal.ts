@@ -39,6 +39,7 @@ export {
   syncLocaleFiles,
   toEntry,
   toVariants,
+  validateEntryUsage,
   validateIcuPairs,
   validateLocaleCode,
   validateLocaleFile,

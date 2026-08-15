@@ -39,6 +39,7 @@ export {
 } from './orphan';
 export { writeRegister } from './register';
 export {
+  validateEntryUsage,
   validateIcuPairs,
   validateLocaleFile,
   validateTranslationParity,

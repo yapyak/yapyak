@@ -301,6 +301,18 @@ export const YAP_COMPILE = {
     message: ({ name }: { name: string }): string =>
       `Placeholder name \`${name}\` is not a valid identifier.`,
   },
+  CATALOG_ENTRY_UNUSED: {
+    code: 'YAP0053',
+    hint: (): string =>
+      'Remove the entry, or restore the `t()` call that used it.',
+    message: ({
+      pathKey,
+      source,
+    }: {
+      pathKey: string;
+      source: string;
+    }): string => `No \`t()\` call in ${pathKey} uses the source "${source}".`,
+  },
 } as const;
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap
