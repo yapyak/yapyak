@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parsePlaceholders } from './placeholder';
+import { findMalformedIssue, parsePlaceholders } from './placeholder';
 
 describe('parsePlaceholders', () => {
   it('parses a simple placeholder', () => {
@@ -386,5 +386,21 @@ describe('parsePlaceholders', () => {
   it('warns on an unknown argument type as malformed', () => {
     const { issues } = parsePlaceholders('{x, mystery, body}');
     expect(issues[0]?.kind).toBe('malformed');
+  });
+});
+
+describe('findMalformedIssue', () => {
+  it('returns the issue when found', () => {
+    const { issues } = parsePlaceholders('Hello {name');
+
+    expect(findMalformedIssue(issues)?.kind).toBe('malformed');
+  });
+
+  it('returns undefined when not found', () => {
+    const { issues } = parsePlaceholders(
+      'You have {count, plural, one {# item}}',
+    );
+
+    expect(findMalformedIssue(issues)).toBeUndefined();
   });
 });

@@ -164,6 +164,26 @@ describe('parseArguments', () => {
       expect(codes).not.toContain('YAP0005');
     });
 
+    it('emits no YAP0005 when the source is malformed', () => {
+      const parsed = parseInline(
+        "export const x = t('Hi {name', { name: 'Ada' });",
+      );
+      const codes = parsed.diagnostics.map((diagnostic) => diagnostic.code);
+
+      expect(codes).toContain('YAP0007');
+      expect(codes).not.toContain('YAP0005');
+    });
+
+    it('emits YAP0049 when the source issue is not malformed', () => {
+      const parsed = parseInline(
+        "export const x = t('{count, plural, one {# item}}', { conut: 1 });",
+      );
+      const codes = parsed.diagnostics.map((diagnostic) => diagnostic.code);
+
+      expect(codes).toContain('YAP0008');
+      expect(codes).toContain('YAP0049');
+    });
+
     it('emits YAP0006 for spread params', () => {
       const [parsed] = parseAll('diagnostic', 'yap0006-spread-param.ts');
       expect(parsed?.params?.kind).toBe('spread');

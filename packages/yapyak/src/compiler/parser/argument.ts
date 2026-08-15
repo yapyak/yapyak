@@ -7,7 +7,7 @@ import type { TagIssue } from './tag';
 import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../diagnostic';
-import { parsePlaceholders } from '../placeholder';
+import { findMalformedIssue, parsePlaceholders } from '../placeholder';
 import { classifyParamKeys } from './param-key';
 import { toRange } from './range';
 import { validateRichTextTags } from './tag';
@@ -111,6 +111,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   const { issues, placeholders } = parsePlaceholders(source);
   const placeholderKeys = placeholders.map((placeholder) => placeholder.name);
   const hasPlaceholders = placeholderKeys.length > 0;
+  const isSourceMalformed = findMalformedIssue(issues) !== undefined;
 
   for (const issue of issues) {
     diagnostics.push(
@@ -134,7 +135,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   if (paramsExpression) {
     params = parseParams(paramsExpression, sourceFile);
   }
-  if (hasPlaceholders || paramsExpression) {
+  if (!isSourceMalformed && (hasPlaceholders || paramsExpression)) {
     validateParams({
       callSite,
       diagnostics,

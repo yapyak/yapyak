@@ -1,4 +1,4 @@
-export type { TemplateDiagnostic } from './diagnostic';
+export type { MalformedDiagnostic, TemplateDiagnostic } from './diagnostic';
 export type { Template, TemplateNode } from './node';
 export type { Placeholder } from './placeholder';
 

@@ -3,12 +3,14 @@ export type TemplateRange = {
   start: number;
 };
 
+export type MalformedDiagnostic = {
+  message: string;
+  range: TemplateRange;
+  kind: 'malformed';
+};
+
 export type TemplateDiagnostic =
-  | {
-      message: string;
-      range: TemplateRange;
-      kind: 'malformed';
-    }
+  | MalformedDiagnostic
   | {
       name: string;
       range: TemplateRange;

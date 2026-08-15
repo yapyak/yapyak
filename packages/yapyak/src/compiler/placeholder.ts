@@ -1,8 +1,12 @@
-import type { Placeholder, TemplateDiagnostic } from '../template';
+import type {
+  MalformedDiagnostic,
+  Placeholder,
+  TemplateDiagnostic,
+} from '../template';
 
 import { extractPlaceholders, parseTemplate } from '../template';
 
-export type { Placeholder, TemplateDiagnostic };
+export type { MalformedDiagnostic, Placeholder, TemplateDiagnostic };
 
 export type ParsedMessage = {
   issues: TemplateDiagnostic[];
@@ -21,6 +25,14 @@ export function parsePlaceholders(source: string): ParsedMessage {
     issues: diagnostics,
     placeholders: extractPlaceholders(template),
   };
+}
+
+export function findMalformedIssue(
+  issues: TemplateDiagnostic[],
+): MalformedDiagnostic | undefined {
+  return issues.find(
+    (issue): issue is MalformedDiagnostic => issue.kind === 'malformed',
+  );
 }
 
 function hasFatalDiagnostic(diagnostics: TemplateDiagnostic[]): boolean {
