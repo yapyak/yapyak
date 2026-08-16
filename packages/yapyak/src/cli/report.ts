@@ -8,6 +8,7 @@ import type { Processor } from '../processor';
 
 import {
   YAP_COMPILE,
+  discoverLocales,
   extractFile,
   findTranslation,
   fromMessageKey,
@@ -17,7 +18,6 @@ import {
   walkSourceFiles,
 } from '../compiler/internal';
 import { createFilter } from '../config/internal';
-import { existsSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 
 export type MissingEntry = {
@@ -54,18 +54,13 @@ type BuildReportInput = {
 
 export function buildReport(input: BuildReportInput): Report {
   const localesPath = join(input.projectRoot, input.localesDir);
-  const fileLocales = existsSync(localesPath)
-    ? readdirSync(localesPath)
-        .filter((name) => name.endsWith('.json'))
-        .map((name) => name.replace(/\.json$/, ''))
-    : [];
-  const { defaultLocale } = input;
-  const locales = [
-    ...new Set([
-      defaultLocale,
-      ...fileLocales,
-    ]),
-  ].sort();
+  const { defaultLocale, locales } = discoverLocales(
+    input.localesDir,
+    input.projectRoot,
+    {
+      defaultLocale: input.defaultLocale,
+    },
+  );
 
   const filter = createFilter(input.include, input.exclude);
   const sourceFiles = walkSourceFiles(filter, input.projectRoot);

@@ -26,7 +26,7 @@ export function discoverLocales(
   options?: DiscoverLocalesOptions,
 ): DiscoverLocalesResult {
   const directory = join(projectRoot, localesDir);
-  const fileLocales = existsSync(directory)
+  const fileNames = existsSync(directory)
     ? readdirSync(directory, {
         withFileTypes: true,
       })
@@ -34,31 +34,36 @@ export function discoverLocales(
         .map((entry) => entry.name.replace(/\.json$/, ''))
         .sort()
     : [];
+  const fileLocales: string[] = [];
+  const warnings: LocaleWarning[] = [];
+  for (const code of fileNames) {
+    const result = validateLocaleCode(code);
+    if (result.valid) {
+      fileLocales.push(code);
+      continue;
+    }
+    if (result.issue === undefined) {
+      continue;
+    }
+    const warning: LocaleWarning = {
+      code,
+      issue: result.issue,
+    };
+    if (result.suggestion !== undefined) {
+      warning.suggestion = result.suggestion;
+    }
+    warnings.push(warning);
+  }
   const defaultLocale = options?.defaultLocale || 'en';
   const uniqueLocales = new Set<string>([
     defaultLocale,
     ...fileLocales,
   ]);
-  const locales = [
-    ...uniqueLocales,
-  ].sort();
-  const warnings: LocaleWarning[] = [];
-  for (const code of locales) {
-    const result = validateLocaleCode(code);
-    if (!result.valid && result.issue) {
-      const warning: LocaleWarning = {
-        code,
-        issue: result.issue,
-      };
-      if (result.suggestion !== undefined) {
-        warning.suggestion = result.suggestion;
-      }
-      warnings.push(warning);
-    }
-  }
   return {
     defaultLocale,
-    locales,
+    locales: [
+      ...uniqueLocales,
+    ].sort(),
     warnings,
   };
 }
