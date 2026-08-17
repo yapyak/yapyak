@@ -28,7 +28,7 @@ ICU defines six plural categories:
 | `many` | Polish, Russian, Czech (cardinal: 0, 5+ for many Slavic languages) |
 | `other` | Everywhere. The required fallback |
 
-You only write the categories the source language uses. The model fills in the rest per locale when it translates.
+You only write the categories the source language uses. The model fills in the rest per locale when it translates: the prompt lists each target locale's CLDR categories, and a translation that uses a branch the locale lacks is rejected before it reaches the locale file.
 
 English uses `one` and `other`:
 

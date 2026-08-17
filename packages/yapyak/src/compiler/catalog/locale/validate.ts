@@ -5,6 +5,7 @@ import type { ParseEntryError } from './file';
 
 import { buildDiagnostic } from '../../../diagnostic';
 import { toMessageKey } from '../../../message-key';
+import { resolvePluralCategories } from '../../../plural-category';
 import { parseTemplate } from '../../../template';
 import { classifyNames } from '../../name';
 import { findMalformedIssue, parsePlaceholders } from '../../placeholder';
@@ -172,12 +173,14 @@ function formatEntryErrorMessage(
 export type TranslationParityResult = {
   issues: {
     branch?: string;
+    categories?: string[];
     kind:
       | 'missing'
       | 'extra'
       | 'kind-mismatch'
       | 'missing-other-branch'
-      | 'missing-select-branch';
+      | 'missing-select-branch'
+      | 'unknown-branch';
     name: string;
     sourceKind?: Placeholder['kind'];
     targetKind?: Placeholder['kind'];
@@ -188,6 +191,7 @@ export type TranslationParityResult = {
 export function validateTranslationParity(
   source: string,
   target: string,
+  locale: string,
 ): TranslationParityResult {
   const sourceByName = buildPlaceholderIndex(
     parsePlaceholders(source).placeholders,
@@ -246,6 +250,26 @@ export function validateTranslationParity(
           });
         }
       }
+    }
+  }
+  for (const [name, targetEntry] of targetBranchesByName) {
+    if (targetEntry.kind === 'select') {
+      continue;
+    }
+    const categories = resolvePluralCategories(
+      locale,
+      targetEntry.kind === 'selectordinal' ? 'ordinal' : 'cardinal',
+    );
+    for (const branch of targetEntry.branches) {
+      if (EXACT_MATCH_RX.test(branch) || categories.includes(branch)) {
+        continue;
+      }
+      issues.push({
+        branch,
+        categories,
+        kind: 'unknown-branch',
+        name,
+      });
     }
   }
   return {
@@ -347,17 +371,16 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
   }
   const localeFile = parseLocaleFile(parsed);
   const diagnostics: Diagnostic[] = [];
-  const categoriesCache = new Map<Intl.PluralRulesOptions['type'], string[]>();
+  const categoriesCache = new Map<
+    NonNullable<Intl.PluralRulesOptions['type']>,
+    string[]
+  >();
   const resolveCategories = (
-    type: Intl.PluralRulesOptions['type'],
+    type: NonNullable<Intl.PluralRulesOptions['type']>,
   ): string[] => {
     let categories = categoriesCache.get(type);
     if (!categories) {
-      categories = [
-        ...new Intl.PluralRules(locale, {
-          type,
-        }).resolvedOptions().pluralCategories,
-      ];
+      categories = resolvePluralCategories(locale, type);
       categoriesCache.set(type, categories);
     }
     return categories;

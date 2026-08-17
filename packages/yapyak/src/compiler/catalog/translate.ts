@@ -552,7 +552,7 @@ function registerTranslation(
   if (!trimmed) {
     return;
   }
-  const parity = validateTranslationParity(stub.source, trimmed);
+  const parity = validateTranslationParity(stub.source, trimmed, stub.locale);
   if (!parity.ok) {
     context.errors.push({
       error: new Error(
@@ -591,6 +591,8 @@ function formatParityIssues(issues: TranslationParityResult['issues']): string {
           return `missing \`other\` branch in {${issue.name}}`;
         case 'missing-select-branch':
           return `missing select branch "${issue.branch}" in {${issue.name}}`;
+        case 'unknown-branch':
+          return `unknown branch "${issue.branch}" in {${issue.name}} (the locale has ${issue.categories?.join(', ')})`;
         default: {
           const exhaustive: never = issue.kind;
           throw new Error(

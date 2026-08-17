@@ -805,15 +805,17 @@ describe('validateIcuPairs', () => {
 
 describe('validateTranslationParity', () => {
   it('returns `ok: true` for a placeholder-free source and target', () => {
-    expect(validateTranslationParity('Hello', 'Hej').ok).toBe(true);
+    expect(validateTranslationParity('Hello', 'Hej', 'sv').ok).toBe(true);
   });
 
   it('returns `ok: true` when every source placeholder is preserved', () => {
-    expect(validateTranslationParity('Hi {name}', 'Hej {name}').ok).toBe(true);
+    expect(validateTranslationParity('Hi {name}', 'Hej {name}', 'sv').ok).toBe(
+      true,
+    );
   });
 
   it('returns a `missing` issue when a source placeholder is dropped', () => {
-    const result = validateTranslationParity('Hi {name}', 'Hej');
+    const result = validateTranslationParity('Hi {name}', 'Hej', 'sv');
     expect(result.ok).toBe(false);
     expect(result.issues).toEqual([
       {
@@ -825,7 +827,7 @@ describe('validateTranslationParity', () => {
   });
 
   it('returns an `extra` issue when the target invents a placeholder', () => {
-    const result = validateTranslationParity('Hi', 'Hej {name}');
+    const result = validateTranslationParity('Hi', 'Hej {name}', 'sv');
     expect(result.ok).toBe(false);
     expect(result.issues).toEqual([
       {
@@ -839,6 +841,7 @@ describe('validateTranslationParity', () => {
     const result = validateTranslationParity(
       '{count, plural, one {one} other {many}}',
       '{count, select, one {ett} other {flera}}',
+      'sv',
     );
     expect(result.ok).toBe(false);
     expect(result.issues[0]?.kind).toBe('kind-mismatch');
@@ -848,6 +851,7 @@ describe('validateTranslationParity', () => {
     const result = validateTranslationParity(
       '{count, plural, one {# item} other {# items}}',
       '{count, plural, one {# objekt}}',
+      'sv',
     );
     expect(result.ok).toBe(false);
     expect(result.issues).toContainEqual({
@@ -860,6 +864,7 @@ describe('validateTranslationParity', () => {
     const result = validateTranslationParity(
       '{theme, select, dark {Dark mode} other {Light mode}}',
       '{theme, select, dark {Mörkt}}',
+      'sv',
     );
     expect(result.ok).toBe(false);
     expect(result.issues).toContainEqual({
@@ -872,6 +877,7 @@ describe('validateTranslationParity', () => {
     const result = validateTranslationParity(
       '{theme, select, dark {Dark mode} light {Light mode} other {System}}',
       '{theme, select, dark {Mörkt} other {System}}',
+      'sv',
     );
     expect(result.ok).toBe(false);
     expect(result.issues).toContainEqual({
@@ -885,6 +891,46 @@ describe('validateTranslationParity', () => {
     const result = validateTranslationParity(
       '{count, plural, one {# item} other {# items}}',
       '{count, plural, one {# objekt} few {# objekt} many {# objekt} other {# objekt}}',
+      'pl',
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  it('returns an `unknown-branch` issue when a plural branch is not a category of the locale', () => {
+    const result = validateTranslationParity(
+      '{count, plural, one {# item} other {# items}}',
+      '{count, plural, one {# objekt} few {# objekt} other {# objekt}}',
+      'sv',
+    );
+    expect(result.ok).toBe(false);
+    expect(result.issues).toEqual([
+      {
+        branch: 'few',
+        categories: [
+          'one',
+          'other',
+        ],
+        kind: 'unknown-branch',
+        name: 'count',
+      },
+    ]);
+  });
+
+  it('returns an `unknown-branch` issue when an ordinal branch is not a category of the locale', () => {
+    const result = validateTranslationParity(
+      '{count, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}',
+      '{count, selectordinal, two {#nd} other {#th}}',
+      'sv',
+    );
+    expect(result.ok).toBe(false);
+    expect(result.issues[0]?.kind).toBe('unknown-branch');
+  });
+
+  it('returns `ok: true` for an exact-match branch the locale never lists', () => {
+    const result = validateTranslationParity(
+      '{count, plural, one {# item} other {# items}}',
+      '{count, plural, =1 {# objekt} other {# objekt}}',
+      'sv',
     );
     expect(result.ok).toBe(true);
   });
