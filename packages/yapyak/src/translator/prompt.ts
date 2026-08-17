@@ -22,10 +22,7 @@ export function buildSystem(
     'Keep every {placeholder} name, its argument type (plural, select, selectordinal, number, date, time) and every `#` exactly as written.',
     'For `select`, keep the branch keys exactly as written.',
     'For `plural` and `selectordinal`, use only the CLDR categories of the target locale listed below: add the categories the locale has, drop the ones it does not have, always keep `other`, and keep exact matches like `=1`. Branch keys are category keywords, never translated words.',
-    ...targetLocales.map(
-      (locale) =>
-        `  ${locale}: plural ${resolvePluralCategories(locale, 'cardinal').join(', ')}; ordinal ${resolvePluralCategories(locale, 'ordinal').join(', ')}`,
-    ),
+    ...targetLocales.map(toCategoryLine),
   ];
   if (options?.voice) {
     lines.push(`Voice: ${stripControlCharacters(options.voice)}`);
@@ -40,6 +37,15 @@ export function buildSystem(
     }
   }
   return lines.join('\n');
+}
+
+function toCategoryLine(locale: string): string {
+  const cardinal = resolvePluralCategories(locale, 'cardinal');
+  const ordinal = resolvePluralCategories(locale, 'ordinal');
+  if (cardinal === undefined || ordinal === undefined) {
+    return `  ${locale}: no CLDR data on this system, keep the branches of the source`;
+  }
+  return `  ${locale}: plural ${cardinal.join(', ')}; ordinal ${ordinal.join(', ')}`;
 }
 
 function extractGlossary(

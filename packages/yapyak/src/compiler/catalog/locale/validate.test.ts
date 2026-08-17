@@ -758,6 +758,28 @@ describe('validateIcuPairs', () => {
     ).toBe(true);
   });
 
+  it('emits no YAP0045 for a locale without plural data', () => {
+    const source = 'You have {count, plural, one {# item} other {# items}}';
+    const messages = [
+      makeMessage(source, [
+        makeLocation(),
+      ]),
+    ];
+    const localeFile: LocaleFile = {
+      'src/a.tsx': {
+        [source]:
+          'Du har {count, plural, one {# objekt} few {# objekt} other {# objekt}}',
+      },
+    };
+    const diagnostics = validateIcuPairs(
+      makeIcuPairsInput('xx', localeFile, messages),
+    );
+
+    expect(
+      diagnostics.some((diagnostic) => diagnostic.code === 'YAP0045'),
+    ).toBe(false);
+  });
+
   it('emits YAP0045 when the target selectordinal uses an unknown branch name', () => {
     const source =
       '{count, selectordinal, one {#st} two {#nd} few {#rd} other {#th}}';
@@ -931,6 +953,15 @@ describe('validateTranslationParity', () => {
       '{count, plural, one {# item} other {# items}}',
       '{count, plural, =1 {# objekt} other {# objekt}}',
       'sv',
+    );
+    expect(result.ok).toBe(true);
+  });
+
+  it('returns `ok: true` for a locale without plural data', () => {
+    const result = validateTranslationParity(
+      '{count, plural, one {# item} other {# items}}',
+      '{count, plural, one {# objekt} few {# objekt} other {# objekt}}',
+      'xx',
     );
     expect(result.ok).toBe(true);
   });

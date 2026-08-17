@@ -10,7 +10,14 @@ const CLDR_ORDER = [
 export function resolvePluralCategories(
   locale: string,
   type: NonNullable<Intl.PluralRulesOptions['type']>,
-): string[] {
+): string[] | undefined {
+  if (
+    Intl.PluralRules.supportedLocalesOf([
+      locale,
+    ]).length === 0
+  ) {
+    return undefined;
+  }
   return [
     ...new Intl.PluralRules(locale, {
       type,

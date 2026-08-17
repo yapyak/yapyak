@@ -260,6 +260,9 @@ export function validateTranslationParity(
       locale,
       targetEntry.kind === 'selectordinal' ? 'ordinal' : 'cardinal',
     );
+    if (categories === undefined) {
+      continue;
+    }
     for (const branch of targetEntry.branches) {
       if (EXACT_MATCH_RX.test(branch) || categories.includes(branch)) {
         continue;
@@ -373,17 +376,15 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const categoriesCache = new Map<
     NonNullable<Intl.PluralRulesOptions['type']>,
-    string[]
+    string[] | undefined
   >();
   const resolveCategories = (
     type: NonNullable<Intl.PluralRulesOptions['type']>,
-  ): string[] => {
-    let categories = categoriesCache.get(type);
-    if (!categories) {
-      categories = resolvePluralCategories(locale, type);
-      categoriesCache.set(type, categories);
+  ): string[] | undefined => {
+    if (!categoriesCache.has(type)) {
+      categoriesCache.set(type, resolvePluralCategories(locale, type));
     }
-    return categories;
+    return categoriesCache.get(type);
   };
   for (const message of messages) {
     const parsedSource = parsePlaceholders(message.source);
@@ -532,6 +533,9 @@ export function validateIcuPairs(input: ValidateIcuPairsInput): Diagnostic[] {
         const categories = resolveCategories(
           isOrdinal ? 'ordinal' : 'cardinal',
         );
+        if (categories === undefined) {
+          continue;
+        }
         for (const branch of targetEntry.branches) {
           if (EXACT_MATCH_RX.test(branch) || categories.includes(branch)) {
             continue;

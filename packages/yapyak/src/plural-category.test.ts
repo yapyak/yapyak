@@ -20,4 +20,8 @@ describe('resolvePluralCategories', () => {
       'other',
     ]);
   });
+
+  it('returns undefined when the runtime has no plural data for the locale', () => {
+    expect(resolvePluralCategories('xx', 'cardinal')).toBeUndefined();
+  });
 });
