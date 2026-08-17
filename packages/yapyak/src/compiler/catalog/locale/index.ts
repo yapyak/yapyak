@@ -12,6 +12,7 @@ export type {
 } from './file';
 export type { RenameConflict } from './migrate';
 export type { OrphanCache } from './orphan';
+export type { TranslationProgress } from './translation-progress';
 export type { TranslationParityResult } from './validate';
 
 export { validateLocaleCode } from './code';
@@ -38,6 +39,11 @@ export {
   readOrphans,
 } from './orphan';
 export { writeRegister } from './register';
+export {
+  isTranslationRunning,
+  readTranslationProgress,
+  writeTranslationProgress,
+} from './translation-progress';
 export {
   validateEntryUsage,
   validateIcuPairs,

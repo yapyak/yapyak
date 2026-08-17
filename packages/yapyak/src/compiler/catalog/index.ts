@@ -8,6 +8,7 @@ export type {
   RenameConflict,
   SyncItem,
   SyncLocaleFilesResult,
+  TranslationProgress,
 } from './locale';
 
 export { stringifyCanonical } from './canonical';
@@ -20,10 +21,12 @@ export {
   findEntryRange,
   findTranslation,
   getDefaultYapyakDir,
+  isTranslationRunning,
   migrateLocales,
   parseLocaleFile,
   readLocaleData,
   readLocaleFile,
+  readTranslationProgress,
   syncLocaleFiles,
   toEntry,
   toVariants,

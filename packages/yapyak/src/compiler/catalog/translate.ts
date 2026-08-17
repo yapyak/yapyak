@@ -12,6 +12,7 @@ import type {
   LocaleData,
   OrphanCache,
   TranslationParityResult,
+  TranslationProgress,
 } from './locale';
 
 import { toMessageKey } from '../../message-key';
@@ -21,10 +22,13 @@ import {
   getDefaultYapyakDir,
   readLocaleFile,
   readOrphans,
+  readTranslationProgress,
   validateLocaleCode,
   validateTranslationParity,
   writeLocaleFile,
+  writeTranslationProgress,
 } from './locale';
+import { randomUUID } from 'node:crypto';
 import { join } from 'node:path';
 
 export type AutoTranslateInput = {
@@ -68,11 +72,13 @@ type BatchContext = {
       value: string;
     }[]
   >;
+  progress: TranslationProgress;
   projectRoot: string;
   registeredStubs: Set<TranslationStub>;
   signal?: AbortSignal;
   stubsByRequest: Map<TranslateRequest, TranslationStub>;
   translated: number;
+  yapyakDir: string;
 };
 
 export async function autoTranslate(
@@ -83,6 +89,7 @@ export async function autoTranslate(
 ): Promise<AutoTranslateResult> {
   const force = options?.force ?? false;
   const examplesMax = options?.examples ?? 0;
+  const yapyakDir = options?.yapyakDir ?? getDefaultYapyakDir(projectRoot);
   const stubs = extractStubs(
     {
       force,
@@ -101,7 +108,7 @@ export async function autoTranslate(
   const exampleCache = loadExampleCache(
     context,
     projectRoot,
-    options?.yapyakDir,
+    yapyakDir,
     examplesMax,
   );
   const requests = stubs.map((stub) =>
@@ -113,6 +120,18 @@ export async function autoTranslate(
     extractedKeys: toExtractedKeys(input.messages),
     localesDir: context.localesDir,
     pendingTranslationsByLocale: new Map(),
+    progress: {
+      errors: [],
+      finishedAt: null,
+      id: randomUUID(),
+      locales: [
+        ...new Set(stubs.map((stub) => stub.locale)),
+      ],
+      pid: process.pid,
+      startedAt: new Date().toISOString(),
+      total: stubs.length,
+      translated: 0,
+    },
     projectRoot,
     registeredStubs: new Set(),
     ...(signal === undefined
@@ -122,61 +141,68 @@ export async function autoTranslate(
         }),
     stubsByRequest: toStubsByRequest(requests, stubs),
     translated: 0,
+    yapyakDir,
   };
+  writeTranslationProgress(yapyakDir, batchContext.progress);
 
-  let results: string[];
   try {
-    results =
-      typeof input.translator.batch === 'function'
-        ? await input.translator.batch(requests, {
-            onChunkComplete: (chunkRequests, chunkResult) => {
-              registerChunk(batchContext, chunkRequests, chunkResult);
-            },
-            onChunkError: (error, chunkRequests) => {
-              collectChunkErrors(batchContext, error, chunkRequests);
-            },
-            ...(signal === undefined
-              ? {}
-              : {
-                  signal,
-                }),
-          })
-        : await runOneByOne(
-            stubs,
-            requests,
-            input.translator,
-            batchContext.errors,
-            signal,
-          );
-  } catch (error) {
+    let results: string[];
     try {
-      writePendingTranslations(batchContext);
-    } catch (writeError) {
-      collectPendingErrors(batchContext, writeError);
+      results =
+        typeof input.translator.batch === 'function'
+          ? await input.translator.batch(requests, {
+              onChunkComplete: (chunkRequests, chunkResult) => {
+                registerChunk(batchContext, chunkRequests, chunkResult);
+              },
+              onChunkError: (error, chunkRequests) => {
+                collectChunkErrors(batchContext, error, chunkRequests);
+              },
+              ...(signal === undefined
+                ? {}
+                : {
+                    signal,
+                  }),
+            })
+          : await runOneByOne(
+              stubs,
+              requests,
+              input.translator,
+              batchContext.errors,
+              signal,
+            );
+    } catch (error) {
+      try {
+        writePendingTranslations(batchContext);
+      } catch (writeError) {
+        collectPendingErrors(batchContext, writeError);
+      }
+      if (!signal?.aborted) {
+        collectBatchErrors(batchContext, error, stubs);
+      }
+      return {
+        errors: batchContext.errors,
+        translated: batchContext.translated,
+      };
     }
-    if (!signal?.aborted) {
-      collectBatchErrors(batchContext, error, stubs);
+
+    for (let index = 0; index < stubs.length; index++) {
+      const stub = stubs[index];
+      const value = results[index];
+      if (!stub || value === undefined) {
+        continue;
+      }
+      registerTranslation(batchContext, stub, value);
     }
+    writePendingTranslations(batchContext);
+
     return {
       errors: batchContext.errors,
       translated: batchContext.translated,
     };
+  } finally {
+    batchContext.progress.finishedAt = new Date().toISOString();
+    writeProgress(batchContext);
   }
-
-  for (let index = 0; index < stubs.length; index++) {
-    const stub = stubs[index];
-    const value = results[index];
-    if (!stub || value === undefined) {
-      continue;
-    }
-    registerTranslation(batchContext, stub, value);
-  }
-  writePendingTranslations(batchContext);
-
-  return {
-    errors: batchContext.errors,
-    translated: batchContext.translated,
-  };
 }
 
 type ExtractStubsInput = {
@@ -257,7 +283,7 @@ type ExampleCache = {
 function loadExampleCache(
   context: LocaleContext,
   projectRoot: string,
-  yapyakDir: string | undefined,
+  yapyakDir: string,
   max: number,
 ): ExampleCache {
   if (max <= 0) {
@@ -274,8 +300,7 @@ function loadExampleCache(
     const path = join(projectRoot, context.localesDir, `${locale}.json`);
     localeData[locale] = readLocaleFile(path);
   }
-  const resolvedYapyakDir = yapyakDir ?? getDefaultYapyakDir(projectRoot);
-  const orphans = readOrphans(resolvedYapyakDir);
+  const orphans = readOrphans(yapyakDir);
   return {
     localeData,
     orphans,
@@ -382,6 +407,7 @@ function registerChunk(
     registerTranslation(context, stub, value);
   }
   writePendingTranslations(context);
+  writeProgress(context);
 }
 
 function collectChunkErrors(
@@ -574,4 +600,27 @@ function formatParityIssues(issues: TranslationParityResult['issues']): string {
       }
     })
     .join(', ');
+}
+
+function writeProgress(context: BatchContext): void {
+  if (readTranslationProgress(context.yapyakDir)?.id !== context.progress.id) {
+    return;
+  }
+  context.progress.errors = context.errors.map(toProgressError);
+  context.progress.translated = context.translated;
+  writeTranslationProgress(context.yapyakDir, context.progress);
+}
+
+function toProgressError({
+  error,
+  fileId,
+  locale,
+  source,
+}: AutoTranslateResult['errors'][number]): TranslationProgress['errors'][number] {
+  return {
+    fileId,
+    locale,
+    message: error instanceof Error ? error.message : String(error),
+    source,
+  };
 }

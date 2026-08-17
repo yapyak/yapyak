@@ -14,6 +14,7 @@ export type {
   RenameConflict,
   SyncItem,
   SyncLocaleFilesResult,
+  TranslationProgress,
 } from './catalog';
 export type {
   Diagnostic,
@@ -36,10 +37,12 @@ export {
   findEntryRange,
   findTranslation,
   getDefaultYapyakDir,
+  isTranslationRunning,
   migrateLocales,
   parseLocaleFile,
   readLocaleData,
   readLocaleFile,
+  readTranslationProgress,
   stringifyCanonical,
   syncLocaleFiles,
   toEntry,

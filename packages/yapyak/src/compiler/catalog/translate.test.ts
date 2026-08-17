@@ -1,8 +1,10 @@
 import type { TranslateRequest, Translator } from '../../translator';
 import type { ExtractedMessage } from '../parser';
+import type { TranslationProgress } from './locale';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
+import { readTranslationProgress, writeTranslationProgress } from './locale';
 import { autoTranslate } from './translate';
 import {
   existsSync,
@@ -1311,5 +1313,562 @@ describe('autoTranslate', () => {
     expect(result.errors[0]?.error).toBeInstanceOf(Error);
     expect(result.errors[1]?.source).toBe('World');
     expect(readFileSync(localePath, 'utf-8')).toBe('{');
+  });
+
+  it('writes a finished progress record to `.yapyak/progress.json`', async () => {
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: () =>
+          Promise.resolve([
+            'Hej',
+          ]),
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(readTranslationProgress(join(projectRoot, '.yapyak'))).toEqual({
+      errors: [],
+      finishedAt: expect.any(String),
+      id: expect.any(String),
+      locales: [
+        'sv',
+      ],
+      pid: process.pid,
+      startedAt: expect.any(String),
+      total: 1,
+      translated: 1,
+    });
+  });
+
+  it('writes the progress into `yapyakDir` when given', async () => {
+    const yapyakDir = join(projectRoot, 'cache');
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: () =>
+          Promise.resolve([
+            'Hej',
+          ]),
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+      {
+        yapyakDir,
+      },
+    );
+
+    expect(readTranslationProgress(yapyakDir)?.translated).toBe(1);
+    expect(existsSync(join(projectRoot, '.yapyak', 'progress.json'))).toBe(
+      false,
+    );
+  });
+
+  it('writes an unfinished progress record before the translator runs', async () => {
+    let progress: TranslationProgress | undefined;
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: () => {
+          progress = readTranslationProgress(join(projectRoot, '.yapyak'));
+          return Promise.resolve([
+            'Hej',
+          ]);
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(progress).toEqual({
+      errors: [],
+      finishedAt: null,
+      id: expect.any(String),
+      locales: [
+        'sv',
+      ],
+      pid: process.pid,
+      startedAt: expect.any(String),
+      total: 1,
+      translated: 0,
+    });
+  });
+
+  it('writes the translated count after each chunk', async () => {
+    let progress: TranslationProgress | undefined;
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkComplete?: (
+              chunk: TranslateRequest[],
+              result: {
+                sv: string;
+              }[],
+            ) => void;
+          },
+        ): Promise<string[]> => {
+          options?.onChunkComplete?.(requests, [
+            {
+              sv: 'Hej',
+            },
+          ]);
+          progress = readTranslationProgress(join(projectRoot, '.yapyak'));
+          return Promise.resolve([
+            'Hej',
+          ]);
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(progress?.finishedAt).toBeNull();
+    expect(progress?.translated).toBe(1);
+  });
+
+  it('records every failed translation in the progress file', async () => {
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkError?: (error: unknown, chunk: TranslateRequest[]) => void;
+          },
+        ): Promise<string[]> => {
+          options?.onChunkError?.(new Error('chunk failed'), requests);
+          return Promise.resolve([
+            '',
+          ]);
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(
+      readTranslationProgress(join(projectRoot, '.yapyak'))?.errors,
+    ).toEqual([
+      {
+        fileId: 'src/a.tsx',
+        locale: 'sv',
+        message: 'chunk failed',
+        source: 'Hello',
+      },
+    ]);
+  });
+
+  it('writes a finished progress record when the signal aborts', async () => {
+    const controller = new AbortController();
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: () => {
+          controller.abort();
+          return Promise.reject(new Error('Translate batch aborted.'));
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+      {
+        signal: controller.signal,
+      },
+    );
+
+    const progress = readTranslationProgress(join(projectRoot, '.yapyak'));
+    expect(progress?.finishedAt).toEqual(expect.any(String));
+    expect(progress?.translated).toBe(0);
+  });
+
+  it('preserves the progress of a newer run when the run finishes', async () => {
+    const yapyakDir = join(projectRoot, '.yapyak');
+    const newer: TranslationProgress = {
+      errors: [],
+      finishedAt: null,
+      id: 'run-2',
+      locales: [
+        'sv',
+      ],
+      pid: process.pid,
+      startedAt: '2025-01-01T00:00:00.000Z',
+      total: 2,
+      translated: 0,
+    };
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('use batch')),
+      {
+        batch: (
+          requests: TranslateRequest[],
+          options?: {
+            onChunkComplete?: (
+              chunk: TranslateRequest[],
+              result: {
+                sv: string;
+              }[],
+            ) => void;
+          },
+        ): Promise<string[]> => {
+          writeTranslationProgress(yapyakDir, newer);
+          options?.onChunkComplete?.(requests, [
+            {
+              sv: 'Hej',
+            },
+          ]);
+          return Promise.resolve([
+            'Hej',
+          ]);
+        },
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+          'sv',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(readTranslationProgress(yapyakDir)).toEqual(newer);
+  });
+
+  it('writes no progress file when no stub remains', async () => {
+    const translator: Translator = Object.assign(
+      () => Promise.reject(new Error('should not be called')),
+      {
+        batch: () => Promise.reject(new Error('should not be called')),
+        id: 'mock',
+      },
+    );
+
+    const messages: ExtractedMessage[] = [
+      {
+        id: 'm1',
+        locations: [
+          {
+            callSiteContext: {},
+            fileId: 'src/a.tsx',
+            range: {
+              end: {
+                column: 5,
+                line: 1,
+                offset: 5,
+              },
+              start: {
+                column: 1,
+                line: 1,
+                offset: 0,
+              },
+            },
+          },
+        ],
+        placeholders: [],
+        source: 'Hello',
+      },
+    ];
+
+    await autoTranslate(
+      {
+        messages,
+        translator,
+      },
+      {
+        defaultLocale: 'en',
+        locales: [
+          'en',
+        ],
+        localesDir: 'locales',
+      },
+      projectRoot,
+    );
+
+    expect(existsSync(join(projectRoot, '.yapyak', 'progress.json'))).toBe(
+      false,
+    );
   });
 });
