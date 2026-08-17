@@ -15,6 +15,7 @@ export type { OrphanCache } from './orphan';
 export type { TranslationProgress } from './translation-progress';
 export type { TranslationParityResult } from './validate';
 
+export { stringifyCanonical } from './canonical';
 export { validateLocaleCode } from './code';
 export { readLocaleData } from './data';
 export { discoverLocales } from './discover';

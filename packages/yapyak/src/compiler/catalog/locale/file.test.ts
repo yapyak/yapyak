@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { toMessageKey } from '../../../message-key';
 import { resetWarn, setWarn } from '../../../warn';
-import { stringifyCanonical } from '../canonical';
+import { stringifyCanonical } from './canonical';
 import {
   CorruptLocaleFileError,
   YapyakInvariantError,

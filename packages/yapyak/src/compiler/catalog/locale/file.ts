@@ -4,9 +4,9 @@ import type { OrphanCache } from './orphan';
 
 import { YAP_COMPILE, warnDiagnostic } from '../../../diagnostic';
 import { toMessageKey } from '../../../message-key';
-import { compareKeys, stringifyCanonical } from '../canonical';
 import { writeEachAtomic } from './atomic';
 import { stripBom } from './bom';
+import { compareKeys, stringifyCanonical } from './canonical';
 import { validateLocaleCode } from './code';
 import {
   CorruptOrphanCacheError,

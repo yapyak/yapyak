@@ -1,6 +1,6 @@
-import { stringifyCanonical } from '../canonical';
 import { writeAtomic } from './atomic';
 import { stripBom } from './bom';
+import { stringifyCanonical } from './canonical';
 import { isUnsafeKey } from './unsafe-key';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';

@@ -11,7 +11,6 @@ export type {
   TranslationProgress,
 } from './locale';
 
-export { stringifyCanonical } from './canonical';
 export { findContextDiagnostics } from './context-diagnostic';
 export {
   CorruptLocaleFileError,
@@ -27,6 +26,7 @@ export {
   readLocaleData,
   readLocaleFile,
   readTranslationProgress,
+  stringifyCanonical,
   syncLocaleFiles,
   toEntry,
   toVariants,

@@ -1,6 +1,6 @@
-import { stringifyCanonical } from '../canonical';
 import { writeAtomic } from './atomic';
 import { stripBom } from './bom';
+import { stringifyCanonical } from './canonical';
 import { isPlainObject } from './plain-object';
 import { existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
