@@ -65,11 +65,18 @@ function scanText(
     }
     if (character === '{') {
       const close = findMatchingClose(source, index, end);
+      flushText(index);
       if (close === -1) {
-        flushText(end);
+        if (!inBranch) {
+          tokens.push({
+            kind: 'slot',
+            length: end - index,
+            offset: index,
+          });
+        }
+        scanPlaceholder(source, index, end, tokens);
         return;
       }
-      flushText(index);
       if (!inBranch) {
         tokens.push({
           kind: 'slot',
@@ -78,6 +85,7 @@ function scanText(
         });
       }
       scanPlaceholder(source, index, close, tokens);
+      emitPunctuation(tokens, close);
       index = close + 1;
       textStart = index;
       continue;
@@ -159,7 +167,6 @@ function scanPlaceholder(
   tokens: TemplateToken[],
 ): void {
   emitPunctuation(tokens, open);
-  emitPunctuation(tokens, close);
   const nameStart = skipSpace(source, open + 1, close);
   const nameEnd = scanIdentifier(source, nameStart, close);
   if (nameEnd === nameStart) {
@@ -207,10 +214,11 @@ function scanBranches(
     }
     if (source[index] === '{') {
       const close = findMatchingClose(source, index, end);
+      emitPunctuation(tokens, index);
       if (close === -1) {
+        scanText(source, index + 1, end, tokens, true);
         return;
       }
-      emitPunctuation(tokens, index);
       emitPunctuation(tokens, close);
       scanText(source, index + 1, close, tokens, true);
       index = close + 1;

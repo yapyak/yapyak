@@ -152,7 +152,41 @@ describe('tokenizeTemplate', () => {
     ]);
   });
 
-  it('marks no placeholder for an unclosed brace', () => {
-    expect(collectMarked('Hi {name', 'placeholder')).toEqual([]);
+  it('marks the placeholder for an unclosed brace', () => {
+    expect(collectMarked('Hi {name', 'placeholder')).toEqual([
+      'name',
+    ]);
+  });
+
+  it('marks the slot to the end of the source for an unclosed brace', () => {
+    expect(collectMarked('Hi {name', 'slot')).toEqual([
+      '{name',
+    ]);
+  });
+
+  it('marks no closing punctuation for an unclosed brace', () => {
+    expect(collectMarked('Hi {name', 'punctuation')).toEqual([
+      '{',
+    ]);
+  });
+
+  it('marks every branch for a plural missing its closing brace', () => {
+    expect(
+      collectMarked(
+        'You have {count, plural, one {# item} other {# items}',
+        'branch',
+      ),
+    ).toEqual([
+      'one',
+      'other',
+    ]);
+  });
+
+  it('marks the pound for a branch missing its closing brace', () => {
+    expect(
+      collectMarked('You have {count, plural, one {# item', 'pound'),
+    ).toEqual([
+      '#',
+    ]);
   });
 });
