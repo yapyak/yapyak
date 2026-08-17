@@ -30,7 +30,7 @@ Apply in order. First match wins.
    → NO test. Tested through single consumer.
 ```
 
-Rule 1 is absolute. Private helpers are never tested directly, even with many code paths.
+Rule 1 is absolute. Private helpers are never tested directly, even with many code paths → give the export that reaches a helper one test per distinct return path of that helper, on top of the export's category count.
 
 ### Which files get a test file
 
