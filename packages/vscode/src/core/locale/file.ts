@@ -1,11 +1,14 @@
-import { basename, dirname, extname, join } from 'node:path';
+import { basename, dirname, extname, resolve } from 'node:path';
 
 export function isLocaleFile(
   root: string,
   localesDir: string,
   path: string,
 ): boolean {
-  return extname(path) === '.json' && dirname(path) === join(root, localesDir);
+  return (
+    extname(path) === '.json' &&
+    resolve(dirname(path)) === resolve(root, localesDir)
+  );
 }
 
 export function toLocaleCode(path: string): string {

@@ -3,13 +3,22 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { resolveCliPath, runCli, toCliErrorDetail } from './cli';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 describe('resolveCliPath', () => {
   it('returns the cli path when found', () => {
-    expect(resolveCliPath(dirname(fileURLToPath(import.meta.url)))).toMatch(
-      /yapyak\/dist\/cli\/bin\.js$/,
+    const directory = dirname(fileURLToPath(import.meta.url));
+
+    expect(resolveCliPath(directory)).toBe(
+      join(
+        resolve(directory, '..', '..'),
+        'node_modules',
+        'yapyak',
+        'dist',
+        'cli',
+        'bin.js',
+      ),
     );
   });
 
