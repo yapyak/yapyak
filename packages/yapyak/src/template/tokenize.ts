@@ -14,15 +14,6 @@ export type TemplateToken = {
   offset: number;
 };
 
-const ARGUMENT_KINDS = new Set([
-  'date',
-  'number',
-  'plural',
-  'select',
-  'selectordinal',
-  'time',
-]);
-
 const IDENTIFIER_RX = /[0-9A-Za-z_=-]/;
 const TAG_NAME_RX = /[0-9A-Za-z_-]/;
 
@@ -184,14 +175,13 @@ function scanPlaceholder(
   emitPunctuation(tokens, afterName);
   const kindStart = skipSpace(source, afterName + 1, close);
   const kindEnd = scanIdentifier(source, kindStart, close);
-  if (!ARGUMENT_KINDS.has(source.slice(kindStart, kindEnd))) {
-    return;
+  if (kindEnd > kindStart) {
+    tokens.push({
+      kind: 'keyword',
+      length: kindEnd - kindStart,
+      offset: kindStart,
+    });
   }
-  tokens.push({
-    kind: 'keyword',
-    length: kindEnd - kindStart,
-    offset: kindStart,
-  });
   const afterKind = skipSpace(source, kindEnd, close);
   if (source[afterKind] !== ',') {
     return;

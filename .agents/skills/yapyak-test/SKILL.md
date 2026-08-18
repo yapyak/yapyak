@@ -397,6 +397,8 @@ Closed set of fixture data. No invented strings.
 'You have {count,\n plural, one {# msg} other {# msgs}}'             type-level whitespace regression — newline after the placeholder name
 'Öppna {name}'                                                       context-variant target carrying a placeholder the source lacks — locale-file range tests
 'Hi {first name}'                                                    YAP0052 regression — placeholder name holding a space
+'You have {count, plura, one {# item} other {# items}}'              tokenizer regression — misspelled argument kind before branches
+'Price: {amount, numbr, currency EUR}'                               tokenizer regression — misspelled argument kind before a style
 ```
 
 If a test does not exercise one of these edge cases, use the regular pool strings.

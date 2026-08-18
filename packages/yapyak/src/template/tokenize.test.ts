@@ -189,4 +189,48 @@ describe('tokenizeTemplate', () => {
       '#',
     ]);
   });
+
+  it('marks a misspelled argument kind as a keyword', () => {
+    expect(
+      collectMarked(
+        'You have {count, plura, one {# item} other {# items}}',
+        'keyword',
+      ),
+    ).toEqual([
+      'plura',
+    ]);
+  });
+
+  it('marks every branch after a misspelled argument kind', () => {
+    expect(
+      collectMarked(
+        'You have {count, plura, one {# item} other {# items}}',
+        'branch',
+      ),
+    ).toEqual([
+      'one',
+      'other',
+    ]);
+  });
+
+  it('marks the pound after a misspelled argument kind', () => {
+    expect(
+      collectMarked(
+        'You have {count, plura, one {# item} other {# items}}',
+        'pound',
+      ),
+    ).toEqual([
+      '#',
+      '#',
+    ]);
+  });
+
+  it('marks the style after a misspelled argument kind as a branch', () => {
+    expect(
+      collectMarked('Price: {amount, numbr, currency EUR}', 'branch'),
+    ).toEqual([
+      'currency',
+      'EUR',
+    ]);
+  });
 });
