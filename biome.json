@@ -246,6 +246,7 @@
     },
     {
       "includes": [
+        "packages/vscode/e2e/*.ts",
         "packages/vscode/src/**"
       ],
       "linter": {
@@ -254,6 +255,19 @@
             "noUndeclaredDependencies": "off"
           }
         }
+      }
+    },
+    {
+      "includes": [
+        "packages/vscode/e2e/*.spec.ts"
+      ],
+      "javascript": {
+        "globals": [
+          "setup",
+          "suite",
+          "teardown",
+          "test"
+        ]
       }
     }
   ],

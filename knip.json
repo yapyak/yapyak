@@ -2,12 +2,22 @@
   "$schema": "https://unpkg.com/knip@6/schema.json",
   "ignore": [
     "packages/yapyak/src/compiler/parser/fixture/**",
-    "examples/svelte-sveltekit-*/vite.config.ts"
+    "examples/svelte-sveltekit-*/vite.config.ts",
+    "packages/vscode/e2e/fixture/**"
   ],
   "workspaces": {
     "packages/astro": {
       "ignoreDependencies": [
         "@types/estree"
+      ]
+    },
+    "packages/vscode": {
+      "entry": [
+        "e2e/*.spec.ts",
+        ".vscode-test.mjs"
+      ],
+      "ignoreDependencies": [
+        "@vscode/test-electron"
       ]
     }
   }

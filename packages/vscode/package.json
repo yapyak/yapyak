@@ -12,7 +12,8 @@
     "build": "tsdown",
     "test": "pnpm -w vitest --run --project=@yapyak/vscode",
     "test:coverage": "pnpm -w vitest --run --project=@yapyak/vscode --coverage --coverage.include='packages/vscode/src/core/**/*.ts' --coverage.exclude='**/*.test.ts' --coverage.exclude='**/index.ts' --coverage.reporter=text --coverage.thresholds.statements=95 --coverage.thresholds.branches=90 --coverage.thresholds.functions=95 --coverage.thresholds.lines=95",
-    "typecheck": "tsc --noEmit"
+    "test:e2e": "vscode-test",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p e2e"
   },
   "contributes": {
     "commands": [
@@ -43,12 +44,16 @@
     "workspaceContains:**/yapyak.config.js"
   ],
   "devDependencies": {
+    "@types/mocha": "catalog:",
     "@types/node": "catalog:",
     "@types/vscode": "catalog:",
+    "@vscode/test-cli": "catalog:",
+    "@vscode/test-electron": "catalog:",
     "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vitest-config": "workspace:*",
     "tsdown": "catalog:",
+    "tsx": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:",
     "yapyak": "workspace:*"

@@ -49,6 +49,7 @@ catalog:
   '@testing-library/vue': 8.1.0
   '@types/estree': 1.0.9
   '@types/estree-jsx': 1.0.5
+  '@types/mocha': 10.0.10
   '@types/node': 26.1.2
   '@types/picomatch': 4.0.3
   '@types/react': 19.2.18
@@ -58,6 +59,8 @@ catalog:
   '@vitejs/plugin-react': 6.0.5
   '@vitejs/plugin-vue': 6.0.8
   '@vitest/coverage-v8': 4.1.10
+  '@vscode/test-cli': 0.0.15
+  '@vscode/test-electron': 3.1.0
   '@vue/compiler-core': 3.5.40
   '@vue/compiler-sfc': 3.5.40
   astro: 7.1.6
@@ -74,6 +77,7 @@ catalog:
   svelte: 5.56.8
   svelte-check: 4.7.4
   tsdown: 0.22.14
+  tsx: 4.23.12
   typescript: 6.0.3
   vite: 8.2.0
   vitest: 4.1.10
