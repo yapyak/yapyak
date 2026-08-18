@@ -22,6 +22,7 @@ jobs:
       e2e: ${{ steps.classify.outputs.e2e }}
       run-ci: ${{ steps.classify.outputs.run-ci }}
       run-e2e: ${{ steps.classify.outputs.run-e2e }}
+      run-vscode: ${{ steps.classify.outputs.run-vscode }}
       matrix: ${{ steps.classify.outputs.matrix }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -30,17 +31,18 @@ jobs:
           BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           HEAD: ${{ github.sha }}
         run: |
-          library=false; docs=false; e2e=false
+          library=false; docs=false; e2e=false; vscode=false
           if [ -z "$BASE" ] || [ "$BASE" = "0000000000000000000000000000000000000000" ] \
             || ! git fetch --quiet --depth=1 origin "$BASE" \
             || ! files=$(git diff --name-only "$BASE" "$HEAD"); then
-            library=true
+            library=true; vscode=true
             files=""
           fi
           while IFS= read -r file; do
             [ -z "$file" ] && continue
             case "$file" in
-              .github/workflows/*) library=true ;;
+              .github/workflows/*) library=true; vscode=true ;;
+              packages/vscode/*|packages/yapyak/*) library=true; vscode=true ;;
               packages/*) library=true ;;
               docs/*) docs=true ;;
               examples/*|e2e/*) e2e=true ;;
@@ -62,6 +64,7 @@ jobs:
             echo "e2e=$e2e"
             echo "run-ci=$run_ci"
             echo "run-e2e=$run_e2e"
+            echo "run-vscode=$vscode"
             echo "matrix=$matrix"
           } >> "$GITHUB_OUTPUT"
 
@@ -142,6 +145,27 @@ jobs:
           name: e2e-${{ matrix.mode }}-test-results
           path: e2e/test-results
 
+  vscode-e2e:
+    needs: changes
+    if: needs.changes.outputs.run-vscode == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: packages/vscode/.vscode-test
+          key: vscode-test-${{ runner.os }}-${{ hashFiles('packages/vscode/.vscode-test.mjs') }}
+      - run: pnpm --filter @yapyak/vscode test:coverage
+      - run: xvfb-run -a pnpm --filter @yapyak/vscode test:e2e
+
   changesets:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -155,7 +179,7 @@ jobs:
   all-green:
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    needs: [changes, changesets, ci, e2e]
+    needs: [changes, changesets, ci, e2e, vscode-e2e]
     if: always()
     steps:
       - run: test "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "false"
