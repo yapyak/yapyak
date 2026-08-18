@@ -7,7 +7,9 @@ packages:
   - packages/*
 
 allowBuilds:
+  '@vscode/vsce-sign': false
   esbuild: false
+  keytar: false
   sharp: false
   workerd: false
 
@@ -61,6 +63,7 @@ catalog:
   '@vitest/coverage-v8': 4.1.10
   '@vscode/test-cli': 0.0.15
   '@vscode/test-electron': 3.1.0
+  '@vscode/vsce': 3.9.2
   '@vue/compiler-core': 3.5.40
   '@vue/compiler-sfc': 3.5.40
   astro: 7.1.6

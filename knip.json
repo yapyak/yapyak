@@ -14,10 +14,12 @@
     "packages/vscode": {
       "entry": [
         "e2e/*.spec.ts",
+        "scripts/*.mjs",
         ".vscode-test.mjs"
       ],
       "ignoreDependencies": [
-        "@vscode/test-electron"
+        "@vscode/test-electron",
+        "@vscode/vsce"
       ]
     }
   }

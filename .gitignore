@@ -10,3 +10,5 @@ node_modules
 test-results
 
 .vscode-test
+packages/vscode/vsix
+*.vsix
