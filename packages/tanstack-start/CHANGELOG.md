@@ -1,5 +1,12 @@
 # @yapyak/tanstack-start
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies [[`d3ad210`](https://github.com/yapyak/yapyak/commit/d3ad210a72f5068fa52b83654f7725b92f12bf54), [`9e397d1`](https://github.com/yapyak/yapyak/commit/9e397d17aa18fcbc0791169e7bb4f4082c6e5aa9), [`620e004`](https://github.com/yapyak/yapyak/commit/620e004a6830525d8f2f7e3a2647a590f0335edd), [`590291f`](https://github.com/yapyak/yapyak/commit/590291f5ce9b50357c5181f5702f0d1007a9123f), [`9d0f071`](https://github.com/yapyak/yapyak/commit/9d0f071e733379dd9fd285f4660cd52ccba089b4), [`7afe3de`](https://github.com/yapyak/yapyak/commit/7afe3de8d7355450928f3c513f04b6f1877d7135), [`acc8102`](https://github.com/yapyak/yapyak/commit/acc81020525122cdf97087956b9e428967166bcf), [`975476e`](https://github.com/yapyak/yapyak/commit/975476e4af8e50df9c55331de9675332bae06073), [`1a9051e`](https://github.com/yapyak/yapyak/commit/1a9051e9d959b77427845499c34ad741a8f6fe17), [`6fae207`](https://github.com/yapyak/yapyak/commit/6fae207d80007c18872a9a69dda6f1ee66da9892), [`868621d`](https://github.com/yapyak/yapyak/commit/868621d0671f6fa43a74727b25a080de21148d2d)]:
+  - yapyak@0.0.8
+
 ## 0.0.7
 
 ### Patch Changes
