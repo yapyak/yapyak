@@ -1,0 +1,17 @@
+{
+  "configurations": [
+    {
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/packages/vscode",
+        "${workspaceFolder}/examples/react-tanstack-start-cookie"
+      ],
+      "name": "yapyak vscode extension",
+      "outFiles": [
+        "${workspaceFolder}/packages/vscode/dist/**/*.mjs"
+      ],
+      "request": "launch",
+      "type": "extensionHost"
+    }
+  ],
+  "version": "0.2.0"
+}

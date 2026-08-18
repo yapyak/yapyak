@@ -243,6 +243,18 @@
       "includes": [
         "**/src/routes/**/*.tsx"
       ]
+    },
+    {
+      "includes": [
+        "packages/vscode/src/**"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUndeclaredDependencies": "off"
+          }
+        }
+      }
     }
   ],
   "vcs": {

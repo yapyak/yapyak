@@ -1,0 +1,8 @@
+{
+  "capabilities.untrustedWorkspaces": "yapyak runs the yapyak CLI installed in the workspace and loads its compiler.",
+  "capabilities.virtualWorkspaces": "yapyak reads source and locale files from disk.",
+  "command.addLocale": "Add locale",
+  "command.retranslateLocale": "Retranslate all in this locale file",
+  "description": "Translations, ICU diagnostics and quick fixes for yapyak, where the source string is the key.",
+  "displayName": "yapyak"
+}

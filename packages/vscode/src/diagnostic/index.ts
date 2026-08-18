@@ -1,0 +1,1 @@
+export { createDiagnosticPublisher } from './publisher';
