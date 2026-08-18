@@ -21,7 +21,7 @@ Filename derives from the primary export through a deterministic algorithm. No c
 ALGORITHM:
   0. If the file is in `utils/`, filename = kebab-case(primary export name) verbatim — skip steps 2–6 (no verb-drop, no singularize). A concept name applies only when 2+ functions share the file; see § `utils/` and `helpers/`.
   1. Kebab-case the primary export name.
-  2. Drop the FIRST segment (the verb — always, no list lookup). Exception: a leading `use` is kept (React hooks: `useLocale` → `use-locale.ts`).
+  2. Drop the FIRST segment (the verb — always, no list lookup). Exception: a leading `use` is kept (React hooks: `useLocale` → `use-locale.ts`). A constant has no verb: keep every segment (`SOURCE_LANGUAGES` → `source-language.ts`).
   3. While first remaining segment is in PREPOSITION list, drop it.
   4. While first remaining segment is in MODIFIER list, drop it.
   5. Singularize the trailing segment.
@@ -536,6 +536,7 @@ Closed list. Every function starts with one of these (or follows a documented ex
 | `measure*` | Read layout geometry from the DOM | `measure()` |
 | `open*` | Enter an open state | `open()` |
 | `print*` | Write formatted output to a stream | `printHelp()` |
+| `rename*` | Replace one identifier with another | `renamePlaceholder()` |
 | `save*` | Persist state for a later restore | `saveCurrentPosition()` |
 | `scan*` | Sweep source/tokens linearly | `scanToken()` |
 | `skip*` | Advance past a span | `skipBalancedBraces()` |
@@ -545,6 +546,7 @@ Closed list. Every function starts with one of these (or follows a documented ex
 | `throw*` | Construct and throw — returns `never` | `throwNotCompiled()` |
 | `toggle*` | Flip a binary state | `toggle()` |
 | `tokenize*` | Split source text into tokens | `tokenizeJson()` |
+| `wait*` | Resolve when a condition holds or a timeout elapses | `waitForFile()` |
 
 #### Getter noun mirrors the return type
 
