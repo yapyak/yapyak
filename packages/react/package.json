@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/react",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "React bindings for yapyak.",
   "keywords": [
     "bindings",
