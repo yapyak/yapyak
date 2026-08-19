@@ -283,6 +283,10 @@ npm install yapyak @yapyak/astro @yapyak/ollama
 
 {% /switch %}
 
+{% callout variant="tip" %}
+The [yapyak extension for VS Code](https://marketplace.visualstudio.com/items?itemName=yapyak.yapyak) highlights the ICU in source strings and locale files, shows the translations of a `t()` call on hover, reports the compiler's diagnostics as you type with quick fixes, and translates a locale file from the editor. Editors built on VS Code, like Cursor, install it from [Open VSX](https://open-vsx.org/extension/yapyak/yapyak).
+{% /callout %}
+
 ## Setup
 
 Add the yapyak plugin to your build config:
