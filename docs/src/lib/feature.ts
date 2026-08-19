@@ -87,10 +87,10 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        "yapyak is a library, and only a library. It is MIT-licensed and published entirely on npm. Everything runs on your machine. Your translations are files in your repo, committed to git and owned like the rest of your code. If you use a model, the only bill is its provider's. yapyak's pricing page is a 404.",
+        "yapyak ships a VS Code extension, Cursor and the other forks included. Hover t('Save changes') and every locale is right there, the ICU inside is highlighted, and a misspelled placeholder gets a red squiggle with the fix one keystroke away. Have the model translate or retranslate a locale file without leaving the editor. Same compiler as your build, so the editor, the build, and CI never disagree.",
       ),
       number: '12',
-      title: t('Open source, not open core'),
+      title: t('Editor DX, taken seriously'),
     },
   ];
 }
