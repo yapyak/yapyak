@@ -4,7 +4,7 @@ ICU highlighting, translations on hover, diagnostics and quick fixes as you type
 
 ## Installation
 
-[Install via the Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=yapyak.yapyak)
+[Install via the Visual Studio Code Marketplace](https://marketplace.visualstudio.com/items?itemName=yapyak.yapyak), or from [Open VSX](https://open-vsx.org/extension/yapyak/yapyak) in Cursor and the other forks.
 
 Needs yapyak 0.0.9 or later and a `yapyak.config.ts` in your project. Translating from the editor needs a translator in the config; without one, the translate actions are hidden.
 
