@@ -1,0 +1,96 @@
+{
+  "name": "@yapyak/vscode",
+  "displayName": "%displayName%",
+  "version": "0.0.1",
+  "private": true,
+  "description": "%description%",
+  "categories": [
+    "Programming Languages",
+    "Linters"
+  ],
+  "keywords": [
+    "i18n",
+    "translation",
+    "ICU",
+    "vite",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
+  "bugs": "https://github.com/yapyak/yapyak/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yapyak/yapyak.git",
+    "directory": "packages/vscode"
+  },
+  "license": "MIT",
+  "publisher": "yapyak",
+  "type": "module",
+  "main": "./dist/index.mjs",
+  "scripts": {
+    "build": "tsdown",
+    "package": "node scripts/build-vsix.mjs",
+    "test": "pnpm -w vitest --run --project=@yapyak/vscode",
+    "test:coverage": "pnpm -w vitest --run --project=@yapyak/vscode --coverage --coverage.include='packages/vscode/src/core/**/*.ts' --coverage.exclude='**/*.test.ts' --coverage.exclude='**/index.ts' --coverage.reporter=text --coverage.thresholds.statements=95 --coverage.thresholds.branches=90 --coverage.thresholds.functions=95 --coverage.thresholds.lines=95",
+    "test:e2e": "vscode-test",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p e2e"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "yapyak.addLocale",
+        "title": "%command.addLocale%",
+        "category": "yapyak"
+      },
+      {
+        "command": "yapyak.retranslateLocale",
+        "title": "%command.retranslateLocale%",
+        "category": "yapyak"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "yapyak.retranslateLocale",
+          "when": "resourceExtname == .json"
+        }
+      ]
+    }
+  },
+  "activationEvents": [
+    "workspaceContains:**/yapyak.config.ts",
+    "workspaceContains:**/yapyak.config.mts",
+    "workspaceContains:**/yapyak.config.mjs",
+    "workspaceContains:**/yapyak.config.js"
+  ],
+  "devDependencies": {
+    "@types/mocha": "catalog:",
+    "@types/node": "catalog:",
+    "@types/vscode": "catalog:",
+    "@vscode/test-cli": "catalog:",
+    "@vscode/test-electron": "catalog:",
+    "@vscode/vsce": "catalog:",
+    "@yapyak/tsdown-config": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "@yapyak/vitest-config": "workspace:*",
+    "tsdown": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "engines": {
+    "node": ">=22.22",
+    "vscode": "^1.129.0"
+  },
+  "icon": "icon.png",
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "%capabilities.untrustedWorkspaces%"
+    },
+    "virtualWorkspaces": {
+      "supported": false,
+      "description": "%capabilities.virtualWorkspaces%"
+    }
+  }
+}

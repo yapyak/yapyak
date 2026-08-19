@@ -1,0 +1,10 @@
+{
+  "src/a.tsx": {
+    "Cancel": "Avbryt",
+    "Hello": "",
+    "Hi {name}": "Hej {namn}",
+    "Open": {
+      "button": "Öppna"
+    }
+  }
+}

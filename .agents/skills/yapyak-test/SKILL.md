@@ -46,11 +46,19 @@ Files that do **NOT** get unit tests:
 | Constants files | No behavior |
 | Pure adapter wrappers | Tested through target |
 
-### Browser e2e — `*.spec.ts`
+### Host e2e — `*.spec.ts`
 
-- Playwright specs live in `e2e/src` with the `*.spec.ts` suffix; `*.test.ts` is unit-only — the suffix marks which rule set applies.
+- A spec drives a real host; `*.test.ts` is unit-only — the suffix marks which rule set applies.
+
+| Host | Runner | Specs live in | Runs |
+| --- | --- | --- | --- |
+| Browser | Playwright | `e2e/src` | `pnpm e2e:dev`, `pnpm e2e:prod` |
+| VS Code extension host | `@vscode/test-cli` | `packages/vscode/e2e` | `pnpm --filter @yapyak/vscode test:e2e` |
+
 - `test` names draw from the Yap List; fixtures draw from the Yak Pool.
 - The unit rules — symbol selection, source-file mirroring, `describe` structure, category formulas — do not apply to e2e specs.
+- A spec that writes to its fixture restores it in `teardown`.
+- Wrap `setup`/`teardown` and the tests they serve in a `suite` named after the spec file — a root-level Mocha hook runs around every test in every file.
 
 ### Counting code paths
 
@@ -397,6 +405,8 @@ Closed set of fixture data. No invented strings.
 'You have {count,\n plural, one {# msg} other {# msgs}}'             type-level whitespace regression — newline after the placeholder name
 'Öppna {name}'                                                       context-variant target carrying a placeholder the source lacks — locale-file range tests
 'Hi {first name}'                                                    YAP0052 regression — placeholder name holding a space
+'Hej {namn}'                                                         misspelled placeholder in a translation — quick-fix rename tests
+'Hi {name} {namnx}'                                                  a name that starts with a misspelling — rename-boundary tests
 'You have {count, plura, one {# item} other {# items}}'              tokenizer regression — misspelled argument kind before branches
 'Price: {amount, numbr, currency EUR}'                               tokenizer regression — misspelled argument kind before a style
 ```

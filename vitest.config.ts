@@ -9,6 +9,7 @@ export default defineConfig({
         '**/fixture/**',
         '**/{index,internal,type}.ts',
         'packages/*-config/**',
+        'packages/vscode/**',
         'packages/yapyak/src/runtime.ts',
         'packages/{react,svelte,vue}/src/{dev-version,hmr-patch}.*',
       ],

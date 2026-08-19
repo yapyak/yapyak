@@ -7,6 +7,7 @@ import { buildRuntimeMock } from 'yapyak/internal';
 
 export type DefineConfigOptions = Partial<RuntimeMock> & {
   environment?: 'node' | 'happy-dom' | 'jsdom';
+  exclude?: string[];
   plugins?: PluginOption[];
   setupFiles?: string[];
 };
@@ -14,7 +15,13 @@ export type DefineConfigOptions = Partial<RuntimeMock> & {
 export function defineConfig(
   options: DefineConfigOptions = {},
 ): ViteUserConfig {
-  const { environment, plugins = [], setupFiles, ...runtime } = options;
+  const {
+    environment,
+    exclude,
+    plugins = [],
+    setupFiles,
+    ...runtime
+  } = options;
   return defineViteConfig({
     plugins: [
       yapyakRuntimePlugin(runtime),
@@ -22,6 +29,11 @@ export function defineConfig(
     ],
     test: {
       environment,
+      ...(exclude === undefined
+        ? {}
+        : {
+            exclude,
+          }),
       setupFiles,
     },
   });

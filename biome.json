@@ -243,6 +243,32 @@
       "includes": [
         "**/src/routes/**/*.tsx"
       ]
+    },
+    {
+      "includes": [
+        "packages/vscode/e2e/*.ts",
+        "packages/vscode/src/**"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUndeclaredDependencies": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": [
+        "packages/vscode/e2e/*.spec.ts"
+      ],
+      "javascript": {
+        "globals": [
+          "setup",
+          "suite",
+          "teardown",
+          "test"
+        ]
+      }
     }
   ],
   "vcs": {
