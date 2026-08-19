@@ -31,6 +31,9 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 
 **For full documentation, visit [yapyak.dev](https://yapyak.dev). For working examples, see [examples/](examples).**
 
+> [!TIP]
+> yapyak ships a [VS Code extension](https://marketplace.visualstudio.com/items?itemName=yapyak.yapyak), also on [Open VSX](https://open-vsx.org/extension/yapyak/yapyak) for Cursor and the other forks. It highlights the ICU where you write it, shows every locale on hover, marks a misspelled placeholder with a red squiggle and a quick fix, and lets the model translate a locale file without leaving the editor.
+
 ## Demo
 
 ![A t() call is saved, translated into de.json, and pushed to the browser over HMR.](docs/public/demo.gif)
@@ -49,7 +52,7 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 - **Compiled in. Choose how much.** Translations ship inside the code that uses them and split along your routes. Build for one locale and there's no runtime at all.
 - **Locale switching, handled.** Instant, with nothing to load. Keep the choice in a cookie or the URL, which work with SSR, or in local storage for a SPA.
 - **Built for agents.** yapyak is designed so an agent can own i18n. It writes `t('...')` like any string, and gets clear errors early, even in the TypeScript type, so it can fix them right away.
-- **Open source, not open core.** yapyak is MIT open source and runs on your machine. Your translations are JSON files in your repo. If you use a model, requests go straight to it. There's no yapyak service in between.
+- **Your translations, in your repo.** yapyak is MIT-licensed and runs on your machine. Translations are JSON files committed with your code, and if you use a model, requests go to its provider with your own key.
 
 ---
 
