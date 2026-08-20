@@ -40,6 +40,7 @@ export type FragmentSegment = {
 export type Fragment = {
   code: string;
   elisionContext?: ElisionContext;
+  enclosingAttribute?: string;
   enclosingElement?: string;
   snippet?: string;
   type: 'script' | 'template-expression';

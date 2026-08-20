@@ -254,6 +254,11 @@ function extractStubs(
 
 function toMessageContext(location: Location): MessageContext {
   return {
+    ...(location.callSiteContext.enclosingAttribute === undefined
+      ? {}
+      : {
+          enclosingAttribute: location.callSiteContext.enclosingAttribute,
+        }),
     enclosingComponent: location.callSiteContext.enclosingComponent ?? '',
     enclosingElement: location.callSiteContext.enclosingElement,
     snippet: location.callSiteContext.snippet ?? '',

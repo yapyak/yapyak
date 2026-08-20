@@ -26,7 +26,7 @@ export default defineConfig({
 | Level | What's sent | When to use |
 |---|---|---|
 | `'none'` | Source string only. | Privacy-sensitive code. |
-| `'minimal'` | Source, component name, and element tag (when available). | Default. Enough to tell `Open` (button) from `Open` (status badge). |
+| `'minimal'` | Source, component name, element tag, and attribute name (when available). | Default. Enough to tell `Open` (button) from `Open` (status badge). |
 | `'rich'` | Above plus surrounding source code. | When the component name and element alone can't tell two uses apart. |
 
 A higher level produces better translations for tricky strings at the cost of more tokens per request.
@@ -78,6 +78,8 @@ The request carries:
 ```
 
 Enough for the model to translate `Open` as the imperative verb on a button rather than the adjective "open" describing a state.
+
+When the call is an attribute value — `aria-label={t('Pause')}` — the request also carries `attribute: 'aria-label'`, so the model translates it with that attribute's conventions rather than as visible copy. The field is absent for content. The name is sent as written in the source: a component prop like `<Tooltip label={t('Save')}>` carries `label`, and yapyak never rewrites or normalizes the name.
 
 ## Rich
 

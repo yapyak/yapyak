@@ -290,6 +290,11 @@ function mergeCallSiteContext(
   if (enclosingComponent !== undefined) {
     result.enclosingComponent = enclosingComponent;
   }
+  const enclosingAttribute =
+    context.enclosingAttribute ?? fragment.enclosingAttribute;
+  if (enclosingAttribute !== undefined) {
+    result.enclosingAttribute = enclosingAttribute;
+  }
   const enclosingElement =
     context.enclosingElement ?? fragment.enclosingElement;
   if (enclosingElement !== undefined) {

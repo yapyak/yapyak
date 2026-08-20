@@ -243,6 +243,9 @@ function toItem(request: TranslateRequest, level: ContextLevel): TranslateItem {
     if (context.enclosingElement) {
       item.element = context.enclosingElement;
     }
+    if (context.enclosingAttribute) {
+      item.attribute = context.enclosingAttribute;
+    }
     if (level === 'rich' && context.snippet !== '') {
       item.snippet = context.snippet;
     }

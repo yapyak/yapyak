@@ -79,6 +79,7 @@ describe('extractFile', () => {
           },
           {
             code: "t('Save changes')",
+            enclosingAttribute: 'aria-label',
             enclosingElement: 'button',
             language: 'ts',
             segments: segmentsFromOffset("t('Save changes')", 28),
@@ -98,6 +99,7 @@ describe('extractFile', () => {
       },
     );
     expect(result.messages[0]?.locations[0]?.callSiteContext).toEqual({
+      enclosingAttribute: 'aria-label',
       enclosingComponent: 'A',
       enclosingElement: 'button',
       snippet: `<button>{t('Save changes')}</button>`,

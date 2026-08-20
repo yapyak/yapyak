@@ -532,6 +532,7 @@ describe('createTranslator', () => {
     await translator.batch?.([
       {
         context: {
+          enclosingAttribute: 'aria-label',
           enclosingComponent: 'Header',
           enclosingElement: 'h1',
           snippet: '<h1>Save</h1>',
@@ -576,6 +577,34 @@ describe('createTranslator', () => {
     ]);
     const item = receivedItems?.[0] as Record<string, unknown>;
     expect(item.examples).toBeUndefined();
+  });
+
+  it('builds an item with `attribute` at `minimal` context', async () => {
+    let receivedItems: unknown[] | undefined;
+    const translator = createTranslator({
+      translate: (params) => {
+        receivedItems = params.items;
+        return params.items.map(() => ({
+          sv: 'Spara',
+        }));
+      },
+    });
+    await translator.batch?.([
+      {
+        context: {
+          enclosingAttribute: 'aria-label',
+          enclosingComponent: 'Header',
+          enclosingElement: 'button',
+          snippet: `<button aria-label={t('Save')} />`,
+        },
+        fileId: 'src/a.tsx',
+        source: 'Save',
+        sourceLocale: 'en',
+        targetLocale: 'sv',
+      },
+    ]);
+    const item = receivedItems?.[0] as Record<string, unknown>;
+    expect(item.attribute).toBe('aria-label');
   });
 
   it('builds an item with `enclosingComponent` and `enclosingElement` at `minimal` context', async () => {

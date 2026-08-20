@@ -96,6 +96,7 @@ type TranslateItem = {
 `TranslateItem`:
 
 - **`source`** — the string to translate.
+- **`attribute`** — the enclosing attribute name when the source is an attribute value (sent at context `'minimal'` or `'rich'`).
 - **`component`** — the call-site component name (sent at context `'minimal'` or `'rich'`).
 - **`element`** — the enclosing element (sent at context `'minimal'` or `'rich'`).
 - **`snippet`** — surrounding code (sent only at context `'rich'`).

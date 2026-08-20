@@ -1,6 +1,7 @@
 import ts from '@typescript/typescript6';
 
 export type CallSiteContext = {
+  enclosingAttribute?: string;
   enclosingComponent?: string;
   enclosingElement?: string;
   snippet?: string;
@@ -21,6 +22,10 @@ export function resolveCallSiteContext(
   let current: ts.Node | undefined = node.parent;
 
   while (current && !ts.isSourceFile(current)) {
+    if (!result.enclosingAttribute && ts.isJsxAttribute(current)) {
+      result.enclosingAttribute = current.name.getText(sourceFile);
+    }
+
     if (!result.enclosingElement) {
       const jsxTag = readJsxElementTag(current, sourceFile);
       if (jsxTag) {

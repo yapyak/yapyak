@@ -4,6 +4,8 @@ import type { Locale } from '../locale';
  * The message context.
  */
 export type MessageContext = {
+  /** The enclosing attribute name. */
+  enclosingAttribute?: string;
   /** The enclosing component name. */
   enclosingComponent: string;
   /** The enclosing element name. */
@@ -112,6 +114,8 @@ export type ContextLevel = 'none' | 'minimal' | 'rich';
 
 /** An item in a translate batch. */
 export type TranslateItem = {
+  /** The enclosing attribute name. */
+  attribute?: string;
   /** The enclosing component name. */
   component?: string;
   /** The disambiguation context. */

@@ -145,6 +145,50 @@ describe('resolveCallSiteContext', () => {
     expect(context.snippet).toBe(`<button>{t('Save')}</button>`);
   });
 
+  it('returns the enclosing attribute name for a call in a JSX attribute', () => {
+    const sourceFile = parseInline(`
+      import { t } from 'yapyak';
+      export function Header() {
+        return <button aria-label={t('Save')} />;
+      }
+    `);
+    const context = resolveCallSiteContext(
+      findFirstCall(sourceFile),
+      sourceFile,
+    );
+    expect(context.enclosingAttribute).toBe('aria-label');
+  });
+
+  it('returns the enclosing attribute name for every call in a conditional attribute value', () => {
+    const sourceFile = parseInline(`
+      import { t } from 'yapyak';
+      export function Header({ open }: { open: boolean }) {
+        return <button aria-label={open ? t('Save') : t('Cancel')} />;
+      }
+    `);
+    const contexts = findCalls(sourceFile).map((call) =>
+      resolveCallSiteContext(call, sourceFile),
+    );
+    expect(contexts.map((context) => context.enclosingAttribute)).toEqual([
+      'aria-label',
+      'aria-label',
+    ]);
+  });
+
+  it('returns no attribute name for a call in element content', () => {
+    const sourceFile = parseInline(`
+      import { t } from 'yapyak';
+      export function Header() {
+        return <button>{t('Save')}</button>;
+      }
+    `);
+    const context = resolveCallSiteContext(
+      findFirstCall(sourceFile),
+      sourceFile,
+    );
+    expect(context.enclosingAttribute).toBeUndefined();
+  });
+
   it('returns the JSX tag for a self-closing element', () => {
     const sourceFile = parseInline(`
       import { t } from 'yapyak';
