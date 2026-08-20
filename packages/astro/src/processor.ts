@@ -417,6 +417,9 @@ function fragmentsFromExpression(
     segments: masked.segments,
     type: 'template-expression',
   };
+  if (elisionContext?.mode === 'attribute' && elisionContext.attributeName) {
+    fragment.enclosingAttribute = elisionContext.attributeName;
+  }
   if (enclosingContext) {
     fragment.enclosingElement = enclosingContext.element;
     fragment.snippet = enclosingContext.snippet;

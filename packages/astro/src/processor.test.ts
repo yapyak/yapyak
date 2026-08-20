@@ -59,6 +59,19 @@ describe('astro processor — extract', () => {
     });
   });
 
+  it('returns the enclosing attribute name for a bound attribute', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      `<button title={t('Save changes')}>Save</button>`,
+    ].join('\n');
+    const result = extractAstro(source);
+    expect(
+      result.messages[0]?.locations[0]?.callSiteContext.enclosingAttribute,
+    ).toBe('title');
+  });
+
   it('returns frontmatter `t()` calls when frontmatter imports yapyak', () => {
     const source = [
       '---',
