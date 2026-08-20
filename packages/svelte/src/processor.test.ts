@@ -69,6 +69,20 @@ describe('svelte processor — extract', () => {
     });
   });
 
+  it('returns the enclosing attribute name for a bound attribute', () => {
+    const result = extractSvelte(
+      [
+        '<script lang="ts">',
+        "import { t } from 'yapyak';",
+        '</script>',
+        `<button title={t('Save changes')}>Save</button>`,
+      ].join('\n'),
+    );
+    expect(
+      result.messages[0]?.locations[0]?.callSiteContext.enclosingAttribute,
+    ).toBe('title');
+  });
+
   it('extracts `t()` from inside an `{#if}` block', () => {
     const result = extractSvelte(
       [

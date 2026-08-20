@@ -569,6 +569,9 @@ function fragmentsFromExpression(
   if (elisionContext) {
     fragment.elisionContext = elisionContext;
   }
+  if (elisionContext?.mode === 'attribute' && elisionContext.attributeName) {
+    fragment.enclosingAttribute = elisionContext.attributeName;
+  }
   if (enclosingContext) {
     fragment.enclosingElement = enclosingContext.element;
     fragment.snippet = enclosingContext.snippet;
