@@ -67,6 +67,25 @@ before you release. Last-chance edits can be made to `CHANGELOG.md` in the Versi
 You control cadence: merge the Version PR immediately for continuous releases, or let
 changesets accumulate and ship weekly. No changesets = no PR = silent.
 
+## Breaking changes (pre-1.0)
+
+Every changeset declares `patch` — `scripts/verify-changesets.mjs` and the CI
+`changesets` job enforce it. With `workspace:*` peers a `minor` escalates every peer
+dependent to `major` and the fixed group with it, at any version, so the version number
+cannot signal a break. The signal lives in two places instead:
+
+1. **The changeset text** carries the change and the reason.
+2. **[BREAKING.md](BREAKING.md)** carries the migration: before/after code and the
+   steps. The entry lands under `## Unreleased` **in the same change that introduces
+   the break** — never at release time. When the Version Packages PR ships it, rename
+   `Unreleased` to the released version as a last-chance edit in that PR.
+
+This regime ends with the 1.0 graduation, in one change (see `yapyak-package`
+§ Changeset bumps): switch the `yapyak` peer to `workspace:^`, set
+`onlyUpdatePeerDependentsWhenOutOfRange: true`, and remove the guard script with its CI
+job. From 1.0 breaking changes follow semantic versioning — major releases only — and a
+dedicated changelog takes over; BREAKING.md is frozen.
+
 ## First-time launch runbook
 
 The scaffolding is committed but **dormant** until these steps. Until then, commit freely;

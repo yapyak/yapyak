@@ -56,6 +56,12 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 
 ---
 
+## Stability
+
+yapyak is pre-1.0: every release is `0.0.x`, and any of them may contain breaking changes. Each one is listed in [BREAKING.md](BREAKING.md) with migration steps.
+
+---
+
 ## Contributing
 
 yapyak is early, and contributions are very welcome.

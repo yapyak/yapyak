@@ -78,7 +78,8 @@ Add a new external dep with `pnpm add <pkg>` in the consuming package — `catal
 
 #### Changeset bumps
 
-- Every changeset declares `patch`; breaking changes carry their migration in the changeset text. With `workspace:*` peers a `minor` escalates every peer dependent to `major` and the fixed group with it, at any version.
+- Every changeset declares `patch`; the changeset text carries the change and the reason. With `workspace:*` peers a `minor` escalates every peer dependent to `major` and the fixed group with it, at any version.
+- A breaking change adds its entry to `BREAKING.md` under `## Unreleased` in the same change: before/after code and the migration steps.
 - Declare `minor` or `major` only as part of the user's decision to release 1.0.0, in one change: switch the `yapyak` peer to `workspace:^`, set `onlyUpdatePeerDependentsWhenOutOfRange: true` in `.changeset/config.json`, and remove `scripts/verify-changesets.mjs` with its CI `changesets` job. Caret peers stay narrow below 1.0.0, so there is no intermediate 0.y line — graduation goes straight to 1.0.0.
 
 ```jsonc
