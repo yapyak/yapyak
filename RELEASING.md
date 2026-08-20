@@ -76,9 +76,10 @@ cannot signal a break. The signal lives in two places instead:
 
 1. **The changeset text** carries the change and the reason.
 2. **[BREAKING.md](BREAKING.md)** carries the migration: before/after code and the
-   steps. The entry lands under `## Unreleased` **in the same change that introduces
-   the break** — never at release time. When the Version Packages PR ships it, rename
-   `Unreleased` to the released version as a last-chance edit in that PR.
+   steps. The entry lands **in the same change that introduces the break** — never at
+   release time — under the version that ships it. Patch-only releases make that
+   version the next patch; confirm the heading against the Version Packages PR before
+   merging, and bump it if a release landed in between.
 
 This regime ends with the 1.0 graduation, in one change (see `yapyak-package`
 § Changeset bumps): switch the `yapyak` peer to `workspace:^`, set
