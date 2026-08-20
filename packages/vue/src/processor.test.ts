@@ -149,6 +149,51 @@ describe('vue processor — extract', () => {
     });
   });
 
+  it('returns the enclosing attribute name for a shorthand binding', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <button :title="t('Save changes')">Save</button>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(
+      result.messages[0]?.locations[0]?.callSiteContext.enclosingAttribute,
+    ).toBe('title');
+  });
+
+  it('returns the enclosing attribute name for a longhand binding', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <button v-bind:title="t('Save changes')">Save</button>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(
+      result.messages[0]?.locations[0]?.callSiteContext.enclosingAttribute,
+    ).toBe('title');
+  });
+
+  it('returns no attribute name for an object binding', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <button v-bind="{ title: t('Save changes') }">Save</button>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    expect(
+      result.messages[0]?.locations[0]?.callSiteContext.enclosingAttribute,
+    ).toBeUndefined();
+  });
+
   it('returns no messages when no script imports `yapyak`', () => {
     const source = [
       '<template>',

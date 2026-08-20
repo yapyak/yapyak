@@ -79,7 +79,7 @@ The request carries:
 
 Enough for the model to translate `Open` as the imperative verb on a button rather than the adjective "open" describing a state.
 
-When the call is an attribute value — `aria-label={t('Pause')}` — the request also carries `attribute: 'aria-label'`, so the model translates it with that attribute's conventions rather than as visible copy. The field is absent for content. The name is sent as written in the source: a component prop like `<Tooltip label={t('Save')}>` carries `label`, and yapyak never rewrites or normalizes the name.
+When the call is an attribute value — `aria-label={t('Pause')}` — the request also carries `attribute: 'aria-label'`, so the model translates it with that attribute's conventions rather than as visible copy. The field is absent for content. The name is sent as written in the source: a component prop like `<Tooltip label={t('Save')}>` carries `label`, and yapyak never rewrites or normalizes the name. Framework binding syntax is not part of it — Vue's `:title` binding carries `title`.
 
 ## Rich
 

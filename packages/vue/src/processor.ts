@@ -262,6 +262,7 @@ function fragmentsFromDirective(
   };
   const attributeName = readVBindAttributeName(prop);
   if (attributeName) {
+    fragment.enclosingAttribute = attributeName;
     fragment.elisionContext = {
       attributeName,
       mode: 'attribute',
