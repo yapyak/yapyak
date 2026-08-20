@@ -290,7 +290,7 @@ export function createDevServerPlugin(state: State): Plugin {
       );
       if (
         renames.length > 0 &&
-        getNormalized(state).preserveTranslationsOnRename
+        getNormalized(state).preserveTranslationsOnSourceEdit
       ) {
         const migrationResult = migrateLocales(
           {

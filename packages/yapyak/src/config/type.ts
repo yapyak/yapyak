@@ -71,11 +71,11 @@ export type YapyakConfig = {
    */
   persistence?: PersistenceConfig;
   /**
-   * Whether to preserve existing translations when a `t()` call is renamed in place.
+   * Whether to preserve existing translations when a source string is edited in place.
    *
    * @defaultValue `true` without a {@link Translator}, `false` with one
    */
-  preserveTranslationsOnRename?: boolean;
+  preserveTranslationsOnSourceEdit?: boolean;
   /**
    * The processors for framework-specific file formats.
    *

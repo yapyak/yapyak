@@ -161,7 +161,7 @@ If you would otherwise write a bare `?? true` default for a flag, remove the fla
 
 ```ts
 // ✓ — default derived from another field, not a literal
-preserveTranslationsOnRename: config.preserveTranslationsOnRename ?? !config.translator,
+preserveTranslationsOnSourceEdit: config.preserveTranslationsOnSourceEdit ?? !config.translator,
 ```
 
 ### Argument shape — positional vs options

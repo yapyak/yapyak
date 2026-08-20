@@ -64,7 +64,7 @@ export default defineConfig({
 | [`processors`](#processors) | `[]` | Framework file formats |
 | [`translator`](#translator) | none | The model that fills stubs |
 | [`autoTranslateThreshold`](#autotranslatethreshold) | `20` | New strings per save before the translator holds off |
-| [`preserveTranslationsOnRename`](#preservetranslationsonrename) | depends on translator | Keep a translation when a source string is edited |
+| [`preserveTranslationsOnSourceEdit`](#preservetranslationsonsourceedit) | depends on translator | Keep a translation when a source string is edited |
 | [`persistence`](#persistence) | `'none'` | Where the active locale is stored |
 | [`detectUserLocale`](#detectuserlocale) | `false` | Detect the first-visit locale |
 | [`syncHtmlLang`](#synchtmllang) | `false` | Keep `<html lang>` in sync |
@@ -231,7 +231,7 @@ A guardrail for the save loop. When a single save adds more new strings than thi
 
 **Type**: `number` · **Default**: `20`
 
-### `preserveTranslationsOnRename`
+### `preserveTranslationsOnSourceEdit`
 
 Whether yapyak keeps the existing translation when you edit a source string in place. See [Renames](/guide/translating/renames#same-path-edited-source-string).
 

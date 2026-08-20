@@ -1567,7 +1567,7 @@ describe('yapyak', () => {
       });
     });
 
-    it('migrates the translation when the source string is renamed', async () => {
+    it('migrates the translation when a source string is edited in place', async () => {
       const filePath = join(root, 'src', 'a.tsx');
       writeFileSync(
         filePath,

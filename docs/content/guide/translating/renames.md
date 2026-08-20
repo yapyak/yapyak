@@ -24,7 +24,7 @@ The string `'Add to cart'` still exists, in the same form, but in a different fi
 +t('Save changes')
 ```
 
-The translation for `'Save'` (`'Spara'` in Swedish) may or may not still be right for `'Save changes'` (`'Spara ändringar'`). Behavior is controlled by `preserveTranslationsOnRename`:
+The translation for `'Save'` (`'Spara'` in Swedish) may or may not still be right for `'Save changes'` (`'Spara ändringar'`). Behavior is controlled by `preserveTranslationsOnSourceEdit`:
 
 - `true`: keep the existing translation. Small edits like adding a word are unlikely to break it.
 - `false`: treat the edit as a new string. The translation is regenerated (with a translator) or marked empty (without one).
@@ -38,7 +38,7 @@ The default flips based on whether a translator is configured:
 import { defineConfig } from 'yapyak/config';
 
 export default defineConfig({
-  preserveTranslationsOnRename: true
+  preserveTranslationsOnSourceEdit: true
 });
 ```
 

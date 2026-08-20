@@ -91,7 +91,7 @@ The text you pass to `t()` is what every locale file uses as its key:
 }
 ```
 
-Open the file and you see exactly which source string is used where. Edit the source string in your component and yapyak follows it. Depending on [`preserveTranslationsOnRename`](/guide/getting-started/configuration), the existing translation is kept or marked for re-translation.
+Open the file and you see exactly which source string is used where. Edit the source string in your component and yapyak follows it. Depending on [`preserveTranslationsOnSourceEdit`](/guide/getting-started/configuration), the existing translation is kept or marked for re-translation.
 
 ## What the compiler checks
 

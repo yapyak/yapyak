@@ -66,7 +66,7 @@ A translation is an orphan when no `t()` call in your code points to it anymore.
 
 1. **The source file was deleted.** The whole file's entry in the locale file has no corresponding code.
 2. **The source string was removed.** A `t('Add to wishlist')` call was deleted from a file that still exists; the translation lingers.
-3. **The source string changed.** A `t('Save')` call became `t('Save changes')`; if [`preserveTranslationsOnRename`](/guide/getting-started/configuration#preservetranslationsonrename) is `false`, the old "Save" translation is orphaned.
+3. **The source string changed.** A `t('Save')` call became `t('Save changes')`; if [`preserveTranslationsOnSourceEdit`](/guide/getting-started/configuration#preservetranslationsonsourceedit) is `false`, the old "Save" translation is orphaned.
 
 In every case, `clean` notices because it walks the codebase, builds the set of every live `t()` source, and compares it against what's in your locale files.
 

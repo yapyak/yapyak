@@ -16,7 +16,7 @@ export type NormalizedYapyakConfig = {
   include: FilterPattern;
   localesDir: string;
   persistence: NormalizedPersistenceConfig;
-  preserveTranslationsOnRename: boolean;
+  preserveTranslationsOnSourceEdit: boolean;
   processors: Processor[];
   syncHtmlLang: boolean;
   translator: Translator | undefined;
@@ -90,8 +90,8 @@ export function normalizeYapyakConfig(
     include: resolvePatterns(config.include ?? DEFAULT_INCLUDE, processors),
     localesDir,
     persistence: normalizePersistenceConfig(config.persistence),
-    preserveTranslationsOnRename:
-      config.preserveTranslationsOnRename ?? !config.translator,
+    preserveTranslationsOnSourceEdit:
+      config.preserveTranslationsOnSourceEdit ?? !config.translator,
     processors,
     syncHtmlLang: config.syncHtmlLang ?? false,
     translator: config.translator,

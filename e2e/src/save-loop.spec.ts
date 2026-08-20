@@ -187,7 +187,7 @@ test('writes both context translations when `t.as()` homonyms are saved', async 
   await expect(page.getByText('Öppen')).toBeVisible();
 });
 
-test('preserves the translation when a source string is renamed', async ({
+test('preserves the translation when a source string is edited in place', async ({
   page,
 }) => {
   await writeApp((template) =>

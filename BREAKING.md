@@ -12,6 +12,33 @@ confirm the heading against the Version Packages PR before releasing.
 
 ## 0.0.10
 
+### `preserveTranslationsOnRename` renamed to `preserveTranslationsOnSourceEdit`
+
+The option governs one case only: a source string edited in place, where the
+existing translation either follows the new string or the string is treated as
+new. File moves and deleted-then-restored strings are covered by the orphan
+cache regardless of the option, and "rename" read as a file rename — the one
+case the option never touched.
+
+**Before**
+
+```ts
+export default defineConfig({
+  preserveTranslationsOnRename: true
+});
+```
+
+**After**
+
+```ts
+export default defineConfig({
+  preserveTranslationsOnSourceEdit: true
+});
+```
+
+The default is unchanged: `true` without a translator, `false` with one.
+Setting `preserveTranslationsOnRename` is a type error now; rename the key.
+
 ### `examples` moved from `defineConfig` to the translator
 
 Everything that shapes what a translator receives — `context`, `voice`,

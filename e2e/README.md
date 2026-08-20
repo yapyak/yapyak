@@ -27,7 +27,7 @@ pnpm --filter @yapyak/e2e exec playwright install chromium
 | "Component state — open dialogs, controlled form inputs, scroll position — stays put" | [hmr.md](../docs/content/guide/advanced/hmr.md) | `preserves the input value when the source is saved` |
 | "The string renders in your source language immediately … the model translates it" a moment later | [hmr.md](../docs/content/guide/advanced/hmr.md) | `falls back to the source string until the translation arrives` |
 | `t.as()` homonyms get per-context catalog entries | [homonyms.md](../docs/content/guide/writing/homonyms.md) | `writes both context translations when t.as() homonyms are saved` |
-| "Same path, edited source string" keeps the translation with `preserveTranslationsOnRename` | [renames.md](../docs/content/guide/translating/renames.md) | `preserves the translation when a source string is renamed` |
+| "Same path, edited source string" keeps the translation with `preserveTranslationsOnSourceEdit` | [renames.md](../docs/content/guide/translating/renames.md) | `preserves the translation when a source string is edited in place` |
 | "Same source, deleted then re-added" restores from the orphan cache | [renames.md](../docs/content/guide/translating/renames.md) | `preserves the translation when a removed t() call returns` |
 | "Same source, new path" restores under the new file path | [renames.md](../docs/content/guide/translating/renames.md) | `preserves the translation when the source file moves` |
 | A save past `autoTranslateThreshold` "writes the empty stubs and logs that the translator was skipped" | [loop.md](../docs/content/guide/translating/loop.md) | `skips auto-translate when a save exceeds autoTranslateThreshold` |
