@@ -67,7 +67,7 @@ export default defineConfig({
 | [`preserveTranslationsOnSourceEdit`](#preservetranslationsonsourceedit) | depends on translator | Keep a translation when a source string is edited |
 | [`persistence`](#persistence) | `'none'` | Where the active locale is stored |
 | [`detectUserLocale`](#detectuserlocale) | `false` | Detect the first-visit locale |
-| [`syncHtmlLang`](#synchtmllang) | `false` | Keep `<html lang>` in sync |
+| [`syncHtmlAttributes`](#synchtmlattributes) | `false` | Keep `<html lang>` and `<html dir>` in sync |
 
 ## Locales
 
@@ -270,15 +270,15 @@ detectUserLocale: true,
 
 **Type**: `boolean` · **Default**: `false`
 
-### `syncHtmlLang`
+### `syncHtmlAttributes`
 
-Whether to keep `<html lang>` in sync with the active locale on every switch.
+Whether to keep `<html lang>` and `<html dir>` in sync with the active locale on every switch. The direction comes from the locale's script: `rtl` for Arabic, Hebrew, Persian, Urdu, and the other right-to-left scripts; `ltr` otherwise. The same value is available as [`getTextDirection`](/reference/yapyak/getTextDirection) for rendering the attributes server-side.
 
 ```ts
-syncHtmlLang: true,
+syncHtmlAttributes: true,
 ```
 
-Turn it on for SPA frameworks and for Astro projects that switch locale through client-side islands. Leave it off when your layout sets the attribute itself, such as `<html lang={getLocale()}>` in an Astro layout that re-renders on navigation.
+Turn it on for SPA frameworks and for Astro projects that switch locale through client-side islands. Leave it off when your layout sets the attributes itself, such as `<html lang={getLocale()} dir={getTextDirection(getLocale())}>` in an Astro layout that re-renders on navigation.
 
 **Type**: `boolean` · **Default**: `false`
 

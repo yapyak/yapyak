@@ -5,7 +5,7 @@ export type DefineRuntimeInput = {
   detectUserLocale: boolean;
   locales: string[];
   persistence: NormalizedPersistenceConfig;
-  syncHtmlLang: boolean;
+  syncHtmlAttributes: boolean;
 };
 
 export function defineRuntime(input: DefineRuntimeInput): string {
@@ -14,7 +14,7 @@ export function defineRuntime(input: DefineRuntimeInput): string {
     `export const DEFAULT_LOCALE = ${JSON.stringify(input.defaultLocale)};`,
     `export const PERSISTENCE_CONFIG = ${emitPersistenceConfig(input.persistence)};`,
     `export const DETECT_USER_LOCALE = ${JSON.stringify(input.detectUserLocale)};`,
-    `export const SYNC_HTML_LANG = ${JSON.stringify(input.syncHtmlLang)};`,
+    `export const SYNC_HTML_ATTRIBUTES = ${JSON.stringify(input.syncHtmlAttributes)};`,
   ].join('\n');
 }
 

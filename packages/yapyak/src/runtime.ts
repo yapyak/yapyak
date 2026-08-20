@@ -7,4 +7,4 @@ export const PERSISTENCE_CONFIG: NormalizedPersistenceConfig = {
   type: 'none',
 };
 export const DETECT_USER_LOCALE = false;
-export const SYNC_HTML_LANG = false;
+export const SYNC_HTML_ATTRIBUTES = false;

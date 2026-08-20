@@ -15,7 +15,7 @@ vi.mock('yapyak/runtime', () => ({
     name: 'locale',
     type: 'cookie',
   },
-  SYNC_HTML_LANG: false,
+  SYNC_HTML_ATTRIBUTES: false,
 }));
 
 function makeEvent(request: Request): Parameters<typeof handle>[0]['event'] {
@@ -59,6 +59,22 @@ describe('handle', () => {
     } as Parameters<typeof handle>[0]);
 
     expect(await response.text()).toBe('<html lang="en"><meta content="en">');
+  });
+
+  it('replaces the `%yapyak.dir%` placeholder with the text direction', async () => {
+    const event = makeEvent(new Request('http://example.com/'));
+    const response = await handle({
+      event,
+      resolve: async (_event, options) => {
+        const html = options?.transformPageChunk?.({
+          done: true,
+          html: '<html lang="%yapyak.lang%" dir="%yapyak.dir%">',
+        });
+        return new Response(typeof html === 'string' ? html : '');
+      },
+    } as Parameters<typeof handle>[0]);
+
+    expect(await response.text()).toBe('<html lang="en" dir="ltr">');
   });
 
   it('writes Set-Cookie onto the response when `setLocale()` is called server-side', async () => {

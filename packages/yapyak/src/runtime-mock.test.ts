@@ -25,8 +25,8 @@ describe('buildRuntimeMock', () => {
       });
     });
 
-    it('returns `false` as `SYNC_HTML_LANG`', () => {
-      expect(buildRuntimeMock().SYNC_HTML_LANG).toBe(false);
+    it('returns `false` as `SYNC_HTML_ATTRIBUTES`', () => {
+      expect(buildRuntimeMock().SYNC_HTML_ATTRIBUTES).toBe(false);
     });
   });
 
@@ -75,11 +75,11 @@ describe('buildRuntimeMock', () => {
       });
     });
 
-    it('returns the configured `syncHtmlLang`', () => {
+    it('returns the configured `syncHtmlAttributes`', () => {
       expect(
         buildRuntimeMock({
-          syncHtmlLang: true,
-        }).SYNC_HTML_LANG,
+          syncHtmlAttributes: true,
+        }).SYNC_HTML_ATTRIBUTES,
       ).toBe(true);
     });
 

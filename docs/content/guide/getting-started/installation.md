@@ -418,7 +418,7 @@ import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
   processors: [react()],
-  syncHtmlLang: true
+  syncHtmlAttributes: true
 });
 ```
 {% /when %}
@@ -430,7 +430,7 @@ import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
   processors: [react()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY
   })
@@ -445,7 +445,7 @@ import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
   processors: [react()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: openai({
     apiKey: process.env.OPENAI_API_KEY
   })
@@ -460,7 +460,7 @@ import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
   processors: [react()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: gemini({
     apiKey: process.env.GEMINI_API_KEY
   })
@@ -475,7 +475,7 @@ import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
   processors: [react()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: ollama()
 });
 ```
@@ -645,7 +645,7 @@ import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
   processors: [vue()],
-  syncHtmlLang: true
+  syncHtmlAttributes: true
 });
 ```
 {% /when %}
@@ -657,7 +657,7 @@ import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
   processors: [vue()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY
   })
@@ -672,7 +672,7 @@ import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
   processors: [vue()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: openai({
     apiKey: process.env.OPENAI_API_KEY
   })
@@ -687,7 +687,7 @@ import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
   processors: [vue()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: gemini({
     apiKey: process.env.GEMINI_API_KEY
   })
@@ -702,7 +702,7 @@ import { vue } from '@yapyak/vue/processor';
 
 export default defineConfig({
   processors: [vue()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: ollama()
 });
 ```
@@ -721,7 +721,7 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   processors: [svelte()],
-  syncHtmlLang: true
+  syncHtmlAttributes: true
 });
 ```
 {% /when %}
@@ -733,7 +733,7 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   processors: [svelte()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY
   })
@@ -748,7 +748,7 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   processors: [svelte()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: openai({
     apiKey: process.env.OPENAI_API_KEY
   })
@@ -763,7 +763,7 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   processors: [svelte()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: gemini({
     apiKey: process.env.GEMINI_API_KEY
   })
@@ -778,7 +778,7 @@ import { svelte } from '@yapyak/svelte/processor';
 
 export default defineConfig({
   processors: [svelte()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: ollama()
 });
 ```
@@ -795,7 +795,7 @@ import { svelte } from '@yapyak/svelte/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [svelte()],
-  syncHtmlLang: true
+  syncHtmlAttributes: true
 });
 ```
 {% /when %}
@@ -808,7 +808,7 @@ import { svelte } from '@yapyak/svelte/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [svelte()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY
   })
@@ -824,7 +824,7 @@ import { svelte } from '@yapyak/svelte/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [svelte()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: openai({
     apiKey: process.env.OPENAI_API_KEY
   })
@@ -840,7 +840,7 @@ import { svelte } from '@yapyak/svelte/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [svelte()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: gemini({
     apiKey: process.env.GEMINI_API_KEY
   })
@@ -856,7 +856,7 @@ import { svelte } from '@yapyak/svelte/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [svelte()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: ollama()
 });
 ```
@@ -876,7 +876,7 @@ import { astro } from '@yapyak/astro/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [astro()],
-  syncHtmlLang: true
+  syncHtmlAttributes: true
 });
 ```
 {% /when %}
@@ -889,7 +889,7 @@ import { astro } from '@yapyak/astro/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [astro()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: anthropic({
     apiKey: process.env.ANTHROPIC_API_KEY
   })
@@ -905,7 +905,7 @@ import { astro } from '@yapyak/astro/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [astro()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: openai({
     apiKey: process.env.OPENAI_API_KEY
   })
@@ -921,7 +921,7 @@ import { astro } from '@yapyak/astro/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [astro()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: gemini({
     apiKey: process.env.GEMINI_API_KEY
   })
@@ -937,7 +937,7 @@ import { astro } from '@yapyak/astro/processor';
 export default defineConfig({
   persistence: 'cookie',
   processors: [astro()],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
   translator: ollama()
 });
 ```
@@ -1016,11 +1016,11 @@ Register the SvelteKit handle:
 export { handle } from '@yapyak/sveltekit';
 ```
 
-Replace `<html lang>` with yapyak's placeholder:
+Replace `<html lang>` and `<html dir>` with yapyak's placeholders:
 
 ```html [src/app.html]
 <!DOCTYPE html>
-<html lang="%yapyak.lang%">
+<html lang="%yapyak.lang%" dir="%yapyak.dir%">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" href="%sveltekit.assets%/favicon.png" />

@@ -86,11 +86,11 @@ export type YapyakConfig = {
    */
   processors?: Processor[];
   /**
-   * Whether to keep `document.documentElement.lang` synced with the current locale.
+   * Whether to keep the `<html>` element's `lang` and `dir` attributes synced with the active locale.
    *
    * @defaultValue `false`
    */
-  syncHtmlLang?: boolean;
+  syncHtmlAttributes?: boolean;
   /** The translator. */
   translator?: Translator;
 };

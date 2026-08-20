@@ -5,7 +5,7 @@ import {
   DETECT_USER_LOCALE,
   LOCALES,
   PERSISTENCE_CONFIG,
-  SYNC_HTML_LANG,
+  SYNC_HTML_ATTRIBUTES,
 } from 'yapyak/runtime';
 
 import { warnDiagnostic } from '../diagnostic';
@@ -13,6 +13,7 @@ import { registerHotDispose } from '../hot-dispose';
 import { buildPersistence, readRequest } from '../persistence';
 import { findCanonicalLocale } from './canonical';
 import { resolveLocale } from './resolve';
+import { getTextDirection } from './text-direction';
 
 let hasWarnedUninitialized = false;
 let hasWarnedSsrFallback = false;
@@ -80,8 +81,9 @@ function getInitialLocale(): Locale {
 let currentLocale: Locale = getInitialLocale();
 const listeners = new Set<(locale: Locale) => void>();
 
-if (SYNC_HTML_LANG && typeof document !== 'undefined') {
+if (SYNC_HTML_ATTRIBUTES && typeof document !== 'undefined') {
   document.documentElement.lang = currentLocale;
+  document.documentElement.dir = getTextDirection(currentLocale);
 }
 
 function writeLocale(value: Locale): void {
@@ -89,8 +91,9 @@ function writeLocale(value: Locale): void {
     return;
   }
   currentLocale = value;
-  if (SYNC_HTML_LANG && typeof document !== 'undefined') {
+  if (SYNC_HTML_ATTRIBUTES && typeof document !== 'undefined') {
     document.documentElement.lang = value;
+    document.documentElement.dir = getTextDirection(value);
   }
   for (const listener of listeners) {
     try {

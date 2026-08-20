@@ -9,7 +9,7 @@ const baseInput = {
     'en',
     'sv',
   ],
-  syncHtmlLang: false,
+  syncHtmlAttributes: false,
 };
 
 describe('defineRuntime', () => {
@@ -23,7 +23,7 @@ describe('defineRuntime', () => {
     expect(code).toContain('export const LOCALES = ["en","sv"];');
     expect(code).toContain('export const DEFAULT_LOCALE = "en";');
     expect(code).toContain('export const DETECT_USER_LOCALE = false;');
-    expect(code).toContain('export const SYNC_HTML_LANG = false;');
+    expect(code).toContain('export const SYNC_HTML_ATTRIBUTES = false;');
   });
 
   it('emits a `none` persistence config with bare type', () => {

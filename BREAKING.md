@@ -12,6 +12,34 @@ confirm the heading against the Version Packages PR before releasing.
 
 ## 0.0.10
 
+### `syncHtmlLang` renamed to `syncHtmlAttributes`, and it now also sets `dir`
+
+The option kept `<html lang>` synced but left `<html dir>` alone, so
+right-to-left locales rendered in the wrong direction unless the app set the
+attribute itself. Enabled, it now sets both: `lang` to the active locale and
+`dir` to the locale's text direction. The direction is also exported as
+`getTextDirection` for server-side rendering, and the SvelteKit handle
+replaces a `%yapyak.dir%` placeholder next to `%yapyak.lang%`.
+
+**Before**
+
+```ts
+export default defineConfig({
+  syncHtmlLang: true
+});
+```
+
+**After**
+
+```ts
+export default defineConfig({
+  syncHtmlAttributes: true
+});
+```
+
+The default is unchanged: `false`. If the app manages `<html dir>` itself,
+remove that handling or leave the option off.
+
 ### `preserveTranslationsOnRename` renamed to `preserveTranslationsOnSourceEdit`
 
 The option governs one case only: a source string edited in place, where the

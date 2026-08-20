@@ -12,3 +12,4 @@ export {
   setLocale,
   subscribeLocale,
 } from './store';
+export { getTextDirection } from './text-direction';

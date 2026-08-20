@@ -18,7 +18,7 @@ export type NormalizedYapyakConfig = {
   persistence: NormalizedPersistenceConfig;
   preserveTranslationsOnSourceEdit: boolean;
   processors: Processor[];
-  syncHtmlLang: boolean;
+  syncHtmlAttributes: boolean;
   translator: Translator | undefined;
 };
 
@@ -93,7 +93,7 @@ export function normalizeYapyakConfig(
     preserveTranslationsOnSourceEdit:
       config.preserveTranslationsOnSourceEdit ?? !config.translator,
     processors,
-    syncHtmlLang: config.syncHtmlLang ?? false,
+    syncHtmlAttributes: config.syncHtmlAttributes ?? false,
     translator: config.translator,
   };
 }

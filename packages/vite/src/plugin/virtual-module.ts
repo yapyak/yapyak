@@ -18,7 +18,7 @@ export function createVirtualModulePlugin(state: State): Plugin {
           detectUserLocale: normalized.detectUserLocale,
           locales: emitted.locales,
           persistence: normalized.persistence,
-          syncHtmlLang: normalized.syncHtmlLang,
+          syncHtmlAttributes: normalized.syncHtmlAttributes,
         });
       }
       return null;

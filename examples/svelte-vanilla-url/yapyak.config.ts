@@ -6,5 +6,5 @@ export default defineConfig({
   processors: [
     svelte(),
   ],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
 });

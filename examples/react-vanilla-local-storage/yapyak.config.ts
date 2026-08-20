@@ -6,5 +6,5 @@ export default defineConfig({
   processors: [
     react(),
   ],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
 });

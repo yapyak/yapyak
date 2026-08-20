@@ -15,7 +15,7 @@ vi.mock('yapyak/runtime', () => ({
     name: 'locale',
     type: 'cookie',
   },
-  SYNC_HTML_LANG: false,
+  SYNC_HTML_ATTRIBUTES: false,
 }));
 
 describe('middleware', () => {

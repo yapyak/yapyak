@@ -13,7 +13,7 @@ vi.mock('yapyak/runtime', () => ({
   PERSISTENCE_CONFIG: {
     type: 'none',
   },
-  SYNC_HTML_LANG: false,
+  SYNC_HTML_ATTRIBUTES: false,
 }));
 
 beforeEach(() => {

@@ -57,11 +57,11 @@ The third argument is a selector that tells yapyak where the `Response` lives on
 
 The shipped TanStack Start adapter uses this pattern. The framework's middleware returns `{ response, ... }`, and yapyak's adapter extracts the `Response` to flush pending headers onto.
 
-## Setting `<html lang>`
+## Setting `<html lang>` and `<html dir>`
 
-How you render `<html lang>` depends on your framework, but the source of truth is the same: call [`getLocale()`](/guide/switching/switch) from inside the `withResponse` scope. Pass it to your template, your component, your renderer. Whatever is producing the HTML.
+How you render `<html lang>` and `<html dir>` depends on your framework, but the source of truth is the same. Call [`getLocale()`](/guide/switching/switch) from inside the `withResponse` scope. Derive the direction with [`getTextDirection`](/reference/yapyak/getTextDirection), and pass both to your template, your component, your renderer. Whatever is producing the HTML.
 
-For client-side switching from inside a React/Vue/Svelte runtime, enable [`syncHtmlLang: true`](/guide/getting-started/configuration#synchtmllang) in `yapyak.config.ts` so the attribute follows the locale without a navigation.
+For client-side switching from inside a React/Vue/Svelte runtime, enable [`syncHtmlAttributes: true`](/guide/getting-started/configuration#synchtmlattributes) in `yapyak.config.ts` so the attributes follow the locale without a navigation.
 
 ## Persistence considerations
 

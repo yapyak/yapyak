@@ -6,7 +6,7 @@ export type RuntimeMock = {
   detectUserLocale: boolean;
   locales: Locale[];
   persistence: NormalizedPersistenceConfig;
-  syncHtmlLang: boolean;
+  syncHtmlAttributes: boolean;
 };
 
 export function buildRuntimeMock(runtime: Partial<RuntimeMock> = {}): {
@@ -15,7 +15,7 @@ export function buildRuntimeMock(runtime: Partial<RuntimeMock> = {}): {
   DETECT_USER_LOCALE: boolean;
   LOCALES: Locale[];
   PERSISTENCE_CONFIG: NormalizedPersistenceConfig;
-  SYNC_HTML_LANG: boolean;
+  SYNC_HTML_ATTRIBUTES: boolean;
   // biome-ignore-end lint/style/useNamingConvention: yap yap yap
 } {
   const {
@@ -28,7 +28,7 @@ export function buildRuntimeMock(runtime: Partial<RuntimeMock> = {}): {
     persistence = {
       type: 'none',
     },
-    syncHtmlLang = false,
+    syncHtmlAttributes = false,
   } = runtime;
   return {
     DEFAULT_LOCALE: defaultLocale,
@@ -40,6 +40,6 @@ export function buildRuntimeMock(runtime: Partial<RuntimeMock> = {}): {
           ...locales,
         ],
     PERSISTENCE_CONFIG: persistence,
-    SYNC_HTML_LANG: syncHtmlLang,
+    SYNC_HTML_ATTRIBUTES: syncHtmlAttributes,
   };
 }

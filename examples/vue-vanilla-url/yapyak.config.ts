@@ -6,5 +6,5 @@ export default defineConfig({
   processors: [
     vue(),
   ],
-  syncHtmlLang: true,
+  syncHtmlAttributes: true,
 });

@@ -26,6 +26,7 @@ export {
   defaultLocale,
   getLocale,
   getLocaleFallbackChain,
+  getTextDirection,
   isLocale,
   locales,
   parseLocale,
