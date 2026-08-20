@@ -159,7 +159,6 @@ export async function retranslate(
       },
       projectRoot,
       {
-        examples: config.examples,
         force: true,
         signal: controller.signal,
       },

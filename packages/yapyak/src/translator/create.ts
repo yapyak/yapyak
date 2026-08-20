@@ -50,6 +50,12 @@ export function createTranslator(input: CreateTranslatorInput): Translator {
     );
   }
   const contextLevel = input.context ?? DEFAULT_CONTEXT;
+  const examples = input.examples;
+  if (examples !== undefined && (!Number.isInteger(examples) || examples < 0)) {
+    throw new Error(
+      `createTranslator: examples must be a non-negative integer, got ${String(examples)}.`,
+    );
+  }
 
   async function batch(
     requests: TranslateRequest[],
@@ -203,6 +209,11 @@ export function createTranslator(input: CreateTranslatorInput): Translator {
   return Object.assign(single, {
     batch,
     context: contextLevel,
+    ...(examples === undefined
+      ? {}
+      : {
+          examples,
+        }),
     id: input.id ?? DEFAULT_ID,
   });
 }

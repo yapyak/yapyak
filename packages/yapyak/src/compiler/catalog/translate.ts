@@ -37,7 +37,6 @@ export type AutoTranslateInput = {
 };
 
 export type AutoTranslateOptions = {
-  examples?: number;
   force?: boolean;
   signal?: AbortSignal;
   yapyakDir?: string;
@@ -81,6 +80,8 @@ type BatchContext = {
   yapyakDir: string;
 };
 
+const DEFAULT_EXAMPLES = 5;
+
 export async function autoTranslate(
   input: AutoTranslateInput,
   context: LocaleContext,
@@ -88,7 +89,9 @@ export async function autoTranslate(
   options?: AutoTranslateOptions,
 ): Promise<AutoTranslateResult> {
   const force = options?.force ?? false;
-  const examplesMax = options?.examples ?? 0;
+  const examplesMax =
+    input.translator.examples ??
+    (input.translator.context === 'none' ? 0 : DEFAULT_EXAMPLES);
   const yapyakDir = options?.yapyakDir ?? getDefaultYapyakDir(projectRoot);
   const stubs = extractStubs(
     {

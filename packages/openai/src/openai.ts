@@ -44,6 +44,12 @@ export type OpenAIOptions = {
    * @defaultValue `'https://api.openai.com/v1/chat/completions'`
    */
   endpoint?: string;
+  /**
+   * The maximum style-reference examples per request.
+   *
+   * @defaultValue `5`, or `0` when `context` is `'none'`
+   */
+  examples?: number;
   /** The translation glossary. */
   glossary?: Record<string, Record<string, string>>;
   /** The extra request headers. */
@@ -126,6 +132,7 @@ export function openai(options: OpenAIOptions): Translator {
     concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
+    examples,
     glossary,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
@@ -143,6 +150,7 @@ export function openai(options: OpenAIOptions): Translator {
     batchSize,
     concurrency,
     context,
+    examples,
     id: 'openai',
     translate: async (request) => {
       const { items, signal, sourceLocale, targetLocales } = request;

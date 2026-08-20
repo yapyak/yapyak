@@ -1,71 +1,11 @@
 import type { Processor } from '../processor';
-import type { ContextLevel, Translator } from '../translator';
 
 import { describe, expect, it } from 'vitest';
 
 import { createProcessor } from '../processor';
-import { createTranslator } from '../translator';
 import { normalizeYapyakConfig } from './normalize';
 
-function makeTranslator(context?: ContextLevel): Translator {
-  const input: Parameters<typeof createTranslator>[0] = {
-    translate: () => [],
-  };
-  if (context !== undefined) {
-    input.context = context;
-  }
-  return createTranslator(input);
-}
-
 describe('normalizeYapyakConfig', () => {
-  it('returns the default examples count when no translator is configured', () => {
-    const result = normalizeYapyakConfig({});
-
-    expect(result.examples).toBe(5);
-  });
-
-  it('returns the default examples count for a translator without an explicit context', () => {
-    const result = normalizeYapyakConfig({
-      translator: makeTranslator(),
-    });
-
-    expect(result.examples).toBe(5);
-  });
-
-  it('returns the default examples count for a minimal-context translator', () => {
-    const result = normalizeYapyakConfig({
-      translator: makeTranslator('minimal'),
-    });
-
-    expect(result.examples).toBe(5);
-  });
-
-  it('returns zero examples when the translator opts out of call-site context', () => {
-    const result = normalizeYapyakConfig({
-      translator: makeTranslator('none'),
-    });
-
-    expect(result.examples).toBe(0);
-  });
-
-  it('preserves an explicit examples count over the context-derived default', () => {
-    const result = normalizeYapyakConfig({
-      examples: 3,
-      translator: makeTranslator('none'),
-    });
-
-    expect(result.examples).toBe(3);
-  });
-
-  it('preserves an explicit zero examples count regardless of translator context', () => {
-    const result = normalizeYapyakConfig({
-      examples: 0,
-      translator: makeTranslator('rich'),
-    });
-
-    expect(result.examples).toBe(0);
-  });
-
   it('holds only vanilla extensions in the include glob when no processors are registered', () => {
     const result = normalizeYapyakConfig({});
 
@@ -305,14 +245,6 @@ describe('normalizeYapyakConfig', () => {
         localesDir: '',
       }),
     ).toThrow(/localesDir cannot be an empty string/);
-  });
-
-  it('throws when `examples` is a negative integer', () => {
-    expect(() =>
-      normalizeYapyakConfig({
-        examples: -1,
-      }),
-    ).toThrow(/examples must be a non-negative integer/);
   });
 
   it('preserves a `RegExp` inside an include array verbatim', () => {

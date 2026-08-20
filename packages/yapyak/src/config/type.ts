@@ -41,15 +41,6 @@ export type YapyakConfig = {
    */
   detectUserLocale?: boolean;
   /**
-   * The maximum style-reference examples per request.
-   *
-   * @remarks
-   * `0` disables the feature.
-   *
-   * @defaultValue `5`, or `0` when the translator's `context` is `'none'`
-   */
-  examples?: number;
-  /**
    * The patterns to exclude from extraction.
    *
    * @remarks

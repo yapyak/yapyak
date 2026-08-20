@@ -12,7 +12,6 @@ export type NormalizedYapyakConfig = {
   autoTranslateThreshold: number;
   defaultLocale: string;
   detectUserLocale: boolean;
-  examples: number;
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;
@@ -24,7 +23,6 @@ export type NormalizedYapyakConfig = {
 };
 
 const DEFAULT_AUTO_TRANSLATE_THRESHOLD = 20;
-const DEFAULT_EXAMPLES = 5;
 const DEFAULT_LOCALE = 'en';
 const DEFAULT_LOCALES_DIR = 'locales';
 const DEFAULT_COOKIE_NAME = 'locale';
@@ -88,7 +86,6 @@ export function normalizeYapyakConfig(
     autoTranslateThreshold,
     defaultLocale,
     detectUserLocale: config.detectUserLocale ?? false,
-    examples: resolveExamples(config),
     exclude: resolvePatterns(config.exclude ?? DEFAULT_EXCLUDE, processors),
     include: resolvePatterns(config.include ?? DEFAULT_INCLUDE, processors),
     localesDir,
@@ -160,21 +157,6 @@ function resolveExtensions(processors: Processor[]): string[] {
   return [
     ...allExtensions,
   ].sort();
-}
-
-function resolveExamples(config: YapyakConfig): number {
-  if (config.examples !== undefined) {
-    if (!Number.isInteger(config.examples) || config.examples < 0) {
-      throw new Error(
-        `[yapyak] examples must be a non-negative integer, got ${String(config.examples)}.`,
-      );
-    }
-    return config.examples;
-  }
-  if (config.translator?.context === 'none') {
-    return 0;
-  }
-  return DEFAULT_EXAMPLES;
 }
 
 function normalizePersistenceConfig(

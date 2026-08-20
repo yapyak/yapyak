@@ -7,7 +7,6 @@ import { loadYapyakConfig } from '../config/internal';
 
 export type Config = {
   defaultLocale: string;
-  examples: number;
   exclude: FilterPattern;
   include: FilterPattern;
   localesDir: string;
@@ -42,7 +41,6 @@ export function resetConfigCache(): void {
 function toCliConfig(config: NormalizedYapyakConfig): Config {
   return {
     defaultLocale: config.defaultLocale,
-    examples: config.examples,
     exclude: config.exclude,
     include: config.include,
     localesDir: config.localesDir,

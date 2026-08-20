@@ -41,6 +41,12 @@ export type OllamaOptions = {
    * @defaultValue `'http://localhost:11434/api/generate'`
    */
   endpoint?: string;
+  /**
+   * The maximum style-reference examples per request.
+   *
+   * @defaultValue `5`, or `0` when `context` is `'none'`
+   */
+  examples?: number;
   /** The translation glossary. */
   glossary?: Record<string, Record<string, string>>;
   /** The extra request headers. */
@@ -106,6 +112,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
     concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
+    examples,
     glossary,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
@@ -120,6 +127,7 @@ export function ollama(options: OllamaOptions = {}): Translator {
     batchSize,
     concurrency,
     context,
+    examples,
     id: 'ollama',
     translate: async (request) => {
       const { items, signal, sourceLocale, targetLocales } = request;

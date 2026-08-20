@@ -132,7 +132,6 @@ export async function translate(
       },
       projectRoot,
       {
-        examples: config.examples,
         force,
         signal: controller.signal,
       },

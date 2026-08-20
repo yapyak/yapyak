@@ -111,7 +111,6 @@ async function runAutoTranslate(
       },
       state.projectRoot,
       {
-        examples: config.examples,
         signal: input.signal,
         yapyakDir: state.yapyakDir,
       },

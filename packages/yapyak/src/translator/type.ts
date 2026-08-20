@@ -63,6 +63,10 @@ export type Translator = {
    */
   context?: ContextLevel;
   /**
+   * The maximum style-reference examples per request.
+   */
+  examples?: number;
+  /**
    * The stable identifier.
    *
    * @remarks
@@ -171,6 +175,12 @@ export type CreateTranslatorInput = {
    * @defaultValue `'minimal'`
    */
   context?: ContextLevel;
+  /**
+   * The maximum style-reference examples per request.
+   *
+   * @defaultValue `5`, or `0` when `context` is `'none'`
+   */
+  examples?: number;
   /**
    * The stable identifier.
    *

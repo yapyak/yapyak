@@ -45,6 +45,7 @@ const myTranslator = createTranslator({
   batchSize: 10,
   concurrency: 3,
   context: 'rich',
+  examples: 3,
   id: 'my-translator',
   async translate({ items, signal, sourceLocale, targetLocales }) {
     // ...
@@ -58,6 +59,7 @@ const myTranslator = createTranslator({
 | `batchSize` | `number` | `25` | Max items per `translate` call. yapyak chunks larger batches itself. |
 | `concurrency` | `number` | `5` | Max parallel `translate` calls. |
 | `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | What call-site context yapyak attaches to each item. See [Context](/guide/translating/context). |
+| `examples` | `number` | `5`, or `0` when `context` is `'none'` | Max style-reference [examples](/guide/translating/examples) yapyak attaches to each item. |
 | `translate` | [`TranslateFn`](/reference/yapyak/translator/TranslateFn) | required | The batch callback. |
 
 The shipped [translators](/guide/translating/providers) are themselves built on `createTranslator` with these same defaults and lifecycle.
@@ -98,7 +100,7 @@ type TranslateItem = {
 - **`element`** — the enclosing element (sent at context `'minimal'` or `'rich'`).
 - **`snippet`** — surrounding code (sent only at context `'rich'`).
 - **`disambiguation`** — from `t.as(context, source)`, sent at every level.
-- **`examples`** — prior translations sent as style hints.
+- **`examples`** — prior translations sent as style reference (sent at context `'minimal'` or `'rich'`).
 
 ## The output
 

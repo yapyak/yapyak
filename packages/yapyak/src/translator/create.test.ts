@@ -234,6 +234,32 @@ describe('createTranslator', () => {
     ).toThrow(/concurrency must be a positive integer/);
   });
 
+  it('refuses construction when `examples` is a negative integer', () => {
+    expect(() =>
+      createTranslator({
+        examples: -1,
+        translate: () => [],
+      }),
+    ).toThrow(/examples must be a non-negative integer/);
+  });
+
+  it('holds the `examples` count on the returned translator', () => {
+    const translator = createTranslator({
+      examples: 3,
+      translate: () => [],
+    });
+
+    expect(translator.examples).toBe(3);
+  });
+
+  it('holds no `examples` count when the option is omitted', () => {
+    const translator = createTranslator({
+      translate: () => [],
+    });
+
+    expect(translator.examples).toBeUndefined();
+  });
+
   it('warns and returns an empty result when the translate response is not an array', async () => {
     const translator = createTranslator({
       translate: () =>

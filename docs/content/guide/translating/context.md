@@ -139,4 +139,4 @@ Call-site context is part of the request to your provider. It goes from your mac
 
 ## Per-item examples
 
-The `context` setting also affects whether yapyak sends [`examples`](/guide/translating/examples). With `context: 'none'`, the default for `examples` is `0`.
+The `context` setting also affects whether yapyak sends [`examples`](/guide/translating/examples). With `context: 'none'`, the default for the translator's `examples` option is `0`.

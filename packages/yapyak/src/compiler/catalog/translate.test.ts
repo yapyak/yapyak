@@ -1,4 +1,9 @@
-import type { TranslateRequest, Translator } from '../../translator';
+import type {
+  ContextLevel,
+  TranslateRequest,
+  TranslationExample,
+  Translator,
+} from '../../translator';
 import type { ExtractedMessage } from '../parser';
 import type { TranslationProgress } from './locale';
 
@@ -16,6 +21,70 @@ import {
 } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+
+async function collectExamples(
+  projectRoot: string,
+  overrides?: {
+    context?: ContextLevel;
+    examples?: number;
+  },
+): Promise<TranslationExample[] | undefined> {
+  let received: TranslationExample[] | undefined;
+  const translator: Translator = Object.assign(
+    () => Promise.reject(new Error('use batch')),
+    {
+      batch: (requests: TranslateRequest[]): Promise<string[]> => {
+        received = requests[0]?.examples;
+        return Promise.resolve([
+          'Hej',
+        ]);
+      },
+      id: 'mock',
+      ...overrides,
+    },
+  );
+  const messages: ExtractedMessage[] = [
+    {
+      id: 'm1',
+      locations: [
+        {
+          callSiteContext: {},
+          fileId: 'src/a.tsx',
+          range: {
+            end: {
+              column: 5,
+              line: 2,
+              offset: 5,
+            },
+            start: {
+              column: 1,
+              line: 2,
+              offset: 0,
+            },
+          },
+        },
+      ],
+      placeholders: [],
+      source: 'Hello',
+    },
+  ];
+  await autoTranslate(
+    {
+      messages,
+      translator,
+    },
+    {
+      defaultLocale: 'en',
+      locales: [
+        'en',
+        'sv',
+      ],
+      localesDir: 'locales',
+    },
+    projectRoot,
+  );
+  return received;
+}
 
 describe('autoTranslate', () => {
   let projectRoot: string;
@@ -101,7 +170,7 @@ describe('autoTranslate', () => {
     });
   });
 
-  it('loads examples from the locale data when `examples` is positive', async () => {
+  it('loads examples from the locale data when the translator `examples` is positive', async () => {
     writeFileSync(
       localePath,
       JSON.stringify({
@@ -111,84 +180,70 @@ describe('autoTranslate', () => {
       }),
     );
 
-    let receivedExamples:
-      | {
-          source: string;
-          translation: string;
-        }[]
-      | undefined;
-    const translator: Translator = Object.assign(
-      () => Promise.reject(new Error('use batch')),
-      {
-        batch: (
-          requests: {
-            examples?: {
-              source: string;
-              translation: string;
-            }[];
-          }[],
-        ): Promise<string[]> => {
-          receivedExamples = requests[0]?.examples;
-          return Promise.resolve([
-            'Hej',
-          ]);
-        },
-        id: 'mock',
-      },
-    );
+    const received = await collectExamples(projectRoot, {
+      examples: 5,
+    });
 
-    const messages: ExtractedMessage[] = [
-      {
-        id: 'm1',
-        locations: [
-          {
-            callSiteContext: {},
-            fileId: 'src/a.tsx',
-            range: {
-              end: {
-                column: 5,
-                line: 2,
-                offset: 5,
-              },
-              start: {
-                column: 1,
-                line: 2,
-                offset: 0,
-              },
-            },
-          },
-        ],
-        placeholders: [],
-        source: 'Hello',
-      },
-    ];
-
-    const result = await autoTranslate(
-      {
-        messages,
-        translator,
-      },
-      {
-        defaultLocale: 'en',
-        locales: [
-          'en',
-          'sv',
-        ],
-        localesDir: 'locales',
-      },
-      projectRoot,
-      {
-        examples: 5,
-      },
-    );
-
-    expect(result.translated).toBe(1);
-    expect(receivedExamples).toEqual([
+    expect(received).toEqual([
       {
         source: 'Save',
         translation: 'Spara',
       },
     ]);
+  });
+
+  it('falls back to the default examples count when the translator sets none', async () => {
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': {
+          Save: 'Spara',
+        },
+      }),
+    );
+
+    const received = await collectExamples(projectRoot);
+
+    expect(received).toEqual([
+      {
+        source: 'Save',
+        translation: 'Spara',
+      },
+    ]);
+  });
+
+  it('skips examples when the translator `examples` is zero', async () => {
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': {
+          Save: 'Spara',
+        },
+      }),
+    );
+
+    const received = await collectExamples(projectRoot, {
+      examples: 0,
+    });
+
+    expect(received).toBeUndefined();
+  });
+
+  it('skips examples when the translator `context` is `none`', async () => {
+    writeFileSync(
+      localePath,
+      JSON.stringify({
+        'src/a.tsx': {
+          Save: 'Spara',
+        },
+      }),
+    );
+
+    const received = await collectExamples(projectRoot, {
+      context: 'none',
+    });
+
+    expect(received).toBeUndefined();
   });
 
   it('captures the call-site context for each `t.as` variant', async () => {

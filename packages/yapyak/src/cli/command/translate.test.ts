@@ -16,7 +16,6 @@ import { join } from 'node:path';
 function makeConfig(overrides: Partial<Config> = {}): Config {
   return {
     defaultLocale: 'en',
-    examples: 0,
     exclude: [],
     include: [
       'src/**/*.ts',

@@ -63,7 +63,6 @@ export default defineConfig({
 | [`exclude`](#exclude) | tests, generated files, `.d.ts` | Which files it skips |
 | [`processors`](#processors) | `[]` | Framework file formats |
 | [`translator`](#translator) | none | The model that fills stubs |
-| [`examples`](#examples) | `5` | Style examples sent per request |
 | [`autoTranslateThreshold`](#autotranslatethreshold) | `20` | New strings per save before the translator holds off |
 | [`preserveTranslationsOnRename`](#preservetranslationsonrename) | depends on translator | Keep a translation when a source string is edited |
 | [`persistence`](#persistence) | `'none'` | Where the active locale is stored |
@@ -222,15 +221,9 @@ import { anthropic } from '@yapyak/anthropic';
 translator: anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }),
 ```
 
-Voice, glossary, context, batching, concurrency, and model selection are options on the translator itself. See [Translators](/guide/translating/overview).
+Voice, glossary, context, [examples](/guide/translating/examples), batching, concurrency, and model selection are options on the translator itself. See [Translators](/guide/translating/overview).
 
 **Type**: [`Translator`](/reference/yapyak/translator/Translator) · **Default**: none, so stubs stay empty
-
-### `examples`
-
-How many existing [translation examples](/guide/translating/examples) yapyak sends the model per request, as style reference. `0` turns them off.
-
-**Type**: `number` · **Default**: `5`, or `0` when the translator's `context` is `'none'`
 
 ### `autoTranslateThreshold`
 

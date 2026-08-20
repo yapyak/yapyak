@@ -186,7 +186,6 @@ export async function add(
       },
       projectRoot,
       {
-        examples: config.examples,
         signal: controller.signal,
       },
     );

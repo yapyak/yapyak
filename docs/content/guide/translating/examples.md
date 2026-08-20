@@ -3,16 +3,16 @@ title: Examples
 order: 6
 ---
 
-`examples` is the number of your existing translations yapyak sends along with each request as in-context style references. The model uses them to match your project's voice without needing it spelled out.
+`examples` is a translator option: the number of your existing translations yapyak sends along with each request as in-context style references. The model uses them to match your project's voice without needing it spelled out.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
 import { anthropic } from '@yapyak/anthropic';
 
 export default defineConfig({
-  examples: 5,
   translator: anthropic({
-    apiKey: process.env.ANTHROPIC_API_KEY
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    examples: 5
   })
 });
 ```

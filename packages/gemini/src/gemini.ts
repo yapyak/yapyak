@@ -44,6 +44,12 @@ export type GeminiOptions = {
    * @defaultValue `'https://generativelanguage.googleapis.com/v1beta'`
    */
   endpoint?: string;
+  /**
+   * The maximum style-reference examples per request.
+   *
+   * @defaultValue `5`, or `0` when `context` is `'none'`
+   */
+  examples?: number;
   /** The translation glossary. */
   glossary?: Record<string, Record<string, string>>;
   /** The extra request headers. */
@@ -119,6 +125,7 @@ export function gemini(options: GeminiOptions): Translator {
     concurrency,
     context,
     endpoint = DEFAULT_ENDPOINT,
+    examples,
     glossary,
     headers: customHeaders,
     maxRetries = DEFAULT_MAX_RETRIES,
@@ -133,6 +140,7 @@ export function gemini(options: GeminiOptions): Translator {
     batchSize,
     concurrency,
     context,
+    examples,
     id: 'gemini',
     translate: async (request) => {
       const { items, signal, sourceLocale, targetLocales } = request;

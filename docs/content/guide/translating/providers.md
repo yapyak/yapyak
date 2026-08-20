@@ -38,6 +38,7 @@ The four factories accept the same option surface. Provider pages add a handful 
 | `voice` | `string` | undefined | Tone guidance for the model. See [Voice](/guide/translating/voice). |
 | `glossary` | `Record<string, Record<string, string>>` | `{}` | Pinned source-to-target translations. Inner keys are locale codes. See [Glossary](/guide/translating/glossary). |
 | `context` | `'none' \| 'minimal' \| 'rich'` | `'minimal'` | How much call-site code is sent. See [Context](/guide/translating/context). |
+| `examples` | `number` | `5`, or `0` when `context` is `'none'` | Existing translations sent per request as style reference. See [Examples](/guide/translating/examples). |
 | `temperature` | `number` | `0.2` | Sampling temperature. |
 | `maxTokens` | `number` | provider-scaled | Output token cap. |
 | `timeout` | `number` | `30_000` ms | Per-request timeout. Ollama defaults to `120_000`. |
