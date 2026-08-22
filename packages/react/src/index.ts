@@ -14,3 +14,4 @@ export type { RichTextProps } from './rich-text';
 
 export { RichText } from './rich-text';
 export { useLocale } from './use-locale';
+export { useTextDirection } from './use-text-direction';
