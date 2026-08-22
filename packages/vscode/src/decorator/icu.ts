@@ -1,5 +1,5 @@
 import type { Range, TextEditor, TextEditorDecorationType } from 'vscode';
-import type { TemplateTokenKind } from 'yapyak/compiler/internal';
+import type { TemplateTokenKind } from 'yapyak/template/internal';
 import type { Decorator } from './type';
 
 import { ThemeColor, window } from 'vscode';
@@ -46,7 +46,11 @@ export function createIcuDecorator(): Decorator {
       resetDecorations(editor);
       return;
     }
-    const { compiler, config, root } = project;
+    const { compiler, config, root, template } = project;
+    if (template === undefined) {
+      resetDecorations(editor);
+      return;
+    }
     const rangesByKind = new Map<DecoratedTokenKind, Range[]>(
       TOKEN_KINDS.map((kind) => [
         kind,
@@ -54,7 +58,7 @@ export function createIcuDecorator(): Decorator {
       ]),
     );
     const collectTokens = (source: string, base: number): void => {
-      for (const token of compiler.tokenizeTemplate(source)) {
+      for (const token of template.tokenizeTemplate(source)) {
         if (token.kind === 'text') {
           continue;
         }

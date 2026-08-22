@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { parsePlaceholders, parseTemplate } from 'yapyak/compiler/internal';
+import { parsePlaceholders } from 'yapyak/compiler/internal';
+import { parseTemplate } from 'yapyak/template/internal';
 
 import { buildLocaleCompletions } from './completion';
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseTemplate } from 'yapyak/compiler/internal';
+import { parseTemplate } from 'yapyak/template/internal';
 
 import { buildSourceCompletions } from './completion';
 

@@ -9,11 +9,14 @@ export type CompilerModule = typeof import('yapyak/compiler/internal');
 
 type ConfigModule = typeof import('yapyak/config/internal');
 
+type TemplateModule = typeof import('yapyak/template/internal');
+
 export type Project = {
   compiler: CompilerModule;
   config: NormalizedYapyakConfig;
   configModule: ConfigModule;
   root: string;
+  template: TemplateModule | undefined;
 };
 
 const CONFIG_FILES = [
@@ -62,6 +65,7 @@ export function findProjectRoot(directory: string): string | undefined {
 type ProjectModules = {
   compiler: CompilerModule;
   configModule: ConfigModule;
+  template: TemplateModule | undefined;
 };
 
 const moduleCache = new Map<string, Promise<ProjectModules>>();
@@ -86,7 +90,19 @@ async function loadModules(root: string): Promise<ProjectModules> {
     configModule: (await import(
       pathToFileURL(configPath).href
     )) as ConfigModule,
+    template: await loadTemplate(require),
   };
+}
+
+async function loadTemplate(
+  require: ReturnType<typeof createRequire>,
+): Promise<TemplateModule | undefined> {
+  try {
+    const templatePath = require.resolve('yapyak/template/internal');
+    return (await import(pathToFileURL(templatePath).href)) as TemplateModule;
+  } catch {
+    return undefined;
+  }
 }
 
 type LoadedConfig = {
