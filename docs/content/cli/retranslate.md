@@ -148,4 +148,4 @@ bunx yapyak retranslate "Greetings"
   <g>✔</g> <g>No matching call sites.</g>
 ```
 
-Check the spelling and that the source string matches a call site literal exactly (including casing and punctuation).
+Check the spelling and that the source string matches a call-site literal exactly (including casing and punctuation).

@@ -8,7 +8,7 @@ function findFirstCallSite(source: string) {
 }
 
 describe('renderCallReplacement', () => {
-  it('returns undefined when the call-site has an empty source', () => {
+  it('returns undefined when the call site has an empty source', () => {
     const source = "import { t } from 'yapyak'; t('Hello');";
     const callSite = findFirstCallSite(source);
     if (!callSite) {

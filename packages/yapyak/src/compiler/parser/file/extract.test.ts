@@ -182,7 +182,7 @@ describe('extractFile', () => {
     );
   });
 
-  it('returns every discovered call-site in `callSites` for transform reuse', () => {
+  it('returns every discovered call site in `callSites` for transform reuse', () => {
     const result = extractFixture('call', 'nested-jsx.tsx');
     expect(result.callSites).toHaveLength(3);
   });
