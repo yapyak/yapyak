@@ -1,5 +1,12 @@
 # @yapyak/anthropic
 
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies [[`3cccfd0`](https://github.com/yapyak/yapyak/commit/3cccfd0bf301d10d3ad4eb25a95dfdbf26b33e9c), [`c6798e7`](https://github.com/yapyak/yapyak/commit/c6798e73a04279f6732aad0d6649e9c2e685c03f)]:
+  - yapyak@0.0.11
+
 ## 0.0.10
 
 ### Patch Changes
