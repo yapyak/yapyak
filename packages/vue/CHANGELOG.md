@@ -1,5 +1,16 @@
 # @yapyak/vue
 
+## 0.0.10
+
+### Patch Changes
+
+- [`b03a5f5`](https://github.com/yapyak/yapyak/commit/b03a5f5b684f577c8b15aa2ec218bf7e123b846f) Thanks [@qwuide](https://github.com/qwuide)! - Supply the enclosing attribute name from template bindings. A `t()` call bound with `:title` or `v-bind:title` now carries `title` as call-site context; the object form `v-bind="{ ... }"` and interpolation content carry nothing.
+
+- [`6b573ec`](https://github.com/yapyak/yapyak/commit/6b573ecd6f62385f130a55c1258c26703ccccc98) Thanks [@qwuide](https://github.com/qwuide)! - Add a `textDirection` ref holding the text direction of the current locale as a reactive read-only value, next to `locale`. Binding `dir` in a template previously meant deriving the direction manually; the ref recomputes on every read, so it stays correct per request during SSR and tracks locale switches on the client.
+
+- Updated dependencies [[`7b7d19b`](https://github.com/yapyak/yapyak/commit/7b7d19b488e9e83ad251be03946568864c48933a), [`ebcf3f0`](https://github.com/yapyak/yapyak/commit/ebcf3f0e04264fd00520bac2275fc285d101f353), [`b7852de`](https://github.com/yapyak/yapyak/commit/b7852deef88c33949d9165e1e8466ec4d6aa401a), [`93053a1`](https://github.com/yapyak/yapyak/commit/93053a1c0d039a2906593ab7b4c4e86d65b6bfa5), [`287e33e`](https://github.com/yapyak/yapyak/commit/287e33ed8f526beda2d0c195a0d80d911fea4e54)]:
+  - yapyak@0.0.10
+
 ## 0.0.9
 
 ### Patch Changes

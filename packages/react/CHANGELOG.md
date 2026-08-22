@@ -1,5 +1,14 @@
 # @yapyak/react
 
+## 0.0.10
+
+### Patch Changes
+
+- [`2623d20`](https://github.com/yapyak/yapyak/commit/2623d207b211f31c99706ee7da71eb31ff967365) Thanks [@qwuide](https://github.com/qwuide)! - Add a `useTextDirection()` hook returning the text direction of the current locale as a reactive read-only value. Rendering `<html dir>` in a server-rendered root previously meant deriving the direction manually from `useLocale()`; the hook subscribes to locale changes and re-renders only when the direction itself changes.
+
+- Updated dependencies [[`7b7d19b`](https://github.com/yapyak/yapyak/commit/7b7d19b488e9e83ad251be03946568864c48933a), [`ebcf3f0`](https://github.com/yapyak/yapyak/commit/ebcf3f0e04264fd00520bac2275fc285d101f353), [`b7852de`](https://github.com/yapyak/yapyak/commit/b7852deef88c33949d9165e1e8466ec4d6aa401a), [`93053a1`](https://github.com/yapyak/yapyak/commit/93053a1c0d039a2906593ab7b4c4e86d65b6bfa5), [`287e33e`](https://github.com/yapyak/yapyak/commit/287e33ed8f526beda2d0c195a0d80d911fea4e54)]:
+  - yapyak@0.0.10
+
 ## 0.0.9
 
 ### Patch Changes

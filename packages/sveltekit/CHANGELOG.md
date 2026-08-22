@@ -1,5 +1,14 @@
 # @yapyak/sveltekit
 
+## 0.0.10
+
+### Patch Changes
+
+- [`287e33e`](https://github.com/yapyak/yapyak/commit/287e33ed8f526beda2d0c195a0d80d911fea4e54) Thanks [@qwuide](https://github.com/qwuide)! - Rename `syncHtmlLang` to `syncHtmlAttributes` and sync `<html dir>` alongside `<html lang>`. The option kept the language attribute current but left the direction alone, so a right-to-left locale rendered in the wrong direction unless the app set `dir` itself. Enabled, it now writes both attributes on init and on every switch, deriving the direction from the locale's script via likely subtags: `rtl` for Arabic, Hebrew, Thaana and the other right-to-left scripts, `ltr` otherwise. The derivation ships as a new public `getTextDirection(locale)` for rendering the attributes server-side, and the SvelteKit handle now replaces a `%yapyak.dir%` placeholder next to `%yapyak.lang%`. Setting `syncHtmlLang` is a type error now; rename the key. Migration steps are in BREAKING.md.
+
+- Updated dependencies [[`7b7d19b`](https://github.com/yapyak/yapyak/commit/7b7d19b488e9e83ad251be03946568864c48933a), [`ebcf3f0`](https://github.com/yapyak/yapyak/commit/ebcf3f0e04264fd00520bac2275fc285d101f353), [`b7852de`](https://github.com/yapyak/yapyak/commit/b7852deef88c33949d9165e1e8466ec4d6aa401a), [`93053a1`](https://github.com/yapyak/yapyak/commit/93053a1c0d039a2906593ab7b4c4e86d65b6bfa5), [`287e33e`](https://github.com/yapyak/yapyak/commit/287e33ed8f526beda2d0c195a0d80d911fea4e54)]:
+  - yapyak@0.0.10
+
 ## 0.0.9
 
 ### Patch Changes
