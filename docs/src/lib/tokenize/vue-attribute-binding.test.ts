@@ -2,82 +2,53 @@ import type { Token } from './type';
 
 import { describe, expect, it } from 'vitest';
 
-import { expandVueAttributeBindings } from './vue-attribute-binding';
+import { tokenize } from './tokenize';
 
-const HELLO_TOKEN: Token = {
-  kind: 'plain',
-  value: 'Hello',
-};
+function marks(code: string) {
+  return tokenize(code, 'vue')
+    .filter((token: Token) => token.kind === 'jsx-attribute')
+    .map((token) => token.value);
+}
 
-const tokenizeStub = () => [
-  HELLO_TOKEN,
-];
+function inner(code: string) {
+  return tokenize(code, 'vue')
+    .map((token) => `${token.value}:${token.kind}`)
+    .join(' ');
+}
 
 describe('expandVueAttributeBindings', () => {
-  it('expands a `:attr="..."` binding by re-tokenizing the inner string', () => {
-    const tokens: Token[] = [
-      {
-        kind: 'punct',
-        value: ':',
-      },
-      {
-        kind: 'fn-call',
-        value: 'value',
-      },
-      {
-        kind: 'punct',
-        value: '=',
-      },
-      {
-        kind: 'string',
-        value: '"World"',
-      },
-    ];
-
-    const result = expandVueAttributeBindings(tokens, tokenizeStub);
-    expect(result).toContain(HELLO_TOKEN);
+  it('marks a slot shorthand with its name', () => {
+    expect(marks('<template #link="{ children }">')).toEqual([
+      '#',
+      'link',
+    ]);
   });
 
-  it('expands an `@event="..."` binding by re-tokenizing the inner string', () => {
-    const tokens: Token[] = [
-      {
-        kind: 'punct',
-        value: '@',
-      },
-      {
-        kind: 'fn-call',
-        value: 'click',
-      },
-      {
-        kind: 'punct',
-        value: '=',
-      },
-      {
-        kind: 'string',
-        value: '"World"',
-      },
-    ];
-
-    const result = expandVueAttributeBindings(tokens, tokenizeStub);
-    expect(result).toContain(HELLO_TOKEN);
+  it('marks a bind shorthand with its name', () => {
+    expect(marks('<component :is="children" />')).toEqual([
+      ':',
+      'is',
+    ]);
   });
 
-  it('preserves a string value when no `:` or `@` binding precedes it', () => {
-    const tokens: Token[] = [
-      {
-        kind: 'fn-call',
-        value: 'class',
-      },
-      {
-        kind: 'punct',
-        value: '=',
-      },
-      {
-        kind: 'string',
-        value: '"Hello"',
-      },
-    ];
+  it('marks an event shorthand with its name', () => {
+    expect(marks('<button @click="go" />')).toEqual([
+      '@',
+      'click',
+    ]);
+  });
 
-    expect(expandVueAttributeBindings(tokens, tokenizeStub)).toEqual(tokens);
+  it('parses a slot value as an expression', () => {
+    expect(inner('<template #link="{ children }">')).toContain('{:punct');
+  });
+
+  it('parses a bind value as an expression', () => {
+    expect(inner(`<RichText :value="t('Hi')">`)).toContain("'Hi':t-source");
+  });
+
+  it('preserves a plain attribute', () => {
+    expect(marks('<a href="/x" />')).toEqual([
+      'href',
+    ]);
   });
 });

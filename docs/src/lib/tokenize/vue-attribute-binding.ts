@@ -2,10 +2,17 @@ import type { Language, Token } from './type';
 
 type TokenizeFn = (code: string, language: Language) => Token[];
 
+const MARKS = new Set([
+  '#',
+  '@',
+  ':',
+]);
+
 export function expandVueAttributeBindings(
-  tokens: Token[],
+  rawTokens: Token[],
   tokenize: TokenizeFn,
 ) {
+  const tokens = markDirectiveMarks(rawTokens);
   const result: Token[] = [];
   let index = 0;
 
@@ -16,10 +23,7 @@ export function expandVueAttributeBindings(
       continue;
     }
 
-    if (
-      token.kind === 'punct' &&
-      (token.value === ':' || token.value === '@')
-    ) {
+    if (token.kind === 'jsx-attribute' && MARKS.has(token.value)) {
       const identifierIndex = findNextNonWhitespace(tokens, index + 1);
       if (identifierIndex !== -1) {
         const identifier = tokens[identifierIndex];
@@ -79,6 +83,57 @@ export function expandVueAttributeBindings(
 
     result.push(token);
     index++;
+  }
+
+  return result;
+}
+
+function markDirectiveMarks(tokens: Token[]): Token[] {
+  const result: Token[] = [];
+
+  for (const [index, token] of tokens.entries()) {
+    const next = tokens[index + 1];
+    if (
+      token.kind === 'decorator' &&
+      token.value.startsWith('@') &&
+      token.value.length > 1
+    ) {
+      result.push({
+        kind: 'jsx-attribute',
+        value: '@',
+      });
+      result.push({
+        kind: 'jsx-attribute',
+        value: token.value.slice(1),
+      });
+      continue;
+    }
+    if (next?.kind !== 'jsx-attribute') {
+      result.push(token);
+      continue;
+    }
+    if (token.kind === 'punct' && MARKS.has(token.value)) {
+      result.push({
+        kind: 'jsx-attribute',
+        value: token.value,
+      });
+      continue;
+    }
+    if (token.kind === 'plain' && token.value.endsWith('#')) {
+      const head = token.value.slice(0, -1);
+      if (head.length > 0) {
+        result.push({
+          kind: 'plain',
+          value: head,
+        });
+      }
+      result.push({
+        kind: 'jsx-attribute',
+        value: '#',
+      });
+      continue;
+    }
+    result.push(token);
   }
 
   return result;
