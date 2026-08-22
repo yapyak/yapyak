@@ -18,7 +18,7 @@ export type {
   FormatNumberOptions,
   FormatRelativeTimeOptions,
 } from './formatting';
-export type { Locale, Register } from './locale';
+export type { Locale, Register, TextDirection } from './locale';
 export type { RichTextNode, TFn, TParams, TReturn } from './translation';
 
 export { format, isCurrency } from './formatting';

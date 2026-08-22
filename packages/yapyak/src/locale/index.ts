@@ -1,3 +1,4 @@
+export type { TextDirection } from './text-direction';
 export type { Locale, Register } from './type';
 
 export { getLocaleFallbackChain } from './fallback-chain';

@@ -1,3 +1,10 @@
+/**
+ * The text direction.
+ *
+ * @see {@link getTextDirection}
+ */
+export type TextDirection = 'ltr' | 'rtl';
+
 const RTL_SCRIPTS = new Set([
   'Adlm',
   'Arab',
@@ -30,7 +37,7 @@ const RTL_SCRIPTS = new Set([
  * getTextDirection('sv'); // output: 'ltr'
  * ```
  */
-export function getTextDirection(locale: string): 'ltr' | 'rtl' {
+export function getTextDirection(locale: string): TextDirection {
   const script = new Intl.Locale(locale).maximize().script;
   if (script === undefined) {
     return 'ltr';
