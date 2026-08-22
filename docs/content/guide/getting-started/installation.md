@@ -952,19 +952,20 @@ export default defineConfig({
 {% when value="react" %}
 {% switch group="adapter" %}
 {% when value="react-router" %}
-Register yapyak's middleware in your root route, and read the locale through [`useLocale()`](/reference/react/useLocale) for `<html lang>`:
+Register yapyak's middleware in your root route. Read the locale through [`useLocale()`](/reference/react/useLocale) and the text direction through [`useTextDirection()`](/reference/react/useTextDirection). Render them as `<html lang>` and `<html dir>`:
 
 ```tsx [app/root.tsx]
 import type { Route } from './+types/root';
-import { useLocale } from '@yapyak/react';
+import { useLocale, useTextDirection } from '@yapyak/react';
 import { middleware as yapyakMiddleware } from '@yapyak/react-router';
 
 export const middleware: Route.MiddlewareFunction[] = [yapyakMiddleware];
 
 export default function Root() {
   const [locale] = useLocale();
+  const textDirection = useTextDirection();
   return (
-    <html lang={locale}>
+    <html lang={locale} dir={textDirection}>
       <head>{/* ... */}</head>
       <body>
         <Outlet />
@@ -979,7 +980,7 @@ On React Router 7.9 through 7.x, middleware is opt-in. Enable it with `future: {
 {% /callout %}
 {% /when %}
 {% when value="tanstack-start" %}
-Register yapyak's middleware in your start entry, and read the locale through [`useLocale()`](/reference/react/useLocale) in your root route for `<html lang>`:
+Register yapyak's middleware in your start entry. Read the locale through [`useLocale()`](/reference/react/useLocale) and the text direction through [`useTextDirection()`](/reference/react/useTextDirection) in your root route. Render them as `<html lang>` and `<html dir>`:
 
 ```ts [src/start.ts]
 import { createStart } from '@tanstack/react-start';
@@ -991,12 +992,13 @@ export const startInstance = createStart(() => ({
 ```
 
 ```tsx [src/routes/__root.tsx]
-import { useLocale } from '@yapyak/react';
+import { useLocale, useTextDirection } from '@yapyak/react';
 
 function Root() {
   const [locale] = useLocale();
+  const textDirection = useTextDirection();
   return (
-    <html lang={locale}>
+    <html lang={locale} dir={textDirection}>
       <head>{/* ... */}</head>
       <body>{/* ... */}</body>
     </html>
@@ -1038,19 +1040,19 @@ Replace `<html lang>` and `<html dir>` with yapyak's placeholders:
 {% /when %}
 
 {% when value="astro" %}
-Set `<html lang>` via [`getLocale()`](/reference/yapyak/getLocale) in your layout:
+Set `<html lang>` via [`getLocale()`](/reference/yapyak/getLocale) in your layout. [`getTextDirection()`](/reference/yapyak/getTextDirection) derives `<html dir>` from it:
 
 ```astro [src/layouts/Layout.astro]
 ---
-import { getLocale } from 'yapyak';
+import { getLocale, getTextDirection } from 'yapyak';
 ---
-<html lang={getLocale()}>
+<html lang={getLocale()} dir={getTextDirection(getLocale())}>
   <head><slot name="head" /></head>
   <body><slot /></body>
 </html>
 ```
 
-Every navigation re-runs the middleware and re-renders the layout, so `<html lang>` stays correct on full page loads.
+Every navigation re-runs the middleware and re-renders the layout, so `<html lang>` and `<html dir>` stay correct on full page loads.
 {% /when %}
 
 {% /switch %}
