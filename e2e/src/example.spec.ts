@@ -229,6 +229,7 @@ test('renders Swedish content when the server switch is clicked', async ({
   );
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'sv');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
 });
 
 test('renders Swedish content for `/sv`', async ({ page, persistence }) => {
@@ -247,6 +248,7 @@ async function validateContent(page: Page, locale: 'en' | 'sv'): Promise<void> {
     }),
   ).toHaveText(heading);
   await expect(page.locator('html')).toHaveAttribute('lang', locale);
+  await expect(page.locator('html')).toHaveAttribute('dir', 'ltr');
   for (const { count, text } of texts) {
     await expect(
       page.getByText(text, {
