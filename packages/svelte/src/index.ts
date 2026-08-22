@@ -14,3 +14,4 @@ export type { RichTextProps } from './rich-text';
 
 export { locale } from './locale.svelte';
 export { default as RichText } from './rich-text.svelte';
+export { textDirection } from './text-direction';
