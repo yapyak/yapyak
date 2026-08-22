@@ -48,9 +48,9 @@ describe('expandSourcePlaceholders', () => {
     expect(types(result)).toEqual([
       't-source',
       't-source',
-      'punct',
-      't-placeholder',
-      'punct',
+      'icu-punctuation',
+      'icu-placeholder',
+      'icu-punctuation',
       't-source',
     ]);
     expect(values(result)).toEqual([
@@ -69,13 +69,13 @@ describe('expandSourcePlaceholders', () => {
     ]);
     expect(types(result)).toEqual([
       't-source',
-      'punct',
-      't-placeholder',
-      'punct',
+      'icu-punctuation',
+      'icu-placeholder',
+      'icu-punctuation',
       't-source',
-      'punct',
-      't-placeholder',
-      'punct',
+      'icu-punctuation',
+      'icu-placeholder',
+      'icu-punctuation',
       't-source',
     ]);
     expect(values(result)).toEqual([
@@ -108,18 +108,20 @@ describe('expandSourcePlaceholders', () => {
     const result = expandSourcePlaceholders([
       sourceToken("'{count, plural, one {item} other {items}}'"),
     ]);
-    expect(types(result)).toContain('t-placeholder');
-    expect(types(result)).toContain('t-icu-keyword');
-    expect(types(result)).toContain('t-icu-key');
+    expect(types(result)).toContain('icu-placeholder');
+    expect(types(result)).toContain('icu-keyword');
+    expect(types(result)).toContain('icu-branch');
 
-    const keyword = result.find((token) => token.kind === 't-icu-keyword');
+    const keyword = result.find((token) => token.kind === 'icu-keyword');
     expect(keyword?.value).toBe('plural');
 
-    const placeholder = result.find((token) => token.kind === 't-placeholder');
+    const placeholder = result.find(
+      (token) => token.kind === 'icu-placeholder',
+    );
     expect(placeholder?.value).toBe('count');
 
     const keys = result
-      .filter((token) => token.kind === 't-icu-key')
+      .filter((token) => token.kind === 'icu-branch')
       .map((token) => token.value);
     expect(keys).toEqual([
       'one',
@@ -131,11 +133,11 @@ describe('expandSourcePlaceholders', () => {
     const result = expandSourcePlaceholders([
       sourceToken("'{gender, select, male {he} female {she} other {they}}'"),
     ]);
-    const keyword = result.find((token) => token.kind === 't-icu-keyword');
+    const keyword = result.find((token) => token.kind === 'icu-keyword');
     expect(keyword?.value).toBe('select');
 
     const keys = result
-      .filter((token) => token.kind === 't-icu-key')
+      .filter((token) => token.kind === 'icu-branch')
       .map((token) => token.value);
     expect(keys).toEqual([
       'male',
@@ -144,11 +146,11 @@ describe('expandSourcePlaceholders', () => {
     ]);
   });
 
-  it('marks the hash sign inside a branch as t-icu-hash', () => {
+  it('marks the hash sign inside a branch as icu-pound', () => {
     const result = expandSourcePlaceholders([
       sourceToken("'{count, plural, one {# item} other {# items}}'"),
     ]);
-    const hashes = result.filter((token) => token.kind === 't-icu-hash');
+    const hashes = result.filter((token) => token.kind === 'icu-pound');
     expect(hashes).toHaveLength(2);
     expect(hashes[0]?.value).toBe('#');
   });
@@ -158,7 +160,7 @@ describe('expandSourcePlaceholders', () => {
       sourceToken("'{count, plural, =0 {none} =1 {one} other {many}}'"),
     ]);
     const keys = result
-      .filter((token) => token.kind === 't-icu-key')
+      .filter((token) => token.kind === 'icu-branch')
       .map((token) => token.value);
     expect(keys).toEqual([
       '=0',
@@ -174,7 +176,7 @@ describe('expandSourcePlaceholders', () => {
       ),
     ]);
     const placeholders = result
-      .filter((token) => token.kind === 't-placeholder')
+      .filter((token) => token.kind === 'icu-placeholder')
       .map((token) => token.value);
     expect(placeholders).toEqual([
       'count',
@@ -186,15 +188,19 @@ describe('expandSourcePlaceholders', () => {
     const result = expandSourcePlaceholders([
       sourceToken("'{price, number, ::currency/USD}'"),
     ]);
-    const keyword = result.find((token) => token.kind === 't-icu-keyword');
+    const keyword = result.find((token) => token.kind === 'icu-keyword');
     expect(keyword?.value).toBe('number');
   });
 
-  it('preserves an unmatched brace as plain t-source', () => {
+  it('marks an unmatched brace as an open slot', () => {
     const result = expandSourcePlaceholders([
       sourceToken("'broken {name'"),
     ]);
-    expect(result.some((token) => token.kind === 't-placeholder')).toBe(false);
+    const placeholder = result.find(
+      (token) => token.kind === 'icu-placeholder',
+    );
+    expect(placeholder?.value).toBe('name');
+    expect(placeholder?.slot).toBe('end');
   });
 
   it('preserves whitespace around ICU syntax via plain tokens', () => {
@@ -211,9 +217,61 @@ describe('expandSourcePlaceholders', () => {
     ]);
     expect(types(result)).toEqual([
       't-source',
-      'punct',
-      't-placeholder',
-      'punct',
+      'icu-punctuation',
+      'icu-placeholder',
+      'icu-punctuation',
+    ]);
+  });
+
+  it('marks the slot spanning a placeholder', () => {
+    const result = expandSourcePlaceholders([
+      sourceToken("'Hi {name}!'"),
+    ]);
+    expect(
+      result
+        .filter((token) => token.slot !== undefined)
+        .map((token) => [
+          token.value,
+          token.slot,
+        ]),
+    ).toEqual([
+      [
+        '{',
+        'start',
+      ],
+      [
+        'name',
+        'middle',
+      ],
+      [
+        '}',
+        'end',
+      ],
+    ]);
+  });
+
+  it('leaves text outside a slot unmarked', () => {
+    const result = expandSourcePlaceholders([
+      sourceToken("'Hi {name}'"),
+    ]);
+    const outside = result.filter((token) => token.slot === undefined);
+    expect(values(outside)).toEqual([
+      "'",
+      'Hi ',
+      "'",
+    ]);
+  });
+
+  it('marks tags inside a message', () => {
+    const result = expandSourcePlaceholders([
+      sourceToken("'Read <b>this</b>'"),
+    ]);
+    const tags = result
+      .filter((token) => token.kind === 'icu-tag')
+      .map((token) => token.value);
+    expect(tags).toEqual([
+      'b',
+      'b',
     ]);
   });
 

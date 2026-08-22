@@ -33,11 +33,12 @@ export type TokenKind =
   | 't-call'
   | 't-source'
   | 't-yapyak'
-  | 't-placeholder'
-  | 't-icu-keyword'
-  | 't-icu-key'
-  | 't-icu-hash'
-  | 't-tag'
+  | 'icu-punctuation'
+  | 'icu-placeholder'
+  | 'icu-keyword'
+  | 'icu-branch'
+  | 'icu-pound'
+  | 'icu-tag'
   | 'diff-add'
   | 'diff-remove'
   | 'diff-hunk'
@@ -47,7 +48,10 @@ export type TokenKind =
   | 'bash-package'
   | 'bash-placeholder';
 
+export type SlotPosition = 'start' | 'middle' | 'end' | 'only';
+
 export type Token = {
   kind: TokenKind;
+  slot?: SlotPosition;
   value: string;
 };

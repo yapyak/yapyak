@@ -10,7 +10,6 @@ import { markJsxMustaches } from './jsx-mustache';
 import { reclassifyJsxText } from './jsx-text';
 import { mergePlainTokens } from './plain-token';
 import { expandSourcePlaceholders } from './source-placeholder';
-import { expandSourceTags } from './source-tag';
 import { markSvelteBlocks } from './svelte-block';
 import { markTaggedTemplates } from './tagged-template';
 import { expandTemplateInterpolations } from './template-interpolation';
@@ -35,12 +34,10 @@ export function tokenize(code: string, language: Language) {
     return tokenizeYaml(code);
   }
   if (language === 'json') {
-    return expandSourceTags(expandSourcePlaceholders(tokenizeJson(code)));
+    return expandSourcePlaceholders(tokenizeJson(code));
   }
   if (language === 'translation') {
-    return expandSourceTags(
-      expandSourcePlaceholders(tokenizeTranslation(code)),
-    );
+    return expandSourcePlaceholders(tokenizeTranslation(code));
   }
   const tokens: Token[] = [];
   let index = 0;
@@ -79,7 +76,6 @@ export function tokenize(code: string, language: Language) {
     tokenize,
   );
   const icuExpanded = expandSourcePlaceholders(templateExpanded);
-  const tagExpanded = expandSourceTags(icuExpanded);
-  const bracketed = splitJsxBrackets(mergePlainTokens(tagExpanded));
+  const bracketed = splitJsxBrackets(mergePlainTokens(icuExpanded));
   return language === 'svelte' ? markSvelteBlocks(bracketed) : bracketed;
 }

@@ -70,25 +70,29 @@
       text-shadow: var(--shadow-brand-glow);
     }
 
-    &[data-kind="t-placeholder"] {
+    &[data-kind="icu-punctuation"] {
+      color: var(--foreground-softer);
+    }
+
+    &[data-kind="icu-placeholder"] {
       font-style: italic;
       color: var(--foreground);
     }
 
-    &[data-kind="t-icu-keyword"] {
+    &[data-kind="icu-keyword"] {
       color: var(--syntax-keyword);
     }
 
-    &[data-kind="t-icu-key"] {
+    &[data-kind="icu-branch"] {
       color: var(--syntax-literal);
     }
 
-    &[data-kind="t-icu-hash"] {
+    &[data-kind="icu-pound"] {
       color: var(--brand);
       text-shadow: var(--shadow-brand-glow);
     }
 
-    &[data-kind="t-tag"] {
+    &[data-kind="icu-tag"] {
       color: var(--syntax-jsx-tag);
     }
 
