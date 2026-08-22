@@ -469,7 +469,7 @@ Applies to `setTimeout`, `setInterval`, `clearTimeout`, `clearInterval`, `reques
 
 ### Language atoms
 
-- `readonly` is forbidden in types and array types. Exception: class properties assigned only in the constructor — Biome's `useReadonlyClassProperties` requires the modifier there. `Readonly<T>`, `ReadonlyMap<K, V>`, and `ReadonlySet<T>` are forbidden.
+- `readonly` is forbidden in types and array types. Exceptions: class properties assigned only in the constructor — Biome's `useReadonlyClassProperties` requires the modifier there — and accessor-only reactive bindings: a property implemented by a getter with no setter is declared `readonly`, and a ref created by Vue's `toRef(getter)` keeps its declared `Readonly<Ref<T>>` return type. `Readonly<T>`, `ReadonlyMap<K, V>`, and `ReadonlySet<T>` are otherwise forbidden.
 - `Array<T>` and `ReadonlyArray<T>` are forbidden. Use `T[]`. For unions and function types, wrap in parens: `(string | RegExp)[]`, `(() => void)[]`.
 - `as unknown as` is forbidden. Fix the type.
 - `as` to narrow to a literal union is forbidden. Write an `is*` typeguard.

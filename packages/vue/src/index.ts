@@ -14,3 +14,4 @@ export type { RichTextProps, RichTextSlots } from './rich-text';
 
 export { locale } from './locale';
 export { RichText } from './rich-text';
+export { textDirection } from './text-direction';
