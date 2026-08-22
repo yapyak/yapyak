@@ -1,5 +1,14 @@
 # @yapyak/ollama
 
+## 0.0.10
+
+### Patch Changes
+
+- [`93053a1`](https://github.com/yapyak/yapyak/commit/93053a1c0d039a2906593ab7b4c4e86d65b6bfa5) Thanks [@qwuide](https://github.com/qwuide)! - Move `examples` from `defineConfig` to the translator. Everything that shapes what a translator receives — `context`, `voice`, `glossary` — is a translator option, while the example count sat in `defineConfig` and the config layer reached into `translator.context` to pick its default. `examples` is now an option on the shipped translators and on `createTranslator`: `anthropic({ apiKey, examples: 5 })`. The default is unchanged: `5`, or `0` when the translator's `context` is `'none'`. Setting `examples` in `defineConfig` is a type error now; move the value into the translator's options. Migration steps are in BREAKING.md.
+
+- Updated dependencies [[`7b7d19b`](https://github.com/yapyak/yapyak/commit/7b7d19b488e9e83ad251be03946568864c48933a), [`ebcf3f0`](https://github.com/yapyak/yapyak/commit/ebcf3f0e04264fd00520bac2275fc285d101f353), [`b7852de`](https://github.com/yapyak/yapyak/commit/b7852deef88c33949d9165e1e8466ec4d6aa401a), [`93053a1`](https://github.com/yapyak/yapyak/commit/93053a1c0d039a2906593ab7b4c4e86d65b6bfa5), [`287e33e`](https://github.com/yapyak/yapyak/commit/287e33ed8f526beda2d0c195a0d80d911fea4e54)]:
+  - yapyak@0.0.10
+
 ## 0.0.9
 
 ### Patch Changes

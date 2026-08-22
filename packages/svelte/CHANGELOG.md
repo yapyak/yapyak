@@ -1,5 +1,16 @@
 # @yapyak/svelte
 
+## 0.0.10
+
+### Patch Changes
+
+- [`1cd62df`](https://github.com/yapyak/yapyak/commit/1cd62df1a5bd6d6604dbbb15ecc343681ffda096) Thanks [@qwuide](https://github.com/qwuide)! - Supply the enclosing attribute name from template attributes. A `t()` call in an attribute expression — `title={t('Save changes')}` — now carries `title` as call-site context; element content carries nothing.
+
+- [`a06c652`](https://github.com/yapyak/yapyak/commit/a06c652c365be0d2c8df49f8c3aab16ffa7bd543) Thanks [@qwuide](https://github.com/qwuide)! - Add a `textDirection` store holding the text direction of the current locale as a reactive read-only value, next to `locale`. Binding `dir` in a component previously meant deriving the direction manually; `textDirection.current` recomputes on every read, so it stays correct per request during SSR and tracks locale switches on the client.
+
+- Updated dependencies [[`7b7d19b`](https://github.com/yapyak/yapyak/commit/7b7d19b488e9e83ad251be03946568864c48933a), [`ebcf3f0`](https://github.com/yapyak/yapyak/commit/ebcf3f0e04264fd00520bac2275fc285d101f353), [`b7852de`](https://github.com/yapyak/yapyak/commit/b7852deef88c33949d9165e1e8466ec4d6aa401a), [`93053a1`](https://github.com/yapyak/yapyak/commit/93053a1c0d039a2906593ab7b4c4e86d65b6bfa5), [`287e33e`](https://github.com/yapyak/yapyak/commit/287e33ed8f526beda2d0c195a0d80d911fea4e54)]:
+  - yapyak@0.0.10
+
 ## 0.0.9
 
 ### Patch Changes
