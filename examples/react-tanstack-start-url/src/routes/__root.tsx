@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
-import { useLocale } from '@yapyak/react';
+import { useLocale, useTextDirection } from '@yapyak/react';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -22,9 +22,13 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: ReactNode }) {
+  const textDirection = useTextDirection();
   const [locale] = useLocale();
   return (
-    <html lang={locale}>
+    <html
+      dir={textDirection}
+      lang={locale}
+    >
       <head>
         <HeadContent />
       </head>

@@ -1,8 +1,8 @@
 ---
-import { getLocale } from 'yapyak';
+import { getLocale, getTextDirection } from 'yapyak';
 ---
 
-<html lang={getLocale()}>
+<html dir={getTextDirection(getLocale())} lang={getLocale()}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

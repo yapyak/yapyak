@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Route } from './+types/root';
 
-import { useLocale } from '@yapyak/react';
+import { useLocale, useTextDirection } from '@yapyak/react';
 import { middleware as yapyakMiddleware } from '@yapyak/react-router';
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from 'react-router';
 
@@ -10,10 +10,14 @@ export const middleware: Route.MiddlewareFunction[] = [
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
+  const textDirection = useTextDirection();
   const [locale] = useLocale();
 
   return (
-    <html lang={locale}>
+    <html
+      dir={textDirection}
+      lang={locale}
+    >
       <head>
         <meta charSet="utf-8" />
         <meta
