@@ -1,10 +1,5 @@
 export type { YapCode } from '../diagnostic';
 export type {
-  Template,
-  TemplateToken,
-  TemplateTokenKind,
-} from '../template/internal';
-export type {
   CatalogEntry,
   DiscoverLocalesResult,
   LocaleContext,
@@ -26,7 +21,6 @@ export type { ParsedMessage, Placeholder } from './placeholder';
 
 export { YAP_COMPILE, YAP_RUNTIME, getDocsUrl } from '../diagnostic';
 export { fromMessageKey, toMessageKey } from '../message-key';
-export { parseTemplate, tokenizeTemplate } from '../template/internal';
 export {
   CorruptLocaleFileError,
   CorruptOrphanCacheError,
