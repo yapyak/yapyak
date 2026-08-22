@@ -1,6 +1,6 @@
-import type { Template, TemplateNode } from '../../../../template';
+import type { Template, TemplateNode } from '../../../../template/internal';
 
-import { parseTemplate } from '../../../../template';
+import { parseTemplate } from '../../../../template/internal';
 
 export type PickLocaleTextInput = {
   defaultLocale: string;

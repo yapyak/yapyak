@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { parseTemplate } from '../../../../template';
+import { parseTemplate } from '../../../../template/internal';
 import {
   buildVariantsLiteral,
   isStaticTemplate,

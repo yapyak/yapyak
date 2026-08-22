@@ -2,9 +2,9 @@ import type {
   MalformedDiagnostic,
   Placeholder,
   TemplateDiagnostic,
-} from '../template';
+} from '../template/internal';
 
-import { extractPlaceholders, parseTemplate } from '../template';
+import { extractPlaceholders, parseTemplate } from '../template/internal';
 
 export type { MalformedDiagnostic, Placeholder, TemplateDiagnostic };
 

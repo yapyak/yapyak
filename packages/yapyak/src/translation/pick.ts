@@ -1,7 +1,7 @@
-import type { Template } from '../template';
+import type { Template } from '../template/internal';
 
 import { defaultLocale, getLocale, getLocaleFallbackChain } from '../locale';
-import { interpret } from '../template';
+import { interpret } from '../template/internal';
 import { runTrackers } from '../tracker';
 
 export type Variants = Record<string, string | Template>;

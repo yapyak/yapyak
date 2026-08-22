@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetLocale, setLocale } from '../locale';
-import { literal, placeholder } from '../template';
+import { literal, placeholder } from '../template/internal';
 import { pick } from './pick';
 
 beforeEach(() => {

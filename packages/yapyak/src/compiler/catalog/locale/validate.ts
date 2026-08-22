@@ -1,4 +1,4 @@
-import type { Template } from '../../../template';
+import type { Template } from '../../../template/internal';
 import type { Diagnostic, ExtractedMessage } from '../../parser';
 import type { Placeholder } from '../../placeholder';
 import type { ParseEntryError } from './file';
@@ -6,7 +6,7 @@ import type { ParseEntryError } from './file';
 import { buildDiagnostic } from '../../../diagnostic';
 import { toMessageKey } from '../../../message-key';
 import { resolvePluralCategories } from '../../../plural-category';
-import { parseTemplate } from '../../../template';
+import { parseTemplate } from '../../../template/internal';
 import { classifyNames } from '../../name';
 import { findMalformedIssue, parsePlaceholders } from '../../placeholder';
 import { stripBom } from './bom';

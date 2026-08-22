@@ -26,6 +26,6 @@ export {
   plural,
   select,
   time,
-} from './template';
+} from './template/internal';
 export { autoRegisterTracker } from './tracker';
 export { pick, walkRichText } from './translation';

@@ -1,4 +1,4 @@
-import type { Template } from './template';
+import type { Template } from './template/internal';
 
 import { setVariant } from './dev-store';
 
