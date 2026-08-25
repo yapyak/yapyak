@@ -24,8 +24,10 @@ An internal package does not need a `/internal` subpath — the whole package IS
 | Level | Where it lives | Reachable via |
 |---|---|---|
 | **Public** | `src/index.ts` re-exports | Main `package.json exports`: `"."` |
+| **Public, domain-scoped** | `src/<domain>/index.ts` re-exports, listed in `exports` | Subpath: `"./<domain>"` |
 | **Cross-package semi-public** | `src/internal.ts` re-exports | Subpath: `"./internal"` |
-| **Intra-package semi-public** | Domain folder barrel only (`src/<domain>/index.ts`) | Relative imports inside `src/` |
+| **Cross-package semi-public, domain-scoped** | `src/<domain>/internal.ts` re-exports | Subpath: `"./<domain>/internal"` |
+| **Intra-package semi-public** | `src/<domain>/index.ts` re-exports, absent from `exports` | Relative imports inside `src/` |
 | **Private** | Never exported from any barrel | – |
 
 ### Default to NOT exposing
@@ -75,6 +77,8 @@ import { sharedHelper } from '@yourscope/foo/internal';
 
 The `/internal` suffix in the import path IS the boundary signal. Packages without cross-package semi-public material do not need an `/internal` entry.
 
+A domain whose only surface is `/internal` has no `index.ts`.
+
 ### Intra-package semi-public — domain barrel
 
 Symbols used by other files in the same package but not by external users export from their domain folder's barrel — never from `src/index.ts` or `src/internal.ts`:
@@ -89,15 +93,15 @@ export { resetLocale } from './store';
 import { resetLocale } from '../locale';
 ```
 
-The domain barrel is intrinsically private — not listed in `package.json exports`, unreachable from outside the package.
+A domain barrel absent from `package.json exports` is unreachable from outside the package.
 
 ### Decision flow
 
 Classify by the widest consumer. First match wins.
 
-1. An external user → `src/index.ts` (the `.` entry).
-2. A sibling package, not external → `src/internal.ts` (reached via the `./internal` subpath).
-3. 2+ files in this package only → export from the domain barrel.
+1. An external user → `src/index.ts`, or `src/<domain>/index.ts` listed in `exports`.
+2. Any consumer outside this package that is not an external user — a sibling package, or code the compiler emits → `src/internal.ts`, or `src/<domain>/internal.ts`.
+3. 2+ files in this package only → export from the domain barrel, absent from `exports`.
 4. One file only → keep unexported.
 
 Wiring a new subpath's `package.json exports` + `tsdown` `entry`: see [[yapyak-package]].
