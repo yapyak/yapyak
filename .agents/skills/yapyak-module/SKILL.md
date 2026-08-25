@@ -65,9 +65,9 @@ Splitting is allowed only when at least one candidate has 1+ trigger AND no forb
 A folder exists when at least one is true:
 
 1. 2+ files share a concept — the folder name describes the shared concept.
-2. The folder is a public subpath, exposed via `package.json` `exports`.
+2. The folder is a subpath, exposed via `package.json` `exports`.
 
-A folder always has an `index.ts` barrel. Cross-folder imports go through the barrel.
+A folder has a barrel — `index.ts`, `internal.ts`, or both; choosing between them: see [[yapyak-visibility]]. Cross-folder imports go through the barrel.
 
 Single-file concepts do not get folders. A standalone `parser.ts` stays a file until a second file joins it.
 

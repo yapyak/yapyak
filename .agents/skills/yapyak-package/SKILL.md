@@ -184,7 +184,7 @@ export default defineConfig({
 
 #### Entry-point convention
 
-Every `entry` corresponds to a public subpath in `exports` (or a `bin`). 1:1 mapping.
+Every `entry` corresponds to a subpath in `exports` (or a `bin`). 1:1 mapping.
 
 ```ts
 entry: [
@@ -195,7 +195,7 @@ entry: [
 ];
 ```
 
-Adding a public subpath → add to BOTH `entry` AND `exports` in the same change.
+Adding a subpath → add to BOTH `entry` AND `exports` in the same change.
 
 #### `deps.neverBundle` — externalizing
 
