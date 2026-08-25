@@ -1,11 +1,12 @@
 import type { Diagnostic } from 'vscode';
 
-import { DiagnosticTag, commands, languages } from 'vscode';
+import { DiagnosticTag, commands } from 'vscode';
 
 import { openDocument } from './document';
 import { FIXTURE_ROOT } from './fixture-root';
 import { toPosition } from './position';
 import { waitFor } from './wait';
+import { getYapyakDiagnostics } from './yapyak-diagnostic';
 import { strict as assert } from 'node:assert';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
@@ -19,7 +20,7 @@ function toCode(diagnostic: Diagnostic): string {
 test('emits a misspelled-placeholder and an unused-entry diagnostic for a locale file', async () => {
   const { document } = await openDocument('locales/sv.json');
   const diagnostics = await waitFor(
-    () => languages.getDiagnostics(document.uri),
+    () => getYapyakDiagnostics(document.uri),
     (value) => value.length >= 2,
   );
 
@@ -32,7 +33,7 @@ test('emits a misspelled-placeholder and an unused-entry diagnostic for a locale
 test('marks the unused entry as unnecessary', async () => {
   const { document } = await openDocument('locales/sv.json');
   const diagnostics = await waitFor(
-    () => languages.getDiagnostics(document.uri),
+    () => getYapyakDiagnostics(document.uri),
     (value) => value.length >= 2,
   );
   const unused = diagnostics.find(
@@ -53,7 +54,7 @@ test('emits a missing-param diagnostic while a source file is edited', async () 
     edit.insert(anchor, "{t('Hi {name}')}\n      ");
   });
   const diagnostics = await waitFor(
-    () => languages.getDiagnostics(document.uri),
+    () => getYapyakDiagnostics(document.uri),
     (value) => value.length > 0,
   );
 
@@ -78,7 +79,7 @@ suite('diagnostic', () => {
   test('drops the unused-entry diagnostic when the source file gains the call on disk', async () => {
     const { document } = await openDocument('locales/sv.json');
     await waitFor(
-      () => languages.getDiagnostics(document.uri),
+      () => getYapyakDiagnostics(document.uri),
       (value) => value.map(toCode).includes('YAP0053'),
     );
 
@@ -87,7 +88,7 @@ suite('diagnostic', () => {
       original.replace("{t('Hello')}", "{t('Hello')}\n      {t('Cancel')}"),
     );
     const diagnostics = await waitFor(
-      () => languages.getDiagnostics(document.uri),
+      () => getYapyakDiagnostics(document.uri),
       (value) => !value.map(toCode).includes('YAP0053'),
     );
 

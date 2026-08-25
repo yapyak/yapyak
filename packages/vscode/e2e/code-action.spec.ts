@@ -1,10 +1,11 @@
 import type { CodeAction } from 'vscode';
 
-import { commands, languages, workspace } from 'vscode';
+import { commands, workspace } from 'vscode';
 
 import { openDocument } from './document';
 import { toPosition } from './position';
 import { waitFor } from './wait';
+import { getYapyakDiagnostics } from './yapyak-diagnostic';
 import { strict as assert } from 'node:assert';
 
 async function collectActions(
@@ -13,7 +14,7 @@ async function collectActions(
 ): Promise<CodeAction[]> {
   const { document } = await openDocument(path);
   await waitFor(
-    () => languages.getDiagnostics(document.uri),
+    () => getYapyakDiagnostics(document.uri),
     (value) => value.length >= 2,
   );
   const position = toPosition(document, needle);
