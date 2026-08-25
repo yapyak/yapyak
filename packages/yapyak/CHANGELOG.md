@@ -1,5 +1,13 @@
 # yapyak
 
+## 0.0.11
+
+### Patch Changes
+
+- [`3cccfd0`](https://github.com/yapyak/yapyak/commit/3cccfd0bf301d10d3ad4eb25a95dfdbf26b33e9c) Thanks [@qwuide](https://github.com/qwuide)! - Export the template layer from `yapyak/template/internal`. `tokenizeTemplate`, `parseTemplate` and their types were reachable only from `yapyak/compiler/internal`, which pulls the catalog and parser code in with them; the new entry carries them on their own, and `yapyak/compiler/internal` exports the same symbols as before.
+
+- [`c6798e7`](https://github.com/yapyak/yapyak/commit/c6798e73a04279f6732aad0d6649e9c2e685c03f) Thanks [@qwuide](https://github.com/qwuide)! - Drop the template re-exports from `yapyak/compiler/internal`. `parseTemplate`, `tokenizeTemplate` and the `Template`, `TemplateToken` and `TemplateTokenKind` types were reachable from both that entry and `yapyak/template/internal`; they now live at the template entry alone.
+
 ## 0.0.10
 
 ### Patch Changes
