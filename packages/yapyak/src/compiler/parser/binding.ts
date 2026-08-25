@@ -32,7 +32,7 @@ type WalkContext = {
 
 export const YAPYAK_MODULE = 'yapyak';
 export const YAPYAK_INTERNAL_MODULE = 'yapyak/internal';
-export const YAPYAK_DEV_MODULE = 'yapyak/dev';
+export const YAPYAK_DEV_INTERNAL_MODULE = 'yapyak/dev/internal';
 export const RUNTIME_NAME = 't';
 
 export function resolveBindings(

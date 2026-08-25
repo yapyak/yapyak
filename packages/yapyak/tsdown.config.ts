@@ -16,7 +16,7 @@ export default defineConfig({
     'src/compiler/internal.ts',
     'src/config/index.ts',
     'src/config/internal.ts',
-    'src/dev/index.ts',
+    'src/dev/internal.ts',
     'src/processor/index.ts',
     'src/processor/internal.ts',
     'src/template/internal.ts',

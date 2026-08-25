@@ -14,7 +14,7 @@ import type {
 import MagicString from 'magic-string';
 
 import { segmentsFromOffset } from '../../../processor';
-import { YAPYAK_DEV_MODULE, YAPYAK_INTERNAL_MODULE } from '../binding';
+import { YAPYAK_DEV_INTERNAL_MODULE, YAPYAK_INTERNAL_MODULE } from '../binding';
 import { validateFragments } from '../fragment';
 import { resolveProcessor } from '../processor';
 import { renderCallReplacement } from './transform/call-replacement';
@@ -264,7 +264,7 @@ export function transformFile(
   }
   if (localeFilePaths !== undefined && variantsByKey.size > 0) {
     injectionLines.push(
-      `import { registerLocaleFileSource as ${registerLocaleFileSourceLocal} } from '${YAPYAK_DEV_MODULE}';`,
+      `import { registerLocaleFileSource as ${registerLocaleFileSourceLocal} } from '${YAPYAK_DEV_INTERNAL_MODULE}';`,
       `${registerLocaleFileSourceLocal}(${JSON.stringify(localeFilePaths)});`,
     );
   }

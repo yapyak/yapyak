@@ -39,9 +39,9 @@
       "types": "./dist/config/internal.d.ts",
       "default": "./dist/config/internal.js"
     },
-    "./dev": {
-      "types": "./dist/dev/index.d.ts",
-      "default": "./dist/dev/index.js"
+    "./dev/internal": {
+      "types": "./dist/dev/internal.d.ts",
+      "default": "./dist/dev/internal.js"
     },
     "./internal": {
       "types": "./dist/internal.d.ts",

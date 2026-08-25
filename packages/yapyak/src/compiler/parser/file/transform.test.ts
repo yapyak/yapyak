@@ -1374,7 +1374,7 @@ describe('transformFile', () => {
           "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
       });
       expect(code).toContain(
-        "import { registerLocaleFileSource as _registerLocaleFileSource } from 'yapyak/dev';",
+        "import { registerLocaleFileSource as _registerLocaleFileSource } from 'yapyak/dev/internal';",
       );
       expect(code).toContain(
         '_registerLocaleFileSource({"en":"/project/locales/en.json","sv":"/project/locales/sv.json"});',

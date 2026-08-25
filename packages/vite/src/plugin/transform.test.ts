@@ -225,7 +225,7 @@ describe('createTransformPlugin', () => {
       );
 
       expect(result?.code).toContain(
-        `import { registerLocaleFileSource as _registerLocaleFileSource } from 'yapyak/dev';`,
+        `import { registerLocaleFileSource as _registerLocaleFileSource } from 'yapyak/dev/internal';`,
       );
       expect(result?.code).toContain(
         JSON.stringify({
