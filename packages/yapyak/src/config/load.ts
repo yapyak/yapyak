@@ -5,6 +5,7 @@ import { createJiti } from 'jiti';
 
 import { normalizeYapyakConfig } from './normalize';
 import { existsSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import { resolve } from 'node:path';
 import { loadEnvFile } from 'node:process';
 
@@ -48,6 +49,11 @@ export async function loadYapyakConfig(
       continue;
     }
     const jiti = createJiti(cwd, {
+      alias: {
+        'yapyak/config': createRequire(import.meta.url).resolve(
+          'yapyak/config',
+        ),
+      },
       interopDefault: true,
       moduleCache: false,
     });

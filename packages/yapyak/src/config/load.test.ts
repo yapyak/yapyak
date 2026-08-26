@@ -36,6 +36,15 @@ describe('loadYapyakConfig', () => {
     expect(result.config.localesDir).toBe('lang');
   });
 
+  it('resolves `yapyak/config` imports from the loading yapyak', async () => {
+    writeFileSync(
+      join(cwd, 'yapyak.config.ts'),
+      `import { defineConfig } from 'yapyak/config';\n\nexport default defineConfig({ defaultLocale: 'sv' });\n`,
+    );
+    const result = await loadYapyakConfig(cwd);
+    expect(result.config.defaultLocale).toBe('sv');
+  });
+
   it('loads a config from named exports when no `default` export exists', async () => {
     writeFileSync(
       join(cwd, 'yapyak.config.mjs'),
