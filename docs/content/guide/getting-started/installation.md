@@ -1071,12 +1071,6 @@ Tell TypeScript about yapyak's generated types:
 {% /else %}
 {% /switch %}
 
-Ignore yapyak's cache directory:
-
-```diff [.gitignore]
-+.yapyak
-```
-
 ## Add your first locale
 
 Pick a target language and create its locale file in [`localesDir`](/guide/getting-started/configuration#localesdir) (`locales/` by default). Any [BCP 47 tag](/guide/switching/tags) works:
