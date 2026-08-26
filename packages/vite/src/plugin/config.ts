@@ -23,7 +23,7 @@ export function createConfigPlugin(state: State): Plugin {
     async config(userConfig: UserConfig): Promise<UserConfig> {
       const result = await loadOnce(
         loads,
-        resolve(userConfig.root ?? process.cwd()),
+        state.rootOverride ?? resolve(userConfig.root ?? process.cwd()),
       );
       return {
         optimizeDeps: {
@@ -39,7 +39,7 @@ export function createConfigPlugin(state: State): Plugin {
       };
     },
     async configResolved(config: ResolvedConfig): Promise<void> {
-      state.projectRoot = config.root;
+      state.projectRoot = state.rootOverride ?? config.root;
       state.yapyakDir = join(state.projectRoot, '.yapyak');
       state.command = config.command;
       state.logger = config.logger;

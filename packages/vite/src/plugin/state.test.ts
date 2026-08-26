@@ -50,6 +50,19 @@ describe('createState', () => {
     expect(state.yapyakDir).toBe('');
   });
 
+  it('resolves the `root` option into `projectRoot` and `rootOverride`', () => {
+    const state = createState({
+      root: '/tmp/project',
+    });
+    expect(state.projectRoot).toBe('/tmp/project');
+    expect(state.rootOverride).toBe('/tmp/project');
+  });
+
+  it('leaves `rootOverride` unset without the `root` option', () => {
+    const state = createState();
+    expect(state.rootOverride).toBeUndefined();
+  });
+
   it('preserves the `fixedLocale` from options', () => {
     const state = createState({
       fixedLocale: 'sv',

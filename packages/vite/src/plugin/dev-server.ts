@@ -64,6 +64,9 @@ export function createDevServerPlugin(state: State): Plugin {
       if (state.configFile !== undefined) {
         server.watcher.add(state.configFile);
       }
+      server.watcher.add(
+        join(state.projectRoot, getNormalized(state).localesDir),
+      );
 
       const pendingActionByFileId = new Map<string, 'add' | 'unlink'>();
       const flush = debounce(

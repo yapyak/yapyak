@@ -3,6 +3,8 @@ import type { Diagnostic, ExtractedMessage } from 'yapyak/compiler/internal';
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 import type { LocaleResolver } from '../locale-resolver';
 
+import { resolve } from 'node:path';
+
 export type State = {
   autoTranslateController?: AbortController;
   command: 'build' | 'serve';
@@ -23,12 +25,14 @@ export type State = {
   normalized?: NormalizedYapyakConfig;
   projectRoot: string;
   resolver?: LocaleResolver;
+  rootOverride?: string;
   teardownCallbacks: (() => void)[];
   yapyakDir: string;
 };
 
 export type CreateStateOptions = {
   fixedLocale?: string;
+  root?: string;
 };
 
 export function createState(options: CreateStateOptions = {}): State {
@@ -41,7 +45,11 @@ export function createState(options: CreateStateOptions = {}): State {
     }),
     logger: createConsoleLogger(),
     messagesByFile: new Map(),
-    projectRoot: process.cwd(),
+    projectRoot:
+      options.root === undefined ? process.cwd() : resolve(options.root),
+    ...(options.root !== undefined && {
+      rootOverride: resolve(options.root),
+    }),
     teardownCallbacks: [],
     yapyakDir: '',
   };

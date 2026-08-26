@@ -101,6 +101,29 @@ describe('createDevServerPlugin', () => {
     });
   });
 
+  it('watches the locales directory outside the bundler root', () => {
+    const state = buildState(projectRoot);
+    const watched: string[] = [];
+    const plugin = createDevServerPlugin(state);
+    const configureServer = plugin.configureServer as ConfigureServerHook;
+    configureServer({
+      moduleGraph: {
+        invalidateAll: () => {},
+      },
+      watcher: {
+        add: (path) => {
+          watched.push(path);
+        },
+        on: () => {},
+      },
+      ws: {
+        send: () => {},
+      },
+    });
+
+    expect(watched).toContain(join(projectRoot, 'locales'));
+  });
+
   it('warns when a changed locale file cannot be read', () => {
     const state = buildState(projectRoot);
     const warn = vi.spyOn(state.logger, 'warn').mockImplementation(() => {});
