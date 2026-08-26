@@ -11,6 +11,7 @@
   },
   "extends": "@yapyak/typescript-config/library",
   "include": [
-    "*.ts"
+    "*.ts",
+    "one-package/*.ts"
   ]
 }

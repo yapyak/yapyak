@@ -3,7 +3,8 @@
   "ignore": [
     "packages/yapyak/src/compiler/parser/fixture/**",
     "examples/svelte-sveltekit-*/vite.config.ts",
-    "packages/vscode/e2e/fixture/**"
+    "packages/vscode/e2e/fixture/**",
+    "packages/vscode/e2e/one-package/fixture/**"
   ],
   "workspaces": {
     "packages/astro": {
@@ -14,6 +15,7 @@
     "packages/vscode": {
       "entry": [
         "e2e/*.spec.ts",
+        "e2e/one-package/*.spec.ts",
         "scripts/*.mjs",
         ".vscode-test.mjs"
       ],

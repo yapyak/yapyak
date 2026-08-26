@@ -247,6 +247,8 @@
     {
       "includes": [
         "packages/vscode/e2e/*.ts",
+        "packages/vscode/e2e/one-package/*.ts",
+        "packages/vscode/e2e/one-package/fixture/**",
         "packages/vscode/src/**"
       ],
       "linter": {
@@ -259,7 +261,8 @@
     },
     {
       "includes": [
-        "packages/vscode/e2e/*.spec.ts"
+        "packages/vscode/e2e/*.spec.ts",
+        "packages/vscode/e2e/one-package/*.spec.ts"
       ],
       "javascript": {
         "globals": [

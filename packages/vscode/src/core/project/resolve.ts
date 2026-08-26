@@ -1,6 +1,6 @@
 import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -18,6 +18,8 @@ export type Project = {
   root: string;
   template: TemplateModule | undefined;
 };
+
+export type ResolveIdFn = (base: string, id: string) => string;
 
 const CONFIG_FILES = [
   'yapyak.config.ts',
@@ -62,6 +64,28 @@ export function findProjectRoot(directory: string): string | undefined {
   return undefined;
 }
 
+export function resolveThroughScope(
+  root: string,
+  id: string,
+  resolve: ResolveIdFn,
+): string {
+  const anchor = join(root, 'package.json');
+  try {
+    return resolve(anchor, id);
+  } catch {
+    const names = readScopedDependencyNames(anchor);
+    for (const name of names) {
+      try {
+        return resolve(resolve(anchor, name), id);
+      } catch {}
+    }
+    throw new Error(
+      `[yapyak] Cannot resolve '${id}' from ${root}. ` +
+        'Install yapyak in the project, or a @yapyak package that ships it.',
+    );
+  }
+}
+
 type ProjectModules = {
   compiler: CompilerModule;
   configModule: ConfigModule;
@@ -79,10 +103,42 @@ function resolveModules(root: string): Promise<ProjectModules> {
   return cached;
 }
 
+function readScopedDependencyNames(anchor: string): string[] {
+  let manifest: {
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+  };
+  try {
+    manifest = JSON.parse(readFileSync(anchor, 'utf8')) as typeof manifest;
+  } catch {
+    return [];
+  }
+  const names = new Set([
+    ...Object.keys(manifest.dependencies ?? {}),
+    ...Object.keys(manifest.devDependencies ?? {}),
+  ]);
+  return [
+    ...names,
+  ]
+    .filter((name) => name.startsWith('@yapyak/'))
+    .sort();
+}
+
+function resolveId(base: string, id: string): string {
+  return createRequire(base).resolve(id);
+}
+
 async function loadModules(root: string): Promise<ProjectModules> {
-  const require = createRequire(join(root, 'package.json'));
-  const compilerPath = require.resolve('yapyak/compiler/internal');
-  const configPath = require.resolve('yapyak/config/internal');
+  const compilerPath = resolveThroughScope(
+    root,
+    'yapyak/compiler/internal',
+    resolveId,
+  );
+  const configPath = resolveThroughScope(
+    root,
+    'yapyak/config/internal',
+    resolveId,
+  );
   return {
     compiler: (await import(
       pathToFileURL(compilerPath).href
@@ -90,15 +146,17 @@ async function loadModules(root: string): Promise<ProjectModules> {
     configModule: (await import(
       pathToFileURL(configPath).href
     )) as ConfigModule,
-    template: await loadTemplate(require),
+    template: await loadTemplate(root),
   };
 }
 
-async function loadTemplate(
-  require: ReturnType<typeof createRequire>,
-): Promise<TemplateModule | undefined> {
+async function loadTemplate(root: string): Promise<TemplateModule | undefined> {
   try {
-    const templatePath = require.resolve('yapyak/template/internal');
+    const templatePath = resolveThroughScope(
+      root,
+      'yapyak/template/internal',
+      resolveId,
+    );
     return (await import(pathToFileURL(templatePath).href)) as TemplateModule;
   } catch {
     return undefined;

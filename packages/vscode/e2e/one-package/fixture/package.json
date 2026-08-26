@@ -1,0 +1,8 @@
+{
+  "name": "one-package-fixture",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@yapyak/react": "*"
+  }
+}
