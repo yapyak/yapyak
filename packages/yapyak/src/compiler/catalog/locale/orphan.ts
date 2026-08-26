@@ -2,8 +2,9 @@ import { writeAtomic } from './atomic';
 import { stripBom } from './bom';
 import { stringifyCanonical } from './canonical';
 import { isUnsafeKey } from './unsafe-key';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { ensureYapyakDir } from './yapyak-dir';
+import { existsSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 
 export type OrphanEntry = {
   deletedAt: string;
@@ -84,11 +85,8 @@ export function readOrphans(yapyakDir: string): OrphanCache {
 }
 
 export function writeOrphans(yapyakDir: string, cache: OrphanCache): void {
-  const path = getOrphansFilePath(yapyakDir);
-  mkdirSync(dirname(path), {
-    recursive: true,
-  });
-  writeAtomic(path, stringifyCanonical(cache));
+  ensureYapyakDir(yapyakDir);
+  writeAtomic(getOrphansFilePath(yapyakDir), stringifyCanonical(cache));
 }
 
 export function findOrphan(

@@ -1,13 +1,12 @@
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { ensureYapyakDir } from './yapyak-dir';
+import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export function writeRegister(locales: string[], yapyakDir: string): void {
   if (locales.length === 0) {
     return;
   }
-  mkdirSync(yapyakDir, {
-    recursive: true,
-  });
+  ensureYapyakDir(yapyakDir);
   const localeUnion = locales.map((locale) => `'${locale}'`).join(' | ');
   const content = [
     `declare module 'yapyak' {`,

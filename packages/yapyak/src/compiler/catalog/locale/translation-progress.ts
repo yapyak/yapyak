@@ -2,7 +2,8 @@ import { writeAtomic } from './atomic';
 import { stripBom } from './bom';
 import { stringifyCanonical } from './canonical';
 import { isPlainObject } from './plain-object';
-import { existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { ensureYapyakDir } from './yapyak-dir';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export type TranslationProgress = {
@@ -41,9 +42,7 @@ export function writeTranslationProgress(
   yapyakDir: string,
   progress: TranslationProgress,
 ): void {
-  mkdirSync(yapyakDir, {
-    recursive: true,
-  });
+  ensureYapyakDir(yapyakDir);
   writeAtomic(getProgressFilePath(yapyakDir), stringifyCanonical(progress));
 }
 
