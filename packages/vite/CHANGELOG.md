@@ -1,5 +1,18 @@
 # @yapyak/vite
 
+## 0.0.12
+
+### Patch Changes
+
+- [`91b135c`](https://github.com/yapyak/yapyak/commit/91b135c728219863c49fe40dfa6328d022443995) Thanks [@qwuide](https://github.com/qwuide)! - Add `ambientBindings` to the processor contract. A processor can declare names that bind to yapyak in files that leave them unbound, with local declarations and destructures still shadowing them. `processors` also accepts nested arrays, so a factory covering several file formats returns a list.
+
+- [`c66b92a`](https://github.com/yapyak/yapyak/commit/c66b92a8f57ef242d57ed76588cd252ffe349b48) Thanks [@qwuide](https://github.com/qwuide)! - Add a top-level `types` field beside `exports` in every published package. Tools that reference the package directory rather than the bare specifier — a relativized `typeof import()` in a generated declaration, a tsconfig `paths` entry pointing at the package root — now resolve the types instead of silently landing on `any`.
+
+- [`1ed9529`](https://github.com/yapyak/yapyak/commit/1ed9529145dc146ee4b6461ca6f42ee5480390e3) Thanks [@qwuide](https://github.com/qwuide)! - Add a `root` option that points the plugin at the project directory when the bundler roots Vite somewhere else, and watch the locales directory even when it sits outside the bundler root.
+
+- Updated dependencies [[`3f650aa`](https://github.com/yapyak/yapyak/commit/3f650aadff02816ae37bded75c31b583b8e7879a), [`3f43a37`](https://github.com/yapyak/yapyak/commit/3f43a37623ab3d8f4ef5ef90d69945a2094be49a), [`5adeaa9`](https://github.com/yapyak/yapyak/commit/5adeaa953ccf94919078c529976d23311fc40837), [`56dcc76`](https://github.com/yapyak/yapyak/commit/56dcc76871dae9fe6c9fd0fc4bec00339bd2e827), [`5b3afcf`](https://github.com/yapyak/yapyak/commit/5b3afcfc4b78342eeedacf1d1b123281a54e8e57), [`91b135c`](https://github.com/yapyak/yapyak/commit/91b135c728219863c49fe40dfa6328d022443995), [`c66b92a`](https://github.com/yapyak/yapyak/commit/c66b92a8f57ef242d57ed76588cd252ffe349b48)]:
+  - yapyak@0.0.12
+
 ## 0.0.11
 
 ### Patch Changes
