@@ -38,6 +38,7 @@
       "default": "./dist/processor.js"
     }
   },
+  "types": "./src/index.ts",
   "files": [
     "dist",
     "src",

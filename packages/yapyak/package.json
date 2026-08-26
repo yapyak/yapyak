@@ -76,6 +76,7 @@
       "default": "./dist/translator/internal.js"
     }
   },
+  "types": "./dist/index.d.ts",
   "bin": {
     "yapyak": "./dist/cli/bin.js"
   },
