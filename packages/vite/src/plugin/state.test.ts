@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { normalizeYapyakConfig } from 'yapyak/config/internal';
 
 import { createState, getNormalized, getResolver } from './state';
+import { resolve } from 'node:path';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -54,8 +55,8 @@ describe('createState', () => {
     const state = createState({
       root: '/tmp/project',
     });
-    expect(state.projectRoot).toBe('/tmp/project');
-    expect(state.rootOverride).toBe('/tmp/project');
+    expect(state.projectRoot).toBe(resolve('/tmp/project'));
+    expect(state.rootOverride).toBe(resolve('/tmp/project'));
   });
 
   it('leaves `rootOverride` unset without the `root` option', () => {
