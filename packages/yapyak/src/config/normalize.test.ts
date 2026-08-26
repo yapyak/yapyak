@@ -3,6 +3,7 @@ import type { Processor } from '../processor';
 import { describe, expect, it } from 'vitest';
 
 import { createProcessor } from '../processor';
+import { createFilter } from './filter';
 import { normalizeYapyakConfig } from './normalize';
 
 describe('normalizeYapyakConfig', () => {
@@ -10,7 +11,7 @@ describe('normalizeYapyakConfig', () => {
     const result = normalizeYapyakConfig({});
 
     expect(result.include).toEqual([
-      'src/**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}',
+      './**/*.{cjs,cts,js,jsx,mjs,mts,ts,tsx}',
     ]);
   });
 
@@ -24,7 +25,7 @@ describe('normalizeYapyakConfig', () => {
     });
 
     expect(result.include).toEqual([
-      'src/**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
+      './**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
     ]);
   });
 
@@ -41,7 +42,7 @@ describe('normalizeYapyakConfig', () => {
     });
 
     expect(result.include).toEqual([
-      'src/**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx,vue}',
+      './**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx,vue}',
     ]);
   });
 
@@ -56,7 +57,7 @@ describe('normalizeYapyakConfig', () => {
     });
 
     expect(result.include).toEqual([
-      'src/**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
+      './**/*.{cjs,cts,js,jsx,mjs,mts,svelte,ts,tsx}',
     ]);
   });
 
@@ -389,3 +390,62 @@ function makeProcessor(id: string, extensions: string[]): Processor {
     id,
   });
 }
+
+describe('normalizeYapyakConfig root include default', () => {
+  function buildFilter(): (fileId: string) => boolean {
+    const normalized = normalizeYapyakConfig({
+      processors: [
+        createProcessor({
+          extensions: [
+            '.vue',
+          ],
+          id: 'vue',
+        }),
+      ],
+    });
+    return createFilter(normalized.include, normalized.exclude);
+  }
+
+  it('accepts source files anywhere under the project root', () => {
+    const filter = buildFilter();
+    expect(filter('src/a.ts')).toBe(true);
+    expect(filter('app/app.vue')).toBe(true);
+    expect(filter('composables/use-thing.ts')).toBe(true);
+    expect(filter('a.ts')).toBe(true);
+  });
+
+  it('refuses files under `node_modules` and build output directories', () => {
+    const filter = buildFilter();
+    expect(filter('node_modules/pkg/index.ts')).toBe(false);
+    expect(filter('apps/web/node_modules/pkg/index.ts')).toBe(false);
+    expect(filter('dist/a.ts')).toBe(false);
+    expect(filter('build/a.ts')).toBe(false);
+    expect(filter('coverage/a.ts')).toBe(false);
+  });
+
+  it('refuses files inside dot directories and outside the project root', () => {
+    const filter = buildFilter();
+    expect(filter('.nuxt/dev/index.ts')).toBe(false);
+    expect(filter('.output/server/a.ts')).toBe(false);
+    expect(filter('../sibling/a.ts')).toBe(false);
+  });
+
+  it('refuses yapyak config files', () => {
+    const filter = buildFilter();
+    expect(filter('yapyak.config.ts')).toBe(false);
+    expect(filter('yapyak.config.mjs')).toBe(false);
+    expect(filter('apps/web/yapyak.config.ts')).toBe(false);
+  });
+
+  it('narrows extraction to the listed patterns when `include` is set', () => {
+    const normalized = normalizeYapyakConfig({
+      include: [
+        'apps/web',
+      ],
+      processors: [],
+    });
+    const filter = createFilter(normalized.include, normalized.exclude);
+    expect(filter('apps/web/a.ts')).toBe(true);
+    expect(filter('apps/docs/a.ts')).toBe(false);
+  });
+});

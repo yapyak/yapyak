@@ -46,16 +46,16 @@ export type YapyakConfig = {
    * @remarks
    * Directory shortcuts (no glob characters) expand to `<entry>/**\/*.{<extensions>}`. Setting the field replaces the default; spreading `DEFAULT_EXCLUDE` extends it.
    *
-   * @defaultValue `['**\/*.{test,spec}.*', '**\/__tests__/**', '**\/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}', '**\/*.d.ts']`
+   * @defaultValue `['**\/*.{test,spec}.*', '**\/__tests__/**', '**\/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}', '**\/*.d.ts', '**\/node_modules/**', '**\/dist/**', '**\/build/**', '**\/coverage/**', '**\/yapyak.config.*']`
    */
   exclude?: FilterPattern;
   /**
    * The patterns to include for extraction.
    *
    * @remarks
-   * Directory shortcuts (no glob characters) expand to `<entry>/**\/*.{<extensions>}`. Setting the field replaces the default; spreading `DEFAULT_INCLUDE` extends it.
+   * Directory shortcuts (no glob characters) expand to `<entry>/**\/*.{<extensions>}`. Setting the field replaces the default and narrows extraction to the listed patterns.
    *
-   * @defaultValue `['src']`
+   * @defaultValue `['.']` — every source file under the project root
    */
   include?: FilterPattern;
   /**

@@ -490,7 +490,6 @@ import { defineConfig } from 'yapyak/config';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
-  include: ['app'],
   persistence: 'cookie',
   processors: [react()]
 });
@@ -503,7 +502,6 @@ import { anthropic } from '@yapyak/anthropic';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
-  include: ['app'],
   persistence: 'cookie',
   processors: [react()],
   translator: anthropic({
@@ -519,7 +517,6 @@ import { openai } from '@yapyak/openai';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
-  include: ['app'],
   persistence: 'cookie',
   processors: [react()],
   translator: openai({
@@ -535,7 +532,6 @@ import { gemini } from '@yapyak/gemini';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
-  include: ['app'],
   persistence: 'cookie',
   processors: [react()],
   translator: gemini({
@@ -551,7 +547,6 @@ import { ollama } from '@yapyak/ollama';
 import { react } from '@yapyak/react/processor';
 
 export default defineConfig({
-  include: ['app'],
   persistence: 'cookie',
   processors: [react()],
   translator: ollama()

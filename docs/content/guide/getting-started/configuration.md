@@ -59,7 +59,7 @@ export default defineConfig({
 |---|---|---|
 | [`defaultLocale`](#defaultlocale) | `'en'` | Your source language |
 | [`localesDir`](#localesdir) | `'locales'` | Where locale files live |
-| [`include`](#include) | `['src']` | Which files yapyak scans |
+| [`include`](#include) | `['.']` | Which files yapyak scans |
 | [`exclude`](#exclude) | tests, generated files, `.d.ts` | Which files it skips |
 | [`processors`](#processors) | `[]` | Framework file formats |
 | [`translator`](#translator) | none | The model that fills stubs |
@@ -123,26 +123,31 @@ The fields that control which files yapyak scans for `t()` calls.
 
 ### `include`
 
-Which files to scan. Each entry is a directory name, a glob, or a `RegExp`:
+Which files to scan. Defaults to every source file under the project root; dot directories and the [`exclude`](#exclude) patterns are skipped. Set it to narrow extraction to part of the tree:
 
 ```ts
-include: ['src', 'app/components'],
+include: ['apps/web', 'packages/ui/src'],
 ```
 
-A bare directory name expands to every source file inside it, across the extensions your [processors](#processors) handle.
+Each entry is a directory name, a glob, or a `RegExp`. A bare directory name expands to every source file inside it, across the extensions your [processors](#processors) handle. Setting the field replaces the default.
 
-**Type**: [`FilterPattern`](/reference/yapyak/config/FilterPattern) · **Default**: `['src']`
+**Type**: [`FilterPattern`](/reference/yapyak/config/FilterPattern) · **Default**: `['.']`
 
 ### `exclude`
 
-Which files to skip. Same shape as `include`. Tests, generated files, and `.d.ts` declarations are skipped by default:
+Which files to skip. Same shape as `include`. Tests, generated files, `.d.ts` declarations, `node_modules`, and build output are skipped by default:
 
 ```ts
 exclude: [
   '**/*.{test,spec}.*',
   '**/__tests__/**',
   '**/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}',
-  '**/*.d.ts'
+  '**/*.d.ts',
+  '**/node_modules/**',
+  '**/dist/**',
+  '**/build/**',
+  '**/coverage/**',
+  '**/yapyak.config.*'
 ],
 ```
 

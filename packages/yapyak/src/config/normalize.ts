@@ -29,19 +29,10 @@ const DEFAULT_COOKIE_NAME = 'locale';
 const DEFAULT_STORAGE_KEY = 'locale';
 
 /**
- * The default include patterns.
- *
- * @example
- * ```ts
- * import { DEFAULT_INCLUDE, defineConfig } from 'yapyak/config';
- *
- * export default defineConfig({
- *   include: [...DEFAULT_INCLUDE, 'app']
- * });
- * ```
+ * The default include patterns. `.` expands to every source file under the project root; directories starting with a dot never match.
  */
 export const DEFAULT_INCLUDE: FilterPattern = [
-  'src',
+  '.',
 ];
 
 /**
@@ -61,6 +52,11 @@ export const DEFAULT_EXCLUDE: FilterPattern = [
   '**/__tests__/**',
   '**/*.{stories,gen}.{ts,tsx,js,jsx,mjs,cjs}',
   '**/*.d.ts',
+  '**/node_modules/**',
+  '**/dist/**',
+  '**/build/**',
+  '**/coverage/**',
+  '**/yapyak.config.*',
 ];
 
 export function normalizeYapyakConfig(

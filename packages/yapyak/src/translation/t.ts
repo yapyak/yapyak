@@ -176,6 +176,6 @@ function throwNotCompiled(method: 't' | 't.as' | 't.in'): never {
   throw new Error(
     `[yapyak] ${method}() was not rewritten at build time. ` +
       'Install and register a yapyak build-tool plugin (e.g. @yapyak/vite) in your bundler config, ' +
-      "and check that the file is covered by the config's include patterns (default: src).",
+      "and check that the file is covered by the config's include patterns and not skipped by its exclude patterns.",
   );
 }

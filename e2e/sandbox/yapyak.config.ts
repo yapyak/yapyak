@@ -44,6 +44,9 @@ const HOMONYMS_BY_LOCALE: Record<
 
 export default defineConfig({
   autoTranslateThreshold: 3,
+  include: [
+    'src',
+  ],
   persistence: 'local-storage',
   preserveTranslationsOnSourceEdit: true,
   processors: [
