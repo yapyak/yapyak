@@ -114,6 +114,8 @@ export type Runtime = {
  * @see {@link createProcessor}
  */
 export type Processor = {
+  /** The names bound to yapyak's exports in files that leave them unbound. */
+  ambientBindings?: string[];
   /** The import-injection function. */
   applyImport?(
     magicString: MagicString,

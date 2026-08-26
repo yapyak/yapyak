@@ -58,4 +58,25 @@ describe('resolveExtraction', () => {
 
     expect(resolveExtraction(state, 'src/a.ts', '').messages).toEqual([]);
   });
+
+  it('extracts unbound calls when a processor declares ambient bindings', () => {
+    const state = createState();
+    state.normalized = normalizeYapyakConfig({
+      processors: [
+        {
+          ambientBindings: [
+            't',
+          ],
+          extensions: [
+            '.ts',
+          ],
+          id: 'ambient',
+        },
+      ],
+    });
+    const result = resolveExtraction(state, 'src/a.ts', "t('Hello');");
+
+    expect(result.messages).toHaveLength(1);
+    expect(result.messages[0]?.source).toBe('Hello');
+  });
 });

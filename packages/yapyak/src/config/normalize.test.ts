@@ -29,6 +29,25 @@ describe('normalizeYapyakConfig', () => {
     ]);
   });
 
+  it('flattens nested processor arrays', () => {
+    const inner = createProcessor({
+      extensions: [
+        '.vue',
+      ],
+      id: 'vue',
+    });
+    const normalized = normalizeYapyakConfig({
+      processors: [
+        [
+          inner,
+        ],
+      ],
+    });
+    expect(normalized.processors).toEqual([
+      inner,
+    ]);
+  });
+
   it('builds the include glob from extensions across multiple processors', () => {
     const result = normalizeYapyakConfig({
       processors: [

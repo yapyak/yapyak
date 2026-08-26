@@ -67,6 +67,15 @@ export function resolveBindings(
     ...imports.directLocals,
     ...imports.namespaceLocals,
   ]);
+  for (
+    let ambientScope = options?.ambientParent;
+    ambientScope !== undefined;
+    ambientScope = ambientScope.parent
+  ) {
+    for (const name of ambientScope.bindings.keys()) {
+      shadowableNames.add(name);
+    }
+  }
 
   walkBindings(sourceFile, root, {
     scopeByNode,

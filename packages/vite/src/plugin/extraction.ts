@@ -1,4 +1,5 @@
 import type { ExtractFileResult } from 'yapyak/compiler/internal';
+import type { Processor } from 'yapyak/processor';
 import type { State } from './state';
 
 import { extractFile } from 'yapyak/compiler/internal';
@@ -10,7 +11,8 @@ export function resolveExtraction(
   fileId: string,
   source: string,
 ): ExtractFileResult {
-  if (!source.includes('yapyak')) {
+  const { processors } = getNormalized(state);
+  if (!source.includes('yapyak') && !hasAmbientBindings(processors)) {
     return {
       callSites: [],
       diagnostics: [],
@@ -35,4 +37,12 @@ export function resolveExtraction(
     source,
   });
   return result;
+}
+
+function hasAmbientBindings(processors: Processor[]): boolean {
+  return processors.some(
+    (processor) =>
+      processor.ambientBindings !== undefined &&
+      processor.ambientBindings.length > 0,
+  );
 }

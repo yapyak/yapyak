@@ -62,7 +62,7 @@ export const DEFAULT_EXCLUDE: FilterPattern = [
 export function normalizeYapyakConfig(
   config: YapyakConfig,
 ): NormalizedYapyakConfig {
-  const processors = config.processors ?? [];
+  const processors = (config.processors ?? []).flat();
   const autoTranslateThreshold =
     config.autoTranslateThreshold ?? DEFAULT_AUTO_TRANSLATE_THRESHOLD;
   if (!Number.isInteger(autoTranslateThreshold) || autoTranslateThreshold < 0) {

@@ -241,3 +241,78 @@ describe('extractFile', () => {
     });
   });
 });
+
+describe('extractFile ambient bindings', () => {
+  const ambient: Processor = {
+    ambientBindings: [
+      't',
+    ],
+    extensions: [
+      '.ts',
+    ],
+    id: 'ambient',
+  };
+
+  function extractAmbient(source: string): ExtractFileResult {
+    return extractFile('file.ts', source, {
+      processors: [
+        ambient,
+      ],
+    });
+  }
+
+  it('returns messages from unbound calls when the processor declares the name', () => {
+    const result = extractAmbient(`t('Hello');`);
+    expect(result.messages.map((message) => message.source)).toEqual([
+      'Hello',
+    ]);
+  });
+
+  it('returns no messages from unbound calls without the declaration', () => {
+    const result = extractFile('file.ts', `t('Hello');`);
+    expect(result.messages).toHaveLength(0);
+  });
+
+  it('skips calls shadowed by a local declaration', () => {
+    const result = extractAmbient(
+      [
+        'const t = (value: string) => value;',
+        `t('Hello');`,
+      ].join('\n'),
+    );
+    expect(result.messages).toHaveLength(0);
+  });
+
+  it('skips calls shadowed by a destructured binding', () => {
+    const result = extractAmbient(
+      [
+        'declare const kit: { t(value: string): string };',
+        'const { t } = kit;',
+        `t('Hello');`,
+      ].join('\n'),
+    );
+    expect(result.messages).toHaveLength(0);
+  });
+
+  it('skips calls shadowed by a function parameter', () => {
+    const result = extractAmbient(
+      [
+        `const map = (t: (value: string) => string) => t('Hello');`,
+        'map;',
+      ].join('\n'),
+    );
+    expect(result.messages).toHaveLength(0);
+  });
+
+  it('returns messages from explicit imports alongside the ambient name', () => {
+    const result = extractAmbient(
+      [
+        `import { t } from 'yapyak';`,
+        `t('Hello');`,
+      ].join('\n'),
+    );
+    expect(result.messages.map((message) => message.source)).toEqual([
+      'Hello',
+    ]);
+  });
+});

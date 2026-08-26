@@ -108,6 +108,7 @@ export function extractFile(
   const callSites: ParsedCallSite[] = [];
   const messagesById = new Map<string, ExtractedMessage>();
 
+  const processorAmbient = buildProcessorAmbient(processor, fileId);
   const ambientBindings = new Map<string, Binding>();
   let ambientAnchor: ts.SourceFile | undefined;
 
@@ -119,7 +120,9 @@ export function extractFile(
     if (!ambientAnchor) {
       ambientAnchor = sourceFile;
     }
-    const bindings = resolveBindings(sourceFile);
+    const bindings = resolveBindings(sourceFile, {
+      ambientParent: processorAmbient,
+    });
     for (const [name, binding] of bindings.root.bindings) {
       ambientBindings.set(name, binding);
     }
@@ -137,8 +140,8 @@ export function extractFile(
 
   const ambientParent =
     ambientBindings.size > 0 && ambientAnchor
-      ? buildAmbientScope(ambientBindings, ambientAnchor)
-      : undefined;
+      ? buildAmbientScope(ambientBindings, ambientAnchor, processorAmbient)
+      : processorAmbient;
 
   for (const fragment of fragments) {
     if (fragment.type === 'script') {
@@ -322,10 +325,35 @@ function componentNameFromFileId(fileId: string): string | undefined {
 function buildAmbientScope(
   ambientBindings: Map<string, Binding>,
   anchor: ts.Node,
+  parent?: Scope,
 ): Scope {
   return {
     bindings: ambientBindings,
     node: anchor,
+    ...(parent !== undefined && {
+      parent,
+    }),
+  };
+}
+
+function buildProcessorAmbient(
+  processor: Processor,
+  fileId: string,
+): Scope | undefined {
+  const names = processor.ambientBindings;
+  if (names === undefined || names.length === 0) {
+    return undefined;
+  }
+  const bindings = new Map<string, Binding>();
+  for (const name of names) {
+    bindings.set(name, {
+      kind: 'direct',
+      localName: name,
+    });
+  }
+  return {
+    bindings,
+    node: ts.createSourceFile(fileId, '', ts.ScriptTarget.ESNext, true),
   };
 }
 

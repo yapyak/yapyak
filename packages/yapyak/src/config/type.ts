@@ -80,11 +80,11 @@ export type YapyakConfig = {
    * The processors for framework-specific file formats.
    *
    * @remarks
-   * Vanilla `.ts`, `.tsx`, `.js`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` are handled without registration.
+   * Vanilla `.ts`, `.tsx`, `.js`, `.jsx`, `.mts`, `.mjs`, `.cts`, `.cjs` are handled without registration. A processor factory covering several file formats returns an array; the list is flattened.
    *
    * @defaultValue `[]`
    */
-  processors?: Processor[];
+  processors?: (Processor | Processor[])[];
   /**
    * Whether to keep the `<html>` element's `lang` and `dir` attributes synced with the active locale.
    *

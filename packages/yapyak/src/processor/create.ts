@@ -2,6 +2,8 @@ import type { ApplyImportFn, ParseSourceFn, Processor } from './type';
 
 /** Input for {@link createProcessor}. */
 export type CreateProcessorInput = {
+  /** The names bound to yapyak's exports in files that leave them unbound. */
+  ambientBindings?: string[];
   /** The import-injection function. */
   applyImport?: ApplyImportFn;
   /** The file extensions handled by this processor. */
@@ -51,6 +53,9 @@ export function createProcessor(input: CreateProcessorInput): Processor {
     extensions: input.extensions,
     id: input.id,
   };
+  if (input.ambientBindings !== undefined) {
+    processor.ambientBindings = input.ambientBindings;
+  }
   if (input.applyImport !== undefined) {
     processor.applyImport = input.applyImport;
   }

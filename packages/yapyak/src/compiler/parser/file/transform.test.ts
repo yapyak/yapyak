@@ -1659,3 +1659,56 @@ describe('transformFile', () => {
     ).toThrow('Processor "template"');
   });
 });
+
+describe('transformFile ambient bindings', () => {
+  const ambientProcessor: Processor = createProcessor({
+    ambientBindings: [
+      't',
+    ],
+    extensions: [
+      '.ts',
+    ],
+    id: 'ambient',
+  });
+
+  it('rewrites unbound calls when the processor declares the name', () => {
+    const code = runTransform({
+      fileId: 'src/a.ts',
+      locales: [
+        'en',
+        'sv',
+      ],
+      processors: [
+        ambientProcessor,
+      ],
+      source: `t('Hello');`,
+      translations: {
+        sv: {
+          [toMessageKey('Hello')]: 'Hej',
+        },
+      },
+    });
+    expect(code).toContain("from 'yapyak/internal'");
+    expect(code).toContain("sv: 'Hej'");
+    expect(code).not.toContain("t('Hello')");
+  });
+
+  it('leaves calls shadowed by a local declaration alone', () => {
+    const source = [
+      'const t = (value: string) => value;',
+      `t('Hello');`,
+    ].join('\n');
+    const code = runTransform({
+      fileId: 'src/a.ts',
+      locales: [
+        'en',
+        'sv',
+      ],
+      processors: [
+        ambientProcessor,
+      ],
+      source,
+    });
+    expect(code).toBe(source);
+  });
+});
