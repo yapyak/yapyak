@@ -1,76 +1,57 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import {
-  resetResponseHeaderWriter,
-  setResponseHeaderWriter,
-  writePendingResponseHeader,
-} from './pending-response-header';
+import { writePendingResponseHeader } from './pending-response-header';
+import { ensureSharedStorage } from './shared-storage';
+import { AsyncLocalStorage } from 'node:async_hooks';
 
-afterEach(() => {
-  resetResponseHeaderWriter();
-});
+function buildStorage(): ReturnType<typeof ensureSharedStorage> {
+  return ensureSharedStorage(() => ({
+    headers: new AsyncLocalStorage<Headers>(),
+    requests: new AsyncLocalStorage<Request>(),
+  }));
+}
 
 describe('writePendingResponseHeader', () => {
-  it('returns `true` when the writer writes the header', () => {
-    setResponseHeaderWriter(() => true);
-    expect(writePendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(true);
+  it('returns `true` and appends inside a request scope', () => {
+    const storage = buildStorage();
+    const responseHeaders = new Headers();
+    let applied = false;
+    storage.headers.run(responseHeaders, () => {
+      applied = writePendingResponseHeader('Set-Cookie', 'locale=sv');
+    });
+
+    expect(applied).toBe(true);
+    expect(responseHeaders.get('Set-Cookie')).toBe('locale=sv');
   });
 
-  it('returns `false` when the writer does not write the header', () => {
-    setResponseHeaderWriter(() => false);
+  it('returns `false` outside a request scope', () => {
+    buildStorage();
+
     expect(writePendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
   });
 
-  it('returns `false` when no writer is registered', () => {
-    expect(writePendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
-  });
-
-  it('notifies the registered writer with name and value', () => {
-    const writes: [
-      string,
-      string,
-    ][] = [];
-    setResponseHeaderWriter((name, value) => {
-      writes.push([
-        name,
-        value,
-      ]);
-      return true;
+  it('appends repeated headers instead of replacing them', () => {
+    const storage = buildStorage();
+    const responseHeaders = new Headers();
+    storage.headers.run(responseHeaders, () => {
+      writePendingResponseHeader('Set-Cookie', 'locale=sv');
+      writePendingResponseHeader('Set-Cookie', 'theme=dark');
     });
-    writePendingResponseHeader('Set-Cookie', 'locale=sv');
-    expect(writes).toEqual([
-      [
-        'Set-Cookie',
-        'locale=sv',
-      ],
-    ]);
-  });
-});
 
-describe('resetResponseHeaderWriter', () => {
-  it('clears the writer', () => {
-    setResponseHeaderWriter(() => true);
-    resetResponseHeaderWriter();
-    expect(writePendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
-  });
-});
-
-describe('setResponseHeaderWriter', () => {
-  it('writes through only the latest writer when called twice', () => {
-    const firstWriterCalls: string[] = [];
-    const secondWriterCalls: string[] = [];
-    setResponseHeaderWriter((_name: string, value: string) => {
-      firstWriterCalls.push(value);
-      return true;
-    });
-    setResponseHeaderWriter((_name: string, value: string) => {
-      secondWriterCalls.push(value);
-      return true;
-    });
-    writePendingResponseHeader('Set-Cookie', 'locale=sv');
-    expect(firstWriterCalls).toEqual([]);
-    expect(secondWriterCalls).toEqual([
+    expect(responseHeaders.getSetCookie()).toEqual([
       'locale=sv',
+      'theme=dark',
     ]);
+  });
+});
+
+describe('ensureSharedStorage', () => {
+  it('returns the storage the first call created', () => {
+    const first = buildStorage();
+    const second = ensureSharedStorage(() => {
+      throw new Error('unexpected create');
+    });
+
+    expect(second).toBe(first);
   });
 });

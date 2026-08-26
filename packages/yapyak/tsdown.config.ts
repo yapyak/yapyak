@@ -12,6 +12,7 @@ export default defineConfig({
     'src/internal.ts',
     'src/runtime.ts',
     'src/adapter/index.ts',
+    'src/adapter/internal.ts',
     'src/cli/bin.ts',
     'src/compiler/internal.ts',
     'src/config/index.ts',

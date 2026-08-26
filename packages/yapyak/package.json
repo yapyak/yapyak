@@ -27,6 +27,10 @@
       "types": "./dist/adapter/index.d.ts",
       "default": "./dist/adapter/index.js"
     },
+    "./adapter/internal": {
+      "types": "./dist/adapter/internal.d.ts",
+      "default": "./dist/adapter/internal.js"
+    },
     "./compiler/internal": {
       "types": "./dist/compiler/internal.d.ts",
       "default": "./dist/compiler/internal.js"

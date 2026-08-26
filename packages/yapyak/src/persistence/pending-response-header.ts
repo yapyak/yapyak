@@ -1,21 +1,13 @@
-type ResponseHeaderWriter = (name: string, value: string) => boolean;
-
-let responseHeaderWriter: ResponseHeaderWriter | undefined;
-
-export function setResponseHeaderWriter(writer: ResponseHeaderWriter): void {
-  responseHeaderWriter = writer;
-}
-
-export function resetResponseHeaderWriter(): void {
-  responseHeaderWriter = undefined;
-}
+import { readSharedStorage } from './shared-storage';
 
 export function writePendingResponseHeader(
   name: string,
   value: string,
 ): boolean {
-  if (responseHeaderWriter === undefined) {
+  const responseHeaders = readSharedStorage()?.headers.getStore();
+  if (responseHeaders === undefined) {
     return false;
   }
-  return responseHeaderWriter(name, value);
+  responseHeaders.append(name, value);
+  return true;
 }

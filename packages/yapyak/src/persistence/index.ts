@@ -1,3 +1,4 @@
+export type { SharedStorage } from './shared-storage';
 export type {
   CookiePersistenceOptions,
   LocalStoragePersistenceOptions,
@@ -8,8 +9,6 @@ export type {
 } from './type';
 
 export { buildPersistence } from './build';
-export {
-  setResponseHeaderWriter,
-  writePendingResponseHeader,
-} from './pending-response-header';
-export { readRequest, setRequestReader } from './request';
+export { writePendingResponseHeader } from './pending-response-header';
+export { readRequest } from './request';
+export { ensureSharedStorage, readSharedStorage } from './shared-storage';

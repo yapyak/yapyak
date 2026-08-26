@@ -1,11 +1,5 @@
-type RequestReader = () => Request | undefined;
-
-let requestReader: RequestReader | undefined;
-
-export function setRequestReader(reader: RequestReader): void {
-  requestReader = reader;
-}
+import { readSharedStorage } from './shared-storage';
 
 export function readRequest(): Request | undefined {
-  return requestReader?.();
+  return readSharedStorage()?.requests.getStore();
 }

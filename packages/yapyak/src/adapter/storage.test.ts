@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import { writePendingResponseHeader } from '../persistence';
-import { createStorage } from './storage';
+import { createStorage, readPendingResponseHeaders } from './storage';
 import { AsyncLocalStorage } from 'node:async_hooks';
 
 describe('createStorage', () => {
@@ -13,6 +13,16 @@ describe('createStorage', () => {
 
   it('returns the same instance on repeated calls', () => {
     expect(createStorage()).toBe(createStorage());
+  });
+
+  it('shares the instance through `globalThis` across module copies', () => {
+    const storage = createStorage();
+    const key = Symbol.for('yapyak.adapter.storage');
+    const carrier = globalThis as {
+      [key]?: unknown;
+    };
+
+    expect(carrier[key]).toBe(storage);
   });
 
   it('writes the pending header when called inside a request scope', () => {
@@ -31,5 +41,22 @@ describe('createStorage', () => {
     createStorage();
 
     expect(writePendingResponseHeader('Set-Cookie', 'locale=sv')).toBe(false);
+  });
+});
+
+describe('readPendingResponseHeaders', () => {
+  it('returns the headers bound to the request scope', () => {
+    const storage = createStorage();
+    const responseHeaders = new Headers();
+    storage.headers.run(responseHeaders, () => {
+      writePendingResponseHeader('Set-Cookie', 'locale=sv');
+      expect(readPendingResponseHeaders()).toBe(responseHeaders);
+    });
+  });
+
+  it('returns `undefined` outside a request scope', () => {
+    createStorage();
+
+    expect(readPendingResponseHeaders()).toBeUndefined();
   });
 });

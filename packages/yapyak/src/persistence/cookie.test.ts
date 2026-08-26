@@ -2,10 +2,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { resetWarn, setWarn } from '../warn';
 import { cookie, parseCookie } from './cookie';
-import {
-  resetResponseHeaderWriter,
-  setResponseHeaderWriter,
-} from './pending-response-header';
+import { ensureSharedStorage } from './shared-storage';
+import { AsyncLocalStorage } from 'node:async_hooks';
+
+function runWithResponseHeaders(callback: () => void): Headers {
+  const storage = ensureSharedStorage(() => ({
+    headers: new AsyncLocalStorage<Headers>(),
+    requests: new AsyncLocalStorage<Request>(),
+  }));
+  const responseHeaders = new Headers();
+  storage.headers.run(responseHeaders, callback);
+  return responseHeaders;
+}
 
 describe('cookie', () => {
   describe('in browser', () => {
@@ -114,17 +122,7 @@ describe('cookie', () => {
   });
 
   describe('in non-browser environment', () => {
-    let writes: [
-      string,
-      string,
-    ][] = [];
-
-    beforeEach(() => {
-      writes = [];
-    });
-
     afterEach(() => {
-      resetResponseHeaderWriter();
       resetWarn();
     });
 
@@ -136,69 +134,46 @@ describe('cookie', () => {
       ).toBeUndefined();
     });
 
-    it('writes `Set-Cookie` via the registered writer', () => {
-      setResponseHeaderWriter((name, value) => {
-        writes.push([
-          name,
-          value,
-        ]);
-        return true;
+    it('writes `Set-Cookie` into the request-scoped response headers', () => {
+      const responseHeaders = runWithResponseHeaders(() => {
+        cookie({
+          name: 'locale',
+        }).set('sv');
       });
-      cookie({
-        name: 'locale',
-      }).set('sv');
-      expect(writes).toEqual([
-        [
-          'Set-Cookie',
-          'locale=sv; path=/; max-age=31536000; samesite=lax',
-        ],
-      ]);
+      expect(responseHeaders.get('Set-Cookie')).toBe(
+        'locale=sv; path=/; max-age=31536000; samesite=lax',
+      );
     });
 
     it('transforms the locale value when writing the cookie string', () => {
-      setResponseHeaderWriter((name, value) => {
-        writes.push([
-          name,
-          value,
-        ]);
-        return true;
-      });
-      cookie({
-        name: 'locale',
-      }).set('en-US');
-      expect(writes[0]?.[1]).toContain('locale=en-US');
-    });
-
-    it('holds the configured cookie name in the writer call', () => {
-      setResponseHeaderWriter((name, value) => {
-        writes.push([
-          name,
-          value,
-        ]);
-        return true;
-      });
-      cookie({
-        name: 'app-locale',
-      }).set('de');
-      expect(writes[0]?.[1]).toContain('app-locale=de');
-    });
-
-    it('returns false from set when a writer is registered', () => {
-      setResponseHeaderWriter((name, value) => {
-        writes.push([
-          name,
-          value,
-        ]);
-        return true;
-      });
-      expect(
+      const responseHeaders = runWithResponseHeaders(() => {
         cookie({
           name: 'locale',
-        }).set('sv'),
-      ).toBe(false);
+        }).set('en-US');
+      });
+      expect(responseHeaders.get('Set-Cookie')).toContain('locale=en-US');
     });
 
-    it('returns false from set when no writer is registered', () => {
+    it('holds the configured cookie name in the written header', () => {
+      const responseHeaders = runWithResponseHeaders(() => {
+        cookie({
+          name: 'app-locale',
+        }).set('de');
+      });
+      expect(responseHeaders.get('Set-Cookie')).toContain('app-locale=de');
+    });
+
+    it('returns false from set inside a request scope', () => {
+      let applied: boolean | undefined;
+      runWithResponseHeaders(() => {
+        applied = cookie({
+          name: 'locale',
+        }).set('sv');
+      });
+      expect(applied).toBe(false);
+    });
+
+    it('returns false from set outside a request scope', () => {
       setWarn(vi.fn());
       expect(
         cookie({
@@ -207,7 +182,7 @@ describe('cookie', () => {
       ).toBe(false);
     });
 
-    it('warns when set is called without a writer', () => {
+    it('warns when set is called outside a request scope', () => {
       const stub = vi.fn();
       setWarn(stub);
 
