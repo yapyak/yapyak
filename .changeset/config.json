@@ -15,6 +15,7 @@
       "@yapyak/anthropic",
       "@yapyak/astro",
       "@yapyak/gemini",
+      "@yapyak/nuxt",
       "@yapyak/ollama",
       "@yapyak/openai",
       "@yapyak/react",
