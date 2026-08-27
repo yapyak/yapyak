@@ -6,6 +6,7 @@ description: "Modules: file extraction, barrels, imports and exports, folder thr
 ### Export form
 
 - Named exports only. `export default` is forbidden.
+- Exception: export the host artifact as default iff the host contract loads the file's default export (a Nuxt module, a Nuxt or Nitro plugin); every other symbol in the file stays named.
 - One concept per file.
 - `index.ts` re-exports the public API of a folder/module.
 

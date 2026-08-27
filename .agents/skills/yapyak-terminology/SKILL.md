@@ -59,6 +59,7 @@ Locked vocabulary for the yapyak guide. Same concept, same word, every page. Add
 | Concept | The word | Banned alternatives |
 |---|---|---|
 | React/Vue/Svelte/Astro adapter package | `adapter` (`framework adapter` acceptable on first mention) | wrapper, framework integration, plugin (the Vite *plugin* is the plugin) |
+| The `@yapyak/nuxt` package | `module` (`the Nuxt module` on first mention) | Nuxt plugin, Nuxt adapter, Nuxt integration |
 | The SSR adapter package per framework | `SSR adapter` (or `adapter` when context is clear) | middleware adapter, request handler |
 | The reactive per-framework API (`useLocale` hook, `locale` ref, `locale.current` rune) that subscribes a component to locale changes | `framework binding` (first use); `the binding` after | hook/ref/rune (collectively), the framework hook, the reactive helper; never use `binding` for the *package* (that's `adapter`) |
 
