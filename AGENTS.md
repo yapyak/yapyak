@@ -6,7 +6,7 @@
 
 - `packages/yapyak/` — the published `yapyak` package: runtime (`t()`), compiler, CLI, config, locale resolution, persistence, formatting, diagnostics
 - `packages/vite/` — `@yapyak/vite`, the Vite plugin
-- `packages/{react,react-router,vue,svelte,sveltekit,tanstack-start,astro}/` — framework adapters (`@yapyak/<framework>`)
+- `packages/{react,react-router,vue,nuxt,svelte,sveltekit,tanstack-start,astro}/` — framework adapters (`@yapyak/<framework>`)
 - `packages/{anthropic,gemini,ollama,openai}/` — LLM translator providers (`@yapyak/<provider>`)
 - `packages/{typescript-config,tsdown-config,vitest-config}/` — shared build/test config
 - `docs/` — `@yapyak/docs`, Vite + TanStack Start app; `docs/compiler/` is `@yapyak/docs-compiler`, its doc-compilation tooling
