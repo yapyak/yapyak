@@ -77,5 +77,6 @@ If you'd like to model your adapter on a known-good example, the shipped adapter
 - [SvelteKit](https://github.com/yapyak/yapyak/blob/main/packages/sveltekit/src/handle.ts). Wraps `withResponse(event.request, () => resolve(event, ...))` in a SvelteKit `Handle`
 - [TanStack Start](https://github.com/yapyak/yapyak/blob/main/packages/tanstack-start/src/middleware.ts). Wraps `withResponse(request, () => next(), (result) => result.response)` in TanStack Start's middleware shape
 - [Astro](https://github.com/yapyak/yapyak/blob/main/packages/astro/src/integration.ts). Registers `withResponse` as Astro middleware through the integration system
+- [Nuxt](https://github.com/yapyak/yapyak/blob/main/packages/nuxt/src/runtime/nitro.ts). Wraps the Nitro handler in `withResponse` and flushes the buffered headers in a `beforeResponse` hook
 
 Each one is a single function. Most of the file is JSDoc.

@@ -30,6 +30,13 @@ const ADAPTERS: Adapter[] = [
   },
   {
     frameworks: [
+      'vue',
+    ],
+    label: 'Nuxt',
+    value: 'nuxt',
+  },
+  {
+    frameworks: [
       'svelte',
     ],
     label: 'SvelteKit',

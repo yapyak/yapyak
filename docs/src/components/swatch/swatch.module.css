@@ -46,6 +46,10 @@
       background-color: var(--accent-tanstack-start);
     }
 
+    &[data-accent="nuxt"] {
+      background-color: var(--accent-nuxt);
+    }
+
     &[data-accent="sveltekit"] {
       background-color: var(--accent-sveltekit);
     }
