@@ -1,5 +1,23 @@
 # yapyak
 
+## 0.0.12
+
+### Patch Changes
+
+- [`3f650aa`](https://github.com/yapyak/yapyak/commit/3f650aadff02816ae37bded75c31b583b8e7879a) Thanks [@qwuide](https://github.com/qwuide)! - Write a self-ignoring `.gitignore` inside `.yapyak`, so the cache directory stays out of git without a manual ignore entry.
+
+- [`3f43a37`](https://github.com/yapyak/yapyak/commit/3f43a37623ab3d8f4ef5ef90d69945a2094be49a) Thanks [@qwuide](https://github.com/qwuide)! - Share the per-request adapter storage across module graphs through `globalThis`. A server that bundles yapyak into more than one graph — one for the request wrapper, one for the rendered app — now reads and writes the same request context in all of them.
+
+- [`5adeaa9`](https://github.com/yapyak/yapyak/commit/5adeaa953ccf94919078c529976d23311fc40837) Thanks [@qwuide](https://github.com/qwuide)! - Rename the compiler-emitted `yapyak/dev` subpath to `yapyak/dev/internal`. Every subpath outside the public API now carries the `/internal` marker.
+
+- [`56dcc76`](https://github.com/yapyak/yapyak/commit/56dcc76871dae9fe6c9fd0fc4bec00339bd2e827) Thanks [@qwuide](https://github.com/qwuide)! - Scan the whole project by default. `include` now defaults to the project root, with dot directories, `node_modules`, and build output skipped, so `t()` calls outside `src` compile instead of throwing at runtime. Set `include` to narrow extraction, as before.
+
+- [`5b3afcf`](https://github.com/yapyak/yapyak/commit/5b3afcfc4b78342eeedacf1d1b123281a54e8e57) Thanks [@qwuide](https://github.com/qwuide)! - Alias `yapyak/config` inside config files to the yapyak doing the loading, so `yapyak.config.ts` resolves in projects where yapyak is only a transitive dependency of an adapter package.
+
+- [`91b135c`](https://github.com/yapyak/yapyak/commit/91b135c728219863c49fe40dfa6328d022443995) Thanks [@qwuide](https://github.com/qwuide)! - Add `ambientBindings` to the processor contract. A processor can declare names that bind to yapyak in files that leave them unbound, with local declarations and destructures still shadowing them. `processors` also accepts nested arrays, so a factory covering several file formats returns a list.
+
+- [`c66b92a`](https://github.com/yapyak/yapyak/commit/c66b92a8f57ef242d57ed76588cd252ffe349b48) Thanks [@qwuide](https://github.com/qwuide)! - Add a top-level `types` field beside `exports` in every published package. Tools that reference the package directory rather than the bare specifier — a relativized `typeof import()` in a generated declaration, a tsconfig `paths` entry pointing at the package root — now resolve the types instead of silently landing on `any`.
+
 ## 0.0.11
 
 ### Patch Changes
