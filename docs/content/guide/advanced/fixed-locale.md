@@ -21,6 +21,32 @@ export default defineConfig({
 ```
 {% /when %}
 
+{% when value="vue" %}
+{% switch group="adapter" %}
+{% when value="none" %}
+```ts [vite.config.ts]
+import { yapyak } from '@yapyak/vite';
+
+export default defineConfig({
+  plugins: [
+    yapyak({ fixedLocale: 'sv' })
+  ]
+});
+```
+{% /when %}
+{% when value="nuxt" %}
+```ts [nuxt.config.ts]
+export default defineNuxtConfig({
+  modules: ['@yapyak/nuxt'],
+  yapyak: {
+    fixedLocale: 'sv'
+  }
+});
+```
+{% /when %}
+{% /switch %}
+{% /when %}
+
 {% else %}
 ```ts [vite.config.ts]
 import { yapyak } from '@yapyak/vite';
