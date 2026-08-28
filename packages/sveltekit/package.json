@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/sveltekit",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "SvelteKit adapter for yapyak.",
   "keywords": [
     "adapter",
