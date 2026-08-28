@@ -4,6 +4,7 @@
   "description": "Astro bindings for yapyak.",
   "keywords": [
     "astro",
+    "astro-integration",
     "bindings",
     "i18n",
     "translation",
