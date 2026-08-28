@@ -1,5 +1,12 @@
 # @yapyak/vue
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies []:
+  - yapyak@0.0.13
+
 ## 0.0.12
 
 ### Patch Changes
