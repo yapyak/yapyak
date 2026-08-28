@@ -171,6 +171,28 @@ const EXAMPLES: Example[] = [
     switchLocaleOnServer: false,
   },
   {
+    name: 'vue-nuxt-cookie',
+    persistence: 'cookie',
+    port: 5318,
+    saveLoop: {
+      fileId: 'app/app.vue',
+      sourceAnchor: "<h2>{{ t('Dates and times') }}</h2>",
+      sourceInsertion:
+        "<h2>{{ t('Dates and times') }}</h2><p>{{ t('Probe from the save loop') }}</p>",
+      sourcePath: 'app/app.vue',
+      ssrHtml: true,
+    },
+    serve: 'start',
+    switchLocaleOnServer: true,
+  },
+  {
+    name: 'vue-nuxt-url',
+    persistence: 'url',
+    port: 5319,
+    serve: 'start',
+    switchLocaleOnServer: false,
+  },
+  {
     name: 'vue-vanilla-cookie',
     persistence: 'cookie',
     port: 5316,

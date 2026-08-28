@@ -45,28 +45,10 @@ function collectLocalExports(
   sourceFile: SourceFile,
   out: Map<string, ExportEntry>,
 ): void {
-  const localByName = new Map<string, ExportEntry>();
-  for (const node of sourceFile.statements) {
-    for (const [name, entry] of collectDeclarationEntries(node, sourceFile)) {
-      localByName.set(name, entry);
-    }
-  }
-
   for (const node of sourceFile.statements) {
     if (hasExportModifier(node)) {
       for (const [name, entry] of collectDeclarationEntries(node, sourceFile)) {
         out.set(name, entry);
-      }
-      continue;
-    }
-    if (
-      ts.isExportAssignment(node) &&
-      node.isExportEquals !== true &&
-      ts.isIdentifier(node.expression)
-    ) {
-      const entry = localByName.get(node.expression.text);
-      if (entry !== undefined) {
-        out.set('default', entry);
       }
     }
   }

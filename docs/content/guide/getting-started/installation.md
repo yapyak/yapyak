@@ -34,9 +34,17 @@ To use yapyak, install the Vite plugin, a framework adapter, and optionally an S
 {% /when %}
 
 {% when value="vue" %}
+{% switch group="adapter" %}
+{% when value="none" %}
 - Node.js 22.22 or later
 - Vite 8 or later
 - Vue 3.4 or later
+{% /when %}
+{% when value="nuxt" %}
+- Node.js 22.22 or later
+- Nuxt 4.1 or later
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="svelte" %}
@@ -159,6 +167,8 @@ npm install yapyak @yapyak/vite @yapyak/react @yapyak/tanstack-start @yapyak/oll
 {% /when %}
 
 {% when value="vue" %}
+{% switch group="adapter" %}
+{% when value="none" %}
 {% switch group="translator" %}
 {% when value="none" %}
 ```bash
@@ -184,6 +194,131 @@ npm install yapyak @yapyak/vite @yapyak/vue @yapyak/gemini
 ```bash
 npm install yapyak @yapyak/vite @yapyak/vue @yapyak/ollama
 ```
+{% /when %}
+{% /switch %}
+{% /when %}
+{% when value="nuxt" %}
+{% switch group="translator" %}
+{% when value="none" %}
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
+```bash
+pnpm dlx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% /switch %}
+{% /when %}
+{% when value="anthropic" %}
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
+```bash
+pnpm dlx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% /switch %}
+
+Add the translator package:
+
+```bash
+npm install @yapyak/anthropic
+```
+{% /when %}
+{% when value="openai" %}
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
+```bash
+pnpm dlx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% /switch %}
+
+Add the translator package:
+
+```bash
+npm install @yapyak/openai
+```
+{% /when %}
+{% when value="gemini" %}
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
+```bash
+pnpm dlx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% /switch %}
+
+Add the translator package:
+
+```bash
+npm install @yapyak/gemini
+```
+{% /when %}
+{% when value="ollama" %}
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
+```bash
+pnpm dlx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% /switch %}
+
+Add the translator package:
+
+```bash
+npm install @yapyak/ollama
+```
+{% /when %}
+{% /switch %}
 {% /when %}
 {% /switch %}
 {% /when %}
@@ -289,11 +424,11 @@ The [yapyak extension for VS Code](https://marketplace.visualstudio.com/items?it
 
 ## Setup
 
-Add the yapyak plugin to your build config:
-
 {% switch group="framework" %}
 
 {% when value="react" %}
+Add the yapyak plugin to your build config:
+
 {% switch group="adapter" %}
 {% when value="none" %}
 ```ts [vite.config.ts]
@@ -333,6 +468,10 @@ export default defineConfig({
 {% /when %}
 
 {% when value="vue" %}
+{% switch group="adapter" %}
+{% when value="none" %}
+Add the yapyak plugin to your build config:
+
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
@@ -343,8 +482,21 @@ export default defineConfig({
 });
 ```
 {% /when %}
+{% when value="nuxt" %}
+The install command above registers the module in `nuxt.config.ts`:
+
+```ts [nuxt.config.ts]
+export default defineNuxtConfig({
+  modules: ['@yapyak/nuxt']
+});
+```
+{% /when %}
+{% /switch %}
+{% /when %}
 
 {% when value="svelte" %}
+Add the yapyak plugin to your build config:
+
 {% switch group="adapter" %}
 {% when value="none" %}
 ```ts [vite.config.ts]
@@ -372,6 +524,8 @@ export default defineConfig({
 {% /when %}
 
 {% when value="astro" %}
+Add the yapyak integration to your build config:
+
 ```ts [astro.config.ts]
 import { defineConfig } from 'astro/config';
 import { yapyak } from '@yapyak/astro/integration';
@@ -403,11 +557,11 @@ ollama pull llama3.1
 {% /when %}
 {% /switch %}
 
-Create `yapyak.config.ts`:
-
 {% switch group="framework" %}
 
 {% when value="react" %}
+Create `yapyak.config.ts`:
+
 {% switch group="adapter" %}
 {% when value="none" %}
 {% switch group="translator" %}
@@ -632,6 +786,10 @@ export default defineConfig({
 {% /when %}
 
 {% when value="vue" %}
+{% switch group="adapter" %}
+{% when value="none" %}
+Create `yapyak.config.ts`:
+
 {% switch group="translator" %}
 {% when value="none" %}
 ```ts [yapyak.config.ts]
@@ -704,8 +862,100 @@ export default defineConfig({
 {% /when %}
 {% /switch %}
 {% /when %}
+{% when value="nuxt" %}
+{% switch group="translator" %}
+{% when value="none" %}
+It also writes a starter `yapyak.config.ts` at the project root:
+
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { nuxt } from '@yapyak/nuxt/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [nuxt()],
+  syncHtmlAttributes: true
+});
+```
+{% /when %}
+{% when value="anthropic" %}
+It also writes a starter `yapyak.config.ts` at the project root. Add the translator:
+
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { anthropic } from '@yapyak/anthropic';
+import { nuxt } from '@yapyak/nuxt/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [nuxt()],
+  syncHtmlAttributes: true,
+  translator: anthropic({
+    apiKey: process.env.ANTHROPIC_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="openai" %}
+It also writes a starter `yapyak.config.ts` at the project root. Add the translator:
+
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { openai } from '@yapyak/openai';
+import { nuxt } from '@yapyak/nuxt/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [nuxt()],
+  syncHtmlAttributes: true,
+  translator: openai({
+    apiKey: process.env.OPENAI_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="gemini" %}
+It also writes a starter `yapyak.config.ts` at the project root. Add the translator:
+
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { gemini } from '@yapyak/gemini';
+import { nuxt } from '@yapyak/nuxt/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [nuxt()],
+  syncHtmlAttributes: true,
+  translator: gemini({
+    apiKey: process.env.GEMINI_API_KEY
+  })
+});
+```
+{% /when %}
+{% when value="ollama" %}
+It also writes a starter `yapyak.config.ts` at the project root. Add the translator:
+
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { ollama } from '@yapyak/ollama';
+import { nuxt } from '@yapyak/nuxt/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [nuxt()],
+  syncHtmlAttributes: true,
+  translator: ollama()
+});
+```
+{% /when %}
+{% /switch %}
+{% /when %}
+{% /switch %}
+{% /when %}
 
 {% when value="svelte" %}
+Create `yapyak.config.ts`:
+
 {% switch group="adapter" %}
 {% when value="none" %}
 {% switch group="translator" %}
@@ -862,6 +1112,8 @@ export default defineConfig({
 {% /when %}
 
 {% when value="astro" %}
+Create `yapyak.config.ts`:
+
 {% switch group="translator" %}
 {% when value="none" %}
 ```ts [yapyak.config.ts]
@@ -1004,6 +1256,14 @@ function Root() {
 {% /switch %}
 {% /when %}
 
+{% when value="vue" %}
+{% switch group="adapter" %}
+{% when value="nuxt" %}
+With [`syncHtmlAttributes`](/guide/getting-started/configuration#synchtmlattributes) on, `<html lang>` and `<html dir>` follow the active locale, in server-rendered HTML and on locale switches in the browser.
+{% /when %}
+{% /switch %}
+{% /when %}
+
 {% when value="svelte" %}
 {% switch group="adapter" %}
 {% when value="sveltekit" %}
@@ -1052,15 +1312,19 @@ Every navigation re-runs the middleware and re-renders the layout, so `<html lan
 
 {% /switch %}
 
-Tell TypeScript about yapyak's generated types:
-
 {% switch group="adapter" %}
 {% when value="sveltekit" %}
+Tell TypeScript about yapyak's generated types:
+
 ```diff [src/app.d.ts]
 +/// <reference path="../.yapyak/types.d.ts" />
 ```
 {% /when %}
+{% when value="nuxt" %}
+{% /when %}
 {% else %}
+Tell TypeScript about yapyak's generated types:
+
 ```diff [tsconfig.json]
  {
    "include": [
@@ -1103,14 +1367,40 @@ Or create the file by hand. Drop `sv.json` into the folder and yapyak picks it u
 
 Pass a source string to [`t()`](/reference/yapyak/t):
 
+{% switch group="adapter" %}
+{% when value="nuxt" %}
+```vue [app/app.vue]
+<template>
+  <button>{{ t('Save changes') }}</button>
+</template>
+```
+
+{% callout variant="info" %}
+`t` and the `RichText` component are auto-imported. Every other API is a regular import.
+{% /callout %}
+{% /when %}
+{% else %}
 ```ts
 import { t } from 'yapyak';
 
 t('Save changes');
 ```
+{% /else %}
+{% /switch %}
 
 Save the file. yapyak extracts the source string and writes an empty stub to every locale file:
 
+{% switch group="adapter" %}
+{% when value="nuxt" %}
+```json [locales/sv.json]
+{
+  "app/app.vue": {
+    "Save changes": ""
+  }
+}
+```
+{% /when %}
+{% else %}
 ```json [locales/sv.json]
 {
   "src/app.tsx": {
@@ -1118,9 +1408,22 @@ Save the file. yapyak extracts the source string and writes an empty stub to eve
   }
 }
 ```
+{% /else %}
+{% /switch %}
 
 Without a [translator](/guide/translating/providers), the stub stays empty and the source string renders. Hand-edit it and the translation renders instead:
 
+{% switch group="adapter" %}
+{% when value="nuxt" %}
+```json [locales/sv.json]
+{
+  "app/app.vue": {
+    "Save changes": "Spara ändringar"
+  }
+}
+```
+{% /when %}
+{% else %}
 ```json [locales/sv.json]
 {
   "src/app.tsx": {
@@ -1128,5 +1431,7 @@ Without a [translator](/guide/translating/providers), the stub stays empty and t
   }
 }
 ```
+{% /else %}
+{% /switch %}
 
 [Switch the locale](/guide/switching/switch) to see it. The active locale resets on reload until you configure [`persistence`](/guide/switching/persistence).

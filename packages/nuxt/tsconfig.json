@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": [
+      "node",
+      "nuxt",
+      "@nuxt/nitro-server/augments"
+    ]
+  },
+  "exclude": [
+    "dist",
+    "node_modules"
+  ],
+  "extends": "@yapyak/typescript-config/library",
+  "include": [
+    "src"
+  ]
+}

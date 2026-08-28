@@ -67,6 +67,25 @@ before you release. Last-chance edits can be made to `CHANGELOG.md` in the Versi
 You control cadence: merge the Version PR immediately for continuous releases, or let
 changesets accumulate and ship weekly. No changesets = no PR = silent.
 
+## Adding a package
+
+Trusted publishing is configured per package on npmjs.com, and a package that has never been
+published cannot carry the configuration. A brand-new package therefore needs one manual round
+before CI can release it:
+
+1. Land the package on `main` with its changeset, its `version` set to the current lockstep
+   version, and its name added to `fixed` in `.changeset/config.json`.
+2. Publish it once from the repo root:
+   ```bash
+   pnpm publish --filter <name>
+   ```
+   `pnpm publish` rewrites `workspace:*` and `catalog:` to real versions — never use
+   `npm publish` here. This first version ships without provenance.
+3. On npmjs.com, open the new package's Settings and add the same trusted publisher as the
+   existing packages carry (repository `yapyak/yapyak`, workflow `release.yml`).
+4. Merge the next Version Packages PR. From then on CI publishes the package via OIDC with
+   provenance, like every other package.
+
 ## Breaking changes (pre-1.0)
 
 Every changeset declares `patch` — `scripts/verify-changesets.mjs` and the CI

@@ -103,4 +103,35 @@ describe('extractExports', () => {
       'publicName',
     ]);
   });
+
+  it('skips a default export', () => {
+    const entry = join(dir, 'index.ts');
+    writeFileSync(
+      entry,
+      'const module = { setup(): void {} };\nexport type Settings = { theme: string };\nexport default module;',
+    );
+    const result = extractExports(entry);
+    expect([
+      ...result.keys(),
+    ]).toEqual([
+      'Settings',
+    ]);
+  });
+
+  it('skips a re-exported default export', () => {
+    writeFileSync(
+      join(dir, 'leaf.ts'),
+      'const module = { setup(): void {} };\nexport type Settings = { theme: string };\nexport default module;',
+    );
+    const entry = join(dir, 'index.ts');
+    writeFileSync(
+      entry,
+      `export type { Settings } from './leaf';\nexport { default } from './leaf';`,
+    );
+    expect([
+      ...extractExports(entry).keys(),
+    ]).toEqual([
+      'Settings',
+    ]);
+  });
 });

@@ -1,0 +1,82 @@
+{
+  "name": "@yapyak/nuxt",
+  "version": "0.0.12",
+  "description": "Nuxt module for yapyak.",
+  "keywords": [
+    "i18n",
+    "module",
+    "nuxt",
+    "translation",
+    "vue",
+    "yapyak"
+  ],
+  "homepage": "https://yapyak.dev",
+  "bugs": "https://github.com/yapyak/yapyak/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yapyak/yapyak.git",
+    "directory": "packages/nuxt"
+  },
+  "license": "MIT",
+  "author": "Joakim Uhrwing",
+  "sideEffects": false,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./processor": {
+      "types": "./dist/processor.d.ts",
+      "default": "./dist/processor.js"
+    },
+    "./runtime/plugin": {
+      "types": "./dist/runtime/plugin.d.ts",
+      "default": "./dist/runtime/plugin.js"
+    },
+    "./runtime/nitro": {
+      "types": "./dist/runtime/nitro.d.ts",
+      "default": "./dist/runtime/nitro.js"
+    }
+  },
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "yapyak": "./dist/bin.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "pnpm -w vitest --run --project=@yapyak/nuxt",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nuxt/kit": "catalog:",
+    "@yapyak/vite": "workspace:*",
+    "@yapyak/vue": "workspace:*",
+    "h3": "catalog:",
+    "yapyak": "workspace:*"
+  },
+  "devDependencies": {
+    "@nuxt/nitro-server": "catalog:",
+    "@types/node": "catalog:",
+    "@yapyak/tsdown-config": "workspace:*",
+    "@yapyak/typescript-config": "workspace:*",
+    "nitropack": "catalog:",
+    "nuxt": "catalog:",
+    "tsdown": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  },
+  "peerDependencies": {
+    "nitropack": ">=2.13",
+    "nuxt": ">=4.1"
+  },
+  "engines": {
+    "node": ">=22.22"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

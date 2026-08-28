@@ -66,7 +66,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'Every supported framework is a first-class target, not a lowest-common-denominator wrapper. React, Vue, Svelte, and Astro each get their own bindings, parser, and tests. SSR adapters cover Astro, React Router, SvelteKit, and TanStack Start. No framework flies coach.',
+        'Every supported framework is a first-class target, not a lowest-common-denominator wrapper. React, Vue, Svelte, and Astro each get their own bindings, parser, and tests. SSR adapters cover Astro, Nuxt, React Router, SvelteKit, and TanStack Start. No framework flies coach.',
       ),
       number: '09',
       title: t('Frameworks, first-class'),

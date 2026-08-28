@@ -1,0 +1,5 @@
+.nuxt
+.nuxtrc
+.output
+.yapyak/
+node_modules

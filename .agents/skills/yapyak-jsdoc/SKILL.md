@@ -636,6 +636,8 @@ export type RichTextProps = { value: string };
 
 When multiple primaries consume the same secondary, the canonical lives on the umbrella primary.
 
+**Exception — headless primary.** When the primary is a host-loaded default export that the reference omits, its `*Options` secondary is the rendered surface: the secondary carries the primary's `@example` blocks, and the primary keeps the formula sentence only.
+
 ### Cross-framework sibling consistency
 
 When the same conceptual symbol exists in multiple framework packages (`RichText` in `@yapyak/astro`, `@yapyak/react`, `@yapyak/svelte`, `@yapyak/vue`), their JSDoc is mechanically parallel.
@@ -839,10 +841,11 @@ The identifier is the human form of the package name (scope stripped, dashes to 
 
 #### Package identifier and role table
 
-Closed set: `adapter`, `base`, `bindings`, `plugin`, `translator`.
+Closed set: `adapter`, `base`, `bindings`, `module`, `plugin`, `translator`.
 
 `bindings` — client-side framework-native runtime glue (hooks, refs, runes, native components).
 `adapter` — server-lifecycle wiring (middleware, handle, withRequest).
+`module` — full-framework host wiring (build plugin, server plugins, auto-imports).
 `plugin` — build-tool plugins.
 `translator` — LLM-vendor implementations.
 
@@ -851,6 +854,7 @@ Closed set: `adapter`, `base`, `bindings`, `plugin`, `translator`.
 | `@yapyak/anthropic` | Anthropic | translator |
 | `@yapyak/astro` | Astro | bindings |
 | `@yapyak/gemini` | Gemini | translator |
+| `@yapyak/nuxt` | Nuxt | module |
 | `@yapyak/ollama` | Ollama | translator |
 | `@yapyak/openai` | OpenAI | translator |
 | `@yapyak/react` | React | bindings |

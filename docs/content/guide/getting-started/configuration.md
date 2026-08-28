@@ -19,6 +19,8 @@ export default defineConfig({
 {% /when %}
 
 {% when value="vue" %}
+{% switch group="adapter" %}
+{% when value="none" %}
 ```ts [yapyak.config.ts]
 import { vue } from '@yapyak/vue/processor';
 import { defineConfig } from 'yapyak/config';
@@ -27,6 +29,18 @@ export default defineConfig({
   processors: [vue()]
 });
 ```
+{% /when %}
+{% when value="nuxt" %}
+```ts [yapyak.config.ts]
+import { nuxt } from '@yapyak/nuxt/processor';
+import { defineConfig } from 'yapyak/config';
+
+export default defineConfig({
+  processors: [nuxt()]
+});
+```
+{% /when %}
+{% /switch %}
 {% /when %}
 
 {% when value="svelte" %}
@@ -182,6 +196,7 @@ Register one per framework you use. Each takes responsibility for its own file e
 |---|---|
 | React | `import { react } from '@yapyak/react/processor'` |
 | Vue | `import { vue } from '@yapyak/vue/processor'` |
+| Nuxt | `import { nuxt } from '@yapyak/nuxt/processor'` |
 | Svelte | `import { svelte } from '@yapyak/svelte/processor'` |
 | Astro | `import { astro } from '@yapyak/astro/processor'` |
 

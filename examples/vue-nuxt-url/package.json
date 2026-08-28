@@ -1,0 +1,20 @@
+{
+  "name": "@yapyak-examples/vue-nuxt-url",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxi build",
+    "dev": "nuxi dev",
+    "start": "node .output/server/index.mjs",
+    "typecheck": "nuxi typecheck"
+  },
+  "dependencies": {
+    "@yapyak/nuxt": "workspace:*",
+    "nuxt": "catalog:",
+    "vue": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:",
+    "vue-tsc": "catalog:"
+  }
+}

@@ -36,6 +36,8 @@ catalog:
   '@changesets/cli': 2.31.1
   '@fast-check/vitest': 0.4.1
   '@markdoc/markdoc': 0.5.9
+  '@nuxt/kit': 4.5.2
+  '@nuxt/nitro-server': 4.5.2
   '@playwright/test': 1.62.1
   '@react-router/dev': 8.3.0
   '@react-router/node': 8.3.0
@@ -67,11 +69,14 @@ catalog:
   '@vue/compiler-core': 3.5.40
   '@vue/compiler-sfc': 3.5.40
   astro: 7.1.6
+  h3: 1.15.11
   'happy-dom': 20.11.1
   isbot: 5.2.1
   jiti: 2.7.0
   knip: 6.31.0
   'magic-string': 1.1.0
+  nitropack: 2.13.4
+  nuxt: 4.5.2
   picomatch: 4.0.5
   publint: 0.3.23
   react: 19.2.8

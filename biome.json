@@ -272,6 +272,29 @@
           "test"
         ]
       }
+    },
+    {
+      "includes": [
+        "examples/vue-nuxt-cookie/**",
+        "examples/vue-nuxt-url/**"
+      ],
+      "javascript": {
+        "globals": [
+          "$fetch",
+          "defineEventHandler",
+          "defineNuxtConfig",
+          "definePageMeta",
+          "navigateTo",
+          "readBody"
+        ]
+      },
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUndeclaredDependencies": "off"
+          }
+        }
+      }
     }
   ],
   "vcs": {

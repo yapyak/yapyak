@@ -68,6 +68,14 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
   },
 
   {
+    dir: 'nuxt',
+    group: 'Adapters',
+    label: 'Nuxt',
+    subpaths: [
+      './processor',
+    ],
+  },
+  {
     dir: 'sveltekit',
     group: 'Adapters',
     label: 'SvelteKit',
@@ -215,6 +223,10 @@ export default defineConfig({
             {
               label: 'TanStack Start',
               value: 'tanstack-start',
+            },
+            {
+              label: 'Nuxt',
+              value: 'nuxt',
             },
             {
               label: 'SvelteKit',

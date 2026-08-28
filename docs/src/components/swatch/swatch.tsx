@@ -14,6 +14,7 @@ export type SwatchAccent =
   | 'gemini'
   | 'none'
   | 'npm'
+  | 'nuxt'
   | 'ollama'
   | 'openai'
   | 'pnpm'
