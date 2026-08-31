@@ -235,7 +235,7 @@ Everything else follows from that.
 
 3. **AI is useful — when it has context.** Not magic. Not perfect. But useful when it knows you're writing inside a `<button>` in `<SaveDialog>`, with voice "casual" and glossary `"Cart" → "Korg"`. And always optional. Skip AI entirely if you want.
 
-4. **No margin on your tokens.** You bring your own API key. Anthropic, OpenAI, Gemini, Ollama, or a custom translator in 30 lines. yapyak never sees your tokens.
+4. **No margin on your tokens.** You bring your own API key or Claude subscription. Anthropic, OpenAI, Gemini, Ollama, Claude Code, or a custom translator in 30 lines. yapyak never sees your tokens.
 
 5. **Behind all the AI talk, yapyak is a normal modern i18n library.** Plurals, dates, lists, ordinals, framework adapters, CLI, manual workflow, rename-detection. The boring stuff works.
 

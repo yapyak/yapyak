@@ -51,7 +51,7 @@ Locked vocabulary for the yapyak guide. Same concept, same word, every page. Add
 | The yapyak-provided translator implementations | `shipped translator` | built-in translator, yapyak-shipped translator, bundled translator |
 | The vendor company / underlying API (Anthropic, OpenAI…) | `provider` (or `vendor` in error contexts only) | mixing `provider` with `translator` when meaning the binding |
 | The configured translator implementations | `translator` (singular) / `translators` (plural) | provider, AI provider, model provider, AI service, bindings |
-| Anthropic/OpenAI/Gemini/Ollama factory functions | `factory` (`the four factories`) | constructor, builder |
+| Anthropic/OpenAI/Gemini/Ollama/Claude Code factory functions | `factory` (`the five factories`) | constructor, builder |
 | User-built translator via `createTranslator` | `custom translator` | your translator (only as in-page shorthand) |
 
 ### Framework integration
