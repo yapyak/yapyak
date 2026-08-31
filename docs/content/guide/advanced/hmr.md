@@ -30,7 +30,7 @@ A model-returned translation and a hand-edit both write to `locales/<locale>.jso
 2. The yapyak plugin reads the new file and diffs it against the cached version.
 3. Just the changed entries are sent to the browser over Vite's WebSocket.
 4. The runtime in the browser updates them in memory.
-5. Every component that calls `t()` for one of the changed strings re-renders.
+5. Every component that calls `t()` re-renders and picks up the new values.
 
 This is the fast path. The source modules aren't recompiled, so component state survives. The whole loop is sub-second for typical edits.
 

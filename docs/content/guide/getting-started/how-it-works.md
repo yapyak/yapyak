@@ -516,9 +516,10 @@ translations across renames, moves, and deletions, see
 ## Switching
 
 Because the translations are compiled into the modules, a locale change is a
-re-render, not a fetch. When the active locale changes, only the components that
-call `t()` re-render; the rest are left alone. The processor wires that
-subscription in at compile time, through each framework's own reactivity.
+re-render, not a fetch. When the active locale changes, the components that
+call `t()` re-render, along with their children; components outside those
+subtrees are left alone. The processor wires that subscription in at compile
+time, through each framework's own reactivity.
 
 {% switch group="framework" %}
 
