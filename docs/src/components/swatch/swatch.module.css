@@ -78,6 +78,10 @@
       background-color: var(--accent-claude);
     }
 
+    &[data-accent="claude-code"] {
+      background-color: var(--accent-claude-code);
+    }
+
     &[data-accent="cursor"] {
       background-color: var(--accent-cursor);
     }
