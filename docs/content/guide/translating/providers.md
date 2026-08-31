@@ -3,7 +3,7 @@ title: Providers
 order: 3
 ---
 
-A translator connects yapyak to a model. yapyak ships four; any other backend is a [custom translator](/guide/advanced/custom-translator) away.
+A translator connects yapyak to a model. yapyak ships five; any other backend is a [custom translator](/guide/advanced/custom-translator) away.
 
 ```ts [yapyak.config.ts]
 import { defineConfig } from 'yapyak/config';
@@ -24,12 +24,13 @@ export default defineConfig({
 | [OpenAI](/reference/openai) | `@yapyak/openai` | GPT and reasoning models. Other OpenAI-compatible endpoints work by overriding `endpoint` and `headers`. |
 | [Gemini](/reference/gemini) | `@yapyak/gemini` | Google's models. Default batch size 15. |
 | [Ollama](/reference/ollama) | `@yapyak/ollama` | Local inference. No API key. Default batch size 8, timeout 120s. |
+| [Claude Code](/reference/claude-code) | `@yapyak/claude-code` | Runs the local `claude` CLI on the developer's Claude subscription. No API key. Default concurrency 2, timeout 120s. |
 
 Each factory takes an `apiKey` (except Ollama) and the [shared options](#shared-options). Provider-specific options live on each [reference page](/reference).
 
 ## Shared options
 
-The four factories accept the same option surface. Provider pages add a handful of provider-specific extras (model defaults, vendor headers).
+The API factories accept the same option surface. Provider pages add a handful of provider-specific extras (model defaults, vendor headers).
 
 | Option | Type | Default | Purpose |
 |---|---|---|---|
@@ -82,6 +83,28 @@ ollama()
 ```
 
 Ollama defaults to a 120s timeout and 1 retry (versus 30s/2 for the API providers) to accommodate cold-start latency on local hardware.
+
+## Claude Code
+
+`claudeCode()` has no required arguments. It spawns the `claude` CLI in print mode, so translation runs on the developer's Claude subscription instead of an API key. Install [Claude Code](https://claude.com/claude-code) and sign in by running `claude` once. If translation fails with an authentication error, the CLI's saved token has expired. Run `/login` to refresh it.
+
+```ts
+claudeCode()
+```
+
+{% callout variant="info" %}
+Translations run in their own `claude` processes, on the same subscription as the CLI and outside the project directory. The compiler hands each batch the context it needs, so a Claude Code session open in the same project keeps working undisturbed.
+{% /callout %}
+
+The HTTP options don't apply: there is no `apiKey`, `endpoint`, `headers`, `temperature`, `maxTokens`, or `maxRetries`. `model` falls back to the CLI's configured model when omitted. Concurrency defaults to 2 and `timeout` to 120s, since each batch is a CLI process rather than an HTTP request.
+
+CI has no signed-in CLI. That only matters when CI actually translates: `yapyak check` never touches the translator, so a plain `claudeCode()` config is fine for a check-only pipeline. For a pipeline that runs [`yapyak translate`](/reference/cli/translate), pick the translator by environment:
+
+```ts
+translator: process.env.CI
+  ? anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+  : claudeCode()
+```
 
 ## Switching providers
 
