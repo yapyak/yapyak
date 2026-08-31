@@ -45,7 +45,7 @@ Save the file, and yapyak adds the string to your locale files. Connect a model 
 - **Source string is the key.** Write `t('Save changes')`. There are no separate names to invent.
 - **AI translation on save.** New strings are translated in the background as you work, and show up in the browser right away.
 - **Context-aware AI translation.** Because yapyak is a compiler, it sends the model the code around each string, so it translates a button as a button. Set a glossary and a tone, and it learns the rest from your existing translations.
-- **Bring your own AI. Or none.** Anthropic, OpenAI, Gemini, and Ollama are built in. Write your own, or skip AI and fill the JSON by hand.
+- **Bring your own AI. Or none.** Anthropic, OpenAI, Gemini, Ollama, and Claude Code are built in. Write your own, or skip AI and fill the JSON by hand.
 - **Refactor freely.** Move or rename files and the translations come with them. yapyak won't drop a translation you still use.
 - **Paranoid by default.** Missing values are caught as you type, every locale is checked on save, and the browser warns you in development. Numbered diagnostics, YAP0001 and up, each with a page that explains the fix.
 - **Production-ready i18n.** Plurals, selects, ordinals, dates, numbers, lists, and rich text that renders your own components. There's also a `format` helper for values outside a message.

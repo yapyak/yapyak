@@ -128,7 +128,7 @@ export default defineConfig({
 });
 ```
 
-yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama. A custom translator is a short interface if you need one.
+yapyak ships translators for Anthropic, OpenAI, Gemini, Ollama, and Claude Code. A custom translator is a short interface if you need one.
 
 Requests go directly from your machine to the model. There is no yapyak service in between, and the model can run anywhere your machine can reach, including the machine itself.
 
