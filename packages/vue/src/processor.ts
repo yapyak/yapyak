@@ -83,10 +83,10 @@ export function vue(): Processor {
       const fragments: Fragment[] = [];
 
       if (descriptor.script !== null) {
-        fragments.push(toScriptFragment(descriptor.script));
+        fragments.push(toScriptFragment(descriptor.script, 'module'));
       }
       if (descriptor.scriptSetup !== null) {
-        fragments.push(toScriptFragment(descriptor.scriptSetup));
+        fragments.push(toScriptFragment(descriptor.scriptSetup, 'instance'));
       }
       if (descriptor.template?.ast) {
         fragments.push(
@@ -136,10 +136,14 @@ function loadCompiler(): typeof VueSfc {
   }
 }
 
-function toScriptFragment(block: SFCScriptBlock): Fragment {
+function toScriptFragment(
+  block: SFCScriptBlock,
+  scope: Fragment['scope'],
+): Fragment {
   return {
     code: block.content,
     language: block.lang === 'ts' || block.lang === 'typescript' ? 'ts' : 'js',
+    scope,
     segments: segmentsFromOffset(block.content, block.loc.start.offset),
     type: 'script',
   };
@@ -209,6 +213,7 @@ function fragmentsFromInterpolation(
       ),
     },
     language: 'ts',
+    scope: 'instance',
     segments: segmentsFromOffset(mustache.code, mustache.codeOffset),
     type: 'template-expression',
   };
@@ -253,6 +258,7 @@ function fragmentsFromDirective(
   const fragment: Fragment = {
     code: expression.content,
     language: 'ts',
+    scope: 'instance',
     segments: segmentsFromDecoded(
       source,
       expression.loc.start.offset,

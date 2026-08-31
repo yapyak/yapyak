@@ -26,6 +26,7 @@ function runScriptImports(source: string): string {
       {
         code: source,
         language: 'ts',
+        scope: 'module',
         segments: segmentsFromOffset(source, 0),
         type: 'script',
       },
@@ -152,6 +153,7 @@ describe('transformScriptImports', () => {
         {
           code: script,
           language: 'ts',
+          scope: 'module',
           segments: segmentsFromOffset(script, 0),
           type: 'script',
         },
@@ -173,6 +175,7 @@ describe('transformScriptImports', () => {
         {
           code: script,
           language: 'ts',
+          scope: 'module',
           segments: segmentsFromOffset(script, 0),
           type: 'script',
         },
@@ -198,18 +201,21 @@ describe('transformScriptImports', () => {
         {
           code: declaration,
           language: 'ts',
+          scope: 'module',
           segments: segmentsFromOffset(declaration, 0),
           type: 'script',
         },
         {
           code: outer,
           language: 'ts',
+          scope: 'instance',
           segments: segmentsFromOffset(outer, declaration.length),
           type: 'template-expression',
         },
         {
           code: inner,
           language: 'ts',
+          scope: 'instance',
           segments: segmentsFromOffset(inner, source.indexOf(inner)),
           type: 'template-expression',
         },
@@ -230,6 +236,7 @@ describe('transformScriptImports', () => {
         {
           code: source,
           language: 'ts',
+          scope: 'instance',
           segments: segmentsFromOffset(source, 0),
           type: 'template-expression',
         },
@@ -250,12 +257,14 @@ describe('transformScriptImports', () => {
         {
           code: first,
           language: 'ts',
+          scope: 'module',
           segments: segmentsFromOffset(first, 0),
           type: 'script',
         },
         {
           code: second,
           language: 'ts',
+          scope: 'module',
           segments: segmentsFromOffset(second, first.length),
           type: 'script',
         },
@@ -278,12 +287,14 @@ describe('transformScriptImports', () => {
         {
           code: importLine,
           language: 'ts',
+          scope: 'module',
           segments: segmentsFromOffset(importLine, 0),
           type: 'script',
         },
         {
           code: usage,
           language: 'ts',
+          scope: 'module',
           segments: segmentsFromOffset(usage, importLine.length),
           type: 'script',
         },

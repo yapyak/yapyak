@@ -4,6 +4,8 @@ import { createProcessor } from 'yapyak/processor';
 
 const COMPONENT_NAME_RX = /^[A-Z]|^use[A-Z]/;
 
+const EVIDENCE_RX = /^use[A-Z]/;
+
 /** Options for {@link react}. */
 export type ReactOptions = {
   /**
@@ -51,6 +53,7 @@ export function react(options: ReactOptions = {}): Processor {
     id: 'react',
     runtime: {
       componentHook: {
+        evidencePattern: EVIDENCE_RX,
         invoke: 'useYapyak',
         namePattern: COMPONENT_NAME_RX,
         ...(options.rsc === true && {

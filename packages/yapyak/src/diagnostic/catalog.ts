@@ -320,6 +320,13 @@ export const YAP_COMPILE = {
     message: ({ currency }: { currency: string }): string =>
       `Currency code "${currency}" is not one \`Intl.NumberFormat\` knows.`,
   },
+  PARSER_CALL_MODULE_SCOPED: {
+    code: 'YAP0055',
+    hint: (): string =>
+      'Call `t()` inside the component or function where the text is used.',
+    message: (): string =>
+      '`t()` runs at module scope, so it evaluates once when the module loads and its result never updates.',
+  },
 } as const;
 
 // biome-ignore assist/source/useSortedKeys: yap yap yap

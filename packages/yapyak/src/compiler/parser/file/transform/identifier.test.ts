@@ -61,18 +61,18 @@ describe('hasIdentifier', () => {
 
 describe('findFreeIdentifier', () => {
   it('returns the preferred name when it is unused', () => {
-    expect(findFreeIdentifier('const x = 1;', '_useYapyak')).toBe('_useYapyak');
+    expect(findFreeIdentifier('const x = 1;', 'useYapyak')).toBe('useYapyak');
   });
 
   it('returns the preferred name with a numeric suffix when the original collides', () => {
-    expect(findFreeIdentifier('const _useYapyak = 1;', '_useYapyak')).toBe(
-      '_useYapyak_$0',
+    expect(findFreeIdentifier('const useYapyak = 1;', 'useYapyak')).toBe(
+      'useYapyak_$0',
     );
   });
 
   it('returns the next free numeric suffix when both the preferred and the first suffix collide', () => {
-    const source = 'const _useYapyak = 1; const _useYapyak_$0 = 2;';
-    expect(findFreeIdentifier(source, '_useYapyak')).toBe('_useYapyak_$1');
+    const source = 'const useYapyak = 1; const useYapyak_$0 = 2;';
+    expect(findFreeIdentifier(source, 'useYapyak')).toBe('useYapyak_$1');
   });
 });
 

@@ -9,7 +9,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 const SOURCE =
-  "import { t } from 'yapyak';\nexport const a = t('Hi {name}');\n";
+  "import { t } from 'yapyak';\nexport function greet() {\n  return t('Hi {name}');\n}\n";
 
 const TARGET_LOCALE = JSON.stringify(
   {

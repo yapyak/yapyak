@@ -67,10 +67,12 @@ export function svelte(): Processor {
       const fragments: Fragment[] = [];
 
       if (ast.instance != null) {
-        fragments.push(...fragmentsFromScript(ast.instance, source));
+        fragments.push(
+          ...fragmentsFromScript(ast.instance, source, 'instance'),
+        );
       }
       if (ast.module != null) {
-        fragments.push(...fragmentsFromScript(ast.module, source));
+        fragments.push(...fragmentsFromScript(ast.module, source, 'module'));
       }
       if (ast.fragment != null) {
         fragments.push(...fragmentsFromAst(ast.fragment, source));
@@ -133,7 +135,11 @@ function toPositionRange(position: unknown, source: string): Range {
   return rangeFromOffsets(source, 0, 0);
 }
 
-function fragmentsFromScript(script: AST.Script, source: string): Fragment[] {
+function fragmentsFromScript(
+  script: AST.Script,
+  source: string,
+  scope: Fragment['scope'],
+): Fragment[] {
   const start = (
     script.content as {
       start?: unknown;
@@ -152,6 +158,7 @@ function fragmentsFromScript(script: AST.Script, source: string): Fragment[] {
     {
       code,
       language: getScriptLang(script),
+      scope,
       segments: segmentsFromOffset(code, start),
       type: 'script',
     },
@@ -563,6 +570,7 @@ function fragmentsFromExpression(
   const fragment: Fragment = {
     code,
     language: 'ts',
+    scope: 'instance',
     segments: segmentsFromOffset(code, start),
     type: 'template-expression',
   };

@@ -9,6 +9,7 @@ function buildFragment(code: string, sourceOffset: number): Fragment {
   return {
     code,
     language: 'ts',
+    scope: 'module',
     segments: segmentsFromOffset(code, sourceOffset),
     type: 'script',
   };
@@ -27,6 +28,7 @@ describe('remapOffset', () => {
     const fragment: Fragment = {
       code: "a&&t('Save')",
       language: 'ts',
+      scope: 'instance',
       segments: [
         {
           codeLength: 1,

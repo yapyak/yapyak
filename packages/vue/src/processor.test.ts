@@ -51,6 +51,46 @@ describe('vue processor — shape', () => {
   });
 });
 
+describe('vue processor — fragments', () => {
+  it('marks a plain `<script>` fragment as module scope', () => {
+    const source = [
+      '<script lang="ts">',
+      "import { t } from 'yapyak';",
+      "const title = t('Hello');",
+      '</script>',
+    ].join('\n');
+    const fragments = vue().parseSource?.(source)?.fragments;
+    expect(fragments?.[0]?.scope).toBe('module');
+  });
+
+  it('marks a `<script setup>` fragment as instance scope', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      "const title = t('Hello');",
+      '</script>',
+    ].join('\n');
+    const fragments = vue().parseSource?.(source)?.fragments;
+    expect(fragments?.[0]?.scope).toBe('instance');
+  });
+
+  it('marks a template-expression fragment as instance scope', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      "  <h1>{{ t('Hello') }}</h1>",
+      '</template>',
+    ].join('\n');
+    const fragments = vue().parseSource?.(source)?.fragments;
+    const templateFragment = fragments?.find(
+      (fragment) => fragment.type === 'template-expression',
+    );
+    expect(templateFragment?.scope).toBe('instance');
+  });
+});
+
 describe('vue processor — extract', () => {
   it('returns template messages resolved against `<script setup>` import', () => {
     const source = [

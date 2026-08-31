@@ -32,6 +32,7 @@ const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => ({
     {
       code: source,
       language: 'ts',
+      scope: 'module',
       segments: segmentsFromOffset(source, 0),
       type: 'script',
     },
@@ -241,6 +242,16 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     }
     callSites.push(callSite);
 
+    if (fragment.scope === 'module' && isModuleScoped(fragmentCall.node)) {
+      diagnostics.push(
+        buildDiagnostic('PARSER_CALL_MODULE_SCOPED', undefined, {
+          fileId,
+          range: callSite.range,
+          severity: 'warning',
+        }),
+      );
+    }
+
     if (source === '') {
       continue;
     }
@@ -277,6 +288,17 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     }
     messagesById.set(id, message);
   }
+}
+
+function isModuleScoped(node: ts.Node): boolean {
+  let current: ts.Node | undefined = node.parent;
+  while (current) {
+    if (ts.isFunctionLike(current)) {
+      return false;
+    }
+    current = current.parent;
+  }
+  return true;
 }
 
 function mergeCallSiteContext(

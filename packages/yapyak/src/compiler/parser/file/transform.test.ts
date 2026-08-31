@@ -16,6 +16,7 @@ const reactProcessor: Processor = createProcessor({
   id: 'react',
   runtime: {
     componentHook: {
+      evidencePattern: /^use[A-Z]/,
       invoke: 'useYapyak',
       namePattern: /^[A-Z]|^use[A-Z]/,
     },
@@ -1257,6 +1258,7 @@ describe('transformFile', () => {
               {
                 code: source,
                 language: 'ts',
+                scope: 'module',
                 segments: segmentsFromOffset(source, 0),
                 type: 'script',
               },
@@ -1268,6 +1270,7 @@ describe('transformFile', () => {
             {
               code: source.slice(prefix.length),
               language: 'ts',
+              scope: 'module',
               segments: segmentsFromOffset(
                 source.slice(prefix.length),
                 prefix.length,
@@ -1432,9 +1435,11 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).toMatch(/useYapyak as _useYapyak/);
+      expect(code).toMatch(
+        /import \{ useYapyak \} from '@yapyak\/react\/internal'/,
+      );
       expect(code).toContain("from '@yapyak/react/internal'");
-      expect(code).toMatch(/function Header\(\) \{_useYapyak\(\)/);
+      expect(code).toMatch(/function Header\(\) \{useYapyak\(\)/);
     });
 
     it('refuses to write a `useYapyak()` call in a lowercase helper function', () => {
@@ -1451,7 +1456,7 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).not.toMatch(/function helper\(\) \{_useYapyak\(\)/);
+      expect(code).not.toMatch(/function helper\(\) \{useYapyak\(\)/);
     });
 
     it('writes a `useYapyak()` call in a custom hook starting with `use`', () => {
@@ -1471,7 +1476,7 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).toMatch(/function useGreeting\(\) \{_useYapyak\(\)/);
+      expect(code).toMatch(/function useGreeting\(\) \{useYapyak\(\)/);
     });
 
     it('folds repeat `t()` calls with one id into a single `registerVariants` site', () => {
@@ -1502,7 +1507,7 @@ describe('transformFile', () => {
           "import { t } from 'yapyak';\nexport function Header() { return t('Hello'); }\n",
       });
       expect(code).not.toMatch(/_registerVariants/);
-      expect(code).not.toMatch(/_useYapyak/);
+      expect(code).not.toMatch(/useYapyak/);
       expect(code).not.toMatch(/_invalidateFile/);
     });
 
@@ -1522,8 +1527,10 @@ describe('transformFile', () => {
           '}',
         ].join('\n'),
       });
-      expect(code).toMatch(/useYapyak as _useYapyak/);
-      expect(code).toMatch(/function Header\(\) \{_useYapyak\(\)/);
+      expect(code).toMatch(
+        /import \{ useYapyak \} from '@yapyak\/react\/internal'/,
+      );
+      expect(code).toMatch(/function Header\(\) \{useYapyak\(\)/);
       expect(code).not.toMatch(/_registerVariants/);
       expect(code).not.toMatch(/_invalidateFile/);
     });
@@ -1630,6 +1637,7 @@ describe('transformFile', () => {
           {
             code: source,
             language: 'ts',
+            scope: 'module',
             segments: [
               {
                 codeLength: 5,

@@ -107,6 +107,36 @@ test('preserves the input value when the source is saved', async ({ page }) => {
   expect(loadCount).toBe(0);
 });
 
+test('renders the switched locale inside a memoized concise component', async ({
+  page,
+}) => {
+  let loadCount = 0;
+  page.on('load', () => {
+    loadCount += 1;
+  });
+  await writeFile(
+    CART_PATH,
+    [
+      "import { memo } from 'react';",
+      "import { t } from 'yapyak';",
+      '',
+      "const Label = () => <p>{t('Settings')}</p>;",
+      '',
+      'export const Cart = memo(() => <Label />);',
+      '',
+    ].join('\n'),
+  );
+
+  await expect(page.getByText('Settings')).toBeVisible();
+  await page
+    .getByRole('button', {
+      name: 'sv',
+    })
+    .click();
+  await expect(page.getByText('Laddar...')).toBeVisible();
+  expect(loadCount).toBe(0);
+});
+
 test.fail(
   'preserves an uncontrolled input value when the source is saved',
   async ({ page }) => {

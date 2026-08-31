@@ -58,6 +58,12 @@ describe('react processor', () => {
     expect(namePattern?.test('helper')).toBe(false);
   });
 
+  it('returns a processor with an evidence pattern matching `use*` only', () => {
+    const evidencePattern = react().runtime?.componentHook?.evidencePattern;
+    expect(evidencePattern?.test('useTheme')).toBe(true);
+    expect(evidencePattern?.test('Header')).toBe(false);
+  });
+
   it('returns a processor without an eligibility directive when `rsc` is omitted', () => {
     expect(
       react().runtime?.componentHook?.eligibilityDirective,
@@ -86,7 +92,9 @@ describe('react processor', () => {
         '}',
       ].join('\n'),
     });
-    expect(code).toMatch(/useYapyak as _useYapyak/);
+    expect(code).toMatch(
+      /import \{ useYapyak \} from '@yapyak\/react\/internal'/,
+    );
     expect(code).toContain("from '@yapyak/react/internal'");
   });
 
@@ -103,7 +111,9 @@ describe('react processor', () => {
         '}',
       ].join('\n'),
     });
-    expect(code).toMatch(/useYapyak as _useYapyak/);
+    expect(code).toMatch(
+      /import \{ useYapyak \} from '@yapyak\/react\/internal'/,
+    );
     expect(code).toContain("from '@yapyak/react/internal'");
   });
 

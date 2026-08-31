@@ -14,6 +14,7 @@ describe('validateFragments', () => {
           {
             code: SOURCE,
             language: 'ts',
+            scope: 'module',
             segments: segmentsFromOffset(SOURCE, 0),
             type: 'script',
           },
@@ -32,6 +33,7 @@ describe('validateFragments', () => {
           {
             code: '',
             language: 'ts',
+            scope: 'module',
             segments: segmentsFromOffset('', 0),
             type: 'script',
           },
@@ -50,6 +52,7 @@ describe('validateFragments', () => {
           {
             code: SOURCE,
             language: 'ts',
+            scope: 'module',
             segments: [
               {
                 codeLength: -1,
@@ -73,6 +76,7 @@ describe('validateFragments', () => {
           {
             code: SOURCE,
             language: 'ts',
+            scope: 'module',
             segments: [
               {
                 codeLength: SOURCE.length,
@@ -96,6 +100,7 @@ describe('validateFragments', () => {
           {
             code: SOURCE,
             language: 'ts',
+            scope: 'module',
             segments: [
               {
                 codeLength: SOURCE.length - 10,

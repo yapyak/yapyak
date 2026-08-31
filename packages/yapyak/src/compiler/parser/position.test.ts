@@ -13,6 +13,7 @@ function makeSourceFile(source: string): ts.SourceFile {
 const fragment: Fragment = {
   code: '',
   language: 'ts',
+  scope: 'module',
   segments: segmentsFromOffset('', 0),
   type: 'script',
 };
@@ -52,6 +53,7 @@ describe('remapPosition', () => {
     const gapped: Fragment = {
       code: "a&&t('Save')",
       language: 'ts',
+      scope: 'instance',
       segments: [
         {
           codeLength: 1,

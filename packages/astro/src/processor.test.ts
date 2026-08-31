@@ -43,6 +43,34 @@ describe('astro processor — shape', () => {
   });
 });
 
+describe('astro processor — fragments', () => {
+  it('marks the frontmatter fragment as instance scope', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      "const title = t('Hello');",
+      '---',
+      '<h1>{title}</h1>',
+    ].join('\n');
+    const fragments = astro().parseSource?.(source)?.fragments;
+    expect(fragments?.[0]?.scope).toBe('instance');
+  });
+
+  it('marks a template-expression fragment as instance scope', () => {
+    const source = [
+      '---',
+      "import { t } from 'yapyak';",
+      '---',
+      "<h1>{t('Hello')}</h1>",
+    ].join('\n');
+    const fragments = astro().parseSource?.(source)?.fragments;
+    const templateFragment = fragments?.find(
+      (fragment) => fragment.type === 'template-expression',
+    );
+    expect(templateFragment?.scope).toBe('instance');
+  });
+});
+
 describe('astro processor — extract', () => {
   it('returns call-site context for a template message', () => {
     const source = [

@@ -52,6 +52,7 @@ describe('createProcessor', () => {
           {
             code: source,
             language: 'ts',
+            scope: 'module',
             segments: segmentsFromOffset(source, 0),
             type: 'script',
           },
@@ -65,6 +66,7 @@ describe('createProcessor', () => {
         {
           code: 'let x = 1;',
           language: 'ts',
+          scope: 'module',
           segments: segmentsFromOffset('let x = 1;', 0),
           type: 'script',
         },

@@ -95,6 +95,7 @@ export function astro(): Processor {
             {
               code: source,
               language: 'ts',
+              scope: 'instance',
               segments: segmentsFromOffset(source, 0),
               type: 'script',
             },
@@ -242,6 +243,7 @@ function fragmentsFromFrontmatter(
   return {
     code,
     language: 'tsx',
+    scope: 'instance',
     segments: segmentsFromOffset(code, codeStart),
     type: 'script',
   };
@@ -414,6 +416,7 @@ function fragmentsFromExpression(
     elisionContext:
       elisionContext && embedded.length === 0 ? elisionContext : undefined,
     language: 'ts',
+    scope: 'instance',
     segments: masked.segments,
     type: 'template-expression',
   };

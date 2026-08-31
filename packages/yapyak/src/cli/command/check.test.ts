@@ -57,7 +57,7 @@ describe('check', () => {
     });
     writeFileSync(
       join(root, 'src', 'a.ts'),
-      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+      `import { t } from 'yapyak';\nexport function label() {\n  return t('Save');\n}\n`,
     );
     mkdirSync(join(root, 'locales'), {
       recursive: true,
@@ -84,7 +84,7 @@ describe('check', () => {
     });
     writeFileSync(
       join(root, 'src', 'a.ts'),
-      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+      `import { t } from 'yapyak';\nexport function label() {\n  return t('Save');\n}\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
@@ -120,7 +120,7 @@ describe('check', () => {
     });
     writeFileSync(
       join(root, 'src', 'a.ts'),
-      `import { t } from 'yapyak';\nexport const a = t('Save');\nexport const b = t('Cancel');\n`,
+      `import { t } from 'yapyak';\nexport function labels() {\n  return [t('Save'), t('Cancel')];\n}\n`,
     );
     writeFileSync(
       join(root, 'locales', 'sv.json'),
@@ -180,7 +180,7 @@ describe('check', () => {
     });
     writeFileSync(
       join(root, 'src', 'a.ts'),
-      `import { t } from 'yapyak';\nexport const x = t('Save');\n`,
+      `import { t } from 'yapyak';\nexport function label() {\n  return t('Save');\n}\n`,
     );
     writeFileSync(join(root, 'locales', 'sv.json'), '{ "src/a.ts": { "Save": ');
 

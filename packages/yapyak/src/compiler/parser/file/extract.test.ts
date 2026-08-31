@@ -74,6 +74,7 @@ describe('extractFile', () => {
           {
             code: "import { t } from 'yapyak';",
             language: 'ts',
+            scope: 'module',
             segments: segmentsFromOffset("import { t } from 'yapyak';", 0),
             type: 'script',
           },
@@ -82,6 +83,7 @@ describe('extractFile', () => {
             enclosingAttribute: 'aria-label',
             enclosingElement: 'button',
             language: 'ts',
+            scope: 'instance',
             segments: segmentsFromOffset("t('Save changes')", 28),
             snippet: `<button>{t('Save changes')}</button>`,
             type: 'template-expression',
@@ -124,6 +126,7 @@ describe('extractFile', () => {
           {
             code: source,
             language: 'ts',
+            scope: 'module',
             segments: segmentsFromOffset(source, 0),
             type: 'script',
           },
@@ -153,6 +156,7 @@ describe('extractFile', () => {
           {
             code: source,
             language: 'ts',
+            scope: 'module',
             segments: [
               {
                 codeLength: 5,
@@ -238,6 +242,62 @@ describe('extractFile', () => {
       expect(
         result.diagnostics.some((diagnostic) => diagnostic.code === 'YAP0008'),
       ).toBe(true);
+    });
+
+    it('emits YAP0055 for a `t()` call at module scope', () => {
+      const result = extractFile(
+        'src/a.ts',
+        "import { t } from 'yapyak';\nexport const title = t('Hello');\n",
+      );
+      expect(
+        result.diagnostics.some((diagnostic) => diagnostic.code === 'YAP0055'),
+      ).toBe(true);
+    });
+
+    it('records the call range on YAP0055', () => {
+      const source =
+        "import { t } from 'yapyak';\nexport const title = t('Hello');\n";
+      const result = extractFile('src/a.ts', source);
+      const diagnostic = result.diagnostics.find(
+        (candidate) => candidate.code === 'YAP0055',
+      );
+      expect(diagnostic?.severity).toBe('warning');
+      expect(diagnostic?.range.start.offset).toBe(source.indexOf("t('Hello')"));
+    });
+
+    it('emits no YAP0055 for a `t()` call inside a function', () => {
+      const result = extractFile(
+        'src/a.ts',
+        "import { t } from 'yapyak';\nexport function label() {\n  return t('Hello');\n}\n",
+      );
+      expect(result.diagnostics).toHaveLength(0);
+    });
+
+    it('emits no YAP0055 in an instance-scoped fragment', () => {
+      const source = "import { t } from 'yapyak';\nconst title = t('Hello');";
+      const processor: Processor = {
+        extensions: [
+          '.vue',
+        ],
+        id: 'instance-script',
+        parseSource: () => ({
+          fragments: [
+            {
+              code: source,
+              language: 'ts',
+              scope: 'instance',
+              segments: segmentsFromOffset(source, 0),
+              type: 'script',
+            },
+          ],
+        }),
+      };
+      const result = extractFile('src/a.vue', source, {
+        processors: [
+          processor,
+        ],
+      });
+      expect(result.diagnostics).toHaveLength(0);
     });
   });
 });

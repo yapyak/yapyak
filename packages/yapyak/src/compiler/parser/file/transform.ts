@@ -52,7 +52,7 @@ const VARIANTS_PREFIX = '_variants';
 const REGISTER_VARIANTS_LOCAL = '_registerVariants';
 const REGISTER_LOCALE_FILE_SOURCE_LOCAL = '_registerLocaleFileSource';
 const INVALIDATE_FILE_LOCAL = '_invalidateFile';
-const USE_YAPYAK_LOCAL = '_useYapyak';
+const USE_YAPYAK_LOCAL = 'useYapyak';
 const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
   magicString,
   source,
@@ -70,6 +70,7 @@ const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => ({
     {
       code: source,
       language: 'ts',
+      scope: 'module',
       segments: segmentsFromOffset(source, 0),
       type: 'script',
     },
@@ -270,7 +271,9 @@ export function transformFile(
   }
   if (runtime?.componentHook !== undefined) {
     injectionLines.push(
-      `import { ${runtime.componentHook.invoke} as ${componentHookLocal} } from '${runtime.module}';`,
+      runtime.componentHook.invoke === componentHookLocal
+        ? `import { ${componentHookLocal} } from '${runtime.module}';`
+        : `import { ${runtime.componentHook.invoke} as ${componentHookLocal} } from '${runtime.module}';`,
     );
   } else if (runtime?.register !== undefined && (isDev || hasUsedPick)) {
     injectionLines.push(

@@ -42,6 +42,8 @@ export type Fragment = {
   elisionContext?: ElisionContext;
   enclosingAttribute?: string;
   enclosingElement?: string;
+  /** The fragment scope. Determines whether the top level runs once per module load or once per component instance, render, or request. */
+  scope: 'instance' | 'module';
   snippet?: string;
   type: 'script' | 'template-expression';
   language: 'js' | 'ts' | 'tsx';
@@ -90,6 +92,8 @@ export type ParseSourceFn = (source: string) => ParseSourceResult;
 export type ComponentHook = {
   /** The eligibility directive. */
   eligibilityDirective?: string;
+  /** The regex matching call names that count as component evidence in a function body. JSX counts on its own. */
+  evidencePattern: RegExp;
   /** The function name imported and invoked at the start of each matching component body. */
   invoke: string;
   /** The regex matching eligible component-function names. */

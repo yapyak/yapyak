@@ -29,6 +29,7 @@ function makeNode(source: string): {
 const fragment: Fragment = {
   code: 'Hello',
   language: 'ts',
+  scope: 'module',
   segments: segmentsFromOffset('Hello', 0),
   type: 'script',
 };
@@ -89,6 +90,7 @@ describe('remapRange', () => {
     const gapped: Fragment = {
       code: "a&&t('Save')",
       language: 'ts',
+      scope: 'instance',
       segments: [
         {
           codeLength: 1,
