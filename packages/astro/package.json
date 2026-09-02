@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/astro",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Astro bindings for yapyak.",
   "keywords": [
     "astro",
