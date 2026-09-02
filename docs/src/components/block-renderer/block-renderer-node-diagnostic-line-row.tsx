@@ -35,7 +35,7 @@ export function BlockRendererNodeDiagnosticLineRow(
           />
         ) : (
           <Icon
-            name="x"
+            name="cross"
             size="14"
           />
         )}

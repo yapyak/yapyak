@@ -4,6 +4,7 @@ import { IconGlyphChat } from './icon-glyph-chat';
 import { IconGlyphCheck } from './icon-glyph-check';
 import { IconGlyphChevron } from './icon-glyph-chevron';
 import { IconGlyphCopy } from './icon-glyph-copy';
+import { IconGlyphCross } from './icon-glyph-cross';
 import { IconGlyphExternalLink } from './icon-glyph-external-link';
 import { IconGlyphGithub } from './icon-glyph-github';
 import { IconGlyphHash } from './icon-glyph-hash';
@@ -18,6 +19,7 @@ export type IconName =
   | 'check'
   | 'chevron'
   | 'copy'
+  | 'cross'
   | 'external-link'
   | 'github'
   | 'hash'
@@ -43,6 +45,8 @@ export function IconGlyph(props: IconGlyphProps): ReactElement | null {
       return <IconGlyphChevron />;
     case 'copy':
       return <IconGlyphCopy />;
+    case 'cross':
+      return <IconGlyphCross />;
     case 'external-link':
       return <IconGlyphExternalLink />;
     case 'github':

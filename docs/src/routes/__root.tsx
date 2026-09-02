@@ -184,6 +184,12 @@ function Component() {
           <OptionMenuTrigger group="packageManager" />
           <SearchDialogTrigger shortcut="mod+k" />
           <IconLink
+            aria-label={t('Follow on X')}
+            href="https://x.com/yapyak_dev"
+          >
+            <Icon name="x" />
+          </IconLink>
+          <IconLink
             aria-label={t('View on GitHub')}
             href="https://github.com/yapyak/yapyak"
           >

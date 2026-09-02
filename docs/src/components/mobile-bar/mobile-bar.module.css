@@ -87,4 +87,10 @@
     align-items: center;
     min-width: 0;
   }
+
+  .TrailingBar {
+    display: flex;
+    gap: var(--spacing-4);
+    align-items: center;
+  }
 }

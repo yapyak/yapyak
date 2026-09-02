@@ -167,14 +167,24 @@ export function MobileBar(props: MobileBarProps) {
                     <OptionMenuTrigger group="framework" />
                     <OptionMenuTrigger group="packageManager" />
                   </Box>
-                  <IconLink
-                    aria-label={t('View on GitHub')}
-                    href="https://github.com/yapyak/yapyak"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    <Icon name="github" />
-                  </IconLink>
+                  <Box className={styles.TrailingBar}>
+                    <IconLink
+                      aria-label={t('Follow on X')}
+                      href="https://x.com/yapyak_dev"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <Icon name="x" />
+                    </IconLink>
+                    <IconLink
+                      aria-label={t('View on GitHub')}
+                      href="https://github.com/yapyak/yapyak"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <Icon name="github" />
+                    </IconLink>
+                  </Box>
                 </MobileDialog.Footer>
               </>
             )}
