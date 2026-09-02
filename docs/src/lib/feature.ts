@@ -73,7 +73,7 @@ export function getFeatures(): Feature[] {
     },
     {
       description: t(
-        'Anthropic, OpenAI, Gemini, Ollama, Claude Code — shipped. Claude Code runs on your Claude subscription, no API key at all. A custom one is 30 lines: implement one function that returns the translation. Run the model in the cloud, on your own box with Ollama, or skip AI entirely and fill the JSON yourself. Old habits are welcome.',
+        'Anthropic, OpenAI, Gemini, Ollama, Claude Code — shipped. Claude Code translates on the Claude subscription you already have. A custom one is 30 lines: implement one function that returns the translation. Run the model in the cloud, on your own box with Ollama, or skip AI entirely and fill the JSON yourself. Old habits are welcome.',
       ),
       number: '10',
       title: t('Bring your own AI. Or none.'),
