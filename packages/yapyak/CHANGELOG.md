@@ -1,5 +1,13 @@
 # yapyak
 
+## 0.0.14
+
+### Patch Changes
+
+- [`e5cecf8`](https://github.com/yapyak/yapyak/commit/e5cecf85d07c478efe09fcfd0f433c78b63b344a) Thanks [@qwuide](https://github.com/qwuide)! - Add `YAP0055`, a warning for `t()` at module scope, where the result is read once at module load, never updates, and is shared across requests on the server. For custom processors, `Fragment` gains a required `scope` field declaring whether a fragment's top level runs once per module load or once per instance, and `ComponentHook` gains a required `evidencePattern` field naming the calls that count as component evidence.
+
+- [`e5cecf8`](https://github.com/yapyak/yapyak/commit/e5cecf85d07c478efe09fcfd0f433c78b63b344a) Thanks [@qwuide](https://github.com/qwuide)! - Subscribe every React component to locale changes regardless of how it is written. The compiler previously injected the locale subscription only into named function declarations and block-bodied arrows, so components written as concise arrows, wrapped in `memo`-style calls, returned from higher-order components, or held in object properties rendered once and never updated on a locale switch. The compiler now finds the component for every `t()` call by walking up from the call itself, accepting a function either by its name or by evidence in its body, so custom wrappers work without any configured list. The injected hook is also emitted under a `use`-prefixed name so React Fast Refresh counts it in its hook signature.
+
 ## 0.0.13
 
 ## 0.0.12

@@ -1,5 +1,17 @@
 # @yapyak/astro
 
+## 0.0.14
+
+### Patch Changes
+
+- [`e5cecf8`](https://github.com/yapyak/yapyak/commit/e5cecf85d07c478efe09fcfd0f433c78b63b344a) Thanks [@qwuide](https://github.com/qwuide)! - Declare each script block's scope, so the new module-scope diagnostic fires for code that runs once per module load and stays silent for code that runs per instance, render, or request.
+
+- [`5a0dede`](https://github.com/yapyak/yapyak/commit/5a0dede515c2f568b9e5ef84707922bbeb981b1e) Thanks [@qwuide](https://github.com/qwuide)! - Add the keywords the ecosystem directories index on. The Vite plugin registry pulls plugins from npm daily by the `vite-plugin` keyword, and the Astro integrations library pulls weekly by `astro-integration`, so neither package was listed without them.
+
+- Updated dependencies [[`e5cecf8`](https://github.com/yapyak/yapyak/commit/e5cecf85d07c478efe09fcfd0f433c78b63b344a), [`5a0dede`](https://github.com/yapyak/yapyak/commit/5a0dede515c2f568b9e5ef84707922bbeb981b1e), [`e5cecf8`](https://github.com/yapyak/yapyak/commit/e5cecf85d07c478efe09fcfd0f433c78b63b344a)]:
+  - yapyak@0.0.14
+  - @yapyak/vite@0.0.14
+
 ## 0.0.13
 
 ### Patch Changes

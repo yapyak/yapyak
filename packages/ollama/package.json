@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/ollama",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Ollama translator for yapyak.",
   "keywords": [
     "i18n",

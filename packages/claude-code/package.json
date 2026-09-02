@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/claude-code",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Claude Code translator for yapyak.",
   "keywords": [
     "claude",
