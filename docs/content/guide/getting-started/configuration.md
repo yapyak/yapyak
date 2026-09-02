@@ -233,7 +233,7 @@ The fields that control the [translator](/guide/translating/overview) that fills
 
 ### `translator`
 
-The model that fills empty stubs on save. yapyak ships translators for Anthropic, OpenAI, Gemini, and Ollama; for anything else, write a [custom translator](/guide/advanced/custom-translator).
+The model that fills empty stubs on save. yapyak ships translators for Anthropic, OpenAI, Gemini, Ollama, and Claude Code; for anything else, write a [custom translator](/guide/advanced/custom-translator).
 
 ```ts
 import { anthropic } from '@yapyak/anthropic';

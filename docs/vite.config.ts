@@ -111,6 +111,11 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
     group: 'Translators',
     label: 'Ollama',
   },
+  {
+    dir: 'claude-code',
+    group: 'Translators',
+    label: 'Claude Code',
+  },
 ];
 
 const FRAMEWORK_PACKAGES = REFERENCE_PACKAGES.filter(

@@ -853,6 +853,7 @@ Closed set: `adapter`, `base`, `bindings`, `module`, `plugin`, `translator`.
 |---|---|---|
 | `@yapyak/anthropic` | Anthropic | translator |
 | `@yapyak/astro` | Astro | bindings |
+| `@yapyak/claude-code` | Claude Code | translator |
 | `@yapyak/gemini` | Gemini | translator |
 | `@yapyak/nuxt` | Nuxt | module |
 | `@yapyak/ollama` | Ollama | translator |

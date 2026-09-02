@@ -103,6 +103,11 @@ npm install yapyak @yapyak/vite @yapyak/react @yapyak/gemini
 npm install yapyak @yapyak/vite @yapyak/react @yapyak/ollama
 ```
 {% /when %}
+{% when value="claude-code" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/claude-code
+```
+{% /when %}
 {% /switch %}
 {% /when %}
 {% when value="react-router" %}
@@ -132,6 +137,11 @@ npm install yapyak @yapyak/vite @yapyak/react @yapyak/react-router @yapyak/gemin
 npm install yapyak @yapyak/vite @yapyak/react @yapyak/react-router @yapyak/ollama
 ```
 {% /when %}
+{% when value="claude-code" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/react-router @yapyak/claude-code
+```
+{% /when %}
 {% /switch %}
 {% /when %}
 {% when value="tanstack-start" %}
@@ -159,6 +169,11 @@ npm install yapyak @yapyak/vite @yapyak/react @yapyak/tanstack-start @yapyak/gem
 {% when value="ollama" %}
 ```bash
 npm install yapyak @yapyak/vite @yapyak/react @yapyak/tanstack-start @yapyak/ollama
+```
+{% /when %}
+{% when value="claude-code" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/react @yapyak/tanstack-start @yapyak/claude-code
 ```
 {% /when %}
 {% /switch %}
@@ -193,6 +208,11 @@ npm install yapyak @yapyak/vite @yapyak/vue @yapyak/gemini
 {% when value="ollama" %}
 ```bash
 npm install yapyak @yapyak/vite @yapyak/vue @yapyak/ollama
+```
+{% /when %}
+{% when value="claude-code" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/vue @yapyak/claude-code
 ```
 {% /when %}
 {% /switch %}
@@ -318,6 +338,31 @@ Add the translator package:
 npm install @yapyak/ollama
 ```
 {% /when %}
+{% when value="claude-code" %}
+{% switch group="packageManager" %}
+{% when value="pnpm" %}
+```bash
+pnpm dlx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="npm" %}
+```bash
+npx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% when value="bun" %}
+```bash
+bunx nuxi module add @yapyak/nuxt
+```
+{% /when %}
+{% /switch %}
+
+Add the translator package:
+
+```bash
+npm install @yapyak/claude-code
+```
+{% /when %}
 {% /switch %}
 {% /when %}
 {% /switch %}
@@ -352,6 +397,11 @@ npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/gemini
 npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/ollama
 ```
 {% /when %}
+{% when value="claude-code" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/claude-code
+```
+{% /when %}
 {% /switch %}
 {% /when %}
 {% when value="sveltekit" %}
@@ -379,6 +429,11 @@ npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/sveltekit @yapyak/gemini
 {% when value="ollama" %}
 ```bash
 npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/sveltekit @yapyak/ollama
+```
+{% /when %}
+{% when value="claude-code" %}
+```bash
+npm install yapyak @yapyak/vite @yapyak/svelte @yapyak/sveltekit @yapyak/claude-code
 ```
 {% /when %}
 {% /switch %}
@@ -411,6 +466,11 @@ npm install yapyak @yapyak/astro @yapyak/gemini
 {% when value="ollama" %}
 ```bash
 npm install yapyak @yapyak/astro @yapyak/ollama
+```
+{% /when %}
+{% when value="claude-code" %}
+```bash
+npm install yapyak @yapyak/astro @yapyak/claude-code
 ```
 {% /when %}
 {% /switch %}
@@ -555,6 +615,13 @@ Install [Ollama](https://ollama.com) and pull a model:
 ollama pull llama3.1
 ```
 {% /when %}
+{% when value="claude-code" %}
+Install [Claude Code](https://claude.com/claude-code) and sign in by running `claude` once. The translator uses that sign-in.
+
+{% callout variant="info" %}
+Translations run in their own `claude` processes, on the same subscription as the CLI. The compiler hands each batch the context it needs, so a Claude Code session open in the same project keeps working undisturbed.
+{% /callout %}
+{% /when %}
 {% /switch %}
 
 {% switch group="framework" %}
@@ -634,6 +701,19 @@ export default defineConfig({
 });
 ```
 {% /when %}
+{% when value="claude-code" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { claudeCode } from '@yapyak/claude-code';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  processors: [react()],
+  syncHtmlAttributes: true,
+  translator: claudeCode()
+});
+```
+{% /when %}
 {% /switch %}
 {% /when %}
 {% when value="react-router" %}
@@ -707,6 +787,19 @@ export default defineConfig({
 });
 ```
 {% /when %}
+{% when value="claude-code" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { claudeCode } from '@yapyak/claude-code';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [react()],
+  translator: claudeCode()
+});
+```
+{% /when %}
 {% /switch %}
 {% /when %}
 {% when value="tanstack-start" %}
@@ -777,6 +870,19 @@ export default defineConfig({
   persistence: 'cookie',
   processors: [react()],
   translator: ollama()
+});
+```
+{% /when %}
+{% when value="claude-code" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { claudeCode } from '@yapyak/claude-code';
+import { react } from '@yapyak/react/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [react()],
+  translator: claudeCode()
 });
 ```
 {% /when %}
@@ -857,6 +963,19 @@ export default defineConfig({
   processors: [vue()],
   syncHtmlAttributes: true,
   translator: ollama()
+});
+```
+{% /when %}
+{% when value="claude-code" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { claudeCode } from '@yapyak/claude-code';
+import { vue } from '@yapyak/vue/processor';
+
+export default defineConfig({
+  processors: [vue()],
+  syncHtmlAttributes: true,
+  translator: claudeCode()
 });
 ```
 {% /when %}
@@ -948,6 +1067,22 @@ export default defineConfig({
 });
 ```
 {% /when %}
+{% when value="claude-code" %}
+It also writes a starter `yapyak.config.ts` at the project root. Add the translator:
+
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { claudeCode } from '@yapyak/claude-code';
+import { nuxt } from '@yapyak/nuxt/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [nuxt()],
+  syncHtmlAttributes: true,
+  translator: claudeCode()
+});
+```
+{% /when %}
 {% /switch %}
 {% /when %}
 {% /switch %}
@@ -1028,6 +1163,19 @@ export default defineConfig({
 });
 ```
 {% /when %}
+{% when value="claude-code" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { claudeCode } from '@yapyak/claude-code';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  processors: [svelte()],
+  syncHtmlAttributes: true,
+  translator: claudeCode()
+});
+```
+{% /when %}
 {% /switch %}
 {% /when %}
 {% when value="sveltekit" %}
@@ -1103,6 +1251,20 @@ export default defineConfig({
   processors: [svelte()],
   syncHtmlAttributes: true,
   translator: ollama()
+});
+```
+{% /when %}
+{% when value="claude-code" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { claudeCode } from '@yapyak/claude-code';
+import { svelte } from '@yapyak/svelte/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [svelte()],
+  syncHtmlAttributes: true,
+  translator: claudeCode()
 });
 ```
 {% /when %}
@@ -1186,6 +1348,20 @@ export default defineConfig({
   processors: [astro()],
   syncHtmlAttributes: true,
   translator: ollama()
+});
+```
+{% /when %}
+{% when value="claude-code" %}
+```ts [yapyak.config.ts]
+import { defineConfig } from 'yapyak/config';
+import { claudeCode } from '@yapyak/claude-code';
+import { astro } from '@yapyak/astro/processor';
+
+export default defineConfig({
+  persistence: 'cookie',
+  processors: [astro()],
+  syncHtmlAttributes: true,
+  translator: claudeCode()
 });
 ```
 {% /when %}

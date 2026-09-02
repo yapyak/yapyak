@@ -10,6 +10,7 @@ export type SwatchAccent =
   | 'bun'
   | 'chatgpt'
   | 'claude'
+  | 'claude-code'
   | 'cursor'
   | 'gemini'
   | 'none'
