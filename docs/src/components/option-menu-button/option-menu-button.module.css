@@ -49,5 +49,9 @@
         outline-color: var(--accent-soft);
       }
     }
+
+    @container (min-width: 380px) {
+      --option-menu-button-option-display: inline;
+    }
   }
 }

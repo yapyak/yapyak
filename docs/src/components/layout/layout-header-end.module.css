@@ -1,12 +1,15 @@
 @layer components {
   .LayoutHeaderEnd {
     display: none;
-    justify-self: end;
+    container-type: inline-size;
 
     @media (min-width: 1024px) {
+      --option-menu-button-option-display: none;
+
       display: flex;
       gap: var(--spacing-4);
       align-items: center;
+      justify-content: flex-end;
     }
   }
 }
