@@ -86,7 +86,7 @@ catalog:
   react-router: 8.4.0
   svelte: 5.57.1
   svelte-check: 4.7.6
-  tsdown: 0.22.14
+  tsdown: 0.23.0
   tsx: 4.23.15
   typescript: 6.0.3
   vite: 8.3.1
