@@ -31,6 +31,7 @@ A `@biomejs/biome` bump leaves the `biome.json` `$schema` on the old version →
 
 - Every hold has a row below AND its name in `pnpm-workspace.yaml` `updateConfig.ignoreDependencies` — add or remove both in the same commit.
 - Held packages vanish from `pnpm outdated` → re-test every "Re-test when" condition during each bump round.
+- Check each held line for a newer in-range version during each bump round → `pnpm view <pkg> versions`.
 - Never encode a hold as a catalog comment → pnpm re-sorts the catalog and the comment drifts onto the wrong entry.
 
 | Package | Hold | Why | Re-test when |
