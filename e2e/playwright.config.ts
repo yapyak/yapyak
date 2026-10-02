@@ -312,6 +312,7 @@ export default defineConfig<ExampleOptions>({
       command: resolveCommand(example),
       env: {
         ASTRO_DEV_BACKGROUND: '1',
+        ASTRO_PREVIEW_BACKGROUND: '1',
         TZ: 'Europe/Stockholm',
       },
       port: resolvePort(example),
