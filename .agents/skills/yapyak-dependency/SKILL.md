@@ -31,6 +31,8 @@ A `@biomejs/biome` bump leaves the `biome.json` `$schema` on the old version →
 
 | Package | Hold | Why | Re-test when |
 | --- | --- | --- | --- |
+| `@types/vscode` | ≤ `engines.vscode` | `vsce` refuses to package when `@types/vscode` is newer than `engines.vscode` in `packages/vscode/package.json` | `engines.vscode` rises |
+| `h3` | 1.x | npm `latest` is a 2.x release candidate, and `@yapyak/nuxt` wraps the h3 app of Nuxt's Nitro, which depends on `h3 ^1` | `nitropack` and `@nuxt/nitro-server` depend on h3 2.x |
 | `typescript` | 6.x | TS 7's native compiler drops the JS compiler API `@yapyak/docs-compiler` calls | TS 7 ships a JS compiler API, or doc-compiler stops needing one |
 
 ### Release-age gate

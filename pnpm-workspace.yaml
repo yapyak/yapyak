@@ -23,6 +23,8 @@ trustLockfile: true
 
 updateConfig:
   ignoreDependencies:
+    - '@types/vscode'
+    - h3
     - typescript
 
 catalog:
