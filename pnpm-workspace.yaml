@@ -67,7 +67,7 @@ catalog:
   '@vitest/coverage-v8': 5.0.1
   '@vscode/test-cli': 0.0.15
   '@vscode/test-electron': 3.1.0
-  '@vscode/vsce': 3.9.2
+  '@vscode/vsce': 4.0.0
   '@vue/compiler-core': 3.5.43
   '@vue/compiler-sfc': 3.5.43
   astro: 7.3.5
