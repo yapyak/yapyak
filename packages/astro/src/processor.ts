@@ -102,13 +102,7 @@ export function astro(): Processor {
           ],
         };
       }
-      normalizeOffsets(
-        {
-          ast,
-          diagnostics: result.diagnostics,
-        },
-        source,
-      );
+      normalizeOffsets(result.diagnostics, source);
       return {
         diagnostics: toProcessorDiagnostics(result.diagnostics, source),
         fragments: [
@@ -121,11 +115,20 @@ export function astro(): Processor {
   });
 }
 
-function normalizeOffsets(parsed: object, source: string): void {
+function normalizeOffsets(
+  diagnostics: DiagnosticMessage[],
+  source: string,
+): void {
   if (!hasNonAscii(source)) {
     return;
   }
-  remapOffsets(parsed, buildUtf16Offsets(source));
+  const utf16Offsets = buildUtf16Offsets(source);
+  for (const diagnostic of diagnostics) {
+    for (const label of diagnostic.labels) {
+      label.start = utf16OffsetFromByte(utf16Offsets, label.start);
+      label.end = utf16OffsetFromByte(utf16Offsets, label.end);
+    }
+  }
 }
 
 const HIGHEST_ASCII_CODE = 0x7f;
@@ -167,31 +170,6 @@ function toUtf8Length(character: string): number {
     return 2;
   }
   return 3;
-}
-
-function remapOffsets(node: unknown, utf16Offsets: number[]): void {
-  if (!node || typeof node !== 'object') {
-    return;
-  }
-  if (Array.isArray(node)) {
-    for (const child of node) {
-      remapOffsets(child, utf16Offsets);
-    }
-    return;
-  }
-  const range = node as {
-    end?: unknown;
-    start?: unknown;
-  };
-  if (typeof range.start === 'number') {
-    range.start = utf16OffsetFromByte(utf16Offsets, range.start);
-  }
-  if (typeof range.end === 'number') {
-    range.end = utf16OffsetFromByte(utf16Offsets, range.end);
-  }
-  for (const value of Object.values(node)) {
-    remapOffsets(value, utf16Offsets);
-  }
 }
 
 function utf16OffsetFromByte(

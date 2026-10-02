@@ -31,7 +31,7 @@ catalog:
   '@arethetypeswrong/cli': 0.18.5
   '@arethetypeswrong/core': 0.18.5
   '@astrojs/check': 0.9.10
-  '@astrojs/compiler-rs': 0.3.2
+  '@astrojs/compiler-rs': 0.5.0
   '@astrojs/node': 11.1.6
   '@biomejs/biome': 2.5.14
   '@changesets/changelog-github': 1.0.1
