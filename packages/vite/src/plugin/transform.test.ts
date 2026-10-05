@@ -50,6 +50,11 @@ type TransformHookResult = {
 
 type TransformHook = (code: string, id: string) => TransformHookResult;
 
+type TransformObjectHook = {
+  handler: TransformHook;
+  order: 'pre';
+};
+
 function buildContext(
   consumer: 'client' | 'server',
   addWatchFile?: () => void,
@@ -86,10 +91,17 @@ function buildState(projectRoot: string) {
 
 describe('createTransformPlugin', () => {
   describe('transform', () => {
+    it('returns a `transform` hook that runs before other `pre` plugins', () => {
+      const plugin = createTransformPlugin(buildState('/project'));
+
+      expect(plugin.enforce).toBe('pre');
+      expect((plugin.transform as TransformObjectHook).order).toBe('pre');
+    });
+
     it('returns `null` for a virtual module id', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('client'),
@@ -103,7 +115,7 @@ describe('createTransformPlugin', () => {
     it('returns `null` for an id with a `?raw` query', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('client'),
@@ -118,7 +130,7 @@ describe('createTransformPlugin', () => {
       const state = buildState('/project');
       state.filter = () => false;
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('client'),
@@ -132,7 +144,7 @@ describe('createTransformPlugin', () => {
     it('returns `null` when the source has no `yapyak` import', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('client'),
@@ -146,7 +158,7 @@ describe('createTransformPlugin', () => {
     it('returns `null` when the source has no `t()` calls', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('client'),
@@ -160,7 +172,7 @@ describe('createTransformPlugin', () => {
     it('transforms a source with `t()` calls into rewritten code', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('client'),
@@ -175,7 +187,7 @@ describe('createTransformPlugin', () => {
     it('strips the query from the id before transforming', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('client'),
@@ -201,7 +213,7 @@ describe('createTransformPlugin', () => {
         }),
       };
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('client'),
@@ -216,7 +228,7 @@ describe('createTransformPlugin', () => {
     it('emits a locale file source when serving a server environment', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('server'),
@@ -238,7 +250,7 @@ describe('createTransformPlugin', () => {
     it('emits no locale file source when serving a client environment', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       const result = transform.call(
         buildContext('client'),
@@ -253,7 +265,7 @@ describe('createTransformPlugin', () => {
       const state = buildState('/project');
       state.command = 'build';
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
       const addWatchFile = vi.fn();
 
       transform.call(
@@ -273,7 +285,7 @@ describe('createTransformPlugin', () => {
     it('registers no watch file when serving', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
       const addWatchFile = vi.fn();
 
       transform.call(
@@ -288,7 +300,7 @@ describe('createTransformPlugin', () => {
     it('throws when extraction reports an error diagnostic', () => {
       const state = buildState('/project');
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       expect(() =>
         transform.call(
@@ -311,7 +323,7 @@ describe('createTransformPlugin', () => {
         error,
       };
       const plugin = createTransformPlugin(state);
-      const transform = plugin.transform as TransformHook;
+      const transform = (plugin.transform as TransformObjectHook).handler;
 
       expect(() =>
         transform.call(

@@ -1886,10 +1886,10 @@ type TransformHookFn = (
 
 function findTransformHook(plugin: YapyakPlugin): TransformHookFn {
   const sub = plugin.find((entry) => entry.name === 'yapyak:transform');
-  if (!sub || typeof sub.transform !== 'function') {
+  if (!sub || typeof sub.transform !== 'object') {
     throw new Error('yapyak:transform transform hook missing');
   }
-  return sub.transform as unknown as TransformHookFn;
+  return sub.transform.handler as unknown as TransformHookFn;
 }
 
 const TRANSFORM_HOOK_CONTEXT = {
