@@ -9,6 +9,7 @@ import type { State } from './state';
 import {
   findTranslation,
   getDocsUrl,
+  resolveProcessor,
   transformFile,
 } from 'yapyak/compiler/internal';
 
@@ -69,7 +70,11 @@ export function createTransformPlugin(state: State): Plugin {
             message: `${firstError.message}\nSee ${getDocsUrl(firstError.code)}`,
           });
         }
-        if (extracted.callSites.length === 0) {
+        if (
+          extracted.callSites.length === 0 &&
+          resolveProcessor(fileId, code, getNormalized(state).processors)
+            .runtime?.componentHook === undefined
+        ) {
           return null;
         }
         const translations = buildTranslations({

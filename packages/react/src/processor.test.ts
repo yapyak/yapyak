@@ -119,6 +119,22 @@ describe('react processor', () => {
     expect(code).toContain("from '@yapyak/react/internal'");
   });
 
+  it('emits a `useYapyak()` call in a component without yapyak reads', () => {
+    const code = runReactTransform({
+      locales: [
+        'en',
+        'sv',
+      ],
+      source: [
+        "import { getGreeting } from './greeting';",
+        'export function Header() {',
+        '  return <p>{getGreeting()}</p>;',
+        '}',
+      ].join('\n'),
+    });
+    expect(code).toMatch(/function Header\(\) \{useYapyak\(\)/);
+  });
+
   it('emits a `useYapyak()` call in a hook declared in a `.ts` file', () => {
     const code = runReactTransform({
       fileId: 'src/a.ts',

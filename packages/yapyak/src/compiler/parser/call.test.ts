@@ -27,7 +27,7 @@ describe('discoverCalls', () => {
     const sourceFile = loadFixture('call', 'simple.ts');
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(2);
     for (const call of callSites) {
@@ -39,7 +39,7 @@ describe('discoverCalls', () => {
     const sourceFile = loadFixture('binding', 'aliased-import.ts');
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.binding.localName).toBe('tr');
@@ -49,7 +49,7 @@ describe('discoverCalls', () => {
     const sourceFile = loadFixture('binding', 'wrapper.ts');
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.binding.kind).toBe('wrapper');
@@ -59,7 +59,7 @@ describe('discoverCalls', () => {
     const sourceFile = loadFixture('binding', 'namespace-import.ts');
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.binding.kind).toBe('namespace');
@@ -69,7 +69,7 @@ describe('discoverCalls', () => {
     const sourceFile = loadFixture('call', 'nested-jsx.tsx');
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(3);
   });
@@ -78,7 +78,7 @@ describe('discoverCalls', () => {
     const sourceFile = loadFixture('call', 'arrow-callback.ts');
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
   });
@@ -87,7 +87,7 @@ describe('discoverCalls', () => {
     const sourceFile = loadFixture('binding', 'shadowed-wrapper.ts');
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(2);
     const kinds = callSites.map((callSite) => callSite.binding.kind).sort();
@@ -101,7 +101,7 @@ describe('discoverCalls', () => {
     const sourceFile = loadFixture('call', 'scoped-inline.ts');
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(2);
     expect(callSites[0]?.localeExpression?.getText()).toBe(
@@ -119,7 +119,7 @@ describe('discoverCalls', () => {
     );
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
@@ -137,7 +137,7 @@ describe('discoverCalls', () => {
     );
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
@@ -155,7 +155,7 @@ describe('discoverCalls', () => {
     );
     const { callSites, diagnostics } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(0);
     expect(
@@ -173,7 +173,7 @@ describe('discoverCalls', () => {
     );
     const { callSites, diagnostics } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(0);
     expect(
@@ -191,7 +191,7 @@ describe('discoverCalls', () => {
     );
     const { diagnostics } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0020'),
@@ -208,7 +208,7 @@ describe('discoverCalls', () => {
     );
     const { diagnostics } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(
       diagnostics.some((diagnostic) => diagnostic.code === 'YAP0020'),
@@ -225,7 +225,7 @@ describe('discoverCalls', () => {
     );
     const { diagnostics } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(diagnostics).toHaveLength(0);
   });
@@ -240,7 +240,7 @@ describe('discoverCalls', () => {
     );
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
@@ -257,7 +257,7 @@ describe('discoverCalls', () => {
     );
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.contextExpression?.getText()).toBe("'button'");
@@ -274,7 +274,7 @@ describe('discoverCalls', () => {
     );
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
@@ -291,7 +291,7 @@ describe('discoverCalls', () => {
     );
     const { callSites, diagnostics } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(0);
     expect(
@@ -309,7 +309,7 @@ describe('discoverCalls', () => {
     );
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(0);
   });
@@ -324,7 +324,7 @@ describe('discoverCalls', () => {
     );
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(0);
   });
@@ -339,7 +339,7 @@ describe('discoverCalls', () => {
     );
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(1);
     expect(callSites[0]?.localeExpression?.getText()).toBe("'sv'");
@@ -356,7 +356,7 @@ describe('discoverCalls', () => {
     );
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     expect(callSites).toHaveLength(0);
   });
@@ -365,7 +365,7 @@ describe('discoverCalls', () => {
     const sourceFile = loadFixture('call', 'simple.ts');
     const { callSites } = discoverCalls(
       sourceFile,
-      resolveBindings(sourceFile),
+      resolveBindings(sourceFile, 't'),
     );
     const first = callSites[0];
     expect(first?.range.start.line).toBeGreaterThan(0);

@@ -33,13 +33,15 @@ type WalkContext = {
 export const YAPYAK_MODULE = 'yapyak';
 export const YAPYAK_INTERNAL_MODULE = 'yapyak/internal';
 export const YAPYAK_DEV_INTERNAL_MODULE = 'yapyak/dev/internal';
-export const RUNTIME_NAME = 't';
+export const T_EXPORT = 't';
+export const FORMAT_EXPORT = 'format';
 
 export function resolveBindings(
   sourceFile: ts.SourceFile,
+  exportName: string,
   options?: ResolveBindingsOptions,
 ): BindingTable {
-  const imports = extractImports(sourceFile);
+  const imports = extractImports(sourceFile, exportName);
   const scopeByNode = new Map<ts.Node, Scope>();
   const root: Scope = {
     bindings: new Map(),
@@ -88,7 +90,10 @@ export function resolveBindings(
   };
 }
 
-function extractImports(sourceFile: ts.SourceFile): ImportData {
+function extractImports(
+  sourceFile: ts.SourceFile,
+  exportName: string,
+): ImportData {
   const imports: ImportData = {
     directLocals: new Set(),
     namespaceLocals: new Set(),
@@ -125,7 +130,7 @@ function extractImports(sourceFile: ts.SourceFile): ImportData {
         }
         const importedName = (element.propertyName ?? element.name).text;
         const localName = element.name.text;
-        if (importedName === RUNTIME_NAME) {
+        if (importedName === exportName) {
           imports.directLocals.add(localName);
         }
       }

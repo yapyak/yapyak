@@ -2,6 +2,7 @@ import type { LocaleResolver } from '../locale-resolver';
 
 import { describe, expect, it, vi } from 'vitest';
 import { normalizeYapyakConfig } from 'yapyak/config/internal';
+import { createProcessor } from 'yapyak/processor';
 
 import { createState } from './state';
 import { createTransformPlugin } from './transform';
@@ -79,6 +80,23 @@ type WatchChangeHook = (
     event: 'create' | 'delete' | 'update';
   },
 ) => void;
+
+function buildHookProcessor() {
+  return createProcessor({
+    extensions: [
+      '.tsx',
+    ],
+    id: 'react',
+    runtime: {
+      componentHook: {
+        evidencePattern: /^use[A-Z]/,
+        invoke: 'useYapyak',
+        namePattern: /^[A-Z]|^use[A-Z]/,
+      },
+      module: '@yapyak/react/internal',
+    },
+  });
+}
 
 function buildState(projectRoot: string) {
   const state = createState();
@@ -167,6 +185,48 @@ describe('createTransformPlugin', () => {
       );
 
       expect(result).toBeNull();
+    });
+
+    it('transforms a source without `t()` calls when the processor declares a component hook', () => {
+      const state = buildState('/project');
+      state.normalized = normalizeYapyakConfig({
+        processors: [
+          buildHookProcessor(),
+        ],
+      });
+      const plugin = createTransformPlugin(state);
+      const transform = (plugin.transform as TransformObjectHook).handler;
+
+      const result = transform.call(
+        buildContext('client'),
+        `import { format } from 'yapyak';\nexport function Header() { return format.number(1); }\n`,
+        '/project/src/a.tsx',
+      );
+
+      expect(result?.code).toContain(
+        'Header() {useYapyak(); return format.number(1); }',
+      );
+    });
+
+    it('transforms a source without a `yapyak` import when the processor declares a component hook', () => {
+      const state = buildState('/project');
+      state.normalized = normalizeYapyakConfig({
+        processors: [
+          buildHookProcessor(),
+        ],
+      });
+      const plugin = createTransformPlugin(state);
+      const transform = (plugin.transform as TransformObjectHook).handler;
+
+      const result = transform.call(
+        buildContext('client'),
+        'export function Header() { return <p>{getGreeting()}</p>; }\n',
+        '/project/src/a.tsx',
+      );
+
+      expect(result?.code).toContain(
+        'Header() {useYapyak(); return <p>{getGreeting()}</p>; }',
+      );
     });
 
     it('transforms a source with `t()` calls into rewritten code', () => {

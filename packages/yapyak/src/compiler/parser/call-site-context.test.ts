@@ -19,9 +19,10 @@ function parseInline(source: string, fileName = 'src/a.tsx'): ts.SourceFile {
 }
 
 function findCalls(sourceFile: ts.SourceFile): ts.CallExpression[] {
-  return discoverCalls(sourceFile, resolveBindings(sourceFile)).callSites.map(
-    (callSite) => callSite.node,
-  );
+  return discoverCalls(
+    sourceFile,
+    resolveBindings(sourceFile, 't'),
+  ).callSites.map((callSite) => callSite.node);
 }
 
 function findFirstCall(sourceFile: ts.SourceFile): ts.CallExpression {

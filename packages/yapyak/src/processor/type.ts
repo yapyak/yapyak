@@ -92,7 +92,7 @@ export type ParseSourceFn = (source: string) => ParseSourceResult;
 export type ComponentHook = {
   /** The eligibility directive. */
   eligibilityDirective?: string;
-  /** The regex matching call names that count as component evidence in a function body. JSX counts on its own. In a file that cannot hold JSX, a function is eligible only when its own name matches too. */
+  /** The regex matching call names that count as component evidence in a function body. JSX counts on its own. A named function without evidence is eligible only when it calls `t()` or reads `format`. In a file that cannot hold JSX, its name must match too. */
   evidencePattern: RegExp;
   /** The function name imported and invoked at the start of each matching component body. */
   invoke: string;

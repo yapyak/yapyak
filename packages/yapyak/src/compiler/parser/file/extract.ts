@@ -18,7 +18,7 @@ import { toMessageKey } from '../../../message-key';
 import { segmentsFromOffset } from '../../../processor';
 import { parsePlaceholders } from '../../placeholder';
 import { parseArguments } from '../argument';
-import { resolveBindings } from '../binding';
+import { T_EXPORT, resolveBindings } from '../binding';
 import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
 import { validateFragments } from '../fragment';
@@ -121,7 +121,7 @@ export function extractFile(
     if (!ambientAnchor) {
       ambientAnchor = sourceFile;
     }
-    const bindings = resolveBindings(sourceFile, {
+    const bindings = resolveBindings(sourceFile, T_EXPORT, {
       ambientParent: processorAmbient,
     });
     for (const [name, binding] of bindings.root.bindings) {
@@ -149,7 +149,7 @@ export function extractFile(
       continue;
     }
     const sourceFile = createFragmentSourceFile(fileId, fragment);
-    const bindings = resolveBindings(sourceFile, {
+    const bindings = resolveBindings(sourceFile, T_EXPORT, {
       ambientParent,
     });
     extractFromFragment({

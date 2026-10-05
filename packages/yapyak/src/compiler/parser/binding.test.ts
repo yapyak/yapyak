@@ -56,7 +56,7 @@ function findCallBindingKind(
   callName: string,
 ): string | undefined {
   const sourceFile = parseSource(source);
-  const table = resolveBindings(sourceFile);
+  const table = resolveBindings(sourceFile, 't');
   const call = findFirstCallExpression(sourceFile, callName);
   expect(call).toBeDefined();
   return table.find(callName, call as ts.Node)?.kind;
@@ -81,7 +81,7 @@ function findFirstIfStatement(node: ts.Node): ts.IfStatement | undefined {
 describe('resolveBindings', () => {
   it('returns a direct binding for a direct import', () => {
     const sourceFile = loadFixture('direct-import.ts');
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     const binding = table.root.bindings.get('t');
     expect(binding).toBeDefined();
     expect(binding?.kind).toBe('direct');
@@ -90,16 +90,28 @@ describe('resolveBindings', () => {
 
   it('returns a direct binding for an aliased import', () => {
     const sourceFile = loadFixture('aliased-import.ts');
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     const binding = table.root.bindings.get('tr');
     expect(binding?.kind).toBe('direct');
     expect(binding?.localName).toBe('tr');
     expect(table.root.bindings.has('t')).toBe(false);
   });
 
+  it('returns a direct binding for the named export', () => {
+    const sourceFile = parseSource("import { format } from 'yapyak';");
+    const table = resolveBindings(sourceFile, 'format');
+    expect(table.root.bindings.get('format')?.kind).toBe('direct');
+  });
+
+  it('returns no binding for another export of `yapyak`', () => {
+    const sourceFile = parseSource("import { t } from 'yapyak';");
+    const table = resolveBindings(sourceFile, 'format');
+    expect(table.root.bindings.size).toBe(0);
+  });
+
   it('returns a namespace binding for a namespace import', () => {
     const sourceFile = loadFixture('namespace-import.ts');
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     const binding = table.root.bindings.get('y');
     expect(binding?.kind).toBe('namespace');
     expect(binding?.localName).toBe('y');
@@ -107,7 +119,7 @@ describe('resolveBindings', () => {
 
   it('returns a wrapper binding at root scope', () => {
     const sourceFile = loadFixture('wrapper.ts');
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     expect(table.root.bindings.get('t')?.kind).toBe('direct');
     const wrapper = table.root.bindings.get('translate');
     expect(wrapper?.kind).toBe('wrapper');
@@ -116,7 +128,7 @@ describe('resolveBindings', () => {
 
   it('returns a nested wrapper binding scoped to its block', () => {
     const sourceFile = loadFixture('shadowed-wrapper.ts');
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
 
     expect(table.root.bindings.get('t')?.kind).toBe('direct');
     expect(table.root.bindings.has('translate')).toBe(false);
@@ -137,7 +149,7 @@ describe('resolveBindings', () => {
 
   it('returns the binding by walking up the scope chain', () => {
     const sourceFile = loadFixture('direct-import.ts');
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     const call = findFirstCallExpression(sourceFile, 't');
     expect(call).toBeDefined();
     expect(table.find('t', call as ts.Node)?.kind).toBe('direct');
@@ -145,31 +157,31 @@ describe('resolveBindings', () => {
 
   it('returns no binding for an import from a different module', () => {
     const sourceFile = parseSource("import { t } from 'other';");
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     expect(table.root.bindings.size).toBe(0);
   });
 
   it('returns no binding for a side-effect import of `yapyak`', () => {
     const sourceFile = parseSource("import 'yapyak';");
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     expect(table.root.bindings.size).toBe(0);
   });
 
   it('returns no binding for a default-only import of `yapyak`', () => {
     const sourceFile = parseSource("import t from 'yapyak';");
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     expect(table.root.bindings.size).toBe(0);
   });
 
   it('returns no binding for a type-only import of `yapyak`', () => {
     const sourceFile = parseSource("import type { t } from 'yapyak';");
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     expect(table.root.bindings.size).toBe(0);
   });
 
   it('returns no binding for a `type`-qualified named import of `yapyak`', () => {
     const sourceFile = parseSource("import { type t } from 'yapyak';");
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     expect(table.root.bindings.size).toBe(0);
   });
 
@@ -177,7 +189,7 @@ describe('resolveBindings', () => {
     const sourceFile = parseSource(
       "import { t } from 'yapyak';\nconst translate = somethingUnknown;",
     );
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     expect(table.root.bindings.has('translate')).toBe(false);
   });
 
@@ -185,7 +197,7 @@ describe('resolveBindings', () => {
     const sourceFile = parseSource(
       "import * as y from 'yapyak';\nconst x = y;",
     );
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     expect(table.root.bindings.get('x')?.kind).toBe('namespace');
   });
 
@@ -301,7 +313,7 @@ describe('resolveBindings', () => {
     const sourceFile = parseSource(
       "import { t } from 'yapyak';\nfunction f(...t) { return t.length; }",
     );
-    const table = resolveBindings(sourceFile);
+    const table = resolveBindings(sourceFile, 't');
     const functionDecl = sourceFile.statements.find(ts.isFunctionDeclaration);
     expect(functionDecl?.body).toBeDefined();
     expect(table.find('t', functionDecl?.body as ts.Node)?.kind).toBe('shadow');

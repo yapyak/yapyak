@@ -1534,6 +1534,94 @@ describe('transformFile', () => {
       expect(code).not.toMatch(/_registerVariants/);
       expect(code).not.toMatch(/_invalidateFile/);
     });
+
+    it('writes a `useYapyak()` call in a React component that reads `format`', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          reactProcessor,
+        ],
+        source: [
+          "import { format } from 'yapyak';",
+          'export function Price() {',
+          '  return format.number(1);',
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toMatch(
+        /import \{ useYapyak \} from '@yapyak\/react\/internal'/,
+      );
+      expect(code).toMatch(/function Price\(\) \{useYapyak\(\)/);
+    });
+
+    it('writes a `useYapyak()` call in a React component without yapyak reads', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          reactProcessor,
+        ],
+        source: [
+          "import { getGreeting } from './greeting';",
+          'export function Header() {',
+          '  return <p>{getGreeting()}</p>;',
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toMatch(
+        /import \{ useYapyak \} from '@yapyak\/react\/internal'/,
+      );
+      expect(code).toMatch(/function Header\(\) \{useYapyak\(\)/);
+    });
+
+    it('emits no dev wiring for a file without `t()` calls', () => {
+      const code = runTransform({
+        dev: true,
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          reactProcessor,
+        ],
+        source: [
+          "import { format } from 'yapyak';",
+          'export function Price() {',
+          '  return format.number(1);',
+          '}',
+        ].join('\n'),
+      });
+      expect(code).toMatch(/function Price\(\) \{useYapyak\(\)/);
+      expect(code).not.toMatch(/_registerVariants/);
+      expect(code).not.toMatch(/_invalidateFile/);
+      expect(code).not.toMatch(/import\.meta\.hot/);
+    });
+
+    it('preserves a file without `t()` calls or `format` reads', () => {
+      const source = [
+        "import { locales } from 'yapyak';",
+        'export function Header() {',
+        '  return locales.length;',
+        '}',
+      ].join('\n');
+      const code = runTransform({
+        dev: true,
+        locales: [
+          'en',
+          'sv',
+        ],
+        processors: [
+          reactProcessor,
+        ],
+        source,
+      });
+      expect(code).toBe(source);
+    });
   });
 
   describe('with a runtime `register`', () => {

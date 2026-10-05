@@ -18,7 +18,10 @@ import { YAPYAK_DEV_INTERNAL_MODULE, YAPYAK_INTERNAL_MODULE } from '../binding';
 import { validateFragments } from '../fragment';
 import { resolveProcessor } from '../processor';
 import { renderCallReplacement } from './transform/call-replacement';
-import { injectComponentHooks } from './transform/component-hook';
+import {
+  collectComponentHosts,
+  injectComponentHooks,
+} from './transform/component-hook';
 import {
   buildContainmentTree,
   hasContainingParent,
@@ -92,20 +95,15 @@ export function transformFile(
 ): TransformFileResult {
   const defaultLocale = request.defaultLocale ?? request.locales[0];
   if (!defaultLocale) {
-    return {
-      code: request.source,
-      diagnostics: [],
-      map: new MagicString(request.source).generateMap({
-        hires: true,
-        source: request.sourcePath ?? request.fileId,
-      }),
-    };
+    return buildUnchangedResult(request, []);
   }
   const processor = resolveProcessor(
     request.fileId,
     request.source,
     request.processors ?? [],
   );
+  const callSites = request.extracted.callSites;
+  const componentHook = processor.runtime?.componentHook;
   const { fragments } = (processor.parseSource ?? DEFAULT_PARSE_SOURCE)(
     request.source,
   );
@@ -115,10 +113,26 @@ export function transformFile(
     processorId: processor.id,
     source: request.source,
   });
+  const hosts =
+    componentHook === undefined
+      ? []
+      : collectComponentHosts({
+          callSites,
+          componentHook,
+          fileId: request.fileId,
+          fragments,
+          source: request.source,
+        });
+  if (
+    componentHook !== undefined &&
+    callSites.length === 0 &&
+    hosts.length === 0
+  ) {
+    return buildUnchangedResult(request, request.extracted.diagnostics);
+  }
   const isSingleLocale = request.locales.length === 1;
   const isDev = request.dev === true;
   const runtime = processor.runtime;
-  const componentHook = runtime?.componentHook;
   const magicString = new MagicString(request.source);
 
   const pickLocal = findFreePickLocal(request.source);
@@ -165,7 +179,6 @@ export function transformFile(
     });
     return identifier;
   };
-  const callSites = request.extracted.callSites;
   const childrenByParent = buildContainmentTree(callSites);
   const replacementsByCallSite = new Map<ParsedCallSite, CallReplacement>();
   const renderInOrder = (callSite: ParsedCallSite): void => {
@@ -252,7 +265,8 @@ export function transformFile(
   const injectionLines: string[] = [];
   const skipHmrCallback = processor.skipHmrCallback === true;
   const allImportSpecs = importSpecs.slice();
-  if (isDev) {
+  const hasCallSites = callSites.length > 0;
+  if (isDev && hasCallSites) {
     allImportSpecs.push(`registerVariants as ${registerVariantsLocal}`);
     if (!skipHmrCallback) {
       allImportSpecs.push(`invalidateFile as ${invalidateFileLocal}`);
@@ -292,7 +306,7 @@ export function transformFile(
       injectionLines.push(`const ${entry.identifier} = ${entry.literal};`);
     }
   }
-  if (isDev && !skipHmrCallback) {
+  if (isDev && hasCallSites && !skipHmrCallback) {
     injectionLines.push(
       `if (import.meta.hot) import.meta.hot.dispose(() => ${invalidateFileLocal}(${JSON.stringify(request.fileId)}));`,
     );
@@ -304,22 +318,30 @@ export function transformFile(
       injectionLines.join('\n'),
     );
   }
-  if (componentHook !== undefined) {
-    injectComponentHooks({
-      callSites,
-      componentHook,
-      fileId: request.fileId,
-      fragments,
-      invocation: componentHookLocal,
-      magicString,
-      source: request.source,
-    });
-  }
+  injectComponentHooks({
+    hosts,
+    invocation: componentHookLocal,
+    magicString,
+  });
 
   return {
     code: magicString.toString(),
     diagnostics: request.extracted.diagnostics,
     map: magicString.generateMap({
+      hires: true,
+      source: request.sourcePath ?? request.fileId,
+    }),
+  };
+}
+
+function buildUnchangedResult(
+  request: TransformFileRequest,
+  diagnostics: Diagnostic[],
+): TransformFileResult {
+  return {
+    code: request.source,
+    diagnostics,
+    map: new MagicString(request.source).generateMap({
       hires: true,
       source: request.sourcePath ?? request.fileId,
     }),

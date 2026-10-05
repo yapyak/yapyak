@@ -5,7 +5,7 @@ import type { Diagnostic } from './diagnostic';
 import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../diagnostic';
-import { RUNTIME_NAME } from './binding';
+import { T_EXPORT } from './binding';
 import { toRange } from './range';
 
 export type CallSite = {
@@ -106,7 +106,7 @@ function extractMemberCall(
   const methodName = callee.name.text;
   const receiver = callee.expression;
 
-  if (methodName === RUNTIME_NAME && ts.isIdentifier(receiver)) {
+  if (methodName === T_EXPORT && ts.isIdentifier(receiver)) {
     extractNamespaceBase(call, receiver, context);
     return;
   }
@@ -128,7 +128,7 @@ function extractMemberCall(
   if (
     ts.isPropertyAccessExpression(receiver) &&
     ts.isIdentifier(receiver.expression) &&
-    receiver.name.text === RUNTIME_NAME
+    receiver.name.text === T_EXPORT
   ) {
     extractNamespaceModifier(call, receiver, methodName, context);
   }
@@ -305,7 +305,7 @@ function resolveChainBinding(
   if (
     ts.isPropertyAccessExpression(innerReceiver) &&
     ts.isIdentifier(innerReceiver.expression) &&
-    innerReceiver.name.text === RUNTIME_NAME
+    innerReceiver.name.text === T_EXPORT
   ) {
     const binding = context.bindings.find(
       innerReceiver.expression.text,
