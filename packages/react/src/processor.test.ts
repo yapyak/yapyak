@@ -36,10 +36,12 @@ describe('react processor', () => {
     expect(react().id).toBe('react');
   });
 
-  it('returns a processor that handles `.tsx` and `.jsx` files', () => {
+  it('returns a processor that handles `.tsx`, `.jsx`, `.ts`, and `.js` files', () => {
     expect(react().extensions).toEqual([
       '.tsx',
       '.jsx',
+      '.ts',
+      '.js',
     ]);
   });
 
@@ -115,6 +117,40 @@ describe('react processor', () => {
       /import \{ useYapyak \} from '@yapyak\/react\/internal'/,
     );
     expect(code).toContain("from '@yapyak/react/internal'");
+  });
+
+  it('emits a `useYapyak()` call in a hook declared in a `.ts` file', () => {
+    const code = runReactTransform({
+      fileId: 'src/a.ts',
+      locales: [
+        'en',
+        'sv',
+      ],
+      source: [
+        "import { t } from 'yapyak';",
+        'export function useGreeting() {',
+        "  return t('Hello');",
+        '}',
+      ].join('\n'),
+    });
+    expect(code).toMatch(/function useGreeting\(\) \{useYapyak\(\)/);
+  });
+
+  it('skips a capitalized function declared in a `.ts` file', () => {
+    const code = runReactTransform({
+      fileId: 'src/a.ts',
+      locales: [
+        'en',
+        'sv',
+      ],
+      source: [
+        "import { t } from 'yapyak';",
+        'export function Header() {',
+        "  return t('Hello');",
+        '}',
+      ].join('\n'),
+    });
+    expect(code).not.toMatch(/useYapyak\(\)/);
   });
 
   it('skips HMR catalog wiring in production builds', () => {

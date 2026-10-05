@@ -49,6 +49,8 @@ export function react(options: ReactOptions = {}): Processor {
     extensions: [
       '.tsx',
       '.jsx',
+      '.ts',
+      '.js',
     ],
     id: 'react',
     runtime: {

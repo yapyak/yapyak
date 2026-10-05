@@ -93,14 +93,19 @@ function resolveHost(
   node: ts.Node,
   componentHook: ComponentHook,
 ): HostFunction | undefined {
+  const canHoldJsx =
+    node.getSourceFile().languageVariant === ts.LanguageVariant.JSX;
   let current: ts.Node | undefined = node;
   while (current && !ts.isSourceFile(current)) {
     if (ts.isFunctionDeclaration(current) && current.body) {
       if (current.name) {
-        if (componentHook.namePattern.test(current.name.text)) {
+        if (isEligibleName(current.name.text, componentHook, canHoldJsx)) {
           return current;
         }
-      } else if (hasComponentEvidence(current, componentHook.evidencePattern)) {
+      } else if (
+        canHoldJsx &&
+        hasComponentEvidence(current, componentHook.evidencePattern)
+      ) {
         return current;
       }
     }
@@ -110,10 +115,11 @@ function resolveHost(
     ) {
       const name = readDirectName(current);
       if (name !== undefined) {
-        if (componentHook.namePattern.test(name)) {
+        if (isEligibleName(name, componentHook, canHoldJsx)) {
           return current;
         }
       } else if (
+        canHoldJsx &&
         hasComponentEvidence(current, componentHook.evidencePattern) &&
         hasComponentPosition(current, componentHook.namePattern)
       ) {
@@ -123,6 +129,17 @@ function resolveHost(
     current = current.parent;
   }
   return undefined;
+}
+
+function isEligibleName(
+  name: string,
+  componentHook: ComponentHook,
+  canHoldJsx: boolean,
+): boolean {
+  if (!componentHook.namePattern.test(name)) {
+    return false;
+  }
+  return canHoldJsx || componentHook.evidencePattern.test(name);
 }
 
 function hasComponentEvidence(

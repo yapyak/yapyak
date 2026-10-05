@@ -35,13 +35,14 @@ function buildComponentHook(
 function runInject(
   source: string,
   overrides: Partial<ComponentHook> = {},
+  fileId = 'src/a.tsx',
 ): string {
-  const extracted = extractFile('src/a.tsx', source);
+  const extracted = extractFile(fileId, source);
   const magicString = new MagicString(source);
   injectComponentHooks({
     callSites: extracted.callSites,
     componentHook: buildComponentHook(overrides),
-    fileId: 'src/a.tsx',
+    fileId,
     fragments: [
       buildFragment(source),
     ],
@@ -252,6 +253,49 @@ describe('injectComponentHooks', () => {
       ].join('\n'),
     );
     expect(code).toContain('() => {useYapyak();return(<p>');
+  });
+
+  it('emits an invocation into a hook declared in a `.ts` file', () => {
+    const code = runInject(
+      [
+        "import { t } from 'yapyak';",
+        'export function useGreeting() {',
+        "  return t('Hello');",
+        '}',
+      ].join('\n'),
+      {},
+      'src/a.ts',
+    );
+    expect(code).toContain('useGreeting() {useYapyak();');
+  });
+
+  it('skips a capitalized function declared in a `.ts` file', () => {
+    const code = runInject(
+      [
+        "import { t } from 'yapyak';",
+        'export function Header() {',
+        "  return t('Hello');",
+        '}',
+      ].join('\n'),
+      {},
+      'src/a.ts',
+    );
+    expect(code).not.toContain('useYapyak();');
+  });
+
+  it('skips an anonymous function with hook evidence in a `.ts` file', () => {
+    const code = runInject(
+      [
+        "import { t } from 'yapyak';",
+        'export default function () {',
+        '  useMemo();',
+        "  return t('Hello');",
+        '}',
+      ].join('\n'),
+      {},
+      'src/a.ts',
+    );
+    expect(code).not.toContain('useYapyak();');
   });
 
   it('skips a callback without component evidence', () => {
