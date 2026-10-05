@@ -55,6 +55,21 @@ const EXAMPLES: Example[] = [
     switchLocaleOnServer: false,
   },
   {
+    name: 'react-compiler-vanilla-cookie',
+    persistence: 'cookie',
+    port: 5321,
+    saveLoop: {
+      fileId: 'src/app.tsx',
+      sourceAnchor: "<h2>{t('Dates and times')}</h2>",
+      sourceInsertion:
+        "<h2>{t('Dates and times')}</h2><p>{t('Probe from the save loop')}</p>",
+      sourcePath: 'src/app.tsx',
+      ssrHtml: false,
+    },
+    serve: 'preview',
+    switchLocaleOnServer: false,
+  },
+  {
     name: 'react-react-router-cookie',
     persistence: 'cookie',
     port: 5302,
