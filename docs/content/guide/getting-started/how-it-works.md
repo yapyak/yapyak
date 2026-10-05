@@ -479,12 +479,12 @@ translations across renames, moves, and deletions, see
 
 ## Switching
 
-Because the translations are compiled into the modules, a locale change is a re-render, not a fetch. When the active locale changes, the components that call `t()` re-render, along with their children; components outside those subtrees are left alone. The processor wires that subscription in at compile time, through each framework's own reactivity.
+Because the translations are compiled into the modules, a locale change is a re-render, not a fetch. When the active locale changes, the subscribed components re-render, along with their children. The processor wires that subscription in at compile time, through each framework's own reactivity.
 
 {% switch group="framework" %}
 
 {% when value="react" %}
-The compiler injects a `useYapyak()` hook at the top of every component that calls `t()`. It subscribes to the locale store through React's `useSyncExternalStore`, so the component re-renders when the active locale changes.
+The compiler injects a `useYapyak()` hook at the top of every component and custom hook. A function counts when it holds JSX, calls a hook, or reads `t()` or `format`; names follow React's own convention, components capitalized and hooks prefixed with `use`. The hook subscribes to the locale store through React's `useSyncExternalStore`, so the component re-renders when the active locale changes. A helper in another module needs nothing of its own: the component that renders it re-renders. A `useMemo` callback that reads the locale needs `useLocale()` in its dependency list, and the same holds for `useCallback`. Under [React Compiler](/guide/advanced/react-compiler), the plugin also replaces the compiler's memo cache, so cached values recompute on a locale change without a dependency list.
 {% /when %}
 
 {% when value="vue" %}

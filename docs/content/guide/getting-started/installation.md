@@ -1435,7 +1435,7 @@ function Root() {
 {% when value="vue" %}
 {% switch group="adapter" %}
 {% when value="nuxt" %}
-With [`syncHtmlAttributes`](/guide/getting-started/configuration#synchtmlattributes) on, `<html lang>` and `<html dir>` follow the active locale, in server-rendered HTML and on locale switches in the browser.
+With [`syncHtmlAttributes`](/guide/getting-started/configuration#synchtmlattributes) on, `<html lang>` and `<html dir>` follow the active locale, in server-rendered HTML and on locale changes in the browser.
 {% /when %}
 {% /switch %}
 {% /when %}

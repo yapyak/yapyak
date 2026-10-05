@@ -29,6 +29,7 @@ Locked vocabulary for the yapyak guide. Same concept, same word, every page. Add
 | A build that ships one locale | `fixed-locale build` (adjectival, hyphenated); `` `fixedLocale` `` for the option | fixed locale (bare noun), single-locale build, locked build, static-locale build |
 | The BCP 47 identifier | `BCP 47 tag` (first use); `locale code` or `locale tag` after | locale name, language code |
 | Per-request qualifier | `per-request` (adjective: "a per-request locale"); `per request` (adverb: "scoped per request") | — |
+| A change of the active locale | `locale change` (the event: "on a locale change", "when the locale changes"); `switch` only for the user action and its UI (`switch the locale`, `locale switcher`) | locale switch (for the event) |
 
 ### Translations
 
