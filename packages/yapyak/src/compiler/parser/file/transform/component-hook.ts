@@ -144,7 +144,7 @@ function isHostFunction(
   if (isCurried(host)) {
     return false;
   }
-  const name = readDirectName(host);
+  const name = findDirectName(host);
   if (name !== undefined) {
     return (
       isEligibleName(name, componentHook, canHoldJsx) &&
@@ -275,7 +275,7 @@ function isCurried(node: ts.ArrowFunction | ts.FunctionExpression): boolean {
   return ts.isArrowFunction(node.body) || ts.isFunctionExpression(node.body);
 }
 
-function readDirectName(
+function findDirectName(
   node: ts.ArrowFunction | ts.FunctionExpression,
 ): string | undefined {
   if (ts.isFunctionExpression(node) && node.name) {
