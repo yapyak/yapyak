@@ -1889,7 +1889,7 @@ function findTransformHook(plugin: YapyakPlugin): TransformHookFn {
   if (!sub || typeof sub.transform !== 'object') {
     throw new Error('yapyak:transform transform hook missing');
   }
-  return sub.transform.handler as unknown as TransformHookFn;
+  return sub.transform.handler as TransformHookFn;
 }
 
 const TRANSFORM_HOOK_CONTEXT = {
