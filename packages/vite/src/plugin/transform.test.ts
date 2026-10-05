@@ -44,22 +44,22 @@ function buildResolver(): LocaleResolver {
   };
 }
 
-type TransformHookResult = {
+type TransformFnResult = {
   code: string;
   map: unknown;
 } | null;
 
-type TransformHook = (code: string, id: string) => TransformHookResult;
+type TransformFn = (code: string, id: string) => TransformFnResult;
 
 type TransformObjectHook = {
-  handler: TransformHook;
+  handler: TransformFn;
   order: 'pre';
 };
 
 function buildContext(
   consumer: 'client' | 'server',
   addWatchFile?: () => void,
-): ThisParameterType<TransformHook> {
+): ThisParameterType<TransformFn> {
   return {
     ...(addWatchFile === undefined
       ? {}
@@ -71,10 +71,10 @@ function buildContext(
         consumer,
       },
     },
-  } as ThisParameterType<TransformHook>;
+  } as ThisParameterType<TransformFn>;
 }
 
-type WatchChangeHook = (
+type WatchChangeFn = (
   id: string,
   change: {
     event: 'create' | 'delete' | 'update';
@@ -368,7 +368,7 @@ describe('createTransformPlugin', () => {
             error: (input: { message: string }): never => {
               throw new Error(input.message);
             },
-          } as ThisParameterType<TransformHook>,
+          } as ThisParameterType<TransformFn>,
           `import { t } from 'yapyak';\nconst dynamic = 'Hello';\nexport const x = t(dynamic);\n`,
           '/project/src/a.tsx',
         ),
@@ -391,7 +391,7 @@ describe('createTransformPlugin', () => {
             error: (input: { message: string }): never => {
               throw new Error(input.message);
             },
-          } as ThisParameterType<TransformHook>,
+          } as ThisParameterType<TransformFn>,
           `import { t } from 'yapyak';\nconst dynamic = 'Hello';\nexport const a = t(dynamic);\nexport const b = t(dynamic);\n`,
           '/project/src/a.tsx',
         ),
@@ -413,7 +413,7 @@ describe('createTransformPlugin', () => {
         invalidateStructure,
       };
       const plugin = createTransformPlugin(state);
-      const watchChange = plugin.watchChange as WatchChangeHook;
+      const watchChange = plugin.watchChange as WatchChangeFn;
 
       watchChange('/project/locales/sv.json', {
         event: 'update',
@@ -434,7 +434,7 @@ describe('createTransformPlugin', () => {
         invalidateStructure,
       };
       const plugin = createTransformPlugin(state);
-      const watchChange = plugin.watchChange as WatchChangeHook;
+      const watchChange = plugin.watchChange as WatchChangeFn;
 
       watchChange('/project/locales/de.json', {
         event: 'create',
@@ -454,7 +454,7 @@ describe('createTransformPlugin', () => {
         invalidateStructure,
       };
       const plugin = createTransformPlugin(state);
-      const watchChange = plugin.watchChange as WatchChangeHook;
+      const watchChange = plugin.watchChange as WatchChangeFn;
 
       watchChange('/project/locales/sv.json', {
         event: 'update',
@@ -475,7 +475,7 @@ describe('createTransformPlugin', () => {
         invalidateStructure,
       };
       const plugin = createTransformPlugin(state);
-      const watchChange = plugin.watchChange as WatchChangeHook;
+      const watchChange = plugin.watchChange as WatchChangeFn;
 
       watchChange('/project/src/a.tsx', {
         event: 'update',
