@@ -101,9 +101,21 @@ export type ComponentHook = {
 };
 
 /**
+ * The compiler runtime. Imports of any of its specifiers resolve to its module.
+ */
+export type CompilerRuntime = {
+  /** The module that replaces the specifiers. */
+  module: string;
+  /** The module specifiers that compiled components import their memo cache from. */
+  specifiers: string[];
+};
+
+/**
  * The framework runtime wiring.
  */
 export type Runtime = {
+  /** The compiler runtime. */
+  compilerRuntime?: CompilerRuntime;
   /** The component hook. */
   componentHook?: ComponentHook;
   /** The framework runtime module. */

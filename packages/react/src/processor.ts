@@ -54,6 +54,13 @@ export function react(options: ReactOptions = {}): Processor {
     ],
     id: 'react',
     runtime: {
+      compilerRuntime: {
+        module: '@yapyak/react/compiler-runtime/internal',
+        specifiers: [
+          'react/compiler-runtime',
+          'react-compiler-runtime',
+        ],
+      },
       componentHook: {
         evidencePattern: EVIDENCE_RX,
         invoke: 'useYapyak',

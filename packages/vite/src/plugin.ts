@@ -1,6 +1,7 @@
 import type { Plugin } from 'vite';
 
 import {
+  createCompilerRuntimePlugin,
   createConfigPlugin,
   createDevServerPlugin,
   createScanPlugin,
@@ -69,6 +70,7 @@ export function yapyak(options: YapyakOptions = {}): Plugin[] {
     createVirtualModulePlugin(state),
     createScanPlugin(state),
     createTransformPlugin(state),
+    createCompilerRuntimePlugin(state),
     createDevServerPlugin(state),
   ];
 }

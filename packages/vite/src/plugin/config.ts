@@ -116,6 +116,9 @@ function toRuntimeModules(processors: Processor[]): string[] {
       continue;
     }
     modules.push(processor.runtime.module);
+    if (processor.runtime.compilerRuntime !== undefined) {
+      modules.push(processor.runtime.compilerRuntime.module);
+    }
   }
   return modules;
 }

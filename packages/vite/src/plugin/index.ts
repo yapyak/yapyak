@@ -1,3 +1,4 @@
+export { createCompilerRuntimePlugin } from './compiler-runtime';
 export { createConfigPlugin } from './config';
 export { createDevServerPlugin } from './dev-server';
 export { createScanPlugin } from './scan';

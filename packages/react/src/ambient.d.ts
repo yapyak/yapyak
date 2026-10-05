@@ -8,3 +8,7 @@ interface ImportMeta {
     on?<T>(event: string, callback: (data: T) => void): void;
   };
 }
+
+declare module 'react/compiler-runtime' {
+  export function c(size: number): unknown[];
+}

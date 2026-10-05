@@ -25,6 +25,11 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./compiler-runtime/internal": {
+      "types": "./dist/compiler-runtime/internal.d.ts",
+      "react-server": "./dist/compiler-runtime/internal.server.js",
+      "default": "./dist/compiler-runtime/internal.js"
+    },
     "./internal": {
       "types": "./dist/internal.d.ts",
       "default": "./dist/internal.js"

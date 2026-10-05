@@ -49,6 +49,19 @@ describe('react processor', () => {
     expect(react().runtime?.module).toBe('@yapyak/react/internal');
   });
 
+  it('returns a processor that declares `@yapyak/react/compiler-runtime/internal` as the compiler runtime', () => {
+    expect(react().runtime?.compilerRuntime?.module).toBe(
+      '@yapyak/react/compiler-runtime/internal',
+    );
+  });
+
+  it('returns a processor that declares the React compiler-runtime specifiers', () => {
+    expect(react().runtime?.compilerRuntime?.specifiers).toEqual([
+      'react/compiler-runtime',
+      'react-compiler-runtime',
+    ]);
+  });
+
   it('returns a processor that declares `useYapyak` as the component-hook invocation', () => {
     expect(react().runtime?.componentHook?.invoke).toBe('useYapyak');
   });
