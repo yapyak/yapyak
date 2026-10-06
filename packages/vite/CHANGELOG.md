@@ -1,5 +1,19 @@
 # @yapyak/vite
 
+## 0.0.15
+
+### Patch Changes
+
+- [`4ce29e8`](https://github.com/yapyak/yapyak/commit/4ce29e87a770fad18e42b12aea7ec09a60b0d23b) Thanks [@qwuide](https://github.com/qwuide)! - Follow the active locale under React Compiler. React Compiler caches a value until one of its reactive inputs changes, and the active locale is none of them, so a compiled component kept its first `t()` results, `format` output, and helper results after a locale change. `@yapyak/react` now ships a compiler runtime at `@yapyak/react/compiler-runtime/internal`, whose memo cache subscribes the component to the active locale and clears its slots when the locale or a dev-time translation changes, and the Vite plugin resolves `react/compiler-runtime` to it for the files it compiles. Processors declare the replacement through the new `runtime.compilerRuntime` field. On the server the module resolves to React's compiler runtime through the `react-server` condition.
+
+- [`83282fa`](https://github.com/yapyak/yapyak/commit/83282faceeb54699b47897bf3745e1e30c102351) Thanks [@qwuide](https://github.com/qwuide)! - Separate the source locale from the default locale. `defaultLocale` named both the language of the `t()` source strings and the locale a visitor gets when nothing else decides, so a project written in English for Swedish users had no way to start in Swedish without also treating Swedish as the source. The new `sourceLocale` option holds the source language and defaults to `defaultLocale`, so existing configs behave as before. `defaultLocale` is now only the locale that applies when no persisted or detected locale matches, and `yapyak status` marks the source locale as `(source)`.
+
+- [`216aa29`](https://github.com/yapyak/yapyak/commit/216aa29eccef60f3e4f5afd9af3f4fc92d378b01) Thanks [@qwuide](https://github.com/qwuide)! - Subscribe every component to locale changes. The component hook was injected only into components that called `t()`, so a component whose locale-dependent output came from a `format` read or from a helper in another module re-rendered on a locale change only when a parent re-rendered it, and `React.memo` or a `children` prop could stop that. The compiler now injects the hook into every component and custom hook, which is a capitalized or `use`-prefixed function that holds JSX, calls a hook, or reads `t()` or `format`, and the Vite plugin transforms files without `t()` calls when the processor declares a component hook.
+
+- [`3481723`](https://github.com/yapyak/yapyak/commit/34817232251735ba0f6e4927a1aca8c74484160c) Thanks [@qwuide](https://github.com/qwuide)! - Run yapyak's transform ahead of other plugins' transforms. A tool that rewrites components in the same phase, such as React Compiler, ran before yapyak whenever its plugin came earlier in `plugins`, which is the order the installation guide shows, and compiled the source before yapyak had rewritten the `t()` calls and injected its hook. The transform now declares `order: 'pre'`, so React Compiler compiles yapyak's output in either plugin order.
+- Updated dependencies [[`4ce29e8`](https://github.com/yapyak/yapyak/commit/4ce29e87a770fad18e42b12aea7ec09a60b0d23b), [`83282fa`](https://github.com/yapyak/yapyak/commit/83282faceeb54699b47897bf3745e1e30c102351), [`8dbe2cf`](https://github.com/yapyak/yapyak/commit/8dbe2cf8bcb864acc2b22a9415e12d5ba3b424a2), [`216aa29`](https://github.com/yapyak/yapyak/commit/216aa29eccef60f3e4f5afd9af3f4fc92d378b01)]:
+  - yapyak@0.0.15
+
 ## 0.0.14
 
 ### Patch Changes
