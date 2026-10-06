@@ -115,7 +115,7 @@ export async function autoTranslate(
     examplesMax,
   );
   const requests = stubs.map((stub) =>
-    buildRequest(stub, context.defaultLocale, exampleCache, examplesMax),
+    buildRequest(stub, context.sourceLocale, exampleCache, examplesMax),
   );
   const signal = options?.signal;
   const batchContext: BatchContext = {
@@ -220,7 +220,7 @@ function extractStubs(
 ): TranslationStub[] {
   const stubs: TranslationStub[] = [];
   for (const locale of context.locales) {
-    if (locale === context.defaultLocale) {
+    if (locale === context.sourceLocale) {
       continue;
     }
     if (!validateLocaleCode(locale).valid) {
@@ -302,7 +302,7 @@ function loadExampleCache(
   }
   const localeData: LocaleData = {};
   for (const locale of context.locales) {
-    if (locale === context.defaultLocale) {
+    if (locale === context.sourceLocale) {
       continue;
     }
     const path = join(projectRoot, context.localesDir, `${locale}.json`);
@@ -317,7 +317,7 @@ function loadExampleCache(
 
 function buildRequest(
   stub: TranslationStub,
-  defaultLocale: string,
+  sourceLocale: string,
   exampleCache: ExampleCache,
   examplesMax: number,
 ): TranslateRequest {
@@ -325,7 +325,7 @@ function buildRequest(
     context: stub.context,
     fileId: stub.fileId,
     source: stub.source,
-    sourceLocale: defaultLocale,
+    sourceLocale,
     targetLocale: stub.locale,
   };
   if (stub.disambiguation !== undefined) {

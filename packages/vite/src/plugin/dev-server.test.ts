@@ -35,6 +35,7 @@ function buildState(projectRoot: string): State {
         'en',
         'sv',
       ],
+      sourceLocale: 'en',
       warnings: [],
     }),
     getEmittedLocales: () => ({
@@ -51,6 +52,7 @@ function buildState(projectRoot: string): State {
         'en',
         'sv',
       ],
+      sourceLocale: 'en',
     }),
     invalidateData: () => {},
     invalidateStructure: () => {},

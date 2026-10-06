@@ -19,7 +19,6 @@ describe('renderCallReplacement', () => {
         ...callSite,
         source: '',
       },
-      defaultLocale: 'en',
       locales: [
         'en',
       ],
@@ -28,6 +27,7 @@ describe('renderCallReplacement', () => {
       pickLocal: '_pick',
       registerVariants: (literal) => literal,
       singleLocale: true,
+      sourceLocale: 'en',
       translations: {},
     });
     expect(result).toBeUndefined();
@@ -41,7 +41,6 @@ describe('renderCallReplacement', () => {
     }
     const result = renderCallReplacement({
       callSite,
-      defaultLocale: 'en',
       locales: [
         'en',
       ],
@@ -50,6 +49,7 @@ describe('renderCallReplacement', () => {
       pickLocal: '_pick',
       registerVariants: (literal) => literal,
       singleLocale: true,
+      sourceLocale: 'en',
       translations: {},
     });
     expect(result?.code).toBe("'Hello'");
@@ -67,7 +67,6 @@ describe('renderCallReplacement', () => {
     }
     const result = renderCallReplacement({
       callSite,
-      defaultLocale: 'en',
       locales: [
         'en',
       ],
@@ -76,6 +75,7 @@ describe('renderCallReplacement', () => {
       pickLocal: '_pick',
       registerVariants: (literal) => literal,
       singleLocale: true,
+      sourceLocale: 'en',
       translations: {},
     });
     expect(result?.code).toContain('${');
@@ -91,7 +91,6 @@ describe('renderCallReplacement', () => {
     let registered: string | undefined;
     const result = renderCallReplacement({
       callSite,
-      defaultLocale: 'en',
       locales: [
         'en',
         'sv',
@@ -104,6 +103,7 @@ describe('renderCallReplacement', () => {
         return `_variants_${id}`;
       },
       singleLocale: false,
+      sourceLocale: 'en',
       translations: {
         sv: {
           [callSite.id]: 'Spara',
@@ -127,7 +127,6 @@ describe('renderCallReplacement', () => {
     }
     const result = renderCallReplacement({
       callSite,
-      defaultLocale: 'en',
       locales: [
         'en',
         'sv',
@@ -137,6 +136,7 @@ describe('renderCallReplacement', () => {
       pickLocal: '_pick',
       registerVariants: (_literal, id) => `_variants_${id}`,
       singleLocale: false,
+      sourceLocale: 'en',
       translations: {
         sv: {
           'Hi {name}': 'Hej {name}',

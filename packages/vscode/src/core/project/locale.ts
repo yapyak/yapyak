@@ -2,22 +2,22 @@ import type { LocaleData } from 'yapyak/compiler/internal';
 import type { Project } from './resolve';
 
 export type ReadProjectLocalesResult = {
-  defaultLocale: string;
   localeData: LocaleData;
   locales: string[];
+  sourceLocale: string;
 };
 
 export function readProjectLocales(project: Project): ReadProjectLocalesResult {
   const { compiler, config, root } = project;
-  const { defaultLocale, locales } = compiler.discoverLocales(
+  const { locales, sourceLocale } = compiler.discoverLocales(
     config.localesDir,
     root,
     {
       defaultLocale: config.defaultLocale,
+      sourceLocale: config.sourceLocale,
     },
   );
   return {
-    defaultLocale,
     localeData: compiler.readLocaleData(
       {
         locales,
@@ -26,5 +26,6 @@ export function readProjectLocales(project: Project): ReadProjectLocalesResult {
       root,
     ),
     locales,
+    sourceLocale,
   };
 }

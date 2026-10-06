@@ -56,6 +56,7 @@ export async function retranslate(
     localesDir: config.localesDir,
     processors: config.processors,
     projectRoot,
+    sourceLocale: config.sourceLocale,
   });
 
   const requestedAs = options?.as;
@@ -106,7 +107,7 @@ export async function retranslate(
     ? [
         targetLocale,
       ]
-    : report.locales.filter((locale) => locale !== report.defaultLocale);
+    : report.locales.filter((locale) => locale !== report.sourceLocale);
 
   const callSiteCount = matching.reduce(
     (sum, message) => sum + message.locations.length,
@@ -150,12 +151,12 @@ export async function retranslate(
         translator: withProgress(translator, handleProgress),
       },
       {
-        defaultLocale: report.defaultLocale,
         locales: [
-          report.defaultLocale,
+          report.sourceLocale,
           ...targetLocales,
         ],
         localesDir: config.localesDir,
+        sourceLocale: report.sourceLocale,
       },
       projectRoot,
       {

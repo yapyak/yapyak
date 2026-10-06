@@ -74,12 +74,12 @@ async function collectExamples(
       translator,
     },
     {
-      defaultLocale: 'en',
       locales: [
         'en',
         'sv',
       ],
       localesDir: 'locales',
+      sourceLocale: 'en',
     },
     projectRoot,
   );
@@ -151,12 +151,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -325,12 +325,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -394,11 +394,11 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -454,12 +454,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -522,12 +522,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -592,12 +592,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -659,12 +659,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -809,12 +809,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -961,12 +961,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -1030,12 +1030,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -1109,12 +1109,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -1209,12 +1209,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -1312,12 +1312,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -1414,12 +1414,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -1476,12 +1476,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -1545,12 +1545,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -1611,12 +1611,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -1697,12 +1697,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -1762,12 +1762,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -1829,12 +1829,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -1921,12 +1921,12 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -1975,11 +1975,11 @@ describe('autoTranslate', () => {
         translator,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       projectRoot,
     );

@@ -126,7 +126,7 @@ export function migrateLocales(
   const shouldPreserveTranslations = options?.preserveTranslations ?? false;
 
   for (const locale of context.locales) {
-    if (locale === context.defaultLocale) {
+    if (locale === context.sourceLocale) {
       continue;
     }
     const localePath = join(projectRoot, context.localesDir, `${locale}.json`);

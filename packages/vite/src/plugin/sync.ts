@@ -13,16 +13,16 @@ export function syncAll(state: State): void {
   for (const list of state.messagesByFile.values()) {
     allMessages.push(...list);
   }
-  const { defaultLocale, locales } = getResolver(state).getProjectLocales();
+  const { locales, sourceLocale } = getResolver(state).getProjectLocales();
   const result = syncLocaleFiles(
     {
       filter: state.filter,
       messages: allMessages,
     },
     {
-      defaultLocale,
       locales,
       localesDir: getNormalized(state).localesDir,
+      sourceLocale,
     },
     state.projectRoot,
     {

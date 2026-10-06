@@ -11,7 +11,7 @@ import { buildVariantsLiteral, pickLocaleText, toSafeJsString } from './render';
 
 export type RenderCallReplacementInput = {
   callSite: ParsedCallSite;
-  defaultLocale: string;
+  sourceLocale: string;
   locales: string[];
   localsByFactory: Map<string, string>;
   nestedReplacements?: NestedReplacement[];
@@ -40,7 +40,7 @@ export function renderCallReplacement(
 ): CallReplacement | undefined {
   const {
     callSite,
-    defaultLocale,
+    sourceLocale,
     singleLocale: isSingleLocale,
     locales,
     localsByFactory,
@@ -65,10 +65,10 @@ export function renderCallReplacement(
     const singleLocale = locales[0];
     const targetText = singleLocale
       ? pickLocaleText({
-          defaultLocale,
           id,
           locale: singleLocale,
           source,
+          sourceLocale,
           translations,
         })
       : source;
@@ -90,10 +90,10 @@ export function renderCallReplacement(
   const usedFactories = new Set<string>();
   const variants = buildVariantsLiteral(
     {
-      defaultLocale,
       id,
       locales,
       source,
+      sourceLocale,
       translations,
     },
     usedFactories,

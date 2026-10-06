@@ -1,14 +1,18 @@
 import type {
   DiscoverLocalesResult,
-  LocaleContext,
   LocaleData,
 } from 'yapyak/compiler/internal';
+import type { NormalizedYapyakConfig } from 'yapyak/config/internal';
 
 import { discoverLocales, readLocaleData } from 'yapyak/compiler/internal';
 
 type EmittedLocales = {
   defaultLocale: string;
   locales: string[];
+};
+
+type ProjectLocales = EmittedLocales & {
+  sourceLocale: string;
 };
 
 export type CreateLocaleResolverOptions = {
@@ -19,13 +23,16 @@ export type LocaleResolver = {
   getDiscovery(): DiscoverLocalesResult;
   getEmittedLocales(): EmittedLocales;
   getLocaleData(): LocaleData;
-  getProjectLocales(): EmittedLocales;
+  getProjectLocales(): ProjectLocales;
   invalidateData(): void;
   invalidateStructure(): void;
 };
 
 export function createLocaleResolver(
-  context: Pick<LocaleContext, 'defaultLocale' | 'localesDir'>,
+  config: Pick<
+    NormalizedYapyakConfig,
+    'defaultLocale' | 'localesDir' | 'sourceLocale'
+  >,
   projectRoot: string,
   options?: CreateLocaleResolverOptions,
 ): LocaleResolver {
@@ -36,18 +43,20 @@ export function createLocaleResolver(
 
   function getDiscovery(): DiscoverLocalesResult {
     if (discovery === undefined) {
-      discovery = discoverLocales(context.localesDir, projectRoot, {
-        defaultLocale: context.defaultLocale,
+      discovery = discoverLocales(config.localesDir, projectRoot, {
+        defaultLocale: config.defaultLocale,
+        sourceLocale: config.sourceLocale,
       });
     }
     return discovery;
   }
 
-  function getProjectLocales(): EmittedLocales {
+  function getProjectLocales(): ProjectLocales {
     const result = getDiscovery();
     return {
       defaultLocale: result.defaultLocale,
       locales: result.locales,
+      sourceLocale: result.sourceLocale,
     };
   }
 
@@ -56,7 +65,10 @@ export function createLocaleResolver(
       const project = getProjectLocales();
       emitted =
         fixedLocale === undefined
-          ? project
+          ? {
+              defaultLocale: project.defaultLocale,
+              locales: project.locales,
+            }
           : {
               defaultLocale: fixedLocale,
               locales: [
@@ -72,7 +84,7 @@ export function createLocaleResolver(
       localeData = readLocaleData(
         {
           locales: getEmittedLocales().locales,
-          localesDir: context.localesDir,
+          localesDir: config.localesDir,
         },
         projectRoot,
       );

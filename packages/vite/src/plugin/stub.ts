@@ -43,14 +43,14 @@ export function fillStubs(state: State): void {
   if (allMessages.length === 0) {
     return;
   }
-  const { defaultLocale, locales } = getResolver(state).getProjectLocales();
+  const { locales, sourceLocale } = getResolver(state).getProjectLocales();
   const translatableLocales = locales.filter(
     (locale) => validateLocaleCode(locale).valid,
   );
   const missing = discoverMissingMessageKeys(
     allMessages,
     translatableLocales,
-    defaultLocale,
+    sourceLocale,
     getResolver(state).getLocaleData(),
   );
   if (missing.size === 0) {
@@ -66,7 +66,7 @@ export function fillStubs(state: State): void {
     missing.has(toMessageKey(message.source, message.context)),
   );
   const targetLocaleCount = translatableLocales.filter(
-    (locale) => locale !== defaultLocale,
+    (locale) => locale !== sourceLocale,
   ).length;
   const startedAt = Date.now();
   state.logger.info(
@@ -75,20 +75,20 @@ export function fillStubs(state: State): void {
   const controller = new AbortController();
   state.autoTranslateController = controller;
   void runAutoTranslate(state, {
-    defaultLocale,
     filtered,
     locales,
     signal: controller.signal,
+    sourceLocale,
     startedAt,
     translator,
   });
 }
 
 type RunAutoTranslateInput = {
-  defaultLocale: string;
   filtered: ExtractedMessage[];
   locales: string[];
   signal: AbortSignal;
+  sourceLocale: string;
   startedAt: number;
   translator: Translator;
 };
@@ -105,9 +105,9 @@ async function runAutoTranslate(
         translator: input.translator,
       },
       {
-        defaultLocale: input.defaultLocale,
         locales: input.locales,
         localesDir: config.localesDir,
+        sourceLocale: input.sourceLocale,
       },
       state.projectRoot,
       {
@@ -148,7 +148,7 @@ async function runAutoTranslate(
 function discoverMissingMessageKeys(
   messages: ExtractedMessage[],
   locales: string[],
-  defaultLocale: string,
+  sourceLocale: string,
   localeData: LocaleData,
 ): Set<string> {
   const missing = new Set<string>();
@@ -159,7 +159,7 @@ function discoverMissingMessageKeys(
     }
     let isFlagged = false;
     for (const locale of locales) {
-      if (locale === defaultLocale) {
+      if (locale === sourceLocale) {
         continue;
       }
       const localeFile = localeData[locale];

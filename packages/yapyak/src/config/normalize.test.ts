@@ -259,6 +259,30 @@ describe('normalizeYapyakConfig', () => {
     ).toThrow(/defaultLocale cannot be an empty string/);
   });
 
+  it('falls back to the `defaultLocale` as the `sourceLocale`', () => {
+    const normalized = normalizeYapyakConfig({
+      defaultLocale: 'sv',
+    });
+    expect(normalized.sourceLocale).toBe('sv');
+  });
+
+  it('preserves an explicit `sourceLocale` beside the `defaultLocale`', () => {
+    const normalized = normalizeYapyakConfig({
+      defaultLocale: 'sv',
+      sourceLocale: 'en',
+    });
+    expect(normalized.defaultLocale).toBe('sv');
+    expect(normalized.sourceLocale).toBe('en');
+  });
+
+  it('throws when `sourceLocale` is an empty string', () => {
+    expect(() =>
+      normalizeYapyakConfig({
+        sourceLocale: '',
+      }),
+    ).toThrow(/sourceLocale cannot be an empty string/);
+  });
+
   it('throws when `localesDir` is an empty string', () => {
     expect(() =>
       normalizeYapyakConfig({

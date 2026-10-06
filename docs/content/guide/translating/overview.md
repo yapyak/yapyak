@@ -3,7 +3,7 @@ title: Overview
 order: 1
 ---
 
-A translation in yapyak is the value a `t()` call resolves to in a non-default locale. Every call adds an empty stub to your locale files until something fills it.
+A translation in yapyak is the value a `t()` call resolves to in a target locale. Every call adds an empty stub to your locale files until something fills it.
 
 ```json [locales/sv.json]
 {

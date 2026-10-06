@@ -15,6 +15,7 @@ function buildResolver(): LocaleResolver {
         'en',
         'sv',
       ],
+      sourceLocale: 'en',
       warnings: [],
     }),
     getEmittedLocales: () => ({
@@ -31,6 +32,7 @@ function buildResolver(): LocaleResolver {
         'en',
         'sv',
       ],
+      sourceLocale: 'en',
     }),
     invalidateData: () => {},
     invalidateStructure: () => {},

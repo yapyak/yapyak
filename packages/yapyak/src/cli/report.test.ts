@@ -12,6 +12,7 @@ const baseOptions = {
     'src/**/*.ts',
   ],
   localesDir: 'locales',
+  sourceLocale: 'en',
 };
 
 describe('buildReport', () => {

@@ -8,11 +8,11 @@ export type TranslationStat = {
 };
 
 export type BuildTranslationStatsInput = {
-  defaultLocale: string;
   fileId?: string;
   localeData: LocaleData;
   locales: string[];
   messages: ExtractedMessage[];
+  sourceLocale: string;
 };
 
 export function buildTranslationStats(
@@ -21,7 +21,7 @@ export function buildTranslationStats(
 ): TranslationStat[] {
   const stats: TranslationStat[] = [];
   for (const locale of input.locales) {
-    if (locale === input.defaultLocale) {
+    if (locale === input.sourceLocale) {
       continue;
     }
     let missing = 0;

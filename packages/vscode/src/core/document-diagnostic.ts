@@ -21,7 +21,7 @@ export function collectDocumentDiagnostics(
   if (isLocaleFile(root, config.localesDir, path)) {
     const diagnostics = compiler.validateLocaleFile(fileId, path);
     const locale = toLocaleCode(path);
-    if (locale === config.defaultLocale) {
+    if (locale === config.sourceLocale) {
       return diagnostics;
     }
     const { messages, sourceFileIds } = resolveProjectMessages(project);

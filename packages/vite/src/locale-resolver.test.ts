@@ -38,6 +38,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
       );
@@ -48,6 +49,7 @@ describe('createLocaleResolver', () => {
           'en',
           'sv',
         ],
+        sourceLocale: 'en',
         warnings: [],
       });
     });
@@ -57,6 +59,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
       );
@@ -75,6 +78,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
       );
@@ -94,6 +98,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
       );
@@ -116,6 +121,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
       );
@@ -147,6 +153,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
       );
@@ -165,6 +172,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
       );
@@ -199,6 +207,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
         {
@@ -219,6 +228,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
         {
@@ -232,7 +242,28 @@ describe('createLocaleResolver', () => {
           'en',
           'sv',
         ],
+        sourceLocale: 'en',
       });
+    });
+
+    it('returns the default locale beside the source locale when they differ', () => {
+      const resolver = createLocaleResolver(
+        {
+          defaultLocale: 'sv',
+          localesDir: 'locales',
+          sourceLocale: 'en',
+        },
+        projectRoot,
+      );
+
+      expect(resolver.getEmittedLocales()).toEqual({
+        defaultLocale: 'sv',
+        locales: [
+          'en',
+          'sv',
+        ],
+      });
+      expect(resolver.getProjectLocales().sourceLocale).toBe('en');
     });
 
     it('reads the locale data for the fixed locale', () => {
@@ -240,6 +271,7 @@ describe('createLocaleResolver', () => {
         {
           defaultLocale: 'en',
           localesDir: 'locales',
+          sourceLocale: 'en',
         },
         projectRoot,
         {

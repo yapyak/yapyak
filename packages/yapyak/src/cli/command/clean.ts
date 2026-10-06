@@ -42,8 +42,8 @@ export function clean(
         .filter((name) => name.endsWith('.json'))
         .map((name) => name.replace(/\.json$/, ''))
     : [];
-  const { defaultLocale } = config;
-  const locales = fileLocales.filter((locale) => locale !== defaultLocale);
+  const { sourceLocale } = config;
+  const locales = fileLocales.filter((locale) => locale !== sourceLocale);
 
   process.stdout.write(header('Locale cleanup'));
 

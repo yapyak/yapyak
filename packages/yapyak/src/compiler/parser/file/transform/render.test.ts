@@ -47,10 +47,10 @@ describe('pickLocaleText', () => {
   it('returns the source when locale equals the default locale', () => {
     expect(
       pickLocaleText({
-        defaultLocale: 'en',
         id: 'Save',
         locale: 'en',
         source: 'Save',
+        sourceLocale: 'en',
         translations: {},
       }),
     ).toBe('Save');
@@ -59,10 +59,10 @@ describe('pickLocaleText', () => {
   it('returns the source when the locale map is missing', () => {
     expect(
       pickLocaleText({
-        defaultLocale: 'en',
         id: 'Save',
         locale: 'sv',
         source: 'Save',
+        sourceLocale: 'en',
         translations: {},
       }),
     ).toBe('Save');
@@ -71,10 +71,10 @@ describe('pickLocaleText', () => {
   it('returns the source when the id is absent from the locale map', () => {
     expect(
       pickLocaleText({
-        defaultLocale: 'en',
         id: 'Save',
         locale: 'sv',
         source: 'Save',
+        sourceLocale: 'en',
         translations: {
           sv: {
             Cancel: 'Avbryt',
@@ -87,10 +87,10 @@ describe('pickLocaleText', () => {
   it('returns the translated text when present in the locale map', () => {
     expect(
       pickLocaleText({
-        defaultLocale: 'en',
         id: 'Save',
         locale: 'sv',
         source: 'Save',
+        sourceLocale: 'en',
         translations: {
           sv: {
             Save: 'Spara',
@@ -132,12 +132,12 @@ describe('buildVariantsLiteral', () => {
     const usedFactories = new Set<string>();
     const result = buildVariantsLiteral(
       {
-        defaultLocale: 'en',
         id: 'Save',
         locales: [
           'en',
         ],
         source: 'Save',
+        sourceLocale: 'en',
         translations: {},
       },
       usedFactories,
@@ -151,13 +151,13 @@ describe('buildVariantsLiteral', () => {
     const usedFactories = new Set<string>();
     const result = buildVariantsLiteral(
       {
-        defaultLocale: 'en',
         id: 'Save',
         locales: [
           'en',
           'sv',
         ],
         source: 'Save',
+        sourceLocale: 'en',
         translations: {
           sv: {
             Save: 'Spara',
@@ -174,12 +174,12 @@ describe('buildVariantsLiteral', () => {
     const usedFactories = new Set<string>();
     const result = buildVariantsLiteral(
       {
-        defaultLocale: 'en',
         id: 'Hi {name}',
         locales: [
           'en',
         ],
         source: 'Hi {name}',
+        sourceLocale: 'en',
         translations: {},
       },
       usedFactories,
@@ -193,12 +193,12 @@ describe('buildVariantsLiteral', () => {
     const usedFactories = new Set<string>();
     buildVariantsLiteral(
       {
-        defaultLocale: 'en',
         id: 'Hi {name}',
         locales: [
           'en',
         ],
         source: 'Hi {name}',
+        sourceLocale: 'en',
         translations: {},
       },
       usedFactories,

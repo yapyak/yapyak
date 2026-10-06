@@ -11,6 +11,7 @@ export type Config = {
   include: FilterPattern;
   localesDir: string;
   processors: Processor[];
+  sourceLocale: string;
   translator: Translator | undefined;
 };
 
@@ -45,6 +46,7 @@ function toCliConfig(config: NormalizedYapyakConfig): Config {
     include: config.include,
     localesDir: config.localesDir,
     processors: config.processors,
+    sourceLocale: config.sourceLocale,
     translator: config.translator,
   };
 }

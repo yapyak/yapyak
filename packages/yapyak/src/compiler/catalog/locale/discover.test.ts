@@ -26,6 +26,7 @@ describe('discoverLocales', () => {
       locales: [
         'en',
       ],
+      sourceLocale: 'en',
       warnings: [],
     });
   });
@@ -53,6 +54,26 @@ describe('discoverLocales', () => {
       'no',
       'sv',
     ]);
+  });
+
+  it('folds the explicit `sourceLocale` and `defaultLocale` into the locales list', () => {
+    const result = discoverLocales('locales', root, {
+      defaultLocale: 'sv',
+      sourceLocale: 'en',
+    });
+    expect(result.defaultLocale).toBe('sv');
+    expect(result.sourceLocale).toBe('en');
+    expect(result.locales).toEqual([
+      'en',
+      'sv',
+    ]);
+  });
+
+  it('falls back to the `defaultLocale` as the source locale', () => {
+    const result = discoverLocales('locales', root, {
+      defaultLocale: 'sv',
+    });
+    expect(result.sourceLocale).toBe('sv');
   });
 
   it('emits a warning for a locale whose structure is invalid', () => {

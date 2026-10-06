@@ -76,12 +76,12 @@ describe('syncLocaleFiles', () => {
         messages: [],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
     );
@@ -111,12 +111,12 @@ describe('syncLocaleFiles', () => {
         messages: [],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -165,12 +165,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -206,12 +206,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -257,12 +257,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -288,12 +288,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -334,12 +334,12 @@ describe('syncLocaleFiles', () => {
         messages: [],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -357,12 +357,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -408,12 +408,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -463,12 +463,12 @@ describe('syncLocaleFiles', () => {
         messages: [],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -492,12 +492,12 @@ describe('syncLocaleFiles', () => {
         messages: [],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -514,12 +514,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -556,12 +556,12 @@ describe('syncLocaleFiles', () => {
           ],
         },
         {
-          defaultLocale: 'en',
           locales: [
             'en',
             'sv',
           ],
           localesDir,
+          sourceLocale: 'en',
         },
         projectRoot,
         {
@@ -609,12 +609,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -660,12 +660,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -708,12 +708,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {
@@ -731,12 +731,12 @@ describe('syncLocaleFiles', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir,
+        sourceLocale: 'en',
       },
       projectRoot,
       {

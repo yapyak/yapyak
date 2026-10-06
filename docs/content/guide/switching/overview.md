@@ -40,7 +40,7 @@ yapyak resolves the active locale in this order, taking the first that yields a 
 
 1. **A persisted choice.** A cookie, URL parameter, or `localStorage` entry written by an earlier `setLocale()` call. Configured via [`persistence`](/guide/getting-started/configuration#persistence).
 2. **A detected locale**, if [`detectUserLocale`](/guide/getting-started/configuration#detectuserlocale) is enabled. yapyak reads the `Accept-Language` header on the server (under the [SSR adapter](/guide/getting-started/installation)) or `navigator.languages` in the browser, and matches it against your locales.
-3. **The `defaultLocale`.** Your source language, the catch-all. Set via [`defaultLocale`](/guide/getting-started/configuration#defaultlocale) (defaults to `'en'`).
+3. **The `defaultLocale`.** What applies when nothing above matched, and the source language unless [`sourceLocale`](/guide/getting-started/configuration#sourcelocale) is set. Configured via [`defaultLocale`](/guide/getting-started/configuration#defaultlocale) (defaults to `'en'`).
 
 For fixed-locale builds, the active locale is hard-coded at compile time and there's nothing to resolve at runtime. See [Fixed-locale builds](/guide/advanced/fixed-locale).
 

@@ -71,7 +71,8 @@ export default defineConfig({
 
 | Field | Default | What it sets |
 |---|---|---|
-| [`defaultLocale`](#defaultlocale) | `'en'` | Your source language |
+| [`sourceLocale`](#sourcelocale) | `defaultLocale` | Your source language |
+| [`defaultLocale`](#defaultlocale) | `'en'` | The locale users get when nothing else decides |
 | [`localesDir`](#localesdir) | `'locales'` | Where locale files live |
 | [`include`](#include) | `['.']` | Which files yapyak scans |
 | [`exclude`](#exclude) | tests, generated files, `.d.ts` | Which files it skips |
@@ -87,13 +88,32 @@ export default defineConfig({
 
 The fields that define your set of languages and where they live on disk.
 
+### `sourceLocale`
+
+Your source language: the locale you write your `t()` calls in. It has no locale file, and it is the source of every [translator](#translator) request. Set it only if you author in something other than `defaultLocale`.
+
+```ts
+sourceLocale: 'en',
+```
+
+**Type**: [`Locale`](/reference/yapyak/Locale) · **Default**: the `defaultLocale`
+
 ### `defaultLocale`
 
-Your source language: the locale you write your `t()` calls in. yapyak uses it as the source for [translator](#translator) requests, and as the final [fallback](/guide/switching/tags) when no other locale matches. Set it only if you author in something other than English.
+The locale users get when nothing else decides: no [persisted](#persistence) choice, and no [detected](#detectuserlocale) locale that matches. Server-rendered HTML without a cookie or a matching `Accept-Language` header renders in it. With `sourceLocale` unset, it is also the source language.
 
 ```ts
 defaultLocale: 'sv',
 ```
+
+A codebase written in English with Swedish users sets both:
+
+```ts
+sourceLocale: 'en',
+defaultLocale: 'sv',
+```
+
+A missing Swedish translation still falls back to the English source string.
 
 **Type**: [`Locale`](/reference/yapyak/Locale) · **Default**: `'en'`
 

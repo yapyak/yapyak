@@ -27,7 +27,7 @@ bunx yapyak retranslate "Save"
 {% /when %}
 {% /switch %}
 
-By default, every locale (other than the default locale) gets a fresh translation for the matching source string. Existing values are overwritten.
+By default, every locale (other than the source locale) gets a fresh translation for the matching source string. Existing values are overwritten.
 
 ## A single locale
 

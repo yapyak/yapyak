@@ -40,6 +40,7 @@ type Report = {
   missing: MissingEntry[];
   perLocale: Record<string, LocaleStats>;
   sourceFileIds: string[];
+  sourceLocale: string;
   totalMessages: number;
 };
 
@@ -50,15 +51,17 @@ type BuildReportInput = {
   localesDir: string;
   processors?: Processor[];
   projectRoot: string;
+  sourceLocale: string;
 };
 
 export function buildReport(input: BuildReportInput): Report {
   const localesPath = join(input.projectRoot, input.localesDir);
-  const { defaultLocale, locales } = discoverLocales(
+  const { defaultLocale, locales, sourceLocale } = discoverLocales(
     input.localesDir,
     input.projectRoot,
     {
       defaultLocale: input.defaultLocale,
+      sourceLocale: input.sourceLocale,
     },
   );
 
@@ -105,7 +108,7 @@ export function buildReport(input: BuildReportInput): Report {
   const missing: MissingEntry[] = [];
 
   for (const locale of locales) {
-    if (locale === defaultLocale) {
+    if (locale === sourceLocale) {
       perLocale[locale] = {
         missing: 0,
         translated: totalMessages,
@@ -201,6 +204,7 @@ export function buildReport(input: BuildReportInput): Report {
     missing,
     perLocale,
     sourceFileIds,
+    sourceLocale,
     totalMessages,
   };
 }

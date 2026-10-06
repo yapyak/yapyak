@@ -16,6 +16,7 @@ function makeConfig(overrides: Partial<Config> = {}): Config {
     ],
     localesDir: 'locales',
     processors: [],
+    sourceLocale: 'en',
     translator: undefined,
     ...overrides,
   };

@@ -8,20 +8,20 @@ export type TranslationItem = {
 
 export type BuildTranslationTableInput = {
   context?: string;
-  defaultLocale: string;
   fileId: string;
   localeData: LocaleData;
   locales: string[];
   source: string;
+  sourceLocale: string;
 };
 
 export function buildTranslationTable(
   compiler: Pick<CompilerModule, 'findTranslation'>,
   input: BuildTranslationTableInput,
 ): TranslationItem[] {
-  const { context, defaultLocale, fileId, localeData, locales, source } = input;
+  const { context, fileId, localeData, locales, source, sourceLocale } = input;
   const targetLocales = locales
-    .filter((locale) => locale !== defaultLocale)
+    .filter((locale) => locale !== sourceLocale)
     .sort();
   return targetLocales.map((locale) => {
     const value = compiler.findTranslation(

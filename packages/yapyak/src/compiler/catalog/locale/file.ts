@@ -265,14 +265,14 @@ export function syncLocaleFiles(
       throw error;
     }
   }
-  const nonDefaultLocales = context.locales.filter(
+  const targetLocales = context.locales.filter(
     (locale) =>
-      locale !== context.defaultLocale && validateLocaleCode(locale).valid,
+      locale !== context.sourceLocale && validateLocaleCode(locale).valid,
   );
   const existingByLocale = readLocaleFiles(
     projectRoot,
     context.localesDir,
-    nonDefaultLocales,
+    targetLocales,
   );
 
   const inFlightDrops = extractInFlightDrops(
@@ -513,10 +513,10 @@ function extractInFlightDrops(
   existingByLocale: Map<string, LocaleFile>,
   extractedKeys: Record<string, Set<string>>,
   filter: (fileId: string) => boolean,
-  nonDefaultLocales: string[],
+  targetLocales: string[],
 ): InFlightDrops {
   const drops: InFlightDrops = new Map();
-  for (const locale of nonDefaultLocales) {
+  for (const locale of targetLocales) {
     const existing = existingByLocale.get(locale) ?? {};
     for (const [fileId, entries] of Object.entries(existing)) {
       if (!filter(fileId)) {

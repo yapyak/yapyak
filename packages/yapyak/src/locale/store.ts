@@ -210,7 +210,7 @@ export const locales: Locale[] = Object.freeze([
   ...LOCALES,
 ]) as Locale[];
 
-/** The default locale. */
+/** The default locale. Applies when no persisted or detected locale matches. */
 export const defaultLocale: Locale = DEFAULT_LOCALE;
 
 export function subscribeLocale(

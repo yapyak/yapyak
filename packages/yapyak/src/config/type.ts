@@ -26,7 +26,7 @@ export type YapyakConfig = {
    */
   autoTranslateThreshold?: number;
   /**
-   * The default locale.
+   * The default locale. Applies when no persisted or detected locale matches.
    *
    * @defaultValue `'en'`
    */
@@ -85,6 +85,12 @@ export type YapyakConfig = {
    * @defaultValue `[]`
    */
   processors?: (Processor | Processor[])[];
+  /**
+   * The source locale. Holds the `t()` source strings and has no locale file.
+   *
+   * @defaultValue `defaultLocale`
+   */
+  sourceLocale?: Locale;
   /**
    * Whether to keep the `<html>` element's `lang` and `dir` attributes synced with the active locale.
    *

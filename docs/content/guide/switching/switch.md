@@ -96,7 +96,7 @@ import { defaultLocale, getLocale, locales, setLocale } from 'yapyak';
 - [`getLocale()`](/reference/yapyak/getLocale) returns the active [`Locale`](/reference/yapyak/Locale).
 - [`setLocale('sv')`](/reference/yapyak/setLocale) switches the active locale.
 - [`locales`](/reference/yapyak/locales) is the array of `Locale` values you've added.
-- [`defaultLocale`](/reference/yapyak/defaultLocale) is your source language, the fallback when no other locale matches.
+- [`defaultLocale`](/reference/yapyak/defaultLocale) is the locale that applies when no other locale matches.
 
 You'll reach for these directly when:
 

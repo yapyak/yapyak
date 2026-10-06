@@ -18,6 +18,7 @@ export type NormalizedYapyakConfig = {
   persistence: NormalizedPersistenceConfig;
   preserveTranslationsOnSourceEdit: boolean;
   processors: Processor[];
+  sourceLocale: string;
   syncHtmlAttributes: boolean;
   translator: Translator | undefined;
 };
@@ -74,6 +75,10 @@ export function normalizeYapyakConfig(
   if (defaultLocale === '') {
     throw new Error('[yapyak] defaultLocale cannot be an empty string.');
   }
+  const sourceLocale = config.sourceLocale ?? defaultLocale;
+  if (sourceLocale === '') {
+    throw new Error('[yapyak] sourceLocale cannot be an empty string.');
+  }
   const localesDir = config.localesDir ?? DEFAULT_LOCALES_DIR;
   if (localesDir === '') {
     throw new Error('[yapyak] localesDir cannot be an empty string.');
@@ -89,6 +94,7 @@ export function normalizeYapyakConfig(
     preserveTranslationsOnSourceEdit:
       config.preserveTranslationsOnSourceEdit ?? !config.translator,
     processors,
+    sourceLocale,
     syncHtmlAttributes: config.syncHtmlAttributes ?? false,
     translator: config.translator,
   };

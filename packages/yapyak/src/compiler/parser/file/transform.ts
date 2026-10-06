@@ -31,7 +31,7 @@ import { findFreeIdentifier, hasIdentifier } from './transform/identifier';
 import { transformScriptImports } from './transform/script-import';
 
 export type TransformFileRequest = {
-  defaultLocale?: string;
+  sourceLocale?: string;
   dev?: boolean;
   extracted: ExtractFileResult;
   fileId: string;
@@ -93,8 +93,8 @@ const FACTORY_ORDER = [
 export function transformFile(
   request: TransformFileRequest,
 ): TransformFileResult {
-  const defaultLocale = request.defaultLocale ?? request.locales[0];
-  if (!defaultLocale) {
+  const sourceLocale = request.sourceLocale ?? request.locales[0];
+  if (!sourceLocale) {
     return buildUnchangedResult(request, []);
   }
   const processor = resolveProcessor(
@@ -200,7 +200,6 @@ export function transformFile(
     }
     const replacement = renderCallReplacement({
       callSite,
-      defaultLocale,
       locales: request.locales,
       localsByFactory,
       nestedReplacements,
@@ -208,6 +207,7 @@ export function transformFile(
       pickLocal,
       registerVariants,
       singleLocale: isSingleLocale,
+      sourceLocale,
       translations: request.translations,
     });
     if (replacement) {

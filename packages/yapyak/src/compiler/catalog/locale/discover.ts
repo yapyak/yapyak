@@ -6,6 +6,7 @@ import { join } from 'node:path';
 
 export type DiscoverLocalesOptions = {
   defaultLocale?: string;
+  sourceLocale?: string;
 };
 
 export type LocaleWarning = {
@@ -17,6 +18,7 @@ export type LocaleWarning = {
 export type DiscoverLocalesResult = {
   defaultLocale: string;
   locales: string[];
+  sourceLocale: string;
   warnings: LocaleWarning[];
 };
 
@@ -55,7 +57,9 @@ export function discoverLocales(
     warnings.push(warning);
   }
   const defaultLocale = options?.defaultLocale || 'en';
+  const sourceLocale = options?.sourceLocale || defaultLocale;
   const uniqueLocales = new Set<string>([
+    sourceLocale,
     defaultLocale,
     ...fileLocales,
   ]);
@@ -64,6 +68,7 @@ export function discoverLocales(
     locales: [
       ...uniqueLocales,
     ].sort(),
+    sourceLocale,
     warnings,
   };
 }

@@ -59,12 +59,13 @@ export async function translate(
     localesDir: config.localesDir,
     processors: config.processors,
     projectRoot,
+    sourceLocale: config.sourceLocale,
   });
   const targetLocales = targetLocale
     ? [
         targetLocale,
       ]
-    : report.locales.filter((locale) => locale !== report.defaultLocale);
+    : report.locales.filter((locale) => locale !== report.sourceLocale);
 
   const stubsToFill = force
     ? targetLocales.flatMap((locale) =>
@@ -123,12 +124,12 @@ export async function translate(
         translator: withProgress(translator, handleProgress),
       },
       {
-        defaultLocale: report.defaultLocale,
         locales: [
-          report.defaultLocale,
+          report.sourceLocale,
           ...localesToProcess,
         ],
         localesDir: config.localesDir,
+        sourceLocale: report.sourceLocale,
       },
       projectRoot,
       {

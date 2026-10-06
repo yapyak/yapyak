@@ -29,20 +29,20 @@ bunx yapyak status
 
 ```terminal
   <b>Translation status</b>
-  <d>Locales</d>   <b>en</b> <d>(default)</d> <d>·</d> <b>sv</b>
+  <d>Locales</d>   <b>en</b> <d>(source)</d> <d>·</d> <b>sv</b>
   <d>Total</d>     <b>521</b> messages × 2 = <b>1042</b> translations
 
   ┌──────────────┬───────────┬────────────────────────────────────┐
   │ <b>Locale</b>       │  <b>Coverage</b> │                                    │
   ├──────────────┼───────────┼────────────────────────────────────┤
-  │ en <d>(default)</d> │ 521 / 521 │ ████████████████████ 521/521  100% │
+  │ en <d>(source)</d> │ 521 / 521 │ ████████████████████ 521/521  100% │
   │ sv           │ 521 / 521 │ ████████████████████ 521/521  100% │
   └──────────────┴───────────┴────────────────────────────────────┘
 
   <g>✔</g> <g>All translations present.</g>
 ```
 
-Each row shows the locale, how many translations exist out of the total, a progress bar, and the percentage. `defaultLocale` is always 100% since every source string is by definition translated to itself.
+Each row shows the locale, how many translations exist out of the total, a progress bar, and the percentage. `sourceLocale` is always 100% since every source string is by definition translated to itself.
 
 ## Machine-readable output
 
@@ -69,6 +69,7 @@ bunx yapyak status --json
 ```terminal
 {
   "defaultLocale": "en",
+  "sourceLocale": "en",
   "locales": ["de", "en", "ja", "sv"],
   "totalMessages": 124,
   "perLocale": {

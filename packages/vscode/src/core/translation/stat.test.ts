@@ -39,7 +39,6 @@ describe('buildTranslationStats', () => {
   it('builds one stat for every locale but the default', () => {
     expect(
       buildTranslationStats(compiler, {
-        defaultLocale: 'en',
         localeData: {},
         locales: [
           'en',
@@ -47,6 +46,7 @@ describe('buildTranslationStats', () => {
           'sv',
         ],
         messages: [],
+        sourceLocale: 'en',
       }).map((stat) => stat.locale),
     ).toEqual([
       'de',
@@ -57,7 +57,6 @@ describe('buildTranslationStats', () => {
   it('counts a translated message', () => {
     expect(
       buildTranslationStats(compiler, {
-        defaultLocale: 'en',
         localeData: {
           sv: {
             'src/a.tsx': {
@@ -72,6 +71,7 @@ describe('buildTranslationStats', () => {
         messages: [
           makeMessage('Hello'),
         ],
+        sourceLocale: 'en',
       })[0],
     ).toEqual({
       locale: 'sv',
@@ -83,7 +83,6 @@ describe('buildTranslationStats', () => {
   it('counts a message with no entry as missing', () => {
     expect(
       buildTranslationStats(compiler, {
-        defaultLocale: 'en',
         localeData: {},
         locales: [
           'en',
@@ -92,6 +91,7 @@ describe('buildTranslationStats', () => {
         messages: [
           makeMessage('Hello'),
         ],
+        sourceLocale: 'en',
       })[0]?.missing,
     ).toBe(1);
   });
@@ -99,7 +99,6 @@ describe('buildTranslationStats', () => {
   it('counts an empty translation as missing', () => {
     expect(
       buildTranslationStats(compiler, {
-        defaultLocale: 'en',
         localeData: {
           sv: {
             'src/a.tsx': {
@@ -114,6 +113,7 @@ describe('buildTranslationStats', () => {
         messages: [
           makeMessage('Hello'),
         ],
+        sourceLocale: 'en',
       })[0]?.missing,
     ).toBe(1);
   });
@@ -121,7 +121,6 @@ describe('buildTranslationStats', () => {
   it('counts only the file the input names', () => {
     expect(
       buildTranslationStats(compiler, {
-        defaultLocale: 'en',
         fileId: 'src/a.tsx',
         localeData: {},
         locales: [
@@ -132,6 +131,7 @@ describe('buildTranslationStats', () => {
           makeMessage('Hello'),
           makeMessage('Save', 'src/b.tsx'),
         ],
+        sourceLocale: 'en',
       })[0]?.missing,
     ).toBe(1);
   });

@@ -53,6 +53,7 @@ export function exportCommand(
     localesDir: config.localesDir,
     processors: config.processors,
     projectRoot,
+    sourceLocale: config.sourceLocale,
   });
 
   const errorCount = report.diagnostics.filter(
@@ -83,7 +84,7 @@ export function exportCommand(
   let localeData: LocaleData;
   try {
     localeData = buildLocaleData(
-      report.defaultLocale,
+      report.sourceLocale,
       join(projectRoot, config.localesDir),
       targetLocales,
       variantsByFile,
@@ -175,7 +176,7 @@ function buildVariantsByFile(
 }
 
 function buildLocaleData(
-  defaultLocale: string,
+  sourceLocale: string,
   localesDir: string,
   targetLocales: string[],
   variantsByFile: Map<string, ExportVariant[]>,
@@ -183,7 +184,7 @@ function buildLocaleData(
   const localeData: LocaleData = {};
   for (const locale of targetLocales) {
     localeData[locale] = buildLocaleFile(
-      defaultLocale,
+      sourceLocale,
       locale,
       join(localesDir, `${locale}.json`),
       variantsByFile,
@@ -193,14 +194,14 @@ function buildLocaleData(
 }
 
 function buildLocaleFile(
-  defaultLocale: string,
+  sourceLocale: string,
   locale: string,
   localePath: string,
   variantsByFile: Map<string, ExportVariant[]>,
 ): LocaleFile {
-  const isDefault = locale === defaultLocale;
+  const isSource = locale === sourceLocale;
   let onDisk: LocaleFile;
-  if (isDefault) {
+  if (isSource) {
     onDisk = {};
   } else {
     onDisk = readLocaleFile(localePath);
@@ -213,7 +214,7 @@ function buildLocaleFile(
       Map<string | undefined, string>
     >();
     for (const { context, source } of variants) {
-      const value = isDefault
+      const value = isSource
         ? source
         : (findTranslation(fileEntries?.[source], context) ?? '');
       let byContext = byContextBySource.get(source);

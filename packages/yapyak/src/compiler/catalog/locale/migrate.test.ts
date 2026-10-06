@@ -279,12 +279,12 @@ describe('migrateLocales', () => {
         ...overrides.input,
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
         ...overrides.context,
       },
       root,
@@ -436,12 +436,12 @@ describe('migrateLocales', () => {
         ],
       },
       {
-        defaultLocale: 'en',
         locales: [
           'en',
           'sv',
         ],
         localesDir: 'locales',
+        sourceLocale: 'en',
       },
       root,
     );

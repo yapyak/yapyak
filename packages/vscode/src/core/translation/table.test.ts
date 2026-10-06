@@ -11,7 +11,6 @@ describe('buildTranslationTable', () => {
   it('builds a row for every target locale', () => {
     expect(
       buildTranslationTable(COMPILER, {
-        defaultLocale: 'en',
         fileId: 'src/a.tsx',
         localeData: {
           sv: {
@@ -25,6 +24,7 @@ describe('buildTranslationTable', () => {
           'sv',
         ],
         source: 'Save changes',
+        sourceLocale: 'en',
       }),
     ).toEqual([
       {
@@ -37,7 +37,6 @@ describe('buildTranslationTable', () => {
   it('builds a row without a value when the entry is missing', () => {
     expect(
       buildTranslationTable(COMPILER, {
-        defaultLocale: 'en',
         fileId: 'src/a.tsx',
         localeData: {
           sv: {},
@@ -47,6 +46,7 @@ describe('buildTranslationTable', () => {
           'sv',
         ],
         source: 'Save changes',
+        sourceLocale: 'en',
       }),
     ).toEqual([
       {
@@ -58,7 +58,6 @@ describe('buildTranslationTable', () => {
   it('builds a row without a value when the entry is an empty stub', () => {
     expect(
       buildTranslationTable(COMPILER, {
-        defaultLocale: 'en',
         fileId: 'src/a.tsx',
         localeData: {
           sv: {
@@ -72,6 +71,7 @@ describe('buildTranslationTable', () => {
           'sv',
         ],
         source: 'Save changes',
+        sourceLocale: 'en',
       }),
     ).toEqual([
       {
@@ -84,7 +84,6 @@ describe('buildTranslationTable', () => {
     expect(
       buildTranslationTable(COMPILER, {
         context: 'button',
-        defaultLocale: 'en',
         fileId: 'src/a.tsx',
         localeData: {
           sv: {
@@ -100,6 +99,7 @@ describe('buildTranslationTable', () => {
           'sv',
         ],
         source: 'Open',
+        sourceLocale: 'en',
       }),
     ).toEqual([
       {
@@ -112,13 +112,13 @@ describe('buildTranslationTable', () => {
   it('builds no rows when `locales` holds the default locale only', () => {
     expect(
       buildTranslationTable(COMPILER, {
-        defaultLocale: 'en',
         fileId: 'src/a.tsx',
         localeData: {},
         locales: [
           'en',
         ],
         source: 'Save changes',
+        sourceLocale: 'en',
       }),
     ).toEqual([]);
   });

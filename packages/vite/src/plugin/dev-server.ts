@@ -276,7 +276,7 @@ export function createDevServerPlugin(state: State): Plugin {
       }
       const fileId = toFileId(state.projectRoot, options.file);
       const code = await options.read();
-      const { defaultLocale, locales } = getResolver(state).getProjectLocales();
+      const { locales, sourceLocale } = getResolver(state).getProjectLocales();
       const result = resolveExtraction(state, fileId, code);
       renderErrorDiagnostics(state.logger, result);
       if (hasParseFailure(result)) {
@@ -302,9 +302,9 @@ export function createDevServerPlugin(state: State): Plugin {
             renames,
           },
           {
-            defaultLocale,
             locales,
             localesDir: getNormalized(state).localesDir,
+            sourceLocale,
           },
           state.projectRoot,
           {

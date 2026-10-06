@@ -65,6 +65,7 @@ export function createConfigPlugin(state: State): Plugin {
         {
           defaultLocale: result.config.defaultLocale,
           localesDir: result.config.localesDir,
+          sourceLocale: result.config.sourceLocale,
         },
         state.projectRoot,
         {

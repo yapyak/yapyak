@@ -91,13 +91,16 @@ export async function add(
     }
   }
 
-  const { defaultLocale } = config;
-  const allLocales = readdirSync(localesDirAbsolute)
+  const fileLocales = readdirSync(localesDirAbsolute)
     .filter((name) => name.endsWith('.json'))
     .map((name) => name.replace(/\.json$/, ''));
-  if (!allLocales.includes(defaultLocale)) {
-    allLocales.unshift(defaultLocale);
-  }
+  const allLocales = [
+    ...new Set([
+      config.sourceLocale,
+      config.defaultLocale,
+      ...fileLocales,
+    ]),
+  ];
   writeRegister(allLocales, getDefaultYapyakDir(projectRoot));
 
   const report = buildReport({
@@ -107,6 +110,7 @@ export async function add(
     localesDir: config.localesDir,
     processors: config.processors,
     projectRoot,
+    sourceLocale: config.sourceLocale,
   });
 
   if (report.totalMessages === 0) {
@@ -177,12 +181,12 @@ export async function add(
         translator: withProgress(translator, handleProgress),
       },
       {
-        defaultLocale: report.defaultLocale,
         locales: [
-          report.defaultLocale,
+          report.sourceLocale,
           ...locales,
         ],
         localesDir: config.localesDir,
+        sourceLocale: report.sourceLocale,
       },
       projectRoot,
       {

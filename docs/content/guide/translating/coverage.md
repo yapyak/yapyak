@@ -25,13 +25,13 @@ bunx yapyak status
 
 ```terminal
   <b>Translation status</b>
-  <d>Locales</d>   <b>en</b> <d>(default)</d> <d>·</d> <b>sv</b> <d>·</d> <b>de</b>
+  <d>Locales</d>   <b>en</b> <d>(source)</d> <d>·</d> <b>sv</b> <d>·</d> <b>de</b>
   <d>Total</d>     <b>124</b> messages × 3 = <b>372</b> translations
 
   ┌──────────────┬───────────┬────────────────────────────────────┐
   │ <b>Locale</b>       │  <b>Coverage</b> │                                    │
   ├──────────────┼───────────┼────────────────────────────────────┤
-  │ en <d>(default)</d> │ 124 / 124 │ ████████████████████ 124/124  100% │
+  │ en <d>(source)</d> │ 124 / 124 │ ████████████████████ 124/124  100% │
   │ sv           │ 108 / 124 │ █████████████████░░░ 108/124   87% │
   │ de           │  51 / 124 │ █████████░░░░░░░░░░░  51/124   41% │
   └──────────────┴───────────┴────────────────────────────────────┘
@@ -39,7 +39,7 @@ bunx yapyak status
   <y>⚠</y> <y>89 missing in <b>de</b>, 16 missing in <b>sv</b></y>
 ```
 
-`defaultLocale` is always 100%: every source string is its own translation.
+`sourceLocale` is always 100%: every source string is its own translation.
 
 ## Filling the gaps
 

@@ -21,10 +21,11 @@ Locked vocabulary for the yapyak guide. Same concept, same word, every page. Add
 
 | Concept | The word | Banned alternatives |
 |---|---|---|
-| The user's authoring language | `source language` in prose; `` `defaultLocale` `` for the API | default locale (lowercase prose), source locale, base locale, fallback locale |
+| The user's authoring language | `source language` in prose; `` `sourceLocale` `` for the API | default locale (lowercase prose), source locale, base locale, fallback locale |
+| The locale that applies when nothing else decides | `` `defaultLocale` `` (code-fenced, also in prose) | default language, fallback locale, initial locale, catch-all locale |
 | The currently-selected locale | `active locale` | current locale, selected locale, the locale (when ambiguous) |
 | A locale yapyak is translating *into* | `target locale` (translation context) | destination locale, output locale |
-| A locale that isn't the source | `non-default locale` (config/CLI-gating context) | non-source locale, target language |
+| A locale that isn't the source | `target locale` | non-default locale, non-source locale, target language |
 | Per-call locale override | `forced locale` (via `t.in()`) | locked locale, scoped locale, fixed locale |
 | A build that ships one locale | `fixed-locale build` (adjectival, hyphenated); `` `fixedLocale` `` for the option | fixed locale (bare noun), single-locale build, locked build, static-locale build |
 | The BCP 47 identifier | `BCP 47 tag` (first use); `locale code` or `locale tag` after | locale name, language code |

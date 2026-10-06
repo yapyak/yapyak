@@ -3,7 +3,7 @@ import type { Template, TemplateNode } from '../../../../template/internal';
 import { parseTemplate } from '../../../../template/internal';
 
 export type PickLocaleTextInput = {
-  defaultLocale: string;
+  sourceLocale: string;
   id: string;
   locale: string;
   source: string;
@@ -11,7 +11,7 @@ export type PickLocaleTextInput = {
 };
 
 export type BuildVariantsLiteralInput = {
-  defaultLocale: string;
+  sourceLocale: string;
   id: string;
   locales: string[];
   source: string;
@@ -66,7 +66,7 @@ export function toSafeJsString(text: string): string {
 }
 
 export function pickLocaleText(input: PickLocaleTextInput): string {
-  if (input.locale === input.defaultLocale) {
+  if (input.locale === input.sourceLocale) {
     return input.source;
   }
   const localeMap = input.translations[input.locale];
@@ -101,14 +101,14 @@ export function buildVariantsLiteral(
   usedFactories: Set<string>,
   localsByFactory: Map<string, string>,
 ): string {
-  const { defaultLocale, id, locales, source, translations } = input;
+  const { id, locales, source, sourceLocale, translations } = input;
   const entries: string[] = [];
   for (const locale of locales) {
     const text = pickLocaleText({
-      defaultLocale,
       id,
       locale,
       source,
+      sourceLocale,
       translations,
     });
     entries.push(

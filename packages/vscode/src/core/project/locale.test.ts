@@ -43,10 +43,10 @@ afterEach(() => {
 });
 
 describe('readProjectLocales', () => {
-  it('reads the locales next to the configured default locale', () => {
-    const { defaultLocale, localeData, locales } = readProjectLocales(project);
+  it('reads the locales next to the source locale', () => {
+    const { localeData, locales, sourceLocale } = readProjectLocales(project);
 
-    expect(defaultLocale).toBe('sv');
+    expect(sourceLocale).toBe('sv');
     expect(locales).toEqual([
       'de',
       'sv',

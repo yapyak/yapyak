@@ -114,6 +114,7 @@ const module: NuxtModule<ModuleOptions> = defineNuxtModule<ModuleOptions>({
           nuxt.options.rootDir,
           {
             defaultLocale: config.defaultLocale,
+            sourceLocale: config.sourceLocale,
           },
         );
         return defineRuntime({

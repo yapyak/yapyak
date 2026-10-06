@@ -19,6 +19,7 @@ export function status(
     localesDir: config.localesDir,
     processors: config.processors,
     projectRoot,
+    sourceLocale: config.sourceLocale,
   });
 
   const hasErrors = report.diagnostics.some(
@@ -33,8 +34,8 @@ export function status(
   const total = report.totalMessages;
   const localesLine = report.locales
     .map((locale) =>
-      locale === report.defaultLocale
-        ? `${color.bold(locale)} ${color.dim('(default)')}`
+      locale === report.sourceLocale
+        ? `${color.bold(locale)} ${color.dim('(source)')}`
         : color.bold(locale),
     )
     .join(` ${color.dim('·')} `);
@@ -53,8 +54,8 @@ export function status(
     const ratio = total === 0 ? 1 : translated / total;
     const percent = `${Math.round(ratio * 100)}%`;
     return [
-      locale === report.defaultLocale
-        ? `${locale} ${color.dim('(default)')}`
+      locale === report.sourceLocale
+        ? `${locale} ${color.dim('(source)')}`
         : locale,
       `${translated} / ${total}`,
       `${progressBar(translated, total, 20)}  ${percent}`,

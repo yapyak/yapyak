@@ -21,6 +21,7 @@ export function check(config: Config, projectRoot: string): number {
     localesDir: config.localesDir,
     processors: config.processors,
     projectRoot,
+    sourceLocale: config.sourceLocale,
   });
 
   const localesPath = join(projectRoot, config.localesDir);
@@ -30,7 +31,7 @@ export function check(config: Config, projectRoot: string): number {
   allDiagnostics.push(...findContextDiagnostics(report.messages));
 
   for (const locale of report.locales) {
-    if (locale === report.defaultLocale) {
+    if (locale === report.sourceLocale) {
       continue;
     }
     const localeFilePath = join(localesPath, `${locale}.json`);
@@ -138,15 +139,15 @@ export function check(config: Config, projectRoot: string): number {
   }
 
   if (report.missing.length > 0) {
-    let firstNonDefault = '';
+    let firstTarget = '';
     for (const locale of report.locales) {
-      if (locale !== report.defaultLocale) {
-        firstNonDefault = locale;
+      if (locale !== report.sourceLocale) {
+        firstTarget = locale;
         break;
       }
     }
     process.stdout.write(
-      `  ${color.dim('Run')} ${color.cyan(`yapyak add ${firstNonDefault}`)} ${color.dim('to translate, or fill in the locale file manually.')}\n\n`,
+      `  ${color.dim('Run')} ${color.cyan(`yapyak add ${firstTarget}`)} ${color.dim('to translate, or fill in the locale file manually.')}\n\n`,
     );
   }
 
