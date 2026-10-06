@@ -1,5 +1,15 @@
 # @yapyak/react
 
+## 0.0.15
+
+### Patch Changes
+
+- [`4ce29e8`](https://github.com/yapyak/yapyak/commit/4ce29e87a770fad18e42b12aea7ec09a60b0d23b) Thanks [@qwuide](https://github.com/qwuide)! - Follow the active locale under React Compiler. React Compiler caches a value until one of its reactive inputs changes, and the active locale is none of them, so a compiled component kept its first `t()` results, `format` output, and helper results after a locale change. `@yapyak/react` now ships a compiler runtime at `@yapyak/react/compiler-runtime/internal`, whose memo cache subscribes the component to the active locale and clears its slots when the locale or a dev-time translation changes, and the Vite plugin resolves `react/compiler-runtime` to it for the files it compiles. Processors declare the replacement through the new `runtime.compilerRuntime` field. On the server the module resolves to React's compiler runtime through the `react-server` condition.
+
+- [`8dbe2cf`](https://github.com/yapyak/yapyak/commit/8dbe2cf8bcb864acc2b22a9415e12d5ba3b424a2) Thanks [@qwuide](https://github.com/qwuide)! - Subscribe React hooks in `.ts` and `.js` files to locale changes. The React processor handled `.tsx` and `.jsx` files only, so a custom hook in a `.ts` file that called `t()` got no subscription of its own and updated only when a parent re-rendered it, which React Compiler prevents. The processor now handles `.ts` and `.js` files too, where a function counts as a hook only when its name starts with `use`. For custom processors, a function in a file that cannot hold JSX is eligible for the component hook only when its name also matches `evidencePattern`.
+- Updated dependencies [[`4ce29e8`](https://github.com/yapyak/yapyak/commit/4ce29e87a770fad18e42b12aea7ec09a60b0d23b), [`83282fa`](https://github.com/yapyak/yapyak/commit/83282faceeb54699b47897bf3745e1e30c102351), [`8dbe2cf`](https://github.com/yapyak/yapyak/commit/8dbe2cf8bcb864acc2b22a9415e12d5ba3b424a2), [`216aa29`](https://github.com/yapyak/yapyak/commit/216aa29eccef60f3e4f5afd9af3f4fc92d378b01)]:
+  - yapyak@0.0.15
+
 ## 0.0.14
 
 ### Patch Changes
