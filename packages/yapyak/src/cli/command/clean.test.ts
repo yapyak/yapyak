@@ -184,6 +184,26 @@ describe('clean', () => {
     });
   });
 
+  it('preserves the entries of a source file that does not parse', () => {
+    writeFileSync(
+      join(root, 'src', 'a.ts'),
+      "import { t } from 'yapyak';\nexport const label = t('Save';\n",
+    );
+    const before = JSON.stringify({
+      'src/a.ts': {
+        Save: 'Spara',
+      },
+    });
+    writeFileSync(join(root, 'locales', 'sv.json'), before);
+    const code = clean(makeConfig(), root, {
+      write: true,
+    });
+    expect(code).toBe(0);
+    expect(
+      JSON.parse(readFileSync(join(root, 'locales', 'sv.json'), 'utf-8')),
+    ).toEqual(JSON.parse(before));
+  });
+
   it('returns `1` when a locale file is corrupt', () => {
     writeFileSync(
       join(root, 'src', 'a.ts'),

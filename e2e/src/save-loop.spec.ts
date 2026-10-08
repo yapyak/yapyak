@@ -17,6 +17,7 @@ const YAPYAK_BIN_PATH = fileURLToPath(
 );
 const APP_PATH = fileURLToPath(new URL('src/app.tsx', SANDBOX_URL));
 const CART_PATH = fileURLToPath(new URL('src/cart.tsx', SANDBOX_URL));
+const CONFIG_PATH = fileURLToPath(new URL('yapyak.config.ts', SANDBOX_URL));
 const MOVED_CART_PATH = fileURLToPath(
   new URL('src/checkout/cart.tsx', SANDBOX_URL),
 );
@@ -454,6 +455,60 @@ test('renders the translation when a broken catalog save is fixed', async ({
     },
   });
   await expect(page.getByText('Byt konto')).toBeVisible();
+});
+
+test('preserves the translation when a source string is edited through a save that does not parse', async ({
+  page,
+}) => {
+  await page.goto('about:blank');
+
+  await writeApp((template) =>
+    template.replace("t('Save')", "t('Save changes'"),
+  );
+  await validateSettledCatalog('sv', BASELINE);
+
+  await writeApp((template) =>
+    template.replace("t('Save')", "t('Save changes')"),
+  );
+  await validateSettledCatalog('sv', {
+    'src/app.tsx': {
+      Hello: 'Hej',
+      'Save changes': 'Spara',
+    },
+    'src/cart.tsx': {
+      Settings: 'Laddar...',
+    },
+  });
+  await page.goto('/');
+  await expect(page.getByText('Save changes')).toBeVisible();
+});
+
+test('preserves the translations when the server restarts with a source file that does not parse', async ({
+  page,
+}) => {
+  await page.goto('about:blank');
+  await writeCatalog('sv', {
+    ...BASELINE,
+    'src/cart.tsx': {
+      Cancel: 'Avbryt',
+      Settings: 'Laddar...',
+    },
+  });
+
+  await writeApp((template) => template.replace("t('Hello')", "t('Hello'"));
+  await writeFile(CONFIG_PATH, await readFile(CONFIG_PATH, 'utf8'));
+  await validateSettledCatalog('sv', BASELINE);
+
+  await copyFile(TEMPLATE_APP_PATH, APP_PATH);
+  await expect(async () => {
+    await page.goto('/');
+  }).toPass();
+  await expect(
+    page.getByRole('heading', {
+      level: 1,
+    }),
+  ).toHaveText('Hello');
+  await validateSettledCatalog('sv', BASELINE);
 });
 
 test('writes every translation when `yapyak add` runs', async () => {

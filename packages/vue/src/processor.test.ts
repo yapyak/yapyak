@@ -445,6 +445,24 @@ describe('vue processor — extract', () => {
     expect(result.messages[0]?.source).toBe('Save');
   });
 
+  it('extracts `t()` from the source of a `v-for` written with `of`', () => {
+    const source = [
+      '<script setup lang="ts">',
+      "import { t } from 'yapyak';",
+      '</script>',
+      '<template>',
+      `  <li v-for="label of [t('Save'), t('Cancel')]" :key="label">{{ label }}</li>`,
+      '</template>',
+    ].join('\n');
+    const result = extractVue(source);
+    const sources = result.messages.map((message) => message.source).sort();
+
+    expect(sources).toEqual([
+      'Cancel',
+      'Save',
+    ]);
+  });
+
   it('extracts every `t()` from a directive holding an HTML entity', () => {
     const source = [
       '<script setup lang="ts">',
@@ -686,6 +704,23 @@ describe('vue processor — transform', () => {
         '</script>',
         '<template>',
         '  <button v-for="value in locales" :key="value">{{ value }}</button>',
+        '</template>',
+      ].join('\n'),
+    });
+    expect(code).toMatch(/import \{ locales \}/);
+  });
+
+  it('preserves a `locales` import referenced from a `v-for` written with `of`', () => {
+    const code = runVueTransform({
+      locales: [
+        'en',
+      ],
+      source: [
+        '<script setup lang="ts">',
+        "import { locales } from 'yapyak';",
+        '</script>',
+        '<template>',
+        '  <button v-for="value of locales" :key="value">{{ value }}</button>',
         '</template>',
       ].join('\n'),
     });

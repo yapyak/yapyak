@@ -1,3 +1,4 @@
+import type { CallExpression, Node } from 'oxc-parser';
 import type {
   ElisionContext,
   Fragment,
@@ -6,14 +7,13 @@ import type {
   Range,
 } from '../../../processor';
 import type { Placeholder } from '../../placeholder';
+import type { ParsedParams } from '../argument';
 import type { Binding, Scope } from '../binding';
-import type { CallSite } from '../call';
 import type { CallSiteContext } from '../call-site-context';
 import type { Diagnostic } from '../diagnostic';
+import type { SourceFile } from '../source-file';
 
-import ts from '@typescript/typescript6';
-
-import { buildDiagnostic } from '../../../diagnostic';
+import { YAP_COMPILE, buildDiagnostic } from '../../../diagnostic';
 import { toMessageKey } from '../../../message-key';
 import { segmentsFromOffset } from '../../../processor';
 import { parsePlaceholders } from '../../placeholder';
@@ -22,9 +22,11 @@ import { T_EXPORT, resolveBindings } from '../binding';
 import { discoverCalls } from '../call';
 import { resolveCallSiteContext } from '../call-site-context';
 import { validateFragments } from '../fragment';
+import { isFunctionLike } from '../function-like';
+import { collectLineStarts } from '../position';
 import { resolveProcessor } from '../processor';
 import { remapRange, toRange } from '../range';
-import { getScriptKind } from '../script-kind';
+import { parseSourceFile } from '../source-file';
 import { basename, extname } from 'node:path';
 
 const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => ({
@@ -38,6 +40,11 @@ const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => ({
     },
   ],
 });
+
+const FRAGMENT_START = {
+  end: 0,
+  start: 0,
+};
 
 export type Location = {
   callSiteContext: CallSiteContext;
@@ -58,11 +65,15 @@ export type ExtractFileOptions = {
   processors?: Processor[];
 };
 
-export type ParsedCallSite = CallSite & {
+export type ParsedCallSite = {
+  binding: Binding;
   context?: string;
-  fragment: Fragment;
+  elisionContext?: ElisionContext;
   id: string;
+  localeRange?: Range;
+  params?: ParsedParams;
   placeholders: Placeholder[];
+  range: Range;
   source: string;
 };
 
@@ -108,18 +119,36 @@ export function extractFile(
   }
   const callSites: ParsedCallSite[] = [];
   const messagesById = new Map<string, ExtractedMessage>();
+  const originalLineStarts = collectLineStarts(source);
 
-  const processorAmbient = buildProcessorAmbient(processor, fileId);
+  const processorAmbient = buildProcessorAmbient(processor);
   const ambientBindings = new Map<string, Binding>();
-  let ambientAnchor: ts.SourceFile | undefined;
 
   for (const fragment of fragments) {
     if (fragment.type !== 'script') {
       continue;
     }
-    const sourceFile = createFragmentSourceFile(fileId, fragment);
-    if (!ambientAnchor) {
-      ambientAnchor = sourceFile;
+    const sourceFile = parseSourceFile(fileId, fragment);
+    if (sourceFile.fatalError) {
+      const [label] = sourceFile.fatalError.labels;
+      diagnostics.push(
+        buildDiagnostic(
+          'PROCESSOR_PARSE_ERROR',
+          {
+            text: sourceFile.fatalError.message,
+          },
+          {
+            fileId,
+            range: remapRange(
+              toRange(label ?? FRAGMENT_START, sourceFile),
+              fragment,
+              originalLineStarts,
+            ),
+            severity: 'error',
+          },
+        ),
+      );
+      continue;
     }
     const bindings = resolveBindings(sourceFile, T_EXPORT, {
       ambientParent: processorAmbient,
@@ -134,21 +163,24 @@ export function extractFile(
       fileId,
       fragment,
       messagesById,
-      originalSource: source,
+      originalLineStarts,
       sourceFile,
     });
   }
 
   const ambientParent =
-    ambientBindings.size > 0 && ambientAnchor
-      ? buildAmbientScope(ambientBindings, ambientAnchor, processorAmbient)
-      : processorAmbient;
+    ambientBindings.size === 0
+      ? processorAmbient
+      : buildAmbientScope(ambientBindings, processorAmbient);
 
   for (const fragment of fragments) {
     if (fragment.type === 'script') {
       continue;
     }
-    const sourceFile = createFragmentSourceFile(fileId, fragment);
+    const sourceFile = parseSourceFile(fileId, fragment);
+    if (sourceFile.fatalError) {
+      continue;
+    }
     const bindings = resolveBindings(sourceFile, T_EXPORT, {
       ambientParent,
     });
@@ -159,7 +191,7 @@ export function extractFile(
       fileId,
       fragment,
       messagesById,
-      originalSource: source,
+      originalLineStarts,
       sourceFile,
     });
   }
@@ -171,6 +203,14 @@ export function extractFile(
   };
 }
 
+export function hasParseFailure(
+  result: Pick<ExtractFileResult, 'diagnostics'>,
+): boolean {
+  return result.diagnostics.some(
+    (diagnostic) => diagnostic.code === YAP_COMPILE.PROCESSOR_PARSE_ERROR.code,
+  );
+}
+
 type ExtractFromFragmentInput = {
   bindings: ReturnType<typeof resolveBindings>;
   callSites: ParsedCallSite[];
@@ -178,8 +218,8 @@ type ExtractFromFragmentInput = {
   fileId: string;
   fragment: Fragment;
   messagesById: Map<string, ExtractedMessage>;
-  originalSource: string;
-  sourceFile: ts.SourceFile;
+  originalLineStarts: number[];
+  sourceFile: SourceFile;
 };
 
 function extractFromFragment(input: ExtractFromFragmentInput): void {
@@ -190,19 +230,21 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
     fileId,
     fragment,
     messagesById,
-    originalSource,
+    originalLineStarts,
     sourceFile,
   } = input;
   const { callSites: fragmentCalls, diagnostics: fragmentDiagnostics } =
     discoverCalls(sourceFile, bindings);
   for (const diagnostic of fragmentDiagnostics) {
-    diagnostics.push(remapDiagnostic(diagnostic, fragment, originalSource));
+    diagnostics.push(remapDiagnostic(diagnostic, fragment, originalLineStarts));
   }
 
   for (const fragmentCall of fragmentCalls) {
-    const parsed = parseArguments(fragmentCall);
+    const parsed = parseArguments(fragmentCall, sourceFile);
     for (const diagnostic of parsed.diagnostics) {
-      diagnostics.push(remapDiagnostic(diagnostic, fragment, originalSource));
+      diagnostics.push(
+        remapDiagnostic(diagnostic, fragment, originalLineStarts),
+      );
     }
 
     const source = parsed.source.normalize();
@@ -212,31 +254,38 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
 
     const callSite: ParsedCallSite = {
       binding: fragmentCall.binding,
-      fragment,
       id,
-      node: fragmentCall.node,
       placeholders,
-      range: remapRange(fragmentCall.range, fragment, originalSource),
+      range: remapRange(fragmentCall.range, fragment, originalLineStarts),
       source,
-      sourceExpression: fragmentCall.sourceExpression,
     };
     if (context !== undefined) {
       callSite.context = context;
     }
-    if (fragmentCall.contextExpression) {
-      callSite.contextExpression = fragmentCall.contextExpression;
-    }
     if (fragmentCall.localeExpression) {
-      callSite.localeExpression = fragmentCall.localeExpression;
+      callSite.localeRange = remapRange(
+        toRange(fragmentCall.localeExpression, sourceFile),
+        fragment,
+        originalLineStarts,
+      );
     }
-    if (fragmentCall.paramsExpression) {
-      callSite.paramsExpression = fragmentCall.paramsExpression;
+    if (parsed.params) {
+      callSite.params = remapParams(
+        parsed.params,
+        fragment,
+        originalLineStarts,
+      );
     }
     const elisionContext =
       (isWholeFragment(fragmentCall.node, fragment)
         ? fragment.elisionContext
         : undefined) ??
-      detectJsxElision(fragmentCall.node, sourceFile, fragment, originalSource);
+      detectJsxElision(
+        fragmentCall.node,
+        sourceFile,
+        fragment,
+        originalLineStarts,
+      );
     if (elisionContext) {
       callSite.elisionContext = elisionContext;
     }
@@ -263,7 +312,7 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
         fileId,
       ),
       fileId,
-      range: remapRange(parsed.sourceRange, fragment, originalSource),
+      range: remapRange(parsed.sourceRange, fragment, originalLineStarts),
     };
     if (context !== undefined) {
       location.context = context;
@@ -290,10 +339,25 @@ function extractFromFragment(input: ExtractFromFragmentInput): void {
   }
 }
 
-function isModuleScoped(node: ts.Node): boolean {
-  let current: ts.Node | undefined = node.parent;
+function remapParams(
+  params: ParsedParams,
+  fragment: Fragment,
+  originalLineStarts: number[],
+): ParsedParams {
+  return {
+    entries: params.entries.map((entry) => ({
+      key: entry.key,
+      valueRange: remapRange(entry.valueRange, fragment, originalLineStarts),
+    })),
+    kind: params.kind,
+    range: remapRange(params.range, fragment, originalLineStarts),
+  };
+}
+
+function isModuleScoped(node: Node): boolean {
+  let current = node.parent;
   while (current) {
-    if (ts.isFunctionLike(current)) {
+    if (isFunctionLike(current)) {
       return false;
     }
     current = current.parent;
@@ -346,22 +410,18 @@ function componentNameFromFileId(fileId: string): string | undefined {
 
 function buildAmbientScope(
   ambientBindings: Map<string, Binding>,
-  anchor: ts.Node,
   parent?: Scope,
 ): Scope {
   return {
     bindings: ambientBindings,
-    node: anchor,
+    kind: 'module',
     ...(parent !== undefined && {
       parent,
     }),
   };
 }
 
-function buildProcessorAmbient(
-  processor: Processor,
-  fileId: string,
-): Scope | undefined {
+function buildProcessorAmbient(processor: Processor): Scope | undefined {
   const names = processor.ambientBindings;
   if (names === undefined || names.length === 0) {
     return undefined;
@@ -375,61 +435,55 @@ function buildProcessorAmbient(
   }
   return {
     bindings,
-    node: ts.createSourceFile(fileId, '', ts.ScriptTarget.ESNext, true),
+    kind: 'module',
   };
-}
-
-function createFragmentSourceFile(
-  fileId: string,
-  fragment: Fragment,
-): ts.SourceFile {
-  return ts.createSourceFile(
-    fileId,
-    fragment.code,
-    ts.ScriptTarget.ESNext,
-    true,
-    getScriptKind(fileId, fragment.language),
-  );
 }
 
 const FRAGMENT_PREFIX_RX = /^[\s(]*$/;
 const FRAGMENT_SUFFIX_RX = /^[\s)]*$/;
 
-function isWholeFragment(node: ts.Node, fragment: Fragment): boolean {
+function isWholeFragment(node: Node, fragment: Fragment): boolean {
   return (
-    FRAGMENT_PREFIX_RX.test(fragment.code.slice(0, node.getStart())) &&
-    FRAGMENT_SUFFIX_RX.test(fragment.code.slice(node.getEnd()))
+    FRAGMENT_PREFIX_RX.test(fragment.code.slice(0, node.start)) &&
+    FRAGMENT_SUFFIX_RX.test(fragment.code.slice(node.end))
   );
 }
 
 function detectJsxElision(
-  node: ts.CallExpression,
-  sourceFile: ts.SourceFile,
+  node: CallExpression,
+  sourceFile: SourceFile,
   fragment: Fragment,
-  originalSource: string,
+  originalLineStarts: number[],
 ): ElisionContext | undefined {
   const parent = node.parent;
-  if (!parent || !ts.isJsxExpression(parent)) {
+  if (parent?.type !== 'JSXExpressionContainer') {
     return undefined;
   }
   const grandparent = parent.parent;
   if (!grandparent) {
     return undefined;
   }
-  if (ts.isJsxElement(grandparent) || ts.isJsxFragment(grandparent)) {
+  if (grandparent.type === 'JSXElement' || grandparent.type === 'JSXFragment') {
     return {
       mode: 'text',
-      range: remapRange(toRange(parent, sourceFile), fragment, originalSource),
+      range: remapRange(
+        toRange(parent, sourceFile),
+        fragment,
+        originalLineStarts,
+      ),
     };
   }
-  if (ts.isJsxAttribute(grandparent) && ts.isIdentifier(grandparent.name)) {
+  if (
+    grandparent.type === 'JSXAttribute' &&
+    grandparent.name.type === 'JSXIdentifier'
+  ) {
     return {
-      attributeName: grandparent.name.text,
+      attributeName: grandparent.name.name,
       mode: 'attribute',
       range: remapRange(
         toRange(grandparent, sourceFile),
         fragment,
-        originalSource,
+        originalLineStarts,
       ),
     };
   }
@@ -439,10 +493,10 @@ function detectJsxElision(
 function remapDiagnostic(
   diagnostic: Diagnostic,
   fragment: Fragment,
-  originalSource: string,
+  originalLineStarts: number[],
 ): Diagnostic {
   return {
     ...diagnostic,
-    range: remapRange(diagnostic.range, fragment, originalSource),
+    range: remapRange(diagnostic.range, fragment, originalLineStarts),
   };
 }

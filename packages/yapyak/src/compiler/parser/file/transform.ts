@@ -1,10 +1,8 @@
 import type { SourceMap } from 'magic-string';
-import type {
-  ApplyImportFn,
-  ParseSourceFn,
-  Processor,
-} from '../../../processor';
+import type { Program } from 'oxc-parser';
+import type { Fragment, ParseSourceFn, Processor } from '../../../processor';
 import type { Diagnostic } from '../diagnostic';
+import type { SourceFile } from '../source-file';
 import type { ExtractFileResult, ParsedCallSite } from './extract';
 import type {
   CallReplacement,
@@ -17,6 +15,7 @@ import { segmentsFromOffset } from '../../../processor';
 import { YAPYAK_DEV_INTERNAL_MODULE, YAPYAK_INTERNAL_MODULE } from '../binding';
 import { validateFragments } from '../fragment';
 import { resolveProcessor } from '../processor';
+import { parseSourceFile } from '../source-file';
 import { renderCallReplacement } from './transform/call-replacement';
 import {
   collectComponentHosts,
@@ -26,7 +25,10 @@ import {
   buildContainmentTree,
   hasContainingParent,
 } from './transform/containment-tree';
-import { resolveDirectivePrologueEnd } from './transform/directive';
+import {
+  extractPrologueDirectives,
+  resolveDirectivePrologueEnd,
+} from './transform/directive';
 import { findFreeIdentifier, hasIdentifier } from './transform/identifier';
 import { transformScriptImports } from './transform/script-import';
 
@@ -56,18 +58,6 @@ const REGISTER_VARIANTS_LOCAL = '_registerVariants';
 const REGISTER_LOCALE_FILE_SOURCE_LOCAL = '_registerLocaleFileSource';
 const INVALIDATE_FILE_LOCAL = '_invalidateFile';
 const USE_YAPYAK_LOCAL = 'useYapyak';
-const DEFAULT_APPLY_IMPORT: ApplyImportFn = (
-  magicString,
-  source,
-  importStatement,
-) => {
-  const prologueEnd = resolveDirectivePrologueEnd(source);
-  if (prologueEnd === 0) {
-    magicString.prepend(`${importStatement}\n`);
-    return;
-  }
-  magicString.appendRight(prologueEnd, `${importStatement}\n`);
-};
 const DEFAULT_PARSE_SOURCE: ParseSourceFn = (source) => ({
   fragments: [
     {
@@ -113,15 +103,25 @@ export function transformFile(
     processorId: processor.id,
     source: request.source,
   });
+  const sourceFilesByFragment = new Map<Fragment, SourceFile>(
+    fragments
+      .filter((fragment) => fragment.type === 'script')
+      .map((fragment) => [
+        fragment,
+        parseSourceFile(request.fileId, fragment),
+      ]),
+  );
+  const program = findPrologueProgram(sourceFilesByFragment, request.source);
   const hosts =
     componentHook === undefined
       ? []
       : collectComponentHosts({
           callSites,
           componentHook,
-          fileId: request.fileId,
-          fragments,
+          directives:
+            program === undefined ? [] : extractPrologueDirectives(program),
           source: request.source,
+          sourceFilesByFragment,
         });
   if (
     componentHook !== undefined &&
@@ -246,6 +246,7 @@ export function transformFile(
     fragments,
     magicString,
     originalSource: request.source,
+    sourceFilesByFragment,
   });
 
   const importSpecs: string[] = [];
@@ -312,11 +313,12 @@ export function transformFile(
     );
   }
   if (injectionLines.length > 0) {
-    (processor.applyImport ?? DEFAULT_APPLY_IMPORT)(
-      magicString,
-      request.source,
-      injectionLines.join('\n'),
-    );
+    const importStatement = injectionLines.join('\n');
+    if (processor.applyImport === undefined) {
+      applyDefaultImport(magicString, request.source, program, importStatement);
+    } else {
+      processor.applyImport(magicString, request.source, importStatement);
+    }
   }
   injectComponentHooks({
     hosts,
@@ -348,6 +350,18 @@ function buildUnchangedResult(
   };
 }
 
+function findPrologueProgram(
+  sourceFilesByFragment: Map<Fragment, SourceFile>,
+  source: string,
+): Program | undefined {
+  for (const [fragment, sourceFile] of sourceFilesByFragment) {
+    if (fragment.code === source) {
+      return sourceFile.program;
+    }
+  }
+  return undefined;
+}
+
 type VariantsEntry = {
   id: string;
   identifier: string;
@@ -364,4 +378,19 @@ function findFreeFactoryLocals(source: string): Map<string, string> {
     locals.set(factory, findFreeIdentifier(source, `_${factory}`));
   }
   return locals;
+}
+
+function applyDefaultImport(
+  magicString: MagicString,
+  source: string,
+  program: Program | undefined,
+  importStatement: string,
+): void {
+  const prologueEnd =
+    program === undefined ? 0 : resolveDirectivePrologueEnd(program, source);
+  if (prologueEnd === 0) {
+    magicString.prepend(`${importStatement}\n`);
+    return;
+  }
+  magicString.appendRight(prologueEnd, `${importStatement}\n`);
 }

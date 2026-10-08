@@ -1,22 +1,28 @@
-import type { ElisionContext, Range } from '../../processor';
+import type {
+  Argument,
+  CallExpression,
+  IdentifierReference,
+  Node,
+  StaticMemberExpression,
+} from 'oxc-parser';
+import type { Range } from '../../processor';
 import type { Binding, BindingTable } from './binding';
 import type { Diagnostic } from './diagnostic';
-
-import ts from '@typescript/typescript6';
+import type { SourceFile } from './source-file';
 
 import { buildDiagnostic } from '../../diagnostic';
 import { T_EXPORT } from './binding';
+import { collectChildren } from './child';
 import { toRange } from './range';
 
 export type CallSite = {
   binding: Binding;
-  contextExpression?: ts.Expression;
-  elisionContext?: ElisionContext;
-  localeExpression?: ts.Expression;
-  node: ts.CallExpression;
-  paramsExpression?: ts.Expression;
+  contextExpression?: Argument;
+  localeExpression?: Argument;
+  node: CallExpression;
+  paramsExpression?: Argument;
   range: Range;
-  sourceExpression?: ts.Expression;
+  sourceExpression?: Argument;
 };
 
 export type DiscoverCallsResult = {
@@ -30,13 +36,13 @@ const AS_NAME = 'as';
 type DiscoveryContext = {
   bindings: BindingTable;
   callSites: CallSite[];
-  consumed: Set<ts.CallExpression>;
+  consumed: Set<CallExpression>;
   diagnostics: Diagnostic[];
-  sourceFile: ts.SourceFile;
+  sourceFile: SourceFile;
 };
 
 export function discoverCalls(
-  sourceFile: ts.SourceFile,
+  sourceFile: SourceFile,
   bindings: BindingTable,
 ): DiscoverCallsResult {
   const context: DiscoveryContext = {
@@ -46,41 +52,41 @@ export function discoverCalls(
     diagnostics: [],
     sourceFile,
   };
-  walk(sourceFile, context);
+  walk(sourceFile.program, context);
   return {
     callSites: context.callSites,
     diagnostics: context.diagnostics,
   };
 }
 
-function walk(node: ts.Node, context: DiscoveryContext): void {
-  if (ts.isCallExpression(node) && !context.consumed.has(node)) {
+function walk(node: Node, context: DiscoveryContext): void {
+  if (node.type === 'CallExpression' && !context.consumed.has(node)) {
     tryExtract(node, context);
   }
-  ts.forEachChild(node, (child) => {
+  for (const child of collectChildren(node)) {
     walk(child, context);
-  });
+  }
 }
 
-function tryExtract(call: ts.CallExpression, context: DiscoveryContext): void {
-  const callee = call.expression;
+function tryExtract(call: CallExpression, context: DiscoveryContext): void {
+  const callee = call.callee;
 
-  if (ts.isIdentifier(callee)) {
+  if (callee.type === 'Identifier') {
     extractBaseCall(call, callee, context);
     return;
   }
 
-  if (ts.isPropertyAccessExpression(callee)) {
+  if (isStaticMemberExpression(callee)) {
     extractMemberCall(call, callee, context);
   }
 }
 
 function extractBaseCall(
-  call: ts.CallExpression,
-  callee: ts.Identifier,
+  call: CallExpression,
+  callee: IdentifierReference,
   context: DiscoveryContext,
 ): void {
-  const binding = context.bindings.find(callee.text, call);
+  const binding = context.bindings.find(callee.name, call);
   if (!binding || binding.kind === 'namespace' || binding.kind === 'shadow') {
     return;
   }
@@ -98,15 +104,23 @@ function extractBaseCall(
   context.callSites.push(callSite);
 }
 
+function isStaticMemberExpression(node: Node): node is StaticMemberExpression {
+  return (
+    node.type === 'MemberExpression' &&
+    !node.computed &&
+    node.property.type === 'Identifier'
+  );
+}
+
 function extractMemberCall(
-  call: ts.CallExpression,
-  callee: ts.PropertyAccessExpression,
+  call: CallExpression,
+  callee: StaticMemberExpression,
   context: DiscoveryContext,
 ): void {
-  const methodName = callee.name.text;
-  const receiver = callee.expression;
+  const methodName = callee.property.name;
+  const receiver = callee.object;
 
-  if (methodName === T_EXPORT && ts.isIdentifier(receiver)) {
+  if (methodName === T_EXPORT && receiver.type === 'Identifier') {
     extractNamespaceBase(call, receiver, context);
     return;
   }
@@ -115,31 +129,31 @@ function extractMemberCall(
     return;
   }
 
-  if (ts.isIdentifier(receiver)) {
+  if (receiver.type === 'Identifier') {
     extractDirectModifier(call, receiver, methodName, context);
     return;
   }
 
-  if (ts.isCallExpression(receiver)) {
+  if (receiver.type === 'CallExpression') {
     extractChainedModifier(call, receiver, methodName, context);
     return;
   }
 
   if (
-    ts.isPropertyAccessExpression(receiver) &&
-    ts.isIdentifier(receiver.expression) &&
-    receiver.name.text === T_EXPORT
+    isStaticMemberExpression(receiver) &&
+    receiver.object.type === 'Identifier' &&
+    receiver.property.name === T_EXPORT
   ) {
     extractNamespaceModifier(call, receiver, methodName, context);
   }
 }
 
 function extractNamespaceBase(
-  call: ts.CallExpression,
-  receiver: ts.Identifier,
+  call: CallExpression,
+  receiver: IdentifierReference,
   context: DiscoveryContext,
 ): void {
-  const binding = context.bindings.find(receiver.text, call);
+  const binding = context.bindings.find(receiver.name, call);
   if (binding?.kind !== 'namespace') {
     return;
   }
@@ -158,12 +172,12 @@ function extractNamespaceBase(
 }
 
 function extractDirectModifier(
-  call: ts.CallExpression,
-  receiver: ts.Identifier,
+  call: CallExpression,
+  receiver: IdentifierReference,
   methodName: string,
   context: DiscoveryContext,
 ): void {
-  const binding = context.bindings.find(receiver.text, call);
+  const binding = context.bindings.find(receiver.name, call);
   if (!binding || binding.kind === 'namespace' || binding.kind === 'shadow') {
     return;
   }
@@ -196,17 +210,17 @@ function extractDirectModifier(
 }
 
 function extractChainedModifier(
-  call: ts.CallExpression,
-  innerCall: ts.CallExpression,
+  call: CallExpression,
+  innerCall: CallExpression,
   outerMethod: string,
   context: DiscoveryContext,
 ): void {
-  const innerCallee = innerCall.expression;
-  if (!ts.isPropertyAccessExpression(innerCallee)) {
+  const innerCallee = innerCall.callee;
+  if (!isStaticMemberExpression(innerCallee)) {
     return;
   }
 
-  const innerMethod = innerCallee.name.text;
+  const innerMethod = innerCallee.property.name;
   if (innerMethod === outerMethod) {
     return;
   }
@@ -249,15 +263,15 @@ function extractChainedModifier(
 }
 
 function extractNamespaceModifier(
-  call: ts.CallExpression,
-  receiver: ts.PropertyAccessExpression,
+  call: CallExpression,
+  receiver: StaticMemberExpression,
   methodName: string,
   context: DiscoveryContext,
 ): void {
-  if (!ts.isIdentifier(receiver.expression)) {
+  if (receiver.object.type !== 'Identifier') {
     return;
   }
-  const binding = context.bindings.find(receiver.expression.text, call);
+  const binding = context.bindings.find(receiver.object.name, call);
   if (binding?.kind !== 'namespace') {
     return;
   }
@@ -290,27 +304,24 @@ function extractNamespaceModifier(
 }
 
 function resolveChainBinding(
-  innerCallee: ts.PropertyAccessExpression,
-  innerCall: ts.CallExpression,
+  innerCallee: StaticMemberExpression,
+  innerCall: CallExpression,
   context: DiscoveryContext,
 ): Binding | undefined {
-  const innerReceiver = innerCallee.expression;
-  if (ts.isIdentifier(innerReceiver)) {
-    const binding = context.bindings.find(innerReceiver.text, innerCall);
+  const innerReceiver = innerCallee.object;
+  if (innerReceiver.type === 'Identifier') {
+    const binding = context.bindings.find(innerReceiver.name, innerCall);
     if (!binding || binding.kind === 'namespace' || binding.kind === 'shadow') {
       return undefined;
     }
     return binding;
   }
   if (
-    ts.isPropertyAccessExpression(innerReceiver) &&
-    ts.isIdentifier(innerReceiver.expression) &&
-    innerReceiver.name.text === T_EXPORT
+    isStaticMemberExpression(innerReceiver) &&
+    innerReceiver.object.type === 'Identifier' &&
+    innerReceiver.property.name === T_EXPORT
   ) {
-    const binding = context.bindings.find(
-      innerReceiver.expression.text,
-      innerCall,
-    );
+    const binding = context.bindings.find(innerReceiver.object.name, innerCall);
     if (binding?.kind === 'namespace') {
       return binding;
     }
@@ -319,7 +330,7 @@ function resolveChainBinding(
 }
 
 function emitCaptureDiagnostic(
-  call: ts.CallExpression,
+  call: CallExpression,
   methodName: string,
   context: DiscoveryContext,
 ): void {
@@ -334,7 +345,7 @@ function emitCaptureDiagnostic(
         methodName: methodName === IN_NAME ? 'in' : 'as',
       },
       {
-        fileId: sourceFile.fileName,
+        fileId: sourceFile.fileId,
         range: toRange(call, sourceFile),
         severity: 'error',
       },
@@ -342,22 +353,22 @@ function emitCaptureDiagnostic(
   );
 }
 
-function isInlineChain(call: ts.CallExpression): boolean {
+function isInlineChain(call: CallExpression): boolean {
   const parent = call.parent;
-  if (!ts.isPropertyAccessExpression(parent)) {
+  if (!parent || !isStaticMemberExpression(parent)) {
     return false;
   }
-  if (parent.expression !== call) {
+  if (parent.object !== call) {
     return false;
   }
   const grandparent = parent.parent;
-  if (!ts.isCallExpression(grandparent)) {
+  if (grandparent?.type !== 'CallExpression') {
     return false;
   }
-  if (grandparent.expression !== parent) {
+  if (grandparent.callee !== parent) {
     return false;
   }
-  const propertyName = parent.name.text;
+  const propertyName = parent.property.name;
   if (propertyName !== IN_NAME && propertyName !== AS_NAME) {
     return false;
   }

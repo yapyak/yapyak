@@ -1,22 +1,23 @@
-import type * as ts from '@typescript/typescript6';
+import type { Span } from 'oxc-parser';
 import type { Fragment, Range } from '../../processor';
+import type { SourceFile } from './source-file';
 
 import { remapPosition, toPosition } from './position';
 
-export function toRange(node: ts.Node, sourceFile: ts.SourceFile): Range {
+export function toRange(span: Span, sourceFile: SourceFile): Range {
   return {
-    end: toPosition(sourceFile, node.getEnd()),
-    start: toPosition(sourceFile, node.getStart(sourceFile)),
+    end: toPosition(sourceFile.lineStarts, span.end),
+    start: toPosition(sourceFile.lineStarts, span.start),
   };
 }
 
 export function remapRange(
   range: Range,
   fragment: Fragment,
-  originalSource: string,
+  originalLineStarts: number[],
 ): Range {
   return {
-    end: remapPosition(range.end, fragment, originalSource),
-    start: remapPosition(range.start, fragment, originalSource),
+    end: remapPosition(range.end, fragment, originalLineStarts),
+    start: remapPosition(range.start, fragment, originalLineStarts),
   };
 }

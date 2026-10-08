@@ -49,5 +49,10 @@ export {
   writeRegister,
 } from './catalog';
 export { walkSourceFiles } from './io';
-export { extractFile, resolveProcessor, transformFile } from './parser';
+export {
+  extractFile,
+  hasParseFailure,
+  resolveProcessor,
+  transformFile,
+} from './parser';
 export { parsePlaceholders } from './placeholder';

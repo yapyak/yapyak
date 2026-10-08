@@ -1,54 +1,46 @@
-import ts from '@typescript/typescript6';
+import type { CallExpression, IfStatement, Node } from 'oxc-parser';
+import type { SourceFile } from './source-file';
+
 import { describe, expect, it } from 'vitest';
 
 import { resolveBindings } from './binding';
+import { collectChildren } from './child';
+import { parseSourceFile } from './source-file';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const FIXTURES = join(import.meta.dirname, 'fixture/binding');
 
-function loadFixture(name: string): ts.SourceFile {
-  const source = readFileSync(join(FIXTURES, name), 'utf-8');
-  return ts.createSourceFile(
-    name,
-    source,
-    ts.ScriptTarget.ESNext,
-    true,
-    ts.ScriptKind.TS,
-  );
+function loadFixture(name: string): SourceFile {
+  return parseSource(readFileSync(join(FIXTURES, name), 'utf-8'), name);
 }
 
-function parseSource(source: string): ts.SourceFile {
-  return ts.createSourceFile(
-    'inline.ts',
-    source,
-    ts.ScriptTarget.ESNext,
-    true,
-    ts.ScriptKind.TS,
-  );
+function parseSource(source: string, fileId = 'src/a.ts'): SourceFile {
+  return parseSourceFile(fileId, {
+    code: source,
+    language: 'ts',
+    type: 'script',
+  });
 }
 
 function findFirstCallExpression(
-  node: ts.Node,
+  node: Node,
   name: string,
-): ts.CallExpression | undefined {
-  let found: ts.CallExpression | undefined;
-  const visit = (n: ts.Node): void => {
-    if (found !== undefined) {
-      return;
+): CallExpression | undefined {
+  if (
+    node.type === 'CallExpression' &&
+    node.callee.type === 'Identifier' &&
+    node.callee.name === name
+  ) {
+    return node;
+  }
+  for (const child of collectChildren(node)) {
+    const found = findFirstCallExpression(child, name);
+    if (found) {
+      return found;
     }
-    if (
-      ts.isCallExpression(n) &&
-      ts.isIdentifier(n.expression) &&
-      n.expression.text === name
-    ) {
-      found = n;
-      return;
-    }
-    ts.forEachChild(n, visit);
-  };
-  visit(node);
-  return found;
+  }
+  return undefined;
 }
 
 function findCallBindingKind(
@@ -57,25 +49,24 @@ function findCallBindingKind(
 ): string | undefined {
   const sourceFile = parseSource(source);
   const table = resolveBindings(sourceFile, 't');
-  const call = findFirstCallExpression(sourceFile, callName);
-  expect(call).toBeDefined();
-  return table.find(callName, call as ts.Node)?.kind;
+  const call = findFirstCallExpression(sourceFile.program, callName);
+  if (!call) {
+    throw new Error(`test setup expects a \`${callName}\` call`);
+  }
+  return table.find(callName, call)?.kind;
 }
 
-function findFirstIfStatement(node: ts.Node): ts.IfStatement | undefined {
-  let found: ts.IfStatement | undefined;
-  const visit = (n: ts.Node): void => {
-    if (found !== undefined) {
-      return;
+function findFirstIfStatement(node: Node): IfStatement | undefined {
+  if (node.type === 'IfStatement') {
+    return node;
+  }
+  for (const child of collectChildren(node)) {
+    const found = findFirstIfStatement(child);
+    if (found) {
+      return found;
     }
-    if (ts.isIfStatement(n)) {
-      found = n;
-      return;
-    }
-    ts.forEachChild(n, visit);
-  };
-  visit(node);
-  return found;
+  }
+  return undefined;
 }
 
 describe('resolveBindings', () => {
@@ -133,26 +124,26 @@ describe('resolveBindings', () => {
     expect(table.root.bindings.get('t')?.kind).toBe('direct');
     expect(table.root.bindings.has('translate')).toBe(false);
 
-    const ifStmt = findFirstIfStatement(sourceFile);
-    expect(ifStmt).toBeDefined();
-    const thenBlock = ifStmt?.thenStatement;
-    expect(thenBlock).toBeDefined();
-    const innerCall = findFirstCallExpression(
-      thenBlock as ts.Node,
-      'translate',
-    );
-    expect(innerCall).toBeDefined();
-    expect(table.find('translate', innerCall as ts.Node)?.kind).toBe('wrapper');
+    const ifStatement = findFirstIfStatement(sourceFile.program);
+    const innerCall =
+      ifStatement &&
+      findFirstCallExpression(ifStatement.consequent, 'translate');
+    if (!innerCall) {
+      throw new Error('test setup expects a `translate` call in the if block');
+    }
+    expect(table.find('translate', innerCall)?.kind).toBe('wrapper');
 
-    expect(table.find('translate', sourceFile)).toBeUndefined();
+    expect(table.find('translate', sourceFile.program)).toBeUndefined();
   });
 
   it('returns the binding by walking up the scope chain', () => {
     const sourceFile = loadFixture('direct-import.ts');
     const table = resolveBindings(sourceFile, 't');
-    const call = findFirstCallExpression(sourceFile, 't');
-    expect(call).toBeDefined();
-    expect(table.find('t', call as ts.Node)?.kind).toBe('direct');
+    const call = findFirstCallExpression(sourceFile.program, 't');
+    if (!call) {
+      throw new Error('test setup expects a `t` call');
+    }
+    expect(table.find('t', call)?.kind).toBe('direct');
   });
 
   it('returns no binding for an import from a different module', () => {
@@ -314,9 +305,11 @@ describe('resolveBindings', () => {
       "import { t } from 'yapyak';\nfunction f(...t) { return t.length; }",
     );
     const table = resolveBindings(sourceFile, 't');
-    const functionDecl = sourceFile.statements.find(ts.isFunctionDeclaration);
-    expect(functionDecl?.body).toBeDefined();
-    expect(table.find('t', functionDecl?.body as ts.Node)?.kind).toBe('shadow');
+    const [, declaration] = sourceFile.program.body;
+    if (declaration?.type !== 'FunctionDeclaration' || !declaration.body) {
+      throw new Error('test setup expects a function declaration');
+    }
+    expect(table.find('t', declaration.body)?.kind).toBe('shadow');
   });
 
   it('returns a shadow binding for a parameter with default value `t = expr`', () => {

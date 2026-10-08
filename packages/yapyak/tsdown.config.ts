@@ -6,7 +6,6 @@ export default defineConfig({
       'yapyak/runtime',
     ],
   },
-
   entry: [
     'src/index.ts',
     'src/internal.ts',
@@ -24,5 +23,4 @@ export default defineConfig({
     'src/translator/index.ts',
     'src/translator/internal.ts',
   ],
-  shims: true,
 });

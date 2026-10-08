@@ -1,65 +1,64 @@
 import type MagicString from 'magic-string';
+import type {
+  ImportDeclaration,
+  ImportNamespaceSpecifier,
+  ImportSpecifier,
+  Node,
+  Program,
+} from 'oxc-parser';
 import type { Fragment } from '../../../../processor';
-
-import ts from '@typescript/typescript6';
+import type { SourceFile } from '../../source-file';
 
 import { YAPYAK_MODULE } from '../../binding';
+import { collectChildren } from '../../child';
 import { remapOffset } from '../../offset';
-import { getScriptKind } from '../../script-kind';
+import { parseSourceFile } from '../../source-file';
+import { isReference } from './reference';
 
 export type TransformScriptImportsInput = {
   fileId: string;
   fragments: Fragment[];
   magicString: MagicString;
   originalSource: string;
+  sourceFilesByFragment: Map<Fragment, SourceFile>;
 };
 
 export function transformScriptImports(
   input: TransformScriptImportsInput,
 ): void {
-  const referenceAsts = input.fragments
-    .map((fragment) => parseFragmentReferenceAst(input, fragment))
-    .filter((ast): ast is ts.SourceFile => ast !== undefined);
-  for (const fragment of input.fragments) {
-    if (fragment.type !== 'script') {
-      continue;
-    }
-    const declarationAst = ts.createSourceFile(
-      input.fileId,
-      fragment.code,
-      ts.ScriptTarget.ESNext,
-      true,
-      getScriptKind(input.fileId, fragment.language),
-    );
-    for (const declaration of extractCoreImports(declarationAst)) {
+  const referenceSourceFiles = input.fragments
+    .map((fragment) => parseFragmentReferenceSourceFile(input, fragment))
+    .filter((sourceFile) => sourceFile !== undefined);
+  for (const [fragment, sourceFile] of input.sourceFilesByFragment) {
+    for (const declaration of extractCoreImports(sourceFile.program)) {
       transformImportDeclaration({
         declaration,
-        declarationAst,
         fragment,
         fragments: input.fragments,
         magicString: input.magicString,
         originalSource: input.originalSource,
-        referenceAsts,
+        referenceSourceFiles,
       });
     }
   }
 }
 
-function parseFragmentReferenceAst(
+function parseFragmentReferenceSourceFile(
   input: TransformScriptImportsInput,
   fragment: Fragment,
-): ts.SourceFile | undefined {
+): SourceFile | undefined {
   const postTransformCode = sliceEmittedFragment(fragment, input.magicString);
   if (postTransformCode === undefined) {
     return undefined;
   }
-  return ts.createSourceFile(
-    input.fileId,
-    postTransformCode,
-    ts.ScriptTarget.ESNext,
-    true,
-    getScriptKind(input.fileId, fragment.language),
-  );
+  return parseSourceFile(input.fileId, {
+    code: postTransformCode,
+    language:
+      fragment.type === 'template-expression' && fragment.language === 'ts'
+        ? 'tsx'
+        : fragment.language,
+    type: fragment.type,
+  });
 }
 
 function sliceEmittedFragment(
@@ -76,17 +75,30 @@ function sliceEmittedFragment(
   }
 }
 
+function extractCoreImports(program: Program): ImportDeclaration[] {
+  const result: ImportDeclaration[] = [];
+  for (const statement of program.body) {
+    if (statement.type !== 'ImportDeclaration') {
+      continue;
+    }
+    if (statement.source.value !== YAPYAK_MODULE) {
+      continue;
+    }
+    result.push(statement);
+  }
+  return result;
+}
+
 type TransformImportDeclarationInput = {
-  declaration: ts.ImportDeclaration;
-  declarationAst: ts.SourceFile;
+  declaration: ImportDeclaration;
   fragment: Fragment;
   fragments: Fragment[];
   magicString: MagicString;
   originalSource: string;
-  referenceAsts: ts.SourceFile[];
+  referenceSourceFiles: SourceFile[];
 };
 
-type ImportSpecifier = {
+type RemainingSpecifier = {
   imported: string;
   local: string;
   typeOnly: boolean;
@@ -97,48 +109,46 @@ function transformImportDeclaration(
 ): void {
   const {
     declaration,
-    declarationAst,
     fragment,
     fragments,
     magicString,
     originalSource,
-    referenceAsts,
+    referenceSourceFiles,
   } = input;
-  if (declaration.importClause?.isTypeOnly === true) {
+  if (declaration.importKind === 'type') {
     return;
   }
-  const namedBindings = declaration.importClause?.namedBindings;
-  if (!namedBindings) {
-    return;
-  }
-  const startInOriginal = remapOffset(
-    declaration.getStart(declarationAst),
-    fragment,
+  const namespaceSpecifier = declaration.specifiers.find(
+    (specifier): specifier is ImportNamespaceSpecifier =>
+      specifier.type === 'ImportNamespaceSpecifier',
   );
-  const endInOriginal = remapOffset(declaration.getEnd(), fragment);
-  if (ts.isNamespaceImport(namedBindings)) {
-    const localName = namedBindings.name.text;
+  const namedSpecifiers = declaration.specifiers.filter(
+    (specifier): specifier is ImportSpecifier =>
+      specifier.type === 'ImportSpecifier',
+  );
+  if (namespaceSpecifier === undefined && namedSpecifiers.length === 0) {
+    return;
+  }
+  const startInOriginal = remapOffset(declaration.start, fragment);
+  const endInOriginal = remapOffset(declaration.end, fragment);
+  if (namespaceSpecifier) {
+    const localName = namespaceSpecifier.local.name;
     if (
-      countReferences(referenceAsts, localName) === 0 &&
-      countOutsideReferences(
-        originalSource,
-        fragments,
-        localName,
-        'namespace',
-      ) === 0
+      !hasReference(referenceSourceFiles, localName) &&
+      !hasOutsideReference(originalSource, fragments, localName, 'namespace')
     ) {
       magicString.remove(startInOriginal, endInOriginal);
     }
     return;
   }
-  if (!ts.isNamedImports(namedBindings)) {
-    return;
-  }
-  const remaining: ImportSpecifier[] = [];
-  for (const element of namedBindings.elements) {
-    const importedName = (element.propertyName ?? element.name).text;
-    const localName = element.name.text;
-    if (element.isTypeOnly) {
+  const remaining: RemainingSpecifier[] = [];
+  for (const specifier of namedSpecifiers) {
+    const importedName =
+      specifier.imported.type === 'Literal'
+        ? specifier.imported.value
+        : specifier.imported.name;
+    const localName = specifier.local.name;
+    if (specifier.importKind === 'type') {
       remaining.push({
         imported: importedName,
         local: localName,
@@ -147,8 +157,8 @@ function transformImportDeclaration(
       continue;
     }
     if (
-      countReferences(referenceAsts, localName) > 0 ||
-      countOutsideReferences(originalSource, fragments, localName, 'call') > 0
+      hasReference(referenceSourceFiles, localName) ||
+      hasOutsideReference(originalSource, fragments, localName, 'call')
     ) {
       remaining.push({
         imported: importedName,
@@ -163,8 +173,8 @@ function transformImportDeclaration(
   }
   const specList = remaining.map(renderSpecifier).join(', ');
   const moduleSpecText = originalSource.slice(
-    remapOffset(declaration.moduleSpecifier.getStart(declarationAst), fragment),
-    remapOffset(declaration.moduleSpecifier.getEnd(), fragment),
+    remapOffset(declaration.source.start, fragment),
+    remapOffset(declaration.source.end, fragment),
   );
   magicString.overwrite(
     startInOriginal,
@@ -173,43 +183,46 @@ function transformImportDeclaration(
   );
 }
 
-function renderSpecifier(specifier: ImportSpecifier): string {
-  const prefix = specifier.typeOnly ? 'type ' : '';
-  const body =
-    specifier.imported === specifier.local
-      ? specifier.imported
-      : `${specifier.imported} as ${specifier.local}`;
-  return `${prefix}${body}`;
+function hasReference(
+  referenceSourceFiles: SourceFile[],
+  name: string,
+): boolean {
+  return referenceSourceFiles.some((sourceFile) =>
+    hasReferenceIn(sourceFile, name),
+  );
 }
 
-function extractCoreImports(sourceFile: ts.SourceFile): ts.ImportDeclaration[] {
-  const result: ts.ImportDeclaration[] = [];
-  for (const statement of sourceFile.statements) {
-    if (!ts.isImportDeclaration(statement)) {
-      continue;
-    }
-    if (!ts.isStringLiteral(statement.moduleSpecifier)) {
-      continue;
-    }
-    if (statement.moduleSpecifier.text !== YAPYAK_MODULE) {
-      continue;
-    }
-    result.push(statement);
+function hasReferenceIn(sourceFile: SourceFile, name: string): boolean {
+  if (sourceFile.fatalError) {
+    return true;
   }
-  return result;
+  const stack: Node[] = [
+    sourceFile.program,
+  ];
+  let node = stack.pop();
+  while (node) {
+    if (node.type === 'Identifier' && node.name === name && isReference(node)) {
+      return true;
+    }
+    stack.push(...collectChildren(node));
+    node = stack.pop();
+  }
+  return false;
 }
 
-function countOutsideReferences(
+function hasOutsideReference(
   originalSource: string,
   fragments: Fragment[],
   name: string,
   usage: 'call' | 'namespace',
-): number {
-  let count = 0;
-  for (const region of uncoveredSourceRegions(originalSource, fragments)) {
-    count += countMatches(region, name, usage);
-  }
-  return count;
+): boolean {
+  const suffix = usage === 'call' ? String.raw`\s*\(` : String.raw`\s*[.(]`;
+  const nameRx = new RegExp(
+    `(?<![\\w$])${name.replaceAll('$', '\\$')}${suffix}`,
+  );
+  return uncoveredSourceRegions(originalSource, fragments).some((region) =>
+    nameRx.test(region),
+  );
 }
 
 type SourceSpan = {
@@ -224,7 +237,7 @@ function uncoveredSourceRegions(
   const spans: SourceSpan[] = [];
   for (const fragment of fragments) {
     const span = toSourceSpan(fragment);
-    if (span !== undefined) {
+    if (span) {
       spans.push(span);
     }
   }
@@ -254,61 +267,11 @@ function toSourceSpan(fragment: Fragment): SourceSpan | undefined {
   }
 }
 
-function countMatches(
-  text: string,
-  name: string,
-  usage: 'call' | 'namespace',
-): number {
-  const suffix = usage === 'call' ? String.raw`\s*\(` : String.raw`\s*[.(]`;
-  const nameRx = new RegExp(
-    `(?<![\\w$])${name.replaceAll('$', '\\$')}${suffix}`,
-    'g',
-  );
-  return text.match(nameRx)?.length ?? 0;
-}
-
-function countReferences(referenceAsts: ts.SourceFile[], name: string): number {
-  let total = 0;
-  for (const referenceAst of referenceAsts) {
-    total += countReferencesIn(referenceAst, name);
-  }
-  return total;
-}
-
-function countReferencesIn(sourceFile: ts.SourceFile, name: string): number {
-  let count = 0;
-  const walkNode = (node: ts.Node): void => {
-    if (ts.isIdentifier(node) && node.text === name && isReference(node)) {
-      count += 1;
-    }
-    ts.forEachChild(node, walkNode);
-  };
-  walkNode(sourceFile);
-  return count;
-}
-
-function isReference(node: ts.Identifier): boolean {
-  const parent = node.parent;
-  if (!parent) {
-    return true;
-  }
-  if (ts.isImportSpecifier(parent) && parent.name === node) {
-    return false;
-  }
-  if (ts.isNamespaceImport(parent) && parent.name === node) {
-    return false;
-  }
-  if (ts.isImportClause(parent) && parent.name === node) {
-    return false;
-  }
-  if (ts.isPropertyAccessExpression(parent) && parent.name === node) {
-    return false;
-  }
-  if (ts.isPropertyAssignment(parent) && parent.name === node) {
-    return false;
-  }
-  if (ts.isJsxAttribute(parent) && parent.name === node) {
-    return false;
-  }
-  return true;
+function renderSpecifier(specifier: RemainingSpecifier): string {
+  const prefix = specifier.typeOnly ? 'type ' : '';
+  const body =
+    specifier.imported === specifier.local
+      ? specifier.imported
+      : `${specifier.imported} as ${specifier.local}`;
+  return `${prefix}${body}`;
 }

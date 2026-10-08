@@ -13,6 +13,7 @@ export function resolveExtraction(
 ): ExtractFileResult {
   const { processors } = getNormalized(state);
   if (!source.includes('yapyak') && !hasAmbientBindings(processors)) {
+    state.extractionCache.delete(fileId);
     return {
       callSites: [],
       diagnostics: [],

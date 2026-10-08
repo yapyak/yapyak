@@ -1,10 +1,27 @@
+import type { Fragment } from '../../../../processor';
+import type { SourceFile } from '../../source-file';
+
 import MagicString from 'magic-string';
 import { describe, expect, it } from 'vitest';
 
 import { segmentsFromOffset } from '../../../../processor';
+import { parseSourceFile } from '../../source-file';
 import { extractFile } from '../extract';
 import { transformFile } from '../transform';
 import { transformScriptImports } from './script-import';
+
+function parseScriptFragments(
+  fragments: Fragment[],
+): Map<Fragment, SourceFile> {
+  return new Map<Fragment, SourceFile>(
+    fragments
+      .filter((fragment) => fragment.type === 'script')
+      .map((fragment) => [
+        fragment,
+        parseSourceFile('src/a.tsx', fragment),
+      ]),
+  );
+}
 
 function runTransform(input: { source: string; locales: string[] }): string {
   const fileId = 'src/a.tsx';
@@ -20,19 +37,65 @@ function runTransform(input: { source: string; locales: string[] }): string {
 
 function runScriptImports(source: string): string {
   const magicString = new MagicString(source);
+  const fragments: Fragment[] = [
+    {
+      code: source,
+      language: 'ts',
+      scope: 'module',
+      segments: segmentsFromOffset(source, 0),
+      type: 'script',
+    },
+  ];
   transformScriptImports({
     fileId: 'src/a.tsx',
-    fragments: [
-      {
-        code: source,
-        language: 'ts',
-        scope: 'module',
-        segments: segmentsFromOffset(source, 0),
-        type: 'script',
-      },
-    ],
+    fragments,
     magicString,
     originalSource: source,
+    sourceFilesByFragment: parseScriptFragments(fragments),
+  });
+  return magicString.toString();
+}
+
+function runMaskedTemplate(region: string, code: string): string {
+  const script = "import { locales } from 'yapyak';\n";
+  const source = `${script}${region}`;
+  const opening = code.indexOf('0');
+  const fragments: Fragment[] = [
+    {
+      code: script,
+      language: 'ts',
+      scope: 'module',
+      segments: segmentsFromOffset(script, 0),
+      type: 'script',
+    },
+    {
+      code,
+      language: 'ts',
+      scope: 'instance',
+      segments: [
+        {
+          codeLength: opening,
+          sourceOffset: script.length,
+        },
+        {
+          codeLength: 1,
+          sourceOffset: script.length + opening,
+        },
+        {
+          codeLength: code.length - opening - 1,
+          sourceOffset: source.length - (code.length - opening - 1),
+        },
+      ],
+      type: 'template-expression',
+    },
+  ];
+  const magicString = new MagicString(source);
+  transformScriptImports({
+    fileId: 'src/a.astro',
+    fragments,
+    magicString,
+    originalSource: source,
+    sourceFilesByFragment: parseScriptFragments(fragments),
   });
   return magicString.toString();
 }
@@ -147,19 +210,21 @@ describe('transformScriptImports', () => {
     const script = "import { t } from 'yapyak';\n";
     const source = `${script}{t('Hello')}\n`;
     const magicString = new MagicString(source);
+    const fragments: Fragment[] = [
+      {
+        code: script,
+        language: 'ts',
+        scope: 'module',
+        segments: segmentsFromOffset(script, 0),
+        type: 'script',
+      },
+    ];
     transformScriptImports({
       fileId: 'src/a.tsx',
-      fragments: [
-        {
-          code: script,
-          language: 'ts',
-          scope: 'module',
-          segments: segmentsFromOffset(script, 0),
-          type: 'script',
-        },
-      ],
+      fragments,
       magicString,
       originalSource: source,
+      sourceFilesByFragment: parseScriptFragments(fragments),
     });
 
     expect(magicString.toString()).toContain("import { t } from 'yapyak';");
@@ -169,19 +234,21 @@ describe('transformScriptImports', () => {
     const script = "import * as yapyak from 'yapyak';\n";
     const source = `${script}{yapyak.t('Hello')}\n`;
     const magicString = new MagicString(source);
+    const fragments: Fragment[] = [
+      {
+        code: script,
+        language: 'ts',
+        scope: 'module',
+        segments: segmentsFromOffset(script, 0),
+        type: 'script',
+      },
+    ];
     transformScriptImports({
       fileId: 'src/a.tsx',
-      fragments: [
-        {
-          code: script,
-          language: 'ts',
-          scope: 'module',
-          segments: segmentsFromOffset(script, 0),
-          type: 'script',
-        },
-      ],
+      fragments,
       magicString,
       originalSource: source,
+      sourceFilesByFragment: parseScriptFragments(fragments),
     });
 
     expect(magicString.toString()).toContain(
@@ -195,33 +262,35 @@ describe('transformScriptImports', () => {
     const inner = "'call t( now'";
     const source = `${declaration}${outer}t('left')\n`;
     const magicString = new MagicString(source);
+    const fragments: Fragment[] = [
+      {
+        code: declaration,
+        language: 'ts',
+        scope: 'module',
+        segments: segmentsFromOffset(declaration, 0),
+        type: 'script',
+      },
+      {
+        code: outer,
+        language: 'ts',
+        scope: 'instance',
+        segments: segmentsFromOffset(outer, declaration.length),
+        type: 'template-expression',
+      },
+      {
+        code: inner,
+        language: 'ts',
+        scope: 'instance',
+        segments: segmentsFromOffset(inner, source.indexOf(inner)),
+        type: 'template-expression',
+      },
+    ];
     transformScriptImports({
       fileId: 'src/a.tsx',
-      fragments: [
-        {
-          code: declaration,
-          language: 'ts',
-          scope: 'module',
-          segments: segmentsFromOffset(declaration, 0),
-          type: 'script',
-        },
-        {
-          code: outer,
-          language: 'ts',
-          scope: 'instance',
-          segments: segmentsFromOffset(outer, declaration.length),
-          type: 'template-expression',
-        },
-        {
-          code: inner,
-          language: 'ts',
-          scope: 'instance',
-          segments: segmentsFromOffset(inner, source.indexOf(inner)),
-          type: 'template-expression',
-        },
-      ],
+      fragments,
       magicString,
       originalSource: source,
+      sourceFilesByFragment: parseScriptFragments(fragments),
     });
 
     expect(magicString.toString()).toContain("import { t } from 'yapyak';");
@@ -230,19 +299,21 @@ describe('transformScriptImports', () => {
   it('skips a `template-expression` fragment', () => {
     const source = "import { t } from 'yapyak';";
     const magicString = new MagicString(source);
+    const fragments: Fragment[] = [
+      {
+        code: source,
+        language: 'ts',
+        scope: 'instance',
+        segments: segmentsFromOffset(source, 0),
+        type: 'template-expression',
+      },
+    ];
     transformScriptImports({
       fileId: 'src/a.tsx',
-      fragments: [
-        {
-          code: source,
-          language: 'ts',
-          scope: 'instance',
-          segments: segmentsFromOffset(source, 0),
-          type: 'template-expression',
-        },
-      ],
+      fragments,
       magicString,
       originalSource: source,
+      sourceFilesByFragment: parseScriptFragments(fragments),
     });
     expect(magicString.toString()).toBe(source);
   });
@@ -251,26 +322,28 @@ describe('transformScriptImports', () => {
     const first = "import { t } from 'yapyak';\n";
     const second = "import t from './helper';\n";
     const magicString = new MagicString(first + second);
+    const fragments: Fragment[] = [
+      {
+        code: first,
+        language: 'ts',
+        scope: 'module',
+        segments: segmentsFromOffset(first, 0),
+        type: 'script',
+      },
+      {
+        code: second,
+        language: 'ts',
+        scope: 'module',
+        segments: segmentsFromOffset(second, first.length),
+        type: 'script',
+      },
+    ];
     transformScriptImports({
       fileId: 'src/a.tsx',
-      fragments: [
-        {
-          code: first,
-          language: 'ts',
-          scope: 'module',
-          segments: segmentsFromOffset(first, 0),
-          type: 'script',
-        },
-        {
-          code: second,
-          language: 'ts',
-          scope: 'module',
-          segments: segmentsFromOffset(second, first.length),
-          type: 'script',
-        },
-      ],
+      fragments,
       magicString,
       originalSource: first + second,
+      sourceFilesByFragment: parseScriptFragments(fragments),
     });
     expect(magicString.toString()).toBe(`\n${second}`);
   });
@@ -281,27 +354,77 @@ describe('transformScriptImports', () => {
     const source = importLine + usage;
     const magicString = new MagicString(source);
     magicString.remove(importLine.length - 1, source.length);
+    const fragments: Fragment[] = [
+      {
+        code: importLine,
+        language: 'ts',
+        scope: 'module',
+        segments: segmentsFromOffset(importLine, 0),
+        type: 'script',
+      },
+      {
+        code: usage,
+        language: 'ts',
+        scope: 'module',
+        segments: segmentsFromOffset(usage, importLine.length),
+        type: 'script',
+      },
+    ];
     transformScriptImports({
       fileId: 'src/a.tsx',
-      fragments: [
-        {
-          code: importLine,
-          language: 'ts',
-          scope: 'module',
-          segments: segmentsFromOffset(importLine, 0),
-          type: 'script',
-        },
-        {
-          code: usage,
-          language: 'ts',
-          scope: 'module',
-          segments: segmentsFromOffset(usage, importLine.length),
-          type: 'script',
-        },
-      ],
+      fragments,
       magicString,
       originalSource: source,
+      sourceFilesByFragment: parseScriptFragments(fragments),
     });
     expect(magicString.toString()).toBe('');
+  });
+
+  it('preserves an import referenced in a template region that holds JSX', () => {
+    const code = runMaskedTemplate(
+      'locales.map((value) => (<b>{value}</b>))',
+      'locales.map((value) => (0))',
+    );
+
+    expect(code).toContain("import { locales } from 'yapyak';");
+  });
+
+  it('elides an import that a template region holding JSX names only as text', () => {
+    const region = 'items.map((value) => (<b>locales</b>))';
+    const code = runMaskedTemplate(region, 'items.map((value) => (0))');
+
+    expect(code).toBe(`\n${region}`);
+  });
+
+  it('preserves an import named in a template expression that does not parse', () => {
+    const script = "import { locales } from 'yapyak';\n";
+    const template = 'item of locales';
+    const source = `${script}${template}`;
+    const fragments: Fragment[] = [
+      {
+        code: script,
+        language: 'ts',
+        scope: 'module',
+        segments: segmentsFromOffset(script, 0),
+        type: 'script',
+      },
+      {
+        code: template,
+        language: 'ts',
+        scope: 'instance',
+        segments: segmentsFromOffset(template, script.length),
+        type: 'template-expression',
+      },
+    ];
+    const magicString = new MagicString(source);
+    transformScriptImports({
+      fileId: 'src/a.vue',
+      fragments,
+      magicString,
+      originalSource: source,
+      sourceFilesByFragment: parseScriptFragments(fragments),
+    });
+
+    expect(magicString.toString()).toBe(source);
   });
 });

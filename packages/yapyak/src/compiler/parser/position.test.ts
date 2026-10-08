@@ -1,14 +1,9 @@
 import type { Fragment } from '../../processor';
 
-import ts from '@typescript/typescript6';
 import { describe, expect, it } from 'vitest';
 
 import { segmentsFromOffset } from '../../processor';
-import { remapPosition, toPosition } from './position';
-
-function makeSourceFile(source: string): ts.SourceFile {
-  return ts.createSourceFile('test.ts', source, ts.ScriptTarget.ESNext, true);
-}
+import { collectLineStarts, remapPosition, toPosition } from './position';
 
 const fragment: Fragment = {
   code: '',
@@ -18,6 +13,23 @@ const fragment: Fragment = {
   type: 'script',
 };
 
+describe('collectLineStarts', () => {
+  it('lists the start of every line after LF, CRLF, and CR', () => {
+    expect(collectLineStarts('Hello\nWorld\r\nSave\rCancel')).toEqual([
+      0,
+      6,
+      13,
+      18,
+    ]);
+  });
+
+  it('lists only the first line for an empty text', () => {
+    expect(collectLineStarts('')).toEqual([
+      0,
+    ]);
+  });
+});
+
 describe('remapPosition', () => {
   it('returns the position unchanged when the fragment starts at offset zero', () => {
     const position = {
@@ -25,11 +37,12 @@ describe('remapPosition', () => {
       line: 1,
       offset: 0,
     };
-    expect(remapPosition(position, fragment, 'source')).toEqual(position);
+    expect(
+      remapPosition(position, fragment, collectLineStarts('Hello')),
+    ).toEqual(position);
   });
 
   it('returns a position remapped into the original source when offset is non-zero', () => {
-    const original = 'first\nsecond';
     const result = remapPosition(
       {
         column: 1,
@@ -40,7 +53,7 @@ describe('remapPosition', () => {
         ...fragment,
         segments: segmentsFromOffset('', 6),
       },
-      original,
+      collectLineStarts('Hello\nWorld'),
     );
     expect(result).toEqual({
       column: 1,
@@ -83,7 +96,7 @@ describe('remapPosition', () => {
           offset: 3,
         },
         gapped,
-        "a&amp;&amp;t('Save')",
+        collectLineStarts("a&amp;&amp;t('Save')"),
       ),
     ).toEqual({
       column: 12,
@@ -91,11 +104,28 @@ describe('remapPosition', () => {
       offset: 11,
     });
   });
+
+  it('throws when the line starts are empty', () => {
+    expect(() =>
+      remapPosition(
+        {
+          column: 1,
+          line: 1,
+          offset: 0,
+        },
+        {
+          ...fragment,
+          segments: segmentsFromOffset('', 6),
+        },
+        [],
+      ),
+    ).toThrow(/has no line start/);
+  });
 });
 
 describe('toPosition', () => {
   it('builds a 1-based position from an offset at the start of the source', () => {
-    expect(toPosition(makeSourceFile('hello'), 0)).toEqual({
+    expect(toPosition(collectLineStarts('Hello'), 0)).toEqual({
       column: 1,
       line: 1,
       offset: 0,
@@ -103,10 +133,14 @@ describe('toPosition', () => {
   });
 
   it('builds a 1-based position from an offset on a later line', () => {
-    expect(toPosition(makeSourceFile('hello\nworld'), 6)).toEqual({
-      column: 1,
+    expect(toPosition(collectLineStarts('Hello\nWorld'), 8)).toEqual({
+      column: 3,
       line: 2,
-      offset: 6,
+      offset: 8,
     });
+  });
+
+  it('throws when the line starts are empty', () => {
+    expect(() => toPosition([], 0)).toThrow(/has no line start/);
   });
 });

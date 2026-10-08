@@ -1,7 +1,10 @@
-import ts from '@typescript/typescript6';
+import type { Directive, Program, Statement } from 'oxc-parser';
 
-export function resolveDirectivePrologueEnd(source: string): number {
-  const directives = extractPrologueStatements(source);
+export function resolveDirectivePrologueEnd(
+  program: Program,
+  source: string,
+): number {
+  const directives = extractPrologueStatements(program);
   const last = directives[directives.length - 1];
   if (last === undefined) {
     return 0;
@@ -9,21 +12,15 @@ export function resolveDirectivePrologueEnd(source: string): number {
   return resolveLineEndAfter(source, last.end);
 }
 
-export function extractPrologueDirectives(source: string): string[] {
-  return extractPrologueStatements(source).map(
-    (statement) => (statement.expression as ts.StringLiteral).text,
+export function extractPrologueDirectives(program: Program): string[] {
+  return extractPrologueStatements(program).map(
+    (statement) => statement.expression.value,
   );
 }
 
-function extractPrologueStatements(source: string): ts.ExpressionStatement[] {
-  const sourceFile = ts.createSourceFile(
-    '__directive.ts',
-    source,
-    ts.ScriptTarget.Latest,
-    false,
-  );
-  const directives: ts.ExpressionStatement[] = [];
-  for (const statement of sourceFile.statements) {
+function extractPrologueStatements(program: Program): Directive[] {
+  const directives: Directive[] = [];
+  for (const statement of program.body) {
     if (!isPrologueDirective(statement)) {
       break;
     }
@@ -33,9 +30,12 @@ function extractPrologueStatements(source: string): ts.ExpressionStatement[] {
 }
 
 function isPrologueDirective(
-  node: ts.Statement,
-): node is ts.ExpressionStatement {
-  return ts.isExpressionStatement(node) && ts.isStringLiteral(node.expression);
+  statement: Directive | Statement,
+): statement is Directive {
+  return (
+    statement.type === 'ExpressionStatement' &&
+    typeof statement.directive === 'string'
+  );
 }
 
 function resolveLineEndAfter(source: string, position: number): number {

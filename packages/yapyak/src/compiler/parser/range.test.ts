@@ -1,30 +1,11 @@
 import type { Fragment } from '../../processor';
 
-import ts from '@typescript/typescript6';
 import { describe, expect, it } from 'vitest';
 
 import { segmentsFromOffset } from '../../processor';
+import { collectLineStarts } from './position';
 import { remapRange, toRange } from './range';
-
-function makeNode(source: string): {
-  node: ts.Node;
-  sourceFile: ts.SourceFile;
-} {
-  const sourceFile = ts.createSourceFile(
-    'test.ts',
-    source,
-    ts.ScriptTarget.ESNext,
-    true,
-  );
-  const statement = sourceFile.statements[0];
-  if (!statement) {
-    throw new Error('test setup expects at least one statement');
-  }
-  return {
-    node: statement,
-    sourceFile,
-  };
-}
+import { parseSourceFile } from './source-file';
 
 const fragment: Fragment = {
   code: 'Hello',
@@ -48,7 +29,9 @@ describe('remapRange', () => {
         offset: 0,
       },
     };
-    expect(remapRange(range, fragment, 'Hello')).toEqual(range);
+    expect(remapRange(range, fragment, collectLineStarts('Hello'))).toEqual(
+      range,
+    );
   });
 
   it('builds a range with both endpoints remapped when offset is non-zero', () => {
@@ -70,7 +53,7 @@ describe('remapRange', () => {
         code: 'World',
         segments: segmentsFromOffset('World', 6),
       },
-      'Hello\nWorld',
+      collectLineStarts('Hello\nWorld'),
     );
     expect(result).toEqual({
       end: {
@@ -127,7 +110,7 @@ describe('remapRange', () => {
           },
         },
         gapped,
-        "a&amp;&amp;t('Save')",
+        collectLineStarts("a&amp;&amp;t('Save')"),
       ),
     ).toEqual({
       end: {
@@ -142,12 +125,45 @@ describe('remapRange', () => {
       },
     });
   });
+
+  it('throws when the line starts are empty', () => {
+    expect(() =>
+      remapRange(
+        {
+          end: {
+            column: 6,
+            line: 1,
+            offset: 5,
+          },
+          start: {
+            column: 1,
+            line: 1,
+            offset: 0,
+          },
+        },
+        {
+          ...fragment,
+          segments: segmentsFromOffset('Hello', 6),
+        },
+        [],
+      ),
+    ).toThrow(/has no line start/);
+  });
 });
 
 describe('toRange', () => {
   it('builds a range from a node start and end positions', () => {
-    const { node, sourceFile } = makeNode('export const x = 1;');
-    expect(toRange(node, sourceFile)).toEqual({
+    const sourceFile = parseSourceFile('src/a.ts', {
+      code: 'export const x = 1;',
+      language: 'ts',
+      type: 'script',
+    });
+    const [statement] = sourceFile.program.body;
+    if (statement === undefined) {
+      throw new Error('test setup expects at least one statement');
+    }
+
+    expect(toRange(statement, sourceFile)).toEqual({
       end: {
         column: 20,
         line: 1,

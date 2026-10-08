@@ -11,6 +11,9 @@ import { strict as assert } from 'node:assert';
 import { readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
+const POLL_MILLISECONDS = 100;
+const SETTLE_MILLISECONDS = 1000;
+
 function toCode(diagnostic: Diagnostic): string {
   return typeof diagnostic.code === 'object' && diagnostic.code !== null
     ? String(diagnostic.code.value)
@@ -73,7 +76,34 @@ suite('diagnostic', () => {
   });
 
   teardown(async () => {
+    await commands.executeCommand('workbench.action.files.revert');
     await writeFile(sourcePath, original);
+  });
+
+  test('preserves the diagnostics while a source file does not parse', async () => {
+    const editor = await openDocument('src/a.tsx');
+    const { document } = editor;
+    await editor.edit((edit) => {
+      edit.insert(
+        toPosition(document, "{t('Hello')}"),
+        "{t('Hi {name}')}\n      ",
+      );
+    });
+    await waitFor(
+      () => getYapyakDiagnostics(document.uri),
+      (value) => value.map(toCode).includes('YAP0004'),
+    );
+
+    await editor.edit((edit) => {
+      edit.insert(toPosition(document, "{t('Hello')}"), "{t('Save'}\n      ");
+    });
+    const deadline = Date.now() + SETTLE_MILLISECONDS;
+    while (Date.now() < deadline) {
+      await new Promise((resolve) => setTimeout(resolve, POLL_MILLISECONDS));
+      assert.deepEqual(getYapyakDiagnostics(document.uri).map(toCode), [
+        'YAP0004',
+      ]);
+    }
   });
 
   test('drops the unused-entry diagnostic when the source file gains the call on disk', async () => {

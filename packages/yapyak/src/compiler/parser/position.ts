@@ -1,17 +1,28 @@
-import type * as ts from '@typescript/typescript6';
 import type { Fragment, Position } from '../../processor';
 
-import { offsetToOriginalPosition } from '../../processor';
 import { remapOffset } from './offset';
 
-export function toPosition(
-  sourceFile: ts.SourceFile,
-  offset: number,
-): Position {
-  const { line, character } = sourceFile.getLineAndCharacterOfPosition(offset);
+const LINE_BREAK_RX = /\r\n?|\n/g;
+
+export function toPosition(lineStarts: number[], offset: number): Position {
+  let low = 0;
+  let high = lineStarts.length - 1;
+  while (low < high) {
+    const middle = Math.ceil((low + high) / 2);
+    const middleStart = lineStarts[middle];
+    if (middleStart === undefined || middleStart > offset) {
+      high = middle - 1;
+      continue;
+    }
+    low = middle;
+  }
+  const lineStart = lineStarts[low];
+  if (lineStart === undefined) {
+    throw new Error(`[yapyak] Offset ${offset} has no line start.`);
+  }
   return {
-    column: character + 1,
-    line: line + 1,
+    column: offset - lineStart + 1,
+    line: low + 1,
     offset,
   };
 }
@@ -19,11 +30,21 @@ export function toPosition(
 export function remapPosition(
   position: Position,
   fragment: Fragment,
-  originalSource: string,
+  originalLineStarts: number[],
 ): Position {
   const absoluteOffset = remapOffset(position.offset, fragment);
   if (absoluteOffset === position.offset) {
     return position;
   }
-  return offsetToOriginalPosition(originalSource, absoluteOffset);
+  return toPosition(originalLineStarts, absoluteOffset);
+}
+
+export function collectLineStarts(text: string): number[] {
+  const lineStarts = [
+    0,
+  ];
+  for (const match of text.matchAll(LINE_BREAK_RX)) {
+    lineStarts.push(match.index + match[0].length);
+  }
+  return lineStarts;
 }

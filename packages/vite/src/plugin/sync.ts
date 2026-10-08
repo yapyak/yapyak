@@ -4,7 +4,7 @@ import type {
 } from 'yapyak/compiler/internal';
 import type { State } from './state';
 
-import { syncLocaleFiles } from 'yapyak/compiler/internal';
+import { hasParseFailure, syncLocaleFiles } from 'yapyak/compiler/internal';
 
 import { getNormalized, getResolver } from './state';
 
@@ -16,7 +16,7 @@ export function syncAll(state: State): void {
   const { locales, sourceLocale } = getResolver(state).getProjectLocales();
   const result = syncLocaleFiles(
     {
-      filter: state.filter,
+      filter: (fileId) => state.filter(fileId) && isParsed(state, fileId),
       messages: allMessages,
     },
     {
@@ -31,6 +31,11 @@ export function syncAll(state: State): void {
   );
   emitSyncDiagnostics(state, result);
   getResolver(state).invalidateData();
+}
+
+function isParsed(state: State, fileId: string): boolean {
+  const entry = state.extractionCache.get(fileId);
+  return entry === undefined || !hasParseFailure(entry);
 }
 
 function emitSyncDiagnostics(

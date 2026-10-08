@@ -38,11 +38,7 @@ function collectMessages(project: Project): ResolveProjectMessagesResult {
     const extracted = compiler.extractFile(file.fileId, file.code, {
       processors: config.processors,
     });
-    const isParsed = !extracted.diagnostics.some(
-      (diagnostic) =>
-        diagnostic.code === compiler.YAP_COMPILE.PROCESSOR_PARSE_ERROR.code,
-    );
-    if (isParsed) {
+    if (!compiler.hasParseFailure(extracted)) {
       sourceFileIds.push(file.fileId);
     }
     messages.push(...extracted.messages);

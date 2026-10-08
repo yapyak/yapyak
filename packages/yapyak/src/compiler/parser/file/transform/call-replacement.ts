@@ -2,10 +2,7 @@ import type { Range } from '../../../../processor';
 import type { Placeholder } from '../../../placeholder';
 import type { ParsedCallSite } from '../extract';
 
-import ts from '@typescript/typescript6';
-
 import { findMatchingBraceIndex } from '../../matching-brace';
-import { remapOffset } from '../../offset';
 import { findFreeIdentifiers } from './identifier';
 import { buildVariantsLiteral, pickLocaleText, toSafeJsString } from './render';
 
@@ -55,12 +52,7 @@ export function renderCallReplacement(
   const { id, placeholders, source } = callSite;
   if (
     isSingleLocale &&
-    isElidable(
-      placeholders,
-      callSite,
-      input.nestedReplacements ?? [],
-      originalSource,
-    )
+    isElidable(placeholders, callSite, input.nestedReplacements ?? [])
   ) {
     const singleLocale = locales[0];
     const targetText = singleLocale
@@ -105,14 +97,15 @@ export function renderCallReplacement(
   const paramsExpressionText = hasPlaceholders
     ? getParamArgumentText(callSite, nested, originalSource)
     : undefined;
-  const localeExpression = callSite.localeExpression;
-  const localeText = localeExpression
-    ? interpolateNestedReplacements(
-        getSourceText(localeExpression, callSite, originalSource),
-        remapOffset(localeExpression.getStart(), callSite.fragment),
-        nested,
-      )
-    : undefined;
+  const localeRange = callSite.localeRange;
+  const localeText =
+    localeRange === undefined
+      ? undefined
+      : interpolateNestedReplacements(
+          getSourceText(localeRange, originalSource),
+          localeRange.start.offset,
+          nested,
+        );
   const args: string[] = [
     variantsIdentifier,
   ];
@@ -133,9 +126,8 @@ function isElidable(
   placeholders: Placeholder[],
   callSite: ParsedCallSite,
   nested: NestedReplacement[],
-  originalSource: string,
 ): boolean {
-  if (callSite.localeExpression) {
+  if (callSite.localeRange) {
     return false;
   }
   for (const placeholder of placeholders) {
@@ -149,19 +141,19 @@ function isElidable(
   if (hasNestedInParams(callSite, nested)) {
     return false;
   }
-  return Boolean(getParamExpressions(callSite, originalSource));
+  return callSite.params?.kind === 'static';
 }
 
 function hasNestedInParams(
   callSite: ParsedCallSite,
   nested: NestedReplacement[],
 ): boolean {
-  const paramsExpression = callSite.paramsExpression;
-  if (!paramsExpression || nested.length === 0) {
+  const params = callSite.params;
+  if (!params || nested.length === 0) {
     return false;
   }
-  const start = remapOffset(paramsExpression.getStart(), callSite.fragment);
-  const end = remapOffset(paramsExpression.getEnd(), callSite.fragment);
+  const start = params.range.start.offset;
+  const end = params.range.end.offset;
   for (const replacement of nested) {
     if (replacement.start >= start && replacement.end <= end) {
       return true;
@@ -190,29 +182,16 @@ function getParamExpressions(
   callSite: ParsedCallSite,
   originalSource: string,
 ): Map<string, string> | undefined {
-  const paramsExpression = callSite.paramsExpression;
-  if (!paramsExpression) {
+  const params = callSite.params;
+  if (params?.kind !== 'static') {
     return undefined;
   }
-  if (!ts.isObjectLiteralExpression(paramsExpression)) {
-    return undefined;
-  }
-  const expressionsByParam = new Map<string, string>();
-  for (const property of paramsExpression.properties) {
-    if (ts.isShorthandPropertyAssignment(property)) {
-      expressionsByParam.set(property.name.text, property.name.text);
-      continue;
-    }
-    if (ts.isPropertyAssignment(property) && ts.isIdentifier(property.name)) {
-      expressionsByParam.set(
-        property.name.text,
-        getSourceText(property.initializer, callSite, originalSource),
-      );
-      continue;
-    }
-    return undefined;
-  }
-  return expressionsByParam;
+  return new Map(
+    params.entries.map((entry) => [
+      entry.key,
+      getSourceText(entry.valueRange, originalSource),
+    ]),
+  );
 }
 
 function buildTemplateLiteral(
@@ -322,26 +301,19 @@ function getParamArgumentText(
   nested: NestedReplacement[],
   originalSource: string,
 ): string | undefined {
-  const paramsExpression = callSite.paramsExpression;
-  if (!paramsExpression) {
+  const params = callSite.params;
+  if (!params) {
     return undefined;
   }
   return interpolateNestedReplacements(
-    getSourceText(paramsExpression, callSite, originalSource),
-    remapOffset(paramsExpression.getStart(), callSite.fragment),
+    getSourceText(params.range, originalSource),
+    params.range.start.offset,
     nested,
   );
 }
 
-function getSourceText(
-  node: ts.Node,
-  callSite: ParsedCallSite,
-  originalSource: string,
-): string {
-  return originalSource.slice(
-    remapOffset(node.getStart(), callSite.fragment),
-    remapOffset(node.getEnd(), callSite.fragment),
-  );
+function getSourceText(range: Range, originalSource: string): string {
+  return originalSource.slice(range.start.offset, range.end.offset);
 }
 
 function interpolateNestedReplacements(

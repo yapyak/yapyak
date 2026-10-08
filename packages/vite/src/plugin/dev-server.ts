@@ -19,6 +19,7 @@ import {
   YAP_RUNTIME,
   detectRenames,
   getDocsUrl,
+  hasParseFailure,
   migrateLocales,
   readLocaleFile,
   toMessageKey,
@@ -29,7 +30,7 @@ import {
 import { buildPatches } from 'yapyak/internal';
 
 import { isCandidateId } from './candidate-id';
-import { hasParseFailure, renderErrorDiagnostics } from './error-diagnostic';
+import { renderErrorDiagnostics } from './error-diagnostic';
 import { resolveExtraction } from './extraction';
 import { toFileId } from './file-id';
 import { isLocaleFile } from './locale-file';

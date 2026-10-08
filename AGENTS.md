@@ -19,9 +19,9 @@
 
 `yapyak/internal` is a public subpath that only exists for the Vite plugin's emitted code (transformed `t()` calls). Users never import from it manually. Its exports are the runtime side of the compiler — calling them directly bypasses placeholder type-checking the plugin enforces at compile time.
 
-### Bundled TypeScript
+### Parser
 
-`yapyak` bundles a tree-shaken copy of the TypeScript compiler (the `@typescript/typescript6` devDependency) into its dist instead of declaring `typescript` as a dependency. Deliberate: externalizing would put the full 24 MB floating `^6` TypeScript into every user's install (no dedupe — users run their own TS major) and let compiler behavior drift with it, while the bundled copy keeps the whole package at ~8.5 MB pinned to a tested compiler. Compile-time only — none of it reaches browser bundles. Do not externalize it.
+`yapyak` parses with `oxc-parser`, exactly pinned in the catalog. It is a regular dependency because the Vite plugin, the CLI, and the VS Code extension all parse through yapyak's compiler. The oxc AST never leaves `src/compiler/parser`: results such as `ExtractFileResult` carry ranges, never nodes, and no oxc type reaches a published `.d.ts`. oxc has no error recovery, so a syntax error yields an empty program. A script that does not parse reports `YAP0048`, and every consumer leaves that file's translations untouched. A template expression that reads neither as statements nor as an expression is skipped, because the framework's parser owns template syntax. Lines break at LF, CRLF, and CR in every position the parser computes.
 
 ## Workflow
 

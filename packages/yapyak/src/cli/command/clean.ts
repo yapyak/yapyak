@@ -9,6 +9,7 @@ import type { Config } from '../config';
 import {
   CorruptLocaleFileError,
   extractFile,
+  hasParseFailure,
   readLocaleFile,
   toEntry,
   toMessageKey,
@@ -161,14 +162,16 @@ function buildExpected(
   config: Config,
 ): BuildExpectedResult {
   const filter = createFilter(config.include, config.exclude);
-  const sourceFiles = walkSourceFiles(filter, projectRoot);
-  const scopedFileIds = new Set<string>(sourceFiles.map((file) => file.fileId));
+  const scopedFileIds = new Set<string>();
   const messages: ExtractedMessage[] = [];
-  for (const file of sourceFiles) {
+  for (const file of walkSourceFiles(filter, projectRoot)) {
     const result = extractFile(file.fileId, file.code, {
       processors: config.processors,
     });
     messages.push(...result.messages);
+    if (!hasParseFailure(result)) {
+      scopedFileIds.add(file.fileId);
+    }
   }
   const expected: Record<string, Set<string>> = {};
   for (const message of messages) {

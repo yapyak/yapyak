@@ -34,14 +34,18 @@ export function createDiagnosticPublisher(): DiagnosticPublisher {
       collection.delete(document.uri);
       return;
     }
+    const diagnostics = collectDocumentDiagnostics(project, {
+      content: document.getText(),
+      fileId: relative(project.root, path).replaceAll('\\', '/'),
+      languageId: document.languageId,
+      path,
+    });
+    if (diagnostics === undefined) {
+      return;
+    }
     collection.set(
       document.uri,
-      collectDocumentDiagnostics(project, {
-        content: document.getText(),
-        fileId: relative(project.root, path).replaceAll('\\', '/'),
-        languageId: document.languageId,
-        path,
-      }).map((diagnostic) =>
+      diagnostics.map((diagnostic) =>
         toVscodeDiagnostic(project.compiler, document, diagnostic),
       ),
     );

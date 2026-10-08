@@ -15,7 +15,7 @@ export type CollectDocumentDiagnosticsInput = {
 export function collectDocumentDiagnostics(
   project: Project,
   input: CollectDocumentDiagnosticsInput,
-): Diagnostic[] {
+): Diagnostic[] | undefined {
   const { compiler, config, root } = project;
   const { content, fileId, languageId, path } = input;
   if (isLocaleFile(root, config.localesDir, path)) {
@@ -42,9 +42,12 @@ export function collectDocumentDiagnostics(
     ];
   }
   if (SOURCE_LANGUAGES.includes(languageId)) {
-    return compiler.extractFile(fileId, content, {
+    const extraction = compiler.extractFile(fileId, content, {
       processors: config.processors,
-    }).diagnostics;
+    });
+    return compiler.hasParseFailure(extraction)
+      ? undefined
+      : extraction.diagnostics;
   }
   return [];
 }

@@ -4,7 +4,7 @@ import type { ExtractFileResult } from './extract';
 import { describe, expect, it } from 'vitest';
 
 import { rangeFromOffsets, segmentsFromOffset } from '../../../processor';
-import { extractFile } from './extract';
+import { extractFile, hasParseFailure } from './extract';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -108,6 +108,46 @@ describe('extractFile', () => {
     });
   });
 
+  it('extracts calls from a template expression that is an object literal', () => {
+    const script = "import { t } from 'yapyak';\n";
+    const template = "{ title: t('Hello'), body: t('World') }";
+    const source = `${script}${template}`;
+    const processor: Processor = {
+      extensions: [
+        '.vue',
+      ],
+      id: 'template',
+      parseSource: () => ({
+        fragments: [
+          {
+            code: script,
+            language: 'ts',
+            scope: 'module',
+            segments: segmentsFromOffset(script, 0),
+            type: 'script',
+          },
+          {
+            code: template,
+            language: 'ts',
+            scope: 'instance',
+            segments: segmentsFromOffset(template, script.length),
+            type: 'template-expression',
+          },
+        ],
+      }),
+    };
+    const result = extractFile('src/a.vue', source, {
+      processors: [
+        processor,
+      ],
+    });
+
+    expect(result.messages.map((message) => message.source)).toEqual([
+      'Hello',
+      'World',
+    ]);
+  });
+
   it('records a `YAP0048` diagnostic from the processor', () => {
     const source = "import { t } from 'yapyak';";
     const processor: Processor = {
@@ -142,6 +182,67 @@ describe('extractFile', () => {
     expect(result.diagnostics[0]?.code).toBe('YAP0048');
     expect(result.diagnostics[0]?.severity).toBe('error');
     expect(result.diagnostics[0]?.message).toContain('Unexpected token');
+  });
+
+  it('records a `YAP0048` diagnostic when a script does not parse', () => {
+    const source =
+      "import { t } from 'yapyak';\nexport const label = t('Hello';\n";
+    const result = extractFile('src/a.ts', source);
+
+    expect(result.messages).toEqual([]);
+    expect(result.diagnostics[0]?.code).toBe('YAP0048');
+    expect(result.diagnostics[0]?.range.start.line).toBe(2);
+  });
+
+  it('skips a template expression that parses neither as statements nor as an expression', () => {
+    const script = "import { t } from 'yapyak';\n";
+    const unreadable = 'item of items';
+    const readable = "t('Hello')";
+    const source = `${script}${unreadable}${readable}`;
+    const processor: Processor = {
+      extensions: [
+        '.vue',
+      ],
+      id: 'template',
+      parseSource: () => ({
+        fragments: [
+          {
+            code: script,
+            language: 'ts',
+            scope: 'module',
+            segments: segmentsFromOffset(script, 0),
+            type: 'script',
+          },
+          {
+            code: unreadable,
+            language: 'ts',
+            scope: 'instance',
+            segments: segmentsFromOffset(unreadable, script.length),
+            type: 'template-expression',
+          },
+          {
+            code: readable,
+            language: 'ts',
+            scope: 'instance',
+            segments: segmentsFromOffset(
+              readable,
+              script.length + unreadable.length,
+            ),
+            type: 'template-expression',
+          },
+        ],
+      }),
+    };
+    const result = extractFile('src/a.vue', source, {
+      processors: [
+        processor,
+      ],
+    });
+
+    expect(result.messages.map((message) => message.source)).toEqual([
+      'Hello',
+    ]);
+    expect(result.diagnostics).toEqual([]);
   });
 
   it('refuses a fragment whose segments do not cover the code', () => {
@@ -374,5 +475,25 @@ describe('extractFile ambient bindings', () => {
     expect(result.messages.map((message) => message.source)).toEqual([
       'Hello',
     ]);
+  });
+});
+
+describe('hasParseFailure', () => {
+  it('returns true for a source file that does not parse', () => {
+    const result = extractFile(
+      'src/a.ts',
+      "import { t } from 'yapyak';\nexport const label = t('Save';\n",
+    );
+
+    expect(hasParseFailure(result)).toBe(true);
+  });
+
+  it('returns false for a source file that parses', () => {
+    const result = extractFile(
+      'src/a.ts',
+      "import { t } from 'yapyak';\nexport const label = t('Save');\n",
+    );
+
+    expect(hasParseFailure(result)).toBe(false);
   });
 });
