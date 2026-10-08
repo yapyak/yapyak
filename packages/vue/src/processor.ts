@@ -245,7 +245,8 @@ function fragmentsFromDirective(
   source: string,
   enclosingContext?: EnclosingContext,
 ): Fragment[] {
-  const expression = prop.exp;
+  const expression =
+    prop.name === 'for' ? prop.forParseResult?.source : prop.exp;
   if (!expression) {
     return [];
   }
