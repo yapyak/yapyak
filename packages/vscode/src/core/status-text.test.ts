@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildStatusText } from './status-text';
+import { buildStatusText, buildUnsupportedStatusText } from './status-text';
 
 describe('buildStatusText', () => {
   it('builds a spinning label with the remaining count when a run is in flight', () => {
@@ -38,5 +38,13 @@ describe('buildStatusText', () => {
         missing: 0,
       }),
     ).toBe('$(check) yapyak');
+  });
+});
+
+describe('buildUnsupportedStatusText', () => {
+  it('builds a warning label with the found and required versions', () => {
+    expect(buildUnsupportedStatusText('0.0.12', '0.0.15')).toBe(
+      '$(warning) yapyak 0.0.12 · needs 0.0.15',
+    );
   });
 });

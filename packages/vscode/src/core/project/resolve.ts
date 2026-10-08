@@ -21,6 +21,8 @@ export type Project = {
 
 export type ResolveIdFn = (base: string, id: string) => string;
 
+export const MINIMUM_YAPYAK_VERSION = '0.0.15';
+
 const CONFIG_FILES = [
   'yapyak.config.ts',
   'yapyak.config.mts',
@@ -39,6 +41,9 @@ export async function resolveProject(
   }
   try {
     const modules = await resolveModules(root);
+    if (modules === undefined) {
+      return undefined;
+    }
     return {
       ...modules,
       config: await loadConfig(root, modules.configModule),
@@ -62,6 +67,13 @@ export function findProjectRoot(directory: string): string | undefined {
     current = dirname(current);
   }
   return undefined;
+}
+
+export function findUnsupportedYapyakVersion(
+  directory: string,
+): string | undefined {
+  const root = findProjectRoot(directory);
+  return root === undefined ? undefined : unsupportedVersionByRoot.get(root);
 }
 
 export function resolveThroughScope(
@@ -92,9 +104,10 @@ type ProjectModules = {
   template: TemplateModule | undefined;
 };
 
-const moduleCache = new Map<string, Promise<ProjectModules>>();
+const moduleCache = new Map<string, Promise<ProjectModules | undefined>>();
+const unsupportedVersionByRoot = new Map<string, string>();
 
-function resolveModules(root: string): Promise<ProjectModules> {
+function resolveModules(root: string): Promise<ProjectModules | undefined> {
   let cached = moduleCache.get(root);
   if (cached === undefined) {
     cached = loadModules(root);
@@ -128,12 +141,17 @@ function resolveId(base: string, id: string): string {
   return createRequire(base).resolve(id);
 }
 
-async function loadModules(root: string): Promise<ProjectModules> {
+async function loadModules(root: string): Promise<ProjectModules | undefined> {
   const compilerPath = resolveThroughScope(
     root,
     'yapyak/compiler/internal',
     resolveId,
   );
+  const version = readYapyakVersion(compilerPath);
+  if (version !== undefined && !isAtLeast(version, MINIMUM_YAPYAK_VERSION)) {
+    unsupportedVersionByRoot.set(root, version);
+    return undefined;
+  }
   const configPath = resolveThroughScope(
     root,
     'yapyak/config/internal',
@@ -148,6 +166,47 @@ async function loadModules(root: string): Promise<ProjectModules> {
     )) as ConfigModule,
     template: await loadTemplate(root),
   };
+}
+
+function readYapyakVersion(compilerPath: string): string | undefined {
+  let directory = dirname(compilerPath);
+  let previous = '';
+  while (directory !== previous) {
+    const manifestPath = join(directory, 'package.json');
+    if (existsSync(manifestPath)) {
+      const manifest = JSON.parse(readFileSync(manifestPath, 'utf8')) as {
+        name?: string;
+        version?: string;
+      };
+      if (manifest.name === 'yapyak' && typeof manifest.version === 'string') {
+        return manifest.version;
+      }
+    }
+    previous = directory;
+    directory = dirname(directory);
+  }
+  return undefined;
+}
+
+function isAtLeast(version: string, minimum: string): boolean {
+  const actual = parseVersion(version);
+  const required = parseVersion(minimum);
+  for (let index = 0; index < required.length; index += 1) {
+    const left = actual[index] ?? 0;
+    const right = required[index] ?? 0;
+    if (left !== right) {
+      return left > right;
+    }
+  }
+  return true;
+}
+
+function parseVersion(version: string): number[] {
+  const [core = ''] = version.split('-');
+  return core.split('.').map((part) => {
+    const parsed = Number(part);
+    return Number.isNaN(parsed) ? 0 : parsed;
+  });
 }
 
 async function loadTemplate(root: string): Promise<TemplateModule | undefined> {

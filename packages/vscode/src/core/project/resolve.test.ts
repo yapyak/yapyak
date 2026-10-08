@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import {
   findProjectRoot,
+  findUnsupportedYapyakVersion,
   resolveProject,
   resolveThroughScope,
 } from './resolve';
@@ -12,6 +13,30 @@ import { join } from 'node:path';
 const LOAD_TIMEOUT_MILLISECONDS = 30_000;
 
 let root: string;
+
+function writeProjectWithYapyak(manifest: Record<string, unknown>): void {
+  const packageRoot = join(root, 'node_modules', 'yapyak');
+  for (const subpath of [
+    'compiler',
+    'config',
+  ]) {
+    mkdirSync(join(packageRoot, 'dist', subpath), {
+      recursive: true,
+    });
+    writeFileSync(join(packageRoot, 'dist', subpath, 'internal.js'), '');
+  }
+  writeFileSync(
+    join(packageRoot, 'package.json'),
+    JSON.stringify({
+      exports: {
+        './compiler/internal': './dist/compiler/internal.js',
+        './config/internal': './dist/config/internal.js',
+      },
+      ...manifest,
+    }),
+  );
+  writeFileSync(join(root, 'yapyak.config.mjs'), 'export default {};\n');
+}
 
 beforeEach(() => {
   root = mkdtempSync(join(tmpdir(), 'yapyak-vscode-project-'));
@@ -36,6 +61,50 @@ describe('findProjectRoot', () => {
 
   it('returns undefined when not found', () => {
     expect(findProjectRoot(root)).toBeUndefined();
+  });
+});
+
+describe('findUnsupportedYapyakVersion', () => {
+  it("returns the version when the project's yapyak is older than the minimum", async () => {
+    writeProjectWithYapyak({
+      name: 'yapyak',
+      version: '0.0.12',
+    });
+    await resolveProject(root);
+
+    expect(findUnsupportedYapyakVersion(root)).toBe('0.0.12');
+  });
+
+  it("returns `undefined` when the project's yapyak is supported", {
+    timeout: LOAD_TIMEOUT_MILLISECONDS,
+  }, async () => {
+    writeFileSync(join(root, 'yapyak.config.mjs'), 'export default {};\n');
+    await resolveProject(root);
+
+    expect(findUnsupportedYapyakVersion(root)).toBeUndefined();
+  });
+
+  it('returns `undefined` for a prerelease above the minimum', async () => {
+    writeProjectWithYapyak({
+      name: 'yapyak',
+      version: '0.1.0-beta.1',
+    });
+    await resolveProject(root);
+
+    expect(findUnsupportedYapyakVersion(root)).toBeUndefined();
+  });
+
+  it("returns `undefined` when the project's yapyak carries no version", async () => {
+    writeProjectWithYapyak({
+      name: 'yapyak',
+    });
+    await resolveProject(root);
+
+    expect(findUnsupportedYapyakVersion(root)).toBeUndefined();
+  });
+
+  it('returns `undefined` when no project is found', () => {
+    expect(findUnsupportedYapyakVersion(root)).toBeUndefined();
   });
 });
 
@@ -64,6 +133,15 @@ describe('resolveProject', () => {
   });
 
   it('returns undefined when no config file is found', async () => {
+    expect(await resolveProject(root)).toBeUndefined();
+  });
+
+  it("returns `undefined` when the project's yapyak is older than the minimum", async () => {
+    writeProjectWithYapyak({
+      name: 'yapyak',
+      version: '0.0.12',
+    });
+
     expect(await resolveProject(root)).toBeUndefined();
   });
 

@@ -16,3 +16,10 @@ export function buildStatusText(input: StatusTextInput): string {
     ? '$(check) yapyak'
     : `$(globe) Untranslated (${missing})`;
 }
+
+export function buildUnsupportedStatusText(
+  found: string,
+  required: string,
+): string {
+  return `$(warning) yapyak ${found} · needs ${required}`;
+}

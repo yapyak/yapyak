@@ -1,8 +1,12 @@
 import { StatusBarAlignment, window } from 'vscode';
 
 import {
+  MINIMUM_YAPYAK_VERSION,
   buildStatusText,
   buildTranslationStats,
+  buildUnsupportedStatusText,
+  findProjectRoot,
+  findUnsupportedYapyakVersion,
   readProjectLocales,
   readProjectProgress,
   resolveProject,
@@ -17,6 +21,7 @@ export type UntranslatedStatus = {
 
 const PRIORITY = 100;
 const RUNNING_POLL_MILLISECONDS = 1000;
+const warnedRoots = new Set<string>();
 
 export function createUntranslatedStatus(): UntranslatedStatus {
   const statusBarItem = window.createStatusBarItem(
@@ -25,17 +30,43 @@ export function createUntranslatedStatus(): UntranslatedStatus {
     PRIORITY,
   );
   statusBarItem.name = 'yapyak translations';
-  statusBarItem.command = 'yapyak.showStats';
   let timer: ReturnType<typeof setTimeout> | undefined;
 
-  const applyStatus = async (): Promise<void> => {
-    const path = window.activeTextEditor?.document.uri.fsPath;
-    const project =
-      path === undefined ? undefined : await resolveProject(dirname(path));
-    if (project === undefined) {
+  const applyUnsupported = (directory: string): void => {
+    const found = findUnsupportedYapyakVersion(directory);
+    if (found === undefined) {
       statusBarItem.hide();
       return;
     }
+    statusBarItem.text = buildUnsupportedStatusText(
+      found,
+      MINIMUM_YAPYAK_VERSION,
+    );
+    statusBarItem.command = undefined;
+    statusBarItem.show();
+    const root = findProjectRoot(directory);
+    if (root === undefined || warnedRoots.has(root)) {
+      return;
+    }
+    warnedRoots.add(root);
+    window.showWarningMessage(
+      `yapyak: this extension needs yapyak ${MINIMUM_YAPYAK_VERSION} or later; this project has ${found}.`,
+    );
+  };
+
+  const applyStatus = async (): Promise<void> => {
+    const path = window.activeTextEditor?.document.uri.fsPath;
+    if (path === undefined) {
+      statusBarItem.hide();
+      return;
+    }
+    const directory = dirname(path);
+    const project = await resolveProject(directory);
+    if (project === undefined) {
+      applyUnsupported(directory);
+      return;
+    }
+    statusBarItem.command = 'yapyak.showStats';
     const stats = buildTranslationStats(project.compiler, {
       ...readProjectLocales(project),
       messages: resolveProjectMessages(project).messages,
