@@ -59,7 +59,7 @@ describe('collectDocumentDiagnostics', () => {
       path: join(root, 'src', 'a.ts'),
     });
 
-    expect(diagnostics.map((diagnostic) => diagnostic.code)).toEqual([
+    expect(diagnostics?.map((diagnostic) => diagnostic.code)).toEqual([
       project.compiler.YAP_COMPILE.PARSER_MISSING_PARAM.code,
     ]);
   });
@@ -83,7 +83,7 @@ describe('collectDocumentDiagnostics', () => {
       path: join(root, 'locales', 'sv.json'),
     });
 
-    expect(diagnostics.map((diagnostic) => diagnostic.code).sort()).toEqual([
+    expect(diagnostics?.map((diagnostic) => diagnostic.code).sort()).toEqual([
       project.compiler.YAP_COMPILE.PLACEHOLDER_MISSPELLED_IN_TARGET.code,
       project.compiler.YAP_COMPILE.CATALOG_ENTRY_UNUSED.code,
     ]);
@@ -98,5 +98,16 @@ describe('collectDocumentDiagnostics', () => {
         path: join(root, 'README.md'),
       }),
     ).toEqual([]);
+  });
+
+  it('returns `undefined` for a source file that does not parse', () => {
+    const diagnostics = collectDocumentDiagnostics(project, {
+      content: "import { t } from 'yapyak';\nexport const label = t('Save';\n",
+      fileId: 'src/a.ts',
+      languageId: 'typescript',
+      path: join(root, 'src', 'a.ts'),
+    });
+
+    expect(diagnostics).toBeUndefined();
   });
 });

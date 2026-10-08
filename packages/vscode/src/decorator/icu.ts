@@ -83,10 +83,13 @@ export function createIcuDecorator(): Decorator {
       }
     } else if (SOURCE_LANGUAGES.includes(document.languageId)) {
       const fileId = relative(root, document.uri.fsPath).replaceAll('\\', '/');
-      const { messages } = compiler.extractFile(fileId, text, {
+      const extraction = compiler.extractFile(fileId, text, {
         processors: config.processors,
       });
-      for (const message of messages) {
+      if (compiler.hasParseFailure(extraction)) {
+        return;
+      }
+      for (const message of extraction.messages) {
         for (const location of message.locations) {
           const base = location.range.start.offset + 1;
           if (
