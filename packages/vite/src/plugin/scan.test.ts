@@ -5,7 +5,13 @@ import { normalizeYapyakConfig } from 'yapyak/config/internal';
 
 import { createScanPlugin } from './scan';
 import { createState } from './state';
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -97,6 +103,37 @@ describe('createScanPlugin', () => {
       (plugin.buildStart as () => void).call({});
 
       expect(state.messagesByFile.size).toBeGreaterThan(0);
+    });
+
+    it('preserves the entries of a source file that does not parse', () => {
+      writeFileSync(
+        join(projectRoot, 'src', 'a.tsx'),
+        `import { t } from 'yapyak';\nt('Hello';\n`,
+      );
+      writeFileSync(
+        join(projectRoot, 'locales', 'sv.json'),
+        JSON.stringify({
+          'src/a.tsx': {
+            Hello: 'Hej',
+          },
+        }),
+      );
+      const state = createState();
+      state.command = 'serve';
+      state.normalized = normalizeYapyakConfig({});
+      state.resolver = buildResolver();
+      state.projectRoot = projectRoot;
+      state.filter = () => true;
+      const plugin = createScanPlugin(state);
+
+      (plugin.buildStart as () => void).call({});
+
+      const after = JSON.parse(
+        readFileSync(join(projectRoot, 'locales', 'sv.json'), 'utf-8'),
+      );
+      expect(after['src/a.tsx']).toEqual({
+        Hello: 'Hej',
+      });
     });
 
     it('skips a source file without `t()` calls', () => {

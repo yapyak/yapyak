@@ -45,6 +45,19 @@ describe('resolveExtraction', () => {
     expect(second.messages).toEqual(first.messages);
   });
 
+  it('clears the cached entry when the source stops mentioning `yapyak`', () => {
+    const state = buildState();
+    resolveExtraction(
+      state,
+      'src/a.ts',
+      "import { t } from 'yapyak';\nt('Hello');",
+    );
+
+    resolveExtraction(state, 'src/a.ts', 'export const label = 1;');
+
+    expect(state.extractionCache.has('src/a.ts')).toBe(false);
+  });
+
   it('returns an empty result when the source lacks `yapyak`', () => {
     const state = buildState();
 

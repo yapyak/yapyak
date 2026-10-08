@@ -2,11 +2,19 @@ import type { ExtractedMessage } from 'yapyak/compiler/internal';
 import type { LocaleResolver } from '../locale-resolver';
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { extractFile } from 'yapyak/compiler/internal';
 import { normalizeYapyakConfig } from 'yapyak/config/internal';
 
 import { createState } from './state';
 import { syncAll } from './sync';
-import { mkdirSync, mkdtempSync, readdirSync, rmSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
@@ -124,5 +132,41 @@ describe('syncAll', () => {
 
     const files = readdirSync(absoluteLocalesDir);
     expect(files.length).toBeGreaterThan(0);
+  });
+
+  it('preserves the entries of a file that does not parse', () => {
+    vi.spyOn(console, 'log').mockImplementation(() => {});
+    writeFileSync(
+      join(absoluteLocalesDir, 'sv.json'),
+      JSON.stringify({
+        'src/b.tsx': {
+          Save: 'Spara',
+        },
+      }),
+    );
+    const state = createState();
+    state.normalized = normalizeYapyakConfig({});
+    state.resolver = buildResolver();
+    state.projectRoot = projectRoot;
+    state.filter = () => true;
+    const unparsedSource = "import { t } from 'yapyak';\nt('Save';\n";
+    state.extractionCache.set('src/b.tsx', {
+      callSiteCount: 0,
+      diagnostics: extractFile('src/b.tsx', unparsedSource).diagnostics,
+      messages: [],
+      source: unparsedSource,
+    });
+    state.messagesByFile.set('src/a.tsx', [
+      buildMessage('Hello'),
+    ]);
+
+    syncAll(state);
+
+    const after = JSON.parse(
+      readFileSync(join(absoluteLocalesDir, 'sv.json'), 'utf-8'),
+    );
+    expect(after['src/b.tsx']).toEqual({
+      Save: 'Spara',
+    });
   });
 });
