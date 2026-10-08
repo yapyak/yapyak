@@ -1,28 +1,24 @@
 import type { ParsedArguments } from './argument';
+import type { SourceFile } from './source-file';
 
-import ts from '@typescript/typescript6';
 import { describe, expect, it } from 'vitest';
 
 import { parseArguments } from './argument';
 import { resolveBindings } from './binding';
 import { discoverCalls } from './call';
+import { parseSourceFile } from './source-file';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const ROOT = join(import.meta.dirname, 'fixture');
+const INLINE_PREFIX = "import { t } from 'yapyak';\n";
 
-function loadFixture(category: string, name: string): ts.SourceFile {
-  const source = readFileSync(join(ROOT, category, name), 'utf-8');
-  const scriptKind = name.endsWith('.tsx')
-    ? ts.ScriptKind.TSX
-    : ts.ScriptKind.TS;
-  return ts.createSourceFile(
-    name,
-    source,
-    ts.ScriptTarget.ESNext,
-    true,
-    scriptKind,
-  );
+function loadFixture(category: string, name: string): SourceFile {
+  return parseSourceFile(name, {
+    code: readFileSync(join(ROOT, category, name), 'utf-8'),
+    language: 'ts',
+    type: 'script',
+  });
 }
 
 function parseAll(category: string, name: string): ParsedArguments[] {
@@ -31,23 +27,21 @@ function parseAll(category: string, name: string): ParsedArguments[] {
     sourceFile,
     resolveBindings(sourceFile, 't'),
   );
-  return callSites.map((call) => parseArguments(call));
+  return callSites.map((call) => parseArguments(call, sourceFile));
 }
 
 function parseInline(body: string): ParsedArguments {
-  const sourceFile = ts.createSourceFile(
-    'inline.ts',
-    `import { t } from 'yapyak';\n${body}\n`,
-    ts.ScriptTarget.ESNext,
-    true,
-    ts.ScriptKind.TS,
-  );
+  const sourceFile = parseSourceFile('src/a.ts', {
+    code: `${INLINE_PREFIX}${body}\n`,
+    language: 'ts',
+    type: 'script',
+  });
   const { callSites } = discoverCalls(
     sourceFile,
     resolveBindings(sourceFile, 't'),
   );
   // biome-ignore lint/style/noNonNullAssertion: yap yap yap
-  return parseArguments(callSites[0]!);
+  return parseArguments(callSites[0]!, sourceFile);
 }
 
 describe('parseArguments', () => {
@@ -61,7 +55,7 @@ describe('parseArguments', () => {
   it('parses a single placeholder with matching params', () => {
     const parsed = parseAll('call', 'placeholder.ts');
     expect(parsed[0]?.source).toBe('Hi {name}');
-    expect(parsed[0]?.params?.keys).toEqual([
+    expect(parsed[0]?.params?.entries.map((entry) => entry.key)).toEqual([
       'name',
     ]);
     expect(parsed[0]?.params?.kind).toBe('static');
@@ -72,7 +66,7 @@ describe('parseArguments', () => {
     const parsed = parseAll('call', 'placeholder.ts');
     const summary = parsed[1];
     expect(summary?.source).toBe('Hi {name}, you have {count} messages');
-    expect(summary?.params?.keys.sort()).toEqual([
+    expect(summary?.params?.entries.map((entry) => entry.key).sort()).toEqual([
       'count',
       'name',
     ]);
@@ -85,10 +79,23 @@ describe('parseArguments', () => {
     expect(parsed.diagnostics).toHaveLength(0);
   });
 
+  it('captures the value range of each param', () => {
+    const body = "export const x = t('Hi {name}', { name: user.name });";
+    const [entry] = parseInline(body).params?.entries ?? [];
+
+    expect(entry?.key).toBe('name');
+    expect(entry?.valueRange.start.offset).toBe(
+      INLINE_PREFIX.length + body.indexOf('user.name'),
+    );
+    expect(entry?.valueRange.end.offset).toBe(
+      INLINE_PREFIX.length + body.indexOf(' });'),
+    );
+  });
+
   it('parses placeholder keys from plural blocks', () => {
     const [parsed] = parseAll('diagnostic', 'yap0008-invalid-plural.ts');
     expect(parsed?.source).toContain('plural');
-    expect(parsed?.params?.keys).toEqual([
+    expect(parsed?.params?.entries.map((entry) => entry.key)).toEqual([
       'count',
     ]);
   });
@@ -103,7 +110,7 @@ describe('parseArguments', () => {
     const parsed = parseAll('call', 'scoped-inline.ts');
     const farewell = parsed[1];
     expect(farewell?.source).toBe('Bye {name}');
-    expect(farewell?.params?.keys).toEqual([
+    expect(farewell?.params?.entries.map((entry) => entry.key)).toEqual([
       'name',
     ]);
     expect(farewell?.diagnostics).toHaveLength(0);
@@ -337,7 +344,7 @@ describe('parseArguments', () => {
       );
       expect(parsed.context).toBe('greeting');
       expect(parsed.source).toBe('Hi {name}');
-      expect(parsed.params?.keys).toEqual([
+      expect(parsed.params?.entries.map((entry) => entry.key)).toEqual([
         'name',
       ]);
       expect(parsed.diagnostics).toHaveLength(0);

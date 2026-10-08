@@ -4,8 +4,10 @@ import MagicString from 'magic-string';
 import { describe, expect, it } from 'vitest';
 
 import { segmentsFromOffset } from '../../../../processor';
+import { parseSourceFile } from '../../source-file';
 import { extractFile } from '../extract';
 import { collectComponentHosts, injectComponentHooks } from './component-hook';
+import { extractPrologueDirectives } from './directive';
 
 const COMPONENT_NAME_RX = /^[A-Z]|^use[A-Z]/;
 
@@ -39,14 +41,19 @@ function runInject(
 ): string {
   const extracted = extractFile(fileId, source);
   const magicString = new MagicString(source);
+  const fragment = buildFragment(source);
+  const sourceFile = parseSourceFile(fileId, fragment);
   const hosts = collectComponentHosts({
     callSites: extracted.callSites,
     componentHook: buildComponentHook(overrides),
-    fileId,
-    fragments: [
-      buildFragment(source),
-    ],
+    directives: extractPrologueDirectives(sourceFile.program),
     source,
+    sourceFilesByFragment: new Map([
+      [
+        fragment,
+        sourceFile,
+      ],
+    ]),
   });
   injectComponentHooks({
     hosts,
@@ -530,6 +537,34 @@ describe('collectComponentHosts', () => {
     expect(code).toContain('{useYapyak();');
   });
 
+  it('collects a JSX component when the eligibility directive is present in the prologue', () => {
+    const code = runInject(
+      [
+        "'use client';",
+        "import { t } from 'yapyak';",
+        'export function Header() {',
+        "  return <h1>{t('Hello')}</h1>;",
+        '}',
+      ].join('\n'),
+      {
+        eligibilityDirective: 'use client',
+      },
+    );
+    expect(code).toContain('{useYapyak();');
+  });
+
+  it('blocks collection for an object method', () => {
+    const code = runInject(
+      [
+        "import { t } from 'yapyak';",
+        'export const views = {',
+        "  Header() { return <h1>{t('Hello')}</h1>; },",
+        '};',
+      ].join('\n'),
+    );
+    expect(code).not.toContain('useYapyak()');
+  });
+
   it('blocks collection for a component without evidence or yapyak reads', () => {
     const code = runInject(
       [
@@ -635,15 +670,23 @@ describe('injectComponentHooks', () => {
     const source = leading + trailing;
     const extracted = extractFile('src/a.tsx', source);
     const magicString = new MagicString(source);
+    const leadingFragment = buildFragment(leading);
+    const trailingFragment = buildFragment(trailing, leading.length);
     const hosts = collectComponentHosts({
       callSites: extracted.callSites,
       componentHook: buildComponentHook(),
-      fileId: 'src/a.tsx',
-      fragments: [
-        buildFragment(leading),
-        buildFragment(trailing, leading.length),
-      ],
+      directives: [],
       source,
+      sourceFilesByFragment: new Map([
+        [
+          leadingFragment,
+          parseSourceFile('src/a.tsx', leadingFragment),
+        ],
+        [
+          trailingFragment,
+          parseSourceFile('src/a.tsx', trailingFragment),
+        ],
+      ]),
     });
     injectComponentHooks({
       hosts,

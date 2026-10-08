@@ -126,7 +126,7 @@ Format: `<SUBSYSTEM>_<EVENT>` in SCREAMING_SNAKE_CASE.
 | `TRANSLATE` | Auto-translate runtime |
 | `FORMAT` | `Intl.*Format` runtime fallbacks (currency, unit, time zone) |
 | `RICHTEXT` | Rich-text `<tag>` markup validation in source strings |
-| `PROCESSOR` | File-level parse failures a framework processor reports |
+| `PROCESSOR` | File-level parse failures in a source file |
 
 ### Documentation URLs
 

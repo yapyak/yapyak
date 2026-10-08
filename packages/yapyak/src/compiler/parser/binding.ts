@@ -1,4 +1,15 @@
-import ts from '@typescript/typescript6';
+import type {
+  BindingPattern,
+  BindingRestElement,
+  Node,
+  ParamPattern,
+  Program,
+  VariableDeclarator,
+} from 'oxc-parser';
+import type { SourceFile } from './source-file';
+
+import { collectChildren } from './child';
+import { isFunctionLike } from './function-like';
 
 export type Binding = {
   kind: 'direct' | 'namespace' | 'shadow' | 'wrapper';
@@ -7,12 +18,12 @@ export type Binding = {
 
 export type Scope = {
   bindings: Map<string, Binding>;
-  node: ts.Node;
+  kind: 'block' | 'function' | 'module';
   parent?: Scope;
 };
 
 export type BindingTable = {
-  find(name: string, atNode: ts.Node): Binding | undefined;
+  find(name: string, atNode: Node): Binding | undefined;
   root: Scope;
 };
 
@@ -26,7 +37,7 @@ type ImportData = {
 };
 
 type WalkContext = {
-  scopeByNode: Map<ts.Node, Scope>;
+  scopeByNode: Map<Node, Scope>;
   shadowableNames: Set<string>;
 };
 
@@ -37,20 +48,21 @@ export const T_EXPORT = 't';
 export const FORMAT_EXPORT = 'format';
 
 export function resolveBindings(
-  sourceFile: ts.SourceFile,
+  sourceFile: SourceFile,
   exportName: string,
   options?: ResolveBindingsOptions,
 ): BindingTable {
-  const imports = extractImports(sourceFile, exportName);
-  const scopeByNode = new Map<ts.Node, Scope>();
+  const { program } = sourceFile;
+  const imports = extractImports(program, exportName);
+  const scopeByNode = new Map<Node, Scope>();
   const root: Scope = {
     bindings: new Map(),
-    node: sourceFile,
+    kind: 'module',
     ...(options?.ambientParent && {
       parent: options.ambientParent,
     }),
   };
-  scopeByNode.set(sourceFile, root);
+  scopeByNode.set(program, root);
 
   for (const local of imports.directLocals) {
     root.bindings.set(local, {
@@ -79,10 +91,13 @@ export function resolveBindings(
     }
   }
 
-  walkBindings(sourceFile, root, {
+  const context: WalkContext = {
     scopeByNode,
     shadowableNames,
-  });
+  };
+  for (const child of collectChildren(program)) {
+    walkBindings(child, root, context);
+  }
 
   return {
     find: (name, atNode) => findBinding(scopeByNode, name, atNode),
@@ -90,49 +105,38 @@ export function resolveBindings(
   };
 }
 
-function extractImports(
-  sourceFile: ts.SourceFile,
-  exportName: string,
-): ImportData {
+function extractImports(program: Program, exportName: string): ImportData {
   const imports: ImportData = {
     directLocals: new Set(),
     namespaceLocals: new Set(),
   };
-  for (const statement of sourceFile.statements) {
-    if (!ts.isImportDeclaration(statement)) {
+  for (const statement of program.body) {
+    if (statement.type !== 'ImportDeclaration') {
       continue;
     }
-    if (!ts.isStringLiteral(statement.moduleSpecifier)) {
+    if (statement.source.value !== YAPYAK_MODULE) {
       continue;
     }
-    if (statement.moduleSpecifier.text !== YAPYAK_MODULE) {
+    if (statement.importKind === 'type') {
       continue;
     }
-    const clause = statement.importClause;
-    if (!clause) {
-      continue;
-    }
-    if (clause.isTypeOnly) {
-      continue;
-    }
-    const namedBindings = clause.namedBindings;
-    if (!namedBindings) {
-      continue;
-    }
-    if (ts.isNamespaceImport(namedBindings)) {
-      imports.namespaceLocals.add(namedBindings.name.text);
-      continue;
-    }
-    if (ts.isNamedImports(namedBindings)) {
-      for (const element of namedBindings.elements) {
-        if (element.isTypeOnly) {
-          continue;
-        }
-        const importedName = (element.propertyName ?? element.name).text;
-        const localName = element.name.text;
-        if (importedName === exportName) {
-          imports.directLocals.add(localName);
-        }
+    for (const specifier of statement.specifiers) {
+      if (specifier.type === 'ImportNamespaceSpecifier') {
+        imports.namespaceLocals.add(specifier.local.name);
+        continue;
+      }
+      if (
+        specifier.type === 'ImportDefaultSpecifier' ||
+        specifier.importKind === 'type'
+      ) {
+        continue;
+      }
+      const importedName =
+        specifier.imported.type === 'Literal'
+          ? specifier.imported.value
+          : specifier.imported.name;
+      if (importedName === exportName) {
+        imports.directLocals.add(specifier.local.name);
       }
     }
   }
@@ -140,15 +144,16 @@ function extractImports(
 }
 
 function walkBindings(
-  node: ts.Node,
+  node: Node,
   parentScope: Scope,
   context: WalkContext,
 ): void {
   let scope = parentScope;
-  if (isScopeCreator(node) && !context.scopeByNode.has(node)) {
+  const scopeKind = getScopeKind(node);
+  if (scopeKind) {
     scope = {
       bindings: new Map(),
-      node,
+      kind: scopeKind,
       parent: parentScope,
     };
     context.scopeByNode.set(node, scope);
@@ -156,120 +161,125 @@ function walkBindings(
 
   registerBindings(node, scope, parentScope, context);
 
-  ts.forEachChild(node, (child) => {
+  for (const child of collectChildren(node)) {
     walkBindings(child, scope, context);
-  });
+  }
 }
 
-function isScopeCreator(node: ts.Node): boolean {
-  return (
-    ts.isBlock(node) ||
-    ts.isFunctionLike(node) ||
-    ts.isCatchClause(node) ||
-    ts.isForStatement(node) ||
-    ts.isForInStatement(node) ||
-    ts.isForOfStatement(node)
-  );
+function getScopeKind(node: Node): Scope['kind'] | undefined {
+  if (isFunctionLike(node)) {
+    return 'function';
+  }
+  switch (node.type) {
+    case 'BlockStatement':
+    case 'CatchClause':
+    case 'ForInStatement':
+    case 'ForOfStatement':
+    case 'ForStatement':
+    case 'StaticBlock':
+      return 'block';
+    default:
+      return undefined;
+  }
 }
 
 function registerBindings(
-  node: ts.Node,
+  node: Node,
   scope: Scope,
   parentScope: Scope,
   context: WalkContext,
 ): void {
-  if (ts.isParameter(node)) {
-    registerShadowPattern(node.name, scope, context.shadowableNames);
-    return;
-  }
-  if (ts.isCatchClause(node) && node.variableDeclaration) {
-    registerShadowPattern(
-      node.variableDeclaration.name,
-      scope,
-      context.shadowableNames,
-    );
-    return;
-  }
-  if (ts.isVariableStatement(node)) {
-    const flags = node.declarationList.flags;
-    const isVar = !(
-      flags &
-      (ts.NodeFlags.Let | ts.NodeFlags.Const | ts.NodeFlags.Using)
-    );
-    const targetScope = isVar ? findFunctionOrModuleScope(scope) : scope;
-    for (const declaration of node.declarationList.declarations) {
-      registerVariableDeclaration(declaration, targetScope, context);
-    }
-    return;
-  }
-  if (ts.isFunctionDeclaration(node) && node.name) {
-    const targetScope = findFunctionOrModuleScope(parentScope);
-    registerShadowName(node.name.text, targetScope, context.shadowableNames);
-    return;
-  }
-  if (ts.isClassDeclaration(node) && node.name) {
-    registerShadowName(node.name.text, parentScope, context.shadowableNames);
-    return;
-  }
-  if (ts.isForInStatement(node) || ts.isForOfStatement(node)) {
-    const initializer = node.initializer;
-    if (ts.isVariableDeclarationList(initializer)) {
-      for (const declaration of initializer.declarations) {
-        registerVariableDeclaration(declaration, scope, context);
+  switch (node.type) {
+    case 'ArrowFunctionExpression':
+    case 'FunctionExpression':
+    case 'TSEmptyBodyFunctionExpression':
+      registerParameters(node.params, scope, context.shadowableNames);
+      return;
+    case 'FunctionDeclaration':
+    case 'TSDeclareFunction':
+      registerParameters(node.params, scope, context.shadowableNames);
+      if (node.id) {
+        registerShadowName(
+          node.id.name,
+          findFunctionOrModuleScope(parentScope),
+          context.shadowableNames,
+        );
       }
-    }
-    return;
-  }
-  if (ts.isForStatement(node) && node.initializer) {
-    const initializer = node.initializer;
-    if (ts.isVariableDeclarationList(initializer)) {
-      for (const declaration of initializer.declarations) {
-        registerVariableDeclaration(declaration, scope, context);
+      return;
+    case 'CatchClause':
+      if (node.param) {
+        registerShadowPattern(node.param, scope, context.shadowableNames);
       }
-    }
-  }
-}
-
-function registerVariableDeclaration(
-  declaration: ts.VariableDeclaration,
-  scope: Scope,
-  context: WalkContext,
-): void {
-  if (
-    ts.isIdentifier(declaration.name) &&
-    declaration.initializer &&
-    ts.isIdentifier(declaration.initializer)
-  ) {
-    const target = findBinding(
-      context.scopeByNode,
-      declaration.initializer.text,
-      declaration,
-    );
-    if (target) {
-      scope.bindings.set(declaration.name.text, {
-        kind: target.kind === 'namespace' ? 'namespace' : 'wrapper',
-        localName: declaration.name.text,
-      });
+      return;
+    case 'VariableDeclaration': {
+      const targetScope =
+        node.kind === 'var' ? findFunctionOrModuleScope(scope) : scope;
+      for (const declarator of node.declarations) {
+        registerVariableDeclarator(declarator, targetScope, context);
+      }
       return;
     }
+    case 'ClassDeclaration':
+      if (node.id) {
+        registerShadowName(node.id.name, parentScope, context.shadowableNames);
+      }
+      return;
+    default:
+      return;
   }
-  registerShadowPattern(declaration.name, scope, context.shadowableNames);
 }
 
-function registerShadowPattern(
-  name: ts.BindingName,
+function registerParameters(
+  parameters: ParamPattern[],
   scope: Scope,
   shadowableNames: Set<string>,
 ): void {
-  if (ts.isIdentifier(name)) {
-    registerShadowName(name.text, scope, shadowableNames);
-    return;
+  for (const parameter of parameters) {
+    registerShadowPattern(parameter, scope, shadowableNames);
   }
-  for (const element of name.elements) {
-    if (ts.isOmittedExpression(element)) {
-      continue;
+}
+
+function registerShadowPattern(
+  pattern: BindingPattern | BindingRestElement | ParamPattern,
+  scope: Scope,
+  shadowableNames: Set<string>,
+): void {
+  switch (pattern.type) {
+    case 'Identifier':
+      registerShadowName(pattern.name, scope, shadowableNames);
+      return;
+    case 'ObjectPattern':
+      for (const property of pattern.properties) {
+        registerShadowPattern(
+          property.type === 'RestElement' ? property : property.value,
+          scope,
+          shadowableNames,
+        );
+      }
+      return;
+    case 'ArrayPattern':
+      for (const element of pattern.elements) {
+        if (!element) {
+          continue;
+        }
+        registerShadowPattern(element, scope, shadowableNames);
+      }
+      return;
+    case 'AssignmentPattern':
+      registerShadowPattern(pattern.left, scope, shadowableNames);
+      return;
+    case 'RestElement':
+      registerShadowPattern(pattern.argument, scope, shadowableNames);
+      return;
+    case 'TSParameterProperty':
+      registerShadowPattern(pattern.parameter, scope, shadowableNames);
+      return;
+    default: {
+      const exhaustive: never = pattern;
+      throw new Error(
+        `[yapyak] unknown binding pattern: ${JSON.stringify(exhaustive)}.`,
+      );
     }
-    registerShadowPattern(element.name, scope, shadowableNames);
   }
 }
 
@@ -293,7 +303,7 @@ function registerShadowName(
 function findFunctionOrModuleScope(scope: Scope): Scope {
   let current: Scope | undefined = scope;
   while (current) {
-    if (ts.isSourceFile(current.node) || ts.isFunctionLike(current.node)) {
+    if (current.kind === 'function' || current.kind === 'module') {
       return current;
     }
     current = current.parent;
@@ -301,10 +311,35 @@ function findFunctionOrModuleScope(scope: Scope): Scope {
   return scope;
 }
 
+function registerVariableDeclarator(
+  declarator: VariableDeclarator,
+  scope: Scope,
+  context: WalkContext,
+): void {
+  if (
+    declarator.id.type === 'Identifier' &&
+    declarator.init?.type === 'Identifier'
+  ) {
+    const target = findBinding(
+      context.scopeByNode,
+      declarator.init.name,
+      declarator,
+    );
+    if (target) {
+      scope.bindings.set(declarator.id.name, {
+        kind: target.kind === 'namespace' ? 'namespace' : 'wrapper',
+        localName: declarator.id.name,
+      });
+      return;
+    }
+  }
+  registerShadowPattern(declarator.id, scope, context.shadowableNames);
+}
+
 function findBinding(
-  scopeByNode: Map<ts.Node, Scope>,
+  scopeByNode: Map<Node, Scope>,
   name: string,
-  atNode: ts.Node,
+  atNode: Node,
 ): Binding | undefined {
   let scope = findEnclosingScope(scopeByNode, atNode);
   while (scope) {
@@ -318,10 +353,10 @@ function findBinding(
 }
 
 function findEnclosingScope(
-  scopeByNode: Map<ts.Node, Scope>,
-  atNode: ts.Node,
+  scopeByNode: Map<Node, Scope>,
+  atNode: Node,
 ): Scope | undefined {
-  let current: ts.Node | undefined = atNode;
+  let current: Node | null | undefined = atNode;
   while (current) {
     const scope = scopeByNode.get(current);
     if (scope) {

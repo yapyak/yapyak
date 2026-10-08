@@ -60,6 +60,10 @@ Files that do **NOT** get unit tests:
 - A spec that writes to its fixture restores it in `teardown`.
 - Wrap `setup`/`teardown` and the tests they serve in a `suite` named after the spec file — a root-level Mocha hook runs around every test in every file.
 
+### Browser-conditioned test configs
+
+- Alias `oxc-parser` to `oxc-parser/src-js/index.js` in a package whose test config adds the `browser` resolve condition (`svelteTesting()`) → the `browser` export of `oxc-parser` is its WASM build, and the compiler runs on Node.
+
 ### Counting code paths
 
 Code paths = 1 + count of branching keywords in the function body.
@@ -418,6 +422,7 @@ If a test does not exercise one of these edge cases, use the regular pool string
 ```
 'src/a.ts',     'src/a.tsx',  'src/a.vue',  'src/a.svelte',  'src/a.astro'
 'src/b.ts',     'src/b.tsx',  'src/b.vue',  'src/b.svelte',  'src/b.astro'
+'src/a.jsx',    'src/a.d.ts'
 'src/components/c.tsx'
 ```
 

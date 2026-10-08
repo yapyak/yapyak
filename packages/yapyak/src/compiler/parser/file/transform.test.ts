@@ -110,6 +110,22 @@ describe('transformFile', () => {
       expect(code).not.toContain("t('Hi {name}'");
     });
 
+    it('elides `t` with a quoted param key to a template literal', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+        ],
+        source: `
+          import { t } from 'yapyak';
+          export function greet(user) {
+            return t('Hi {name}', { 'name': user.name });
+          }
+        `,
+      });
+      // biome-ignore lint/suspicious/noTemplateCurlyInString: yap yap yap
+      expect(code).toContain('`Hi ${user.name}`');
+    });
+
     it('elides a placeholder with a non-ASCII identifier', () => {
       const code = runTransform({
         locales: [
@@ -574,6 +590,26 @@ describe('transformFile', () => {
           "'use client';",
           "import { t } from 'yapyak';",
           "export const x = t('Hello');",
+        ].join('\n'),
+      });
+      const firstNonEmpty = code
+        .split('\n')
+        .find((line) => line.trim().length > 0);
+      expect(firstNonEmpty).toBe("'use client';");
+    });
+
+    it('preserves a leading `use client` directive above JSX', () => {
+      const code = runTransform({
+        locales: [
+          'en',
+          'sv',
+        ],
+        source: [
+          "'use client';",
+          "import { t } from 'yapyak';",
+          'export function Header() {',
+          "  return <h1>{t('Hello')}</h1>;",
+          '}',
         ].join('\n'),
       });
       const firstNonEmpty = code

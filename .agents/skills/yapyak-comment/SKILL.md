@@ -30,6 +30,6 @@ Format exactly: `// biome-ignore <rule>: yap yap yap`.
 
 ### `@ts-nocheck` fixture exception
 
-The fixture directory holds compiler test input — files read as raw text via `readFileSync` + `ts.createSourceFile`, never type-checked or executed. Several (`diagnostic/*`) are intentionally invalid `t()` usage that exercises `YAP00xx` build-time diagnostics, so "fix the type" is impossible by design. The directory is already excluded from `tsc`, `knip`, and `biome`. `@ts-nocheck` extends the same "this is data, not code" boundary to the editor's language server.
+The fixture directory holds compiler test input — files read as raw text via `readFileSync` + `parseSourceFile`, never type-checked or executed. Several (`diagnostic/*`) are intentionally invalid `t()` usage that exercises `YAP00xx` build-time diagnostics, so "fix the type" is impossible by design. The directory is already excluded from `tsc`, `knip`, and `biome`. `@ts-nocheck` extends the same "this is data, not code" boundary to the editor's language server.
 
 Scope: `@ts-nocheck` only, under that fixture directory only. Everywhere else the global ban stands.

@@ -1,10 +1,10 @@
+import type { Argument, PropertyKey } from 'oxc-parser';
 import type { Range } from '../../processor';
 import type { TemplateDiagnostic } from '../placeholder';
 import type { CallSite } from './call';
 import type { Diagnostic } from './diagnostic';
+import type { SourceFile } from './source-file';
 import type { TagIssue } from './tag';
-
-import ts from '@typescript/typescript6';
 
 import { buildDiagnostic } from '../../diagnostic';
 import { classifyNames } from '../name';
@@ -12,9 +12,12 @@ import { findMalformedIssue, parsePlaceholders } from '../placeholder';
 import { toRange } from './range';
 import { validateRichTextTags } from './tag';
 
-type ParsedParams = {
-  keys: string[];
-  kind: 'spread' | 'static';
+export type ParsedParams = {
+  entries: {
+    key: string;
+    valueRange: Range;
+  }[];
+  kind: 'dynamic' | 'spread' | 'static';
   range: Range;
 };
 
@@ -26,21 +29,20 @@ export type ParsedArguments = {
   sourceRange: Range;
 };
 
-export function parseArguments(callSite: CallSite): ParsedArguments {
-  const sourceFile = callSite.node.getSourceFile();
-  const fileId = sourceFile.fileName;
+export function parseArguments(
+  callSite: CallSite,
+  sourceFile: SourceFile,
+): ParsedArguments {
+  const fileId = sourceFile.fileId;
   const diagnostics: Diagnostic[] = [];
+  const callRange = toRange(callSite.node, sourceFile);
 
   let context: string | undefined;
 
   if (callSite.contextExpression) {
     const contextExpression = callSite.contextExpression;
-    if (
-      ts.isStringLiteral(contextExpression) ||
-      ts.isNoSubstitutionTemplateLiteral(contextExpression)
-    ) {
-      context = contextExpression.text;
-    } else {
+    context = getStaticString(contextExpression);
+    if (context === undefined) {
       diagnostics.push(
         buildDiagnostic('CONTEXT_NOT_LITERAL', undefined, {
           fileId,
@@ -61,7 +63,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
         },
         {
           fileId,
-          range: toRange(callSite.node, sourceFile),
+          range: callRange,
           severity: 'error',
         },
       ),
@@ -69,7 +71,7 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     const result: ParsedArguments = {
       diagnostics,
       source: '',
-      sourceRange: toRange(callSite.node, sourceFile),
+      sourceRange: callRange,
     };
     if (context !== undefined) {
       result.context = context;
@@ -78,7 +80,8 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
   }
 
   const sourceRange = toRange(sourceExpression, sourceFile);
-  if (!isLiteralFirstArg(sourceExpression)) {
+  const source = getStaticString(sourceExpression);
+  if (source === undefined) {
     diagnostics.push(
       buildDiagnostic('PARSER_TEMPLATE_LITERAL', undefined, {
         fileId,
@@ -97,7 +100,6 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     return result;
   }
 
-  const source = sourceExpression.text;
   if (source === '') {
     diagnostics.push(
       buildDiagnostic('PARSER_EMPTY_SOURCE', undefined, {
@@ -132,18 +134,16 @@ export function parseArguments(callSite: CallSite): ParsedArguments {
     );
   }
 
-  let params: ParsedParams | undefined;
-  const paramsExpression = callSite.paramsExpression;
-  if (paramsExpression) {
-    params = parseParams(paramsExpression, sourceFile);
-  }
-  if (!isSourceInvalid && (hasPlaceholders || paramsExpression)) {
+  const params =
+    callSite.paramsExpression === undefined
+      ? undefined
+      : parseParams(callSite.paramsExpression, sourceFile);
+  if (!isSourceInvalid && (hasPlaceholders || params !== undefined)) {
     validateParams({
-      callSite,
+      callRange,
       diagnostics,
       fileId,
       params,
-      paramsExpressionPresent: paramsExpression !== undefined,
       placeholderKeys,
     });
   }
@@ -166,6 +166,19 @@ type IcuDiagnosticContext = {
   fileId: string;
   range: Range;
 };
+
+function getStaticString(argument: Argument): string | undefined {
+  if (argument.type === 'Literal' && typeof argument.value === 'string') {
+    return argument.value;
+  }
+  if (
+    argument.type === 'TemplateLiteral' &&
+    argument.expressions.length === 0
+  ) {
+    return argument.quasis[0]?.value.cooked ?? undefined;
+  }
+  return undefined;
+}
 
 function toIcuDiagnostic(
   issue: TemplateDiagnostic,
@@ -280,89 +293,64 @@ function toTagDiagnostic(
   );
 }
 
-function isLiteralFirstArg(
-  expression: ts.Expression,
-): expression is ts.NoSubstitutionTemplateLiteral | ts.StringLiteral {
-  return (
-    ts.isStringLiteral(expression) ||
-    ts.isNoSubstitutionTemplateLiteral(expression)
-  );
-}
-
-function parseParams(
-  expression: ts.Expression,
-  sourceFile: ts.SourceFile,
-): ParsedParams | undefined {
-  if (!ts.isObjectLiteralExpression(expression)) {
-    return undefined;
+function parseParams(argument: Argument, sourceFile: SourceFile): ParsedParams {
+  const range = toRange(argument, sourceFile);
+  if (argument.type !== 'ObjectExpression') {
+    return {
+      entries: [],
+      kind: 'dynamic',
+      range,
+    };
   }
-  const keys: string[] = [];
-  let kind: 'spread' | 'static' = 'static';
-  for (const property of expression.properties) {
-    if (ts.isSpreadAssignment(property)) {
+  const entries: ParsedParams['entries'] = [];
+  let kind: ParsedParams['kind'] = 'static';
+  for (const property of argument.properties) {
+    if (property.type === 'SpreadElement') {
       kind = 'spread';
       continue;
     }
-    if (
-      ts.isShorthandPropertyAssignment(property) ||
-      ts.isPropertyAssignment(property)
-    ) {
-      if (ts.isIdentifier(property.name)) {
-        keys.push(property.name.text);
-        continue;
-      }
-      if (ts.isStringLiteral(property.name)) {
-        keys.push(property.name.text);
-        continue;
-      }
+    const key =
+      property.kind === 'init' && !property.method && !property.computed
+        ? getPropertyKeyName(property.key)
+        : undefined;
+    if (key === undefined) {
+      kind = 'spread';
+      continue;
     }
-    kind = 'spread';
+    entries.push({
+      key,
+      valueRange: toRange(property.value, sourceFile),
+    });
   }
   return {
-    keys,
+    entries,
     kind,
-    range: toRange(expression, sourceFile),
+    range,
   };
 }
 
+function getPropertyKeyName(key: PropertyKey): string | undefined {
+  if (key.type === 'Identifier') {
+    return key.name;
+  }
+  if (key.type === 'Literal' && typeof key.value === 'string') {
+    return key.value;
+  }
+  return undefined;
+}
+
 type ValidateParamsInput = {
-  callSite: CallSite;
+  callRange: Range;
   diagnostics: Diagnostic[];
   fileId: string;
   params: ParsedParams | undefined;
-  paramsExpressionPresent: boolean;
   placeholderKeys: string[];
 };
 
 function validateParams(input: ValidateParamsInput): void {
-  const {
-    callSite,
-    diagnostics,
-    fileId,
-    paramsExpressionPresent: hasParamsExpression,
-    params,
-    placeholderKeys,
-  } = input;
-  const sourceFile = callSite.node.getSourceFile();
-  const callRange = toRange(callSite.node, sourceFile);
+  const { callRange, diagnostics, fileId, params, placeholderKeys } = input;
 
-  if (!params) {
-    if (hasParamsExpression) {
-      diagnostics.push(
-        buildDiagnostic(
-          'PARSER_DYNAMIC_PARAMS',
-          {
-            kind: 'dynamic',
-          },
-          {
-            fileId,
-            range: callRange,
-            severity: 'warning',
-          },
-        ),
-      );
-      return;
-    }
+  if (params === undefined) {
     for (const key of placeholderKeys) {
       diagnostics.push(
         buildDiagnostic(
@@ -379,6 +367,23 @@ function validateParams(input: ValidateParamsInput): void {
         ),
       );
     }
+    return;
+  }
+
+  if (params.kind === 'dynamic') {
+    diagnostics.push(
+      buildDiagnostic(
+        'PARSER_DYNAMIC_PARAMS',
+        {
+          kind: 'dynamic',
+        },
+        {
+          fileId,
+          range: callRange,
+          severity: 'warning',
+        },
+      ),
+    );
     return;
   }
 
@@ -401,7 +406,7 @@ function validateParams(input: ValidateParamsInput): void {
 
   const { extra, missing, renames } = classifyNames(
     placeholderKeys,
-    params.keys,
+    params.entries.map((entry) => entry.key),
   );
   for (const rename of renames) {
     diagnostics.push(

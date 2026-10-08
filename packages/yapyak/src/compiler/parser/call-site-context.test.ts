@@ -1,31 +1,29 @@
-import ts from '@typescript/typescript6';
+import type { CallExpression } from 'oxc-parser';
+import type { SourceFile } from './source-file';
+
 import { describe, expect, it } from 'vitest';
 
 import { resolveBindings } from './binding';
 import { discoverCalls } from './call';
 import { resolveCallSiteContext } from './call-site-context';
+import { parseSourceFile } from './source-file';
 
-function parseInline(source: string, fileName = 'src/a.tsx'): ts.SourceFile {
-  const scriptKind = fileName.endsWith('.tsx')
-    ? ts.ScriptKind.TSX
-    : ts.ScriptKind.TS;
-  return ts.createSourceFile(
-    fileName,
-    source,
-    ts.ScriptTarget.ESNext,
-    true,
-    scriptKind,
-  );
+function parseInline(source: string, fileName = 'src/a.tsx'): SourceFile {
+  return parseSourceFile(fileName, {
+    code: source,
+    language: 'ts',
+    type: 'script',
+  });
 }
 
-function findCalls(sourceFile: ts.SourceFile): ts.CallExpression[] {
+function findCalls(sourceFile: SourceFile): CallExpression[] {
   return discoverCalls(
     sourceFile,
     resolveBindings(sourceFile, 't'),
   ).callSites.map((callSite) => callSite.node);
 }
 
-function findFirstCall(sourceFile: ts.SourceFile): ts.CallExpression {
+function findFirstCall(sourceFile: SourceFile): CallExpression {
   const [call] = findCalls(sourceFile);
   if (!call) {
     throw new Error('expected at least one call site');

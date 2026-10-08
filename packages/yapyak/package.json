@@ -91,13 +91,13 @@
   "dependencies": {
     "jiti": "catalog:",
     "magic-string": "catalog:",
+    "oxc-parser": "catalog:",
     "picomatch": "catalog:"
   },
   "devDependencies": {
     "@fast-check/vitest": "catalog:",
     "@types/node": "catalog:",
     "@types/picomatch": "catalog:",
-    "@typescript/typescript6": "catalog:",
     "@yapyak/tsdown-config": "workspace:*",
     "@yapyak/typescript-config": "workspace:*",
     "@yapyak/vitest-config": "workspace:*",

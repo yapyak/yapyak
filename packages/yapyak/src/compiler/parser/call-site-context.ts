@@ -1,4 +1,10 @@
-import ts from '@typescript/typescript6';
+import type {
+  ArrowFunctionExpression,
+  Function as FunctionNode,
+  JSXElementName,
+  Node,
+} from 'oxc-parser';
+import type { SourceFile } from './source-file';
 
 export type CallSiteContext = {
   enclosingAttribute?: string;
@@ -15,28 +21,35 @@ const HOC_NAMES = new Set([
 ]);
 
 export function resolveCallSiteContext(
-  node: ts.Node,
-  sourceFile: ts.SourceFile,
+  node: Node,
+  sourceFile: SourceFile,
 ): CallSiteContext {
   const result: CallSiteContext = {};
-  let current: ts.Node | undefined = node.parent;
+  let current = node.parent;
 
-  while (current && !ts.isSourceFile(current)) {
-    if (!result.enclosingAttribute && ts.isJsxAttribute(current)) {
-      result.enclosingAttribute = current.name.getText(sourceFile);
+  while (current && current.type !== 'Program') {
+    if (!result.enclosingAttribute && current.type === 'JSXAttribute') {
+      result.enclosingAttribute = sourceFile.code.slice(
+        current.name.start,
+        current.name.end,
+      );
     }
 
-    if (!result.enclosingElement) {
-      const jsxTag = readJsxElementTag(current, sourceFile);
+    if (!result.enclosingElement && current.type === 'JSXElement') {
+      const jsxTag = readJsxTagName(current.openingElement.name, sourceFile);
       if (jsxTag) {
         result.enclosingElement = jsxTag;
-        result.snippet = current.getText(sourceFile);
+        result.snippet = sourceFile.code.slice(current.start, current.end);
       }
     }
 
-    const fnName = readFunctionName(current);
-    if (fnName && !result.enclosingComponent && isComponentName(fnName)) {
-      result.enclosingComponent = fnName;
+    const functionName = readFunctionName(current);
+    if (
+      functionName &&
+      !result.enclosingComponent &&
+      isComponentName(functionName)
+    ) {
+      result.enclosingComponent = functionName;
     }
 
     current = current.parent;
@@ -45,69 +58,63 @@ export function resolveCallSiteContext(
   return result;
 }
 
-function readJsxElementTag(
-  node: ts.Node,
-  sourceFile: ts.SourceFile,
-): string | undefined {
-  if (ts.isJsxElement(node)) {
-    return readJsxTagName(node.openingElement.tagName, sourceFile);
-  }
-  if (ts.isJsxSelfClosingElement(node)) {
-    return readJsxTagName(node.tagName, sourceFile);
-  }
-  return undefined;
-}
-
 function readJsxTagName(
-  tagName: ts.JsxTagNameExpression,
-  sourceFile: ts.SourceFile,
+  tagName: JSXElementName,
+  sourceFile: SourceFile,
 ): string | undefined {
-  if (ts.isIdentifier(tagName)) {
-    return tagName.text;
+  if (tagName.type === 'JSXIdentifier') {
+    return tagName.name;
   }
-  if (ts.isPropertyAccessExpression(tagName)) {
-    return tagName.getText(sourceFile);
+  if (tagName.type === 'JSXMemberExpression') {
+    return sourceFile.code.slice(tagName.start, tagName.end);
   }
   return undefined;
 }
 
-function readFunctionName(node: ts.Node): string | undefined {
-  if (ts.isFunctionDeclaration(node)) {
-    return node.name?.text;
+function readFunctionName(node: Node): string | undefined {
+  if (node.type === 'FunctionDeclaration') {
+    return node.id?.name;
   }
-  if (ts.isMethodDeclaration(node) && ts.isIdentifier(node.name)) {
-    return node.name.text;
-  }
-  if (ts.isArrowFunction(node) || ts.isFunctionExpression(node)) {
+  if (
+    node.type === 'ArrowFunctionExpression' ||
+    node.type === 'FunctionExpression'
+  ) {
     return readFunctionExpressionName(node);
   }
   return undefined;
 }
 
 function readFunctionExpressionName(
-  node: ts.ArrowFunction | ts.FunctionExpression,
+  node: ArrowFunctionExpression | FunctionNode,
 ): string | undefined {
-  if (ts.isFunctionExpression(node) && node.name) {
-    return node.name.text;
+  if (node.id) {
+    return node.id.name;
   }
   const parent = node.parent;
   if (!parent) {
     return undefined;
   }
-  if (ts.isVariableDeclaration(parent) && ts.isIdentifier(parent.name)) {
-    return parent.name.text;
+  if (
+    (parent.type === 'MethodDefinition' && parent.kind === 'method') ||
+    (parent.type === 'Property' && parent.method)
+  ) {
+    return !parent.computed && parent.key.type === 'Identifier'
+      ? parent.key.name
+      : undefined;
   }
-  if (ts.isCallExpression(parent) && ts.isIdentifier(parent.expression)) {
-    if (!HOC_NAMES.has(parent.expression.text)) {
+  if (parent.type === 'VariableDeclarator' && parent.id.type === 'Identifier') {
+    return parent.id.name;
+  }
+  if (parent.type === 'CallExpression' && parent.callee.type === 'Identifier') {
+    if (!HOC_NAMES.has(parent.callee.name)) {
       return undefined;
     }
     const callParent = parent.parent;
     if (
-      callParent &&
-      ts.isVariableDeclaration(callParent) &&
-      ts.isIdentifier(callParent.name)
+      callParent?.type === 'VariableDeclarator' &&
+      callParent.id.type === 'Identifier'
     ) {
-      return callParent.name.text;
+      return callParent.id.name;
     }
   }
   return undefined;

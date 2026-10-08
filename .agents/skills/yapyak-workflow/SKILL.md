@@ -112,6 +112,8 @@ If caught inventing: stop, remove, acknowledge. Never defend, qualify, or half-r
 | Explicit over implicit | Leave ambiguity in public APIs |
 | Three similar lines beats a premature abstraction | Defensive fallbacks for impossible states |
 
+Walk an oxc AST only through `collectChildren` in `packages/yapyak/src/compiler/parser/child.ts` → it is the one sanctioned dynamic property access, keyed by oxc-parser's `visitorKeys`.
+
 ### Quality bar
 
 Before code is done:

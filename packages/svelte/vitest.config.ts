@@ -12,5 +12,18 @@ export default defineConfig({
   plugins: [
     svelte(),
     svelteTesting(),
+    {
+      config: () => ({
+        resolve: {
+          alias: [
+            {
+              find: /^oxc-parser$/,
+              replacement: 'oxc-parser/src-js/index.js',
+            },
+          ],
+        },
+      }),
+      name: 'yapyak:oxc-parser-node-entry',
+    },
   ],
 });
