@@ -12,6 +12,7 @@ import {
   extractFile,
   findTranslation,
   fromMessageKey,
+  hasParseFailure,
   readLocaleFile,
   toMessageKey,
   validateLocaleFile,
@@ -77,11 +78,7 @@ export function buildReport(input: BuildReportInput): Report {
     });
     messages.push(...result.messages);
     diagnostics.push(...result.diagnostics);
-    const parsed = !result.diagnostics.some(
-      (diagnostic) =>
-        diagnostic.code === YAP_COMPILE.PROCESSOR_PARSE_ERROR.code,
-    );
-    if (parsed) {
+    if (!hasParseFailure(result)) {
       sourceFileIds.push(file.fileId);
     }
   }

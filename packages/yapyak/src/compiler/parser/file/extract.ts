@@ -13,7 +13,7 @@ import type { CallSiteContext } from '../call-site-context';
 import type { Diagnostic } from '../diagnostic';
 import type { SourceFile } from '../source-file';
 
-import { buildDiagnostic } from '../../../diagnostic';
+import { YAP_COMPILE, buildDiagnostic } from '../../../diagnostic';
 import { toMessageKey } from '../../../message-key';
 import { segmentsFromOffset } from '../../../processor';
 import { parsePlaceholders } from '../../placeholder';
@@ -201,6 +201,14 @@ export function extractFile(
     diagnostics,
     messages: Array.from(messagesById.values()),
   };
+}
+
+export function hasParseFailure(
+  result: Pick<ExtractFileResult, 'diagnostics'>,
+): boolean {
+  return result.diagnostics.some(
+    (diagnostic) => diagnostic.code === YAP_COMPILE.PROCESSOR_PARSE_ERROR.code,
+  );
 }
 
 type ExtractFromFragmentInput = {

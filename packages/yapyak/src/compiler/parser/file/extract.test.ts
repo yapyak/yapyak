@@ -4,7 +4,7 @@ import type { ExtractFileResult } from './extract';
 import { describe, expect, it } from 'vitest';
 
 import { rangeFromOffsets, segmentsFromOffset } from '../../../processor';
-import { extractFile } from './extract';
+import { extractFile, hasParseFailure } from './extract';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
@@ -475,5 +475,25 @@ describe('extractFile ambient bindings', () => {
     expect(result.messages.map((message) => message.source)).toEqual([
       'Hello',
     ]);
+  });
+});
+
+describe('hasParseFailure', () => {
+  it('returns true for a source file that does not parse', () => {
+    const result = extractFile(
+      'src/a.ts',
+      "import { t } from 'yapyak';\nexport const label = t('Save';\n",
+    );
+
+    expect(hasParseFailure(result)).toBe(true);
+  });
+
+  it('returns false for a source file that parses', () => {
+    const result = extractFile(
+      'src/a.ts',
+      "import { t } from 'yapyak';\nexport const label = t('Save');\n",
+    );
+
+    expect(hasParseFailure(result)).toBe(false);
   });
 });
