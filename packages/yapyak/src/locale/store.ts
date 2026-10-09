@@ -67,7 +67,7 @@ function getInitialLocale(): Locale {
       return match;
     }
   }
-  if (DETECT_USER_LOCALE && typeof navigator !== 'undefined') {
+  if (DETECT_USER_LOCALE && typeof window !== 'undefined') {
     const resolved = resolveLocale(DEFAULT_LOCALE, LOCALES, {
       acceptLanguage: navigator.languages.join(','),
     });
