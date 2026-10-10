@@ -39,6 +39,7 @@ const REFERENCE_PACKAGES: ReferencePackage[] = [
     label: 'React',
     subpaths: [
       './processor',
+      './provider',
     ],
   },
   {
