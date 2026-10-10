@@ -120,20 +120,27 @@ test('renders the switched locale inside a memoized concise component', async ({
       "import { memo } from 'react';",
       "import { t } from 'yapyak';",
       '',
-      "const Label = () => <p>{t('Settings')}</p>;",
+      "const Label = () => <h2>{t('Settings')}</h2>;",
       '',
-      'export const Cart = memo(() => <Label />);',
+      'const Summary = memo(() => <Label />);',
+      '',
+      'export function Cart() {',
+      '  return <Summary />;',
+      '}',
       '',
     ].join('\n'),
   );
+  const label = page.getByRole('heading', {
+    level: 2,
+  });
 
-  await expect(page.getByText('Settings')).toBeVisible();
+  await expect(label).toHaveText('Settings');
   await page
     .getByRole('button', {
       name: 'sv',
     })
     .click();
-  await expect(page.getByText('Laddar...')).toBeVisible();
+  await expect(label).toHaveText('Laddar...');
   expect(loadCount).toBe(0);
 });
 
@@ -539,13 +546,12 @@ async function validateSettledCatalog(
   expected: Catalog,
 ): Promise<void> {
   await expect(async () => {
-    expect(await readCatalog(locale)).toEqual(expected);
+    const deadline = Date.now() + SETTLE_TIMEOUT;
+    while (Date.now() < deadline) {
+      expect(await readCatalog(locale)).toEqual(expected);
+      await setTimeout(SETTLE_INTERVAL);
+    }
   }).toPass();
-  const deadline = Date.now() + SETTLE_TIMEOUT;
-  while (Date.now() < deadline) {
-    await setTimeout(SETTLE_INTERVAL);
-    expect(await readCatalog(locale)).toEqual(expected);
-  }
 }
 
 async function writeCatalog(locale: string, catalog: Catalog): Promise<void> {
