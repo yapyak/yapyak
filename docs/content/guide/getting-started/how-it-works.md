@@ -485,6 +485,23 @@ Because the translations are compiled into the modules, a locale change is a re-
 
 {% when value="react" %}
 The compiler injects a `useYapyak()` hook at the top of every component and custom hook. A function counts when it holds JSX, calls a hook, or reads `t()` or `format`; names follow React's own convention, components capitalized and hooks prefixed with `use`. The hook subscribes to the locale store through React's `useSyncExternalStore`, so the component re-renders when the active locale changes. A helper in another module needs nothing of its own: the component that renders it re-renders. A `useMemo` callback that reads the locale needs `useLocale()` in its dependency list, and the same holds for `useCallback`. Under [React Compiler](/guide/advanced/react-compiler), the plugin also replaces the compiler's memo cache, so cached values recompute on a locale change without a dependency list.
+
+The injected hook takes slots in React's hook list, like any other hook. A component that is called as a plain function, `Row(props)` instead of `<Row />`, runs it inside its caller, so React throws "Rendered more hooks than during the previous render" when the number of calls changes between renders. Wrap the app in [`YapyakProvider`](/reference/react/provider/YapyakProvider) to lift that limit:
+
+```tsx [main.tsx]
+import { YapyakProvider } from '@yapyak/react/provider';
+import { createRoot } from 'react-dom/client';
+
+import { App } from './app';
+
+createRoot(document.body).render(
+  <YapyakProvider>
+    <App />
+  </YapyakProvider>,
+);
+```
+
+The provider subscribes to the locale store once and passes the locale down through React context. Below it, `useYapyak()` reads that context and subscribes to nothing itself, and a context read takes no slot in the hook list. A component outside the provider subscribes on its own, as before.
 {% /when %}
 
 {% when value="vue" %}

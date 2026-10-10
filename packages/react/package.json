@@ -37,6 +37,10 @@
     "./processor": {
       "types": "./dist/processor.d.ts",
       "default": "./dist/processor.js"
+    },
+    "./provider": {
+      "types": "./dist/provider.d.ts",
+      "default": "./dist/provider.js"
     }
   },
   "types": "./dist/index.d.ts",
