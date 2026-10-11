@@ -49,8 +49,29 @@ describe('getLocale', () => {
       resetLocale();
       expect(getLocale()).toBe('en');
     });
+  });
+
+  describe('with `detectUserLocale` on the server', () => {
+    it('returns the default locale when `navigator.languages` holds a configured locale', () => {
+      vi.stubGlobal('window', undefined);
+      vi.stubGlobal('navigator', {
+        languages: [
+          'sv-SE',
+        ],
+      });
+      resetLocale();
+      expect(getLocale()).toBe('en');
+    });
+
+    it('returns the default locale when `navigator.languages` is undefined', () => {
+      vi.stubGlobal('window', undefined);
+      vi.stubGlobal('navigator', {});
+      resetLocale();
+      expect(getLocale()).toBe('en');
+    });
 
     it('returns the default locale when `navigator` is undefined', () => {
+      vi.stubGlobal('window', undefined);
       vi.stubGlobal('navigator', undefined);
       resetLocale();
       expect(getLocale()).toBe('en');
