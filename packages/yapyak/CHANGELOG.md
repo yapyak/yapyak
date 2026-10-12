@@ -1,5 +1,21 @@
 # yapyak
 
+## 0.0.16
+
+### Patch Changes
+
+- [#28](https://github.com/yapyak/yapyak/pull/28) [`e41e416`](https://github.com/yapyak/yapyak/commit/e41e416863776c3ba4d74144bd70ecaf4ff0801a) Thanks [@qwuide](https://github.com/qwuide)! - Report a source file with a syntax error as `YAP0048`. The bundled TypeScript parser read past a syntax error and extracted the `t()` calls it could recover, so `yapyak check` passed a file that does not compile. A script that does not parse is now reported like markup that does not parse, and none of its `t()` calls are extracted until it parses again.
+
+- [#31](https://github.com/yapyak/yapyak/pull/31) [`2c90812`](https://github.com/yapyak/yapyak/commit/2c9081231c15529f283fb09b6c7249cd1f1c65ea) Thanks [@spencemc](https://github.com/spencemc)! - Detect the visitor's locale from `navigator.languages` only in the browser. With `detectUserLocale` enabled, the locale store read `navigator.languages` wherever a global `navigator` existed, and server runtimes define one too. Bun's has no `languages`, so importing yapyak threw during server-side rendering before any request was handled. Node's reports the operating system's locale, so the shared fallback locale on the server started as the machine's language instead of `defaultLocale`. On the server the store now starts at `defaultLocale`, and each request still resolves its own locale from `Accept-Language`.
+
+- [#28](https://github.com/yapyak/yapyak/pull/28) [`e41e416`](https://github.com/yapyak/yapyak/commit/e41e416863776c3ba4d74144bd70ecaf4ff0801a) Thanks [@qwuide](https://github.com/qwuide)! - Stop `yapyak clean` from deleting the translations of a source file that does not parse. `clean` counted such a file as using none of its translations, so `yapyak clean --write` removed every entry of a file whose markup did not parse. `clean` now leaves the entries of a file that does not parse in place until it parses again, the way `yapyak check` already did.
+
+- [`d41cccc`](https://github.com/yapyak/yapyak/commit/d41cccca576e305ea407feaf33ee8445b880cc93) Thanks [@qwuide](https://github.com/qwuide)! - Leave the hook out of a component called as a plain function in its own module. The compiler injected `useYapyak()` into every component holding JSX, so a component called as a plain function, `Row(props)` or `items.map(Row)` instead of `<Row />`, ran the hook inside its caller, and React threw "Rendered more hooks than during the previous render" as soon as the number of calls changed. Such a component now gets no hook: it runs inside the component that called it, and that component re-renders. Calling a component as a function also counts as component evidence, so the caller gets the hook even without JSX of its own.
+
+- [#28](https://github.com/yapyak/yapyak/pull/28) [`e41e416`](https://github.com/yapyak/yapyak/commit/e41e416863776c3ba4d74144bd70ecaf4ff0801a) Thanks [@qwuide](https://github.com/qwuide)! - Parse source files with `oxc-parser` instead of a bundled copy of the TypeScript 6 compiler. yapyak bundled TypeScript 6 into its package to read source files. It no longer needs to, and `oxc-parser` installs as a regular dependency.
+
+- [#28](https://github.com/yapyak/yapyak/pull/28) [`e41e416`](https://github.com/yapyak/yapyak/commit/e41e416863776c3ba4d74144bd70ecaf4ff0801a) Thanks [@qwuide](https://github.com/qwuide)! - Compile a `t()` call whose params use quoted keys to a template literal in fixed-locale builds. Only unquoted keys counted as static, so a call such as `t('Hi {name}', { 'name': user })` kept its runtime lookup. It now compiles to the same template literal as the call with an unquoted key.
+
 ## 0.0.15
 
 ### Patch Changes

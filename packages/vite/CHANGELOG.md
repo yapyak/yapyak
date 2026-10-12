@@ -1,5 +1,13 @@
 # @yapyak/vite
 
+## 0.0.16
+
+### Patch Changes
+
+- [#28](https://github.com/yapyak/yapyak/pull/28) [`e41e416`](https://github.com/yapyak/yapyak/commit/e41e416863776c3ba4d74144bd70ecaf4ff0801a) Thanks [@qwuide](https://github.com/qwuide)! - Leave the translations of a source file that does not parse untouched. The dev server kept a file's previous messages while it failed to parse, but a file that already failed when the server started had none, so the save loop moved its translations to the orphan cache until the file parsed again. The save loop now leaves the translations of every file that failed to parse on its last read in place.
+- Updated dependencies [[`e41e416`](https://github.com/yapyak/yapyak/commit/e41e416863776c3ba4d74144bd70ecaf4ff0801a), [`2c90812`](https://github.com/yapyak/yapyak/commit/2c9081231c15529f283fb09b6c7249cd1f1c65ea), [`e41e416`](https://github.com/yapyak/yapyak/commit/e41e416863776c3ba4d74144bd70ecaf4ff0801a), [`d41cccc`](https://github.com/yapyak/yapyak/commit/d41cccca576e305ea407feaf33ee8445b880cc93), [`e41e416`](https://github.com/yapyak/yapyak/commit/e41e416863776c3ba4d74144bd70ecaf4ff0801a), [`e41e416`](https://github.com/yapyak/yapyak/commit/e41e416863776c3ba4d74144bd70ecaf4ff0801a)]:
+  - yapyak@0.0.16
+
 ## 0.0.15
 
 ### Patch Changes
