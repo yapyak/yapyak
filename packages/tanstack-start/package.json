@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/tanstack-start",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "TanStack Start adapter for yapyak.",
   "keywords": [
     "adapter",

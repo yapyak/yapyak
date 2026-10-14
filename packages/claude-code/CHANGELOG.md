@@ -1,5 +1,12 @@
 # @yapyak/claude-code
 
+## 0.0.17
+
+### Patch Changes
+
+- Updated dependencies [[`77b74e1`](https://github.com/yapyak/yapyak/commit/77b74e1f88e5df7c7a28d729d00a9c14078f6c94)]:
+  - yapyak@0.0.17
+
 ## 0.0.16
 
 ### Patch Changes

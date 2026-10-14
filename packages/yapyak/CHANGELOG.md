@@ -1,5 +1,11 @@
 # yapyak
 
+## 0.0.17
+
+### Patch Changes
+
+- [`77b74e1`](https://github.com/yapyak/yapyak/commit/77b74e1f88e5df7c7a28d729d00a9c14078f6c94) Thanks [@qwuide](https://github.com/qwuide)! - Add `format.displayName()`, the fifth `format` method, backed by `Intl.DisplayNames`. It returns the name of a language, region, script, currency, calendar, or date-time field code for the active locale, so a locale switcher can label every added locale with `format.in(value).displayName(value, 'language')` instead of a `t()` call per language. A code the runtime rejects renders as the code itself and reports `YAP0056` once.
+
 ## 0.0.16
 
 ### Patch Changes

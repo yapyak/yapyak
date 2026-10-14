@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/react-router",
-  "version": "0.0.16",
+  "version": "0.0.17",
   "description": "React Router adapter for yapyak.",
   "keywords": [
     "adapter",
