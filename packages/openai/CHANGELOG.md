@@ -1,5 +1,12 @@
 # @yapyak/openai
 
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies []:
+  - yapyak@0.0.18
+
 ## 0.0.17
 
 ### Patch Changes

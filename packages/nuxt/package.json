@@ -1,6 +1,6 @@
 {
   "name": "@yapyak/nuxt",
-  "version": "0.0.17",
+  "version": "0.0.18",
   "description": "Nuxt module for yapyak.",
   "keywords": [
     "i18n",

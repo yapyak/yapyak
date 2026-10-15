@@ -1,5 +1,14 @@
 # @yapyak/nuxt
 
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies [[`54c7a3b`](https://github.com/yapyak/yapyak/commit/54c7a3b99566f5358e1918946539499758206f2f)]:
+  - @yapyak/vite@0.0.18
+  - @yapyak/vue@0.0.18
+  - yapyak@0.0.18
+
 ## 0.0.17
 
 ### Patch Changes

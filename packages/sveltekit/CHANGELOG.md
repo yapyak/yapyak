@@ -1,5 +1,13 @@
 # @yapyak/sveltekit
 
+## 0.0.18
+
+### Patch Changes
+
+- [`93cfe6a`](https://github.com/yapyak/yapyak/commit/93cfe6a7f78159341f4dad27fe8898e6965a992a) Thanks [@qwuide](https://github.com/qwuide)! - Require SvelteKit 3. SvelteKit 3 moved the `Handle` type to `@sveltejs/kit/hooks`, where SvelteKit 2 does not export it, so a handle typed against the old import became `any` in a SvelteKit 3 app without a compile error. The adapter now imports the type from `@sveltejs/kit/hooks` and declares `@sveltejs/kit >=3` as its peer dependency. See `BREAKING.md` for the upgrade steps.
+- Updated dependencies []:
+  - yapyak@0.0.18
+
 ## 0.0.17
 
 ### Patch Changes
