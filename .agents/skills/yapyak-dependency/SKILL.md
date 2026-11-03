@@ -13,8 +13,9 @@ Never add dependabot or renovate configuration for npm packages → run this rou
 2. Drop every package in the Holds table from the candidates.
 3. Bump patch + minor candidates in one batch: `pnpm update --latest -r <pkg…>`.
 4. Bump each major alone: read its changelog first, then re-verify every `peerDependencies` floor naming the package and grep `docs/content` for version mentions.
-5. Verify per [[yapyak-workflow]] § Verify after changes, then `pnpm e2e:dev` and `pnpm e2e:prod`.
-6. Commit `pnpm-workspace.yaml` and `pnpm-lock.yaml` together — CI's frozen install rejects a catalog that doesn't match the lockfile.
+5. Compare `engines.node` of every bumped version (`pnpm view <pkg>@<version> engines.node`) with the lowest Node in the `ci.yml` matrix → a floor above it blocks the bump: hold the package per § Holds, or raise the Node floor per § Tool floors.
+6. Verify per [[yapyak-workflow]] § Verify after changes, then `pnpm e2e:dev` and `pnpm e2e:prod`.
+7. Commit `pnpm-workspace.yaml` and `pnpm-lock.yaml` together — CI's frozen install rejects a catalog that doesn't match the lockfile.
 
 A 0.x minor counts as a major → bump it alone per step 4.
 
