@@ -30,69 +30,69 @@ updateConfig:
 catalog:
   '@arethetypeswrong/cli': 0.18.5
   '@arethetypeswrong/core': 0.18.5
-  '@astrojs/check': 0.9.10
-  '@astrojs/compiler-rs': 0.5.0
-  '@astrojs/node': 11.1.6
-  '@biomejs/biome': 2.5.15
+  '@astrojs/check': 0.9.12
+  '@astrojs/compiler-rs': 0.5.2
+  '@astrojs/node': 11.1.9
+  '@biomejs/biome': 2.6.3
   '@changesets/changelog-github': 1.0.1
   '@changesets/cli': 3.0.3
   '@fast-check/vitest': 0.5.0
   '@markdoc/markdoc': 0.5.10
-  '@nuxt/kit': 4.5.2
-  '@nuxt/nitro-server': 4.5.2
-  '@playwright/test': 1.63.0
-  '@react-router/dev': 8.4.0
-  '@react-router/node': 8.4.0
-  '@react-router/serve': 8.4.0
+  '@nuxt/kit': 4.6.2
+  '@nuxt/nitro-server': 4.6.2
+  '@playwright/test': 1.64.1
+  '@react-router/dev': 8.5.0
+  '@react-router/node': 8.5.0
+  '@react-router/serve': 8.5.0
   '@sveltejs/adapter-node': 6.0.0
-  '@sveltejs/kit': 3.0.1
+  '@sveltejs/kit': 3.1.0
   '@sveltejs/package': 2.5.8
   '@sveltejs/vite-plugin-svelte': 7.3.1
-  '@tanstack/react-router': 1.170.39
-  '@tanstack/react-start': 1.168.58
+  '@tanstack/react-router': 1.170.46
+  '@tanstack/react-start': 1.169.4
   '@testing-library/react': 16.3.3
   '@testing-library/svelte': 5.4.2
   '@testing-library/vue': 8.1.0
   '@types/estree': 1.0.9
   '@types/estree-jsx': 1.0.5
   '@types/mocha': 10.0.10
-  '@types/node': 26.6.2
+  '@types/node': 26.6.5
   '@types/picomatch': 4.0.3
   '@types/react': 19.3.0
   '@types/react-dom': 19.3.0
   '@types/vscode': 1.125.0
   '@typescript/typescript6': 6.0.2
-  '@vitejs/plugin-react': 6.1.1
-  '@vitejs/plugin-vue': 6.0.9
-  '@vitest/coverage-v8': 5.0.1
+  '@vitejs/plugin-react': 6.1.2
+  '@vitejs/plugin-vue': 6.0.10
+  '@vitest/coverage-v8': 5.0.5
   '@vscode/test-cli': 0.0.15
   '@vscode/test-electron': 3.1.0
   '@vscode/vsce': 4.0.0
-  '@vue/compiler-core': 3.5.43
-  '@vue/compiler-sfc': 3.5.43
-  astro: 7.3.5
+  '@vue/compiler-core': 3.5.44
+  '@vue/compiler-sfc': 3.5.44
+  astro: 7.4.2
   h3: 1.15.11
   'happy-dom': 20.14.5
   isbot: 5.2.2
   jiti: 2.7.0
-  knip: 6.38.0
-  'magic-string': 1.4.2
-  nitropack: 2.13.4
-  nuxt: 4.5.2
+  knip: 6.43.0
+  'magic-string': 1.4.4
+  nitropack: 2.13.5
+  nuxt: 4.6.2
   oxc-parser: 0.152.0
   oxc-transform-react: 0.145.0
   picomatch: 4.0.7
-  publint: 0.3.24
-  react: 19.3.0
-  react-dom: 19.3.0
-  react-router: 8.4.0
-  svelte: 5.57.1
-  svelte-check: 4.7.6
-  tsdown: 0.23.0
+  publint: 0.3.25
+  react: 19.3.1
+  react-dom: 19.3.1
+  react-router: 8.5.0
+  svelte: 5.57.2
+  svelte-check: 4.7.7
+  tsdown: 0.23.2
   tsx: 4.23.15
   typescript: 6.0.3
-  vite: 8.3.1
-  vitest: 5.0.1
-  vue: 3.5.43
-  vue-tsc: 3.3.11
-  wrangler: 4.140.0
+  vite: 8.3.5
+  vitest: 5.0.5
+  vue: 3.5.44
+  vue-tsc: 3.3.13
+  wrangler: 4.152.0

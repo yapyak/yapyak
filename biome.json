@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.6.3/schema.json",
   "assist": {
     "actions": {
       "source": {
@@ -101,14 +101,11 @@
         "useAwaitThenable": "error",
         "useConsistentObjectKeys": "error",
         "useExhaustiveSwitchCases": "error",
-        "useImportsFirst": "error",
         "useLogicalProperties": "error",
         "useNamedLayer": "error",
         "usePromiseRejectErrors": "error",
         "useReactNamingConvention": "error",
-        "useSortedClasses": "error",
-        "useTestHooksInOrder": "error",
-        "useTestHooksOnTop": "error"
+        "useTailwindSortedClasses": "error"
       },
       "performance": {
         "noNamespaceImport": "error",
@@ -168,6 +165,7 @@
             "style": "separatedType"
           }
         },
+        "useImportsFirst": "error",
         "useNamingConvention": {
           "level": "error",
           "options": {
@@ -189,6 +187,8 @@
         "useSelfClosingElements": "error",
         "useShorthandAssign": "error",
         "useSingleVarDeclarator": "error",
+        "useTestHooksInOrder": "error",
+        "useTestHooksOnTop": "error",
         "useThrowNewError": "error"
       },
       "suspicious": {
