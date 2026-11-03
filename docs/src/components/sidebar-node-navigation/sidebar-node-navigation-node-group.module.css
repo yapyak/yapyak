@@ -39,7 +39,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         color: var(--foreground-soft);
-        text-align: left;
+        text-align: start;
         white-space: nowrap;
         outline: var(--spacing-2) solid transparent;
         outline-offset: calc(var(--px) * -1);
