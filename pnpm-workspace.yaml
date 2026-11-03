@@ -25,6 +25,7 @@ updateConfig:
   ignoreDependencies:
     - '@types/vscode'
     - h3
+    - oxc-transform-react
     - typescript
 
 catalog:
@@ -80,7 +81,7 @@ catalog:
   nitropack: 2.13.5
   nuxt: 4.6.2
   oxc-parser: 0.155.0
-  oxc-transform-react: 0.145.0
+  oxc-transform-react: 0.152.0
   picomatch: 4.0.7
   publint: 0.3.25
   react: 19.3.1

@@ -40,6 +40,7 @@ A `@biomejs/biome` bump leaves the `biome.json` `$schema` on the old version →
 | --- | --- | --- | --- |
 | `@types/vscode` | ≤ `engines.vscode` | `vsce` refuses to package when `@types/vscode` is newer than `engines.vscode` in `packages/vscode/package.json` | `engines.vscode` rises |
 | `h3` | 1.x | npm `latest` is a 2.x release candidate, and `@yapyak/nuxt` wraps the h3 app of Nuxt's Nitro, which depends on `h3 ^1` | `nitropack` and `@nuxt/nitro-server` depend on h3 2.x |
+| `oxc-transform-react` | `^0.152.0` | `@vitejs/plugin-react` declares the optional peer `oxc-transform-react ^0.152.0`, and a newer release prints `unmet peer` on every resolution | `@vitejs/plugin-react` 6.2 clears the release-age gate, since its peer is `>=0.152.0 <0.157.0` |
 | `typescript` | 6.x | TS 7's native compiler drops the JS compiler API `@yapyak/docs-compiler` calls | TS 7 ships a JS compiler API, or doc-compiler stops needing one |
 
 ### Release-age gate
