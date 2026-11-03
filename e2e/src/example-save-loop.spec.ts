@@ -1,4 +1,6 @@
-import { expect, test } from './test';
+import type { Browser } from '@playwright/test';
+
+import { collectErrors, expect, test } from './test';
 import { readFile, writeFile } from 'node:fs/promises';
 
 const MARKER_SOURCE = 'Dates and times';
@@ -13,9 +15,13 @@ test.beforeEach(async ({ catalogPath, sourcePath }) => {
   originalSource = await readFile(sourcePath, 'utf8');
 });
 
-test.afterEach(async ({ catalogPath, sourcePath }) => {
-  await writeFile(sourcePath, originalSource);
-  await writeFile(catalogPath, originalCatalog);
+test.afterEach(async ({ baseURL, browser, catalogPath, sourcePath }) => {
+  if (baseURL === undefined) {
+    throw new Error('baseURL is required');
+  }
+  await resetFile(sourcePath, originalSource);
+  await resetFile(catalogPath, originalCatalog);
+  await waitUntilRestored(browser, baseURL);
 });
 
 test('renders fresh SSR HTML on the next request after a locale file save', async ({
@@ -68,6 +74,7 @@ test('renders the fresh translation in the browser after a locale file save', as
 
   await page.reload();
   await expect(page.getByText(value)).toBeVisible();
+  await page.waitForLoadState('networkidle');
 });
 
 test('writes the stub when a new `t()` call is saved', async ({
@@ -122,6 +129,53 @@ test('writes the stub when a new `t()` call is saved', async ({
     ]);
   }).toPass();
 });
+
+async function resetFile(path: string, content: string): Promise<void> {
+  if ((await readFile(path, 'utf8')) === content) {
+    return;
+  }
+  await writeFile(path, content);
+}
+
+async function waitUntilRestored(
+  browser: Browser,
+  baseURL: string,
+): Promise<void> {
+  const context = await browser.newContext({
+    baseURL,
+  });
+  try {
+    await context.addCookies([
+      {
+        name: 'locale',
+        url: baseURL,
+        value: 'sv',
+      },
+    ]);
+    const page = await context.newPage();
+    const errors = collectErrors(page);
+    await expect(async () => {
+      errors.length = 0;
+      await page.goto('/');
+      await expect(
+        page
+          .getByText(MARKER_BASELINE, {
+            exact: true,
+          })
+          .first(),
+      ).toBeVisible({
+        timeout: 1000,
+      });
+      await page.waitForLoadState('networkidle');
+      expect(errors).toEqual([]);
+    }).toPass({
+      timeout: 10_000,
+    });
+    await expect(page.getByText(PROBE_SOURCE)).toBeHidden();
+  } finally {
+    await context.close();
+  }
+}
 
 async function writeMarker(
   catalogPath: string,

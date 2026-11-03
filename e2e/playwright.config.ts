@@ -285,7 +285,6 @@ export default defineConfig<ExampleOptions>({
                   testMatch: 'example-save-loop.spec.ts',
                   use: {
                     ...devices['Desktop Chrome'],
-                    allowHydrationMismatch: true,
                     baseURL: `http://localhost:${resolvePort(example)}`,
                     catalogFileId: example.saveLoop.fileId,
                     catalogPath: toExamplePath(example, 'locales/sv.json'),

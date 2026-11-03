@@ -1,7 +1,8 @@
+import type { Page } from '@playwright/test';
+
 import { test as base, expect } from '@playwright/test';
 
 export type ExampleOptions = {
-  allowHydrationMismatch: boolean;
   catalogFileId: string;
   catalogPath: string;
   persistence: 'cookie' | 'local-storage' | 'url';
@@ -12,17 +13,7 @@ export type ExampleOptions = {
   switchLocaleOnServer: boolean;
 };
 
-const IS_PROD = process.env.YAPYAK_E2E_MODE === 'prod';
-
-const HYDRATION_MISMATCH_PREFIX = 'Hydration failed';
-
 export const test = base.extend<ExampleOptions>({
-  allowHydrationMismatch: [
-    false,
-    {
-      option: true,
-    },
-  ],
   catalogFileId: [
     '',
     {
@@ -35,29 +26,8 @@ export const test = base.extend<ExampleOptions>({
       option: true,
     },
   ],
-  page: async ({ allowHydrationMismatch, page }, use) => {
-    const errors: string[] = [];
-    const record = (text: string): void => {
-      if (
-        allowHydrationMismatch &&
-        text.startsWith(HYDRATION_MISMATCH_PREFIX)
-      ) {
-        return;
-      }
-      errors.push(text);
-    };
-    page.on('pageerror', (error) => {
-      record(error.message);
-    });
-    page.on('console', (message) => {
-      if (message.type() === 'error') {
-        record(message.text());
-        return;
-      }
-      if (IS_PROD && message.text().includes('[yapyak]')) {
-        errors.push(message.text());
-      }
-    });
+  page: async ({ page }, use) => {
+    const errors = collectErrors(page);
     await use(page);
     expect(errors).toEqual([]);
   },
@@ -98,5 +68,24 @@ export const test = base.extend<ExampleOptions>({
     },
   ],
 });
+
+const IS_PROD = process.env.YAPYAK_E2E_MODE === 'prod';
+
+export function collectErrors(page: Page): string[] {
+  const errors: string[] = [];
+  page.on('pageerror', (error) => {
+    errors.push(error.message);
+  });
+  page.on('console', (message) => {
+    if (message.type() === 'error') {
+      errors.push(message.text());
+      return;
+    }
+    if (IS_PROD && message.text().includes('[yapyak]')) {
+      errors.push(message.text());
+    }
+  });
+  return errors;
+}
 
 export { expect };
