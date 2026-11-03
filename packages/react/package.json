@@ -67,7 +67,7 @@
     "yapyak": "workspace:*"
   },
   "engines": {
-    "node": ">=22.22"
+    "node": ">=22.23.4"
   },
   "publishConfig": {
     "access": "public"

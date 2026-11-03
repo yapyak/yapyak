@@ -6,6 +6,28 @@ From 1.0 breaking changes follow semantic versioning — they ship only in major
 
 An entry lands in the same change that introduces the break, under the version that ships it. Releases are patch-only, so that version is the next patch; confirm the heading against the Version Packages PR before releasing.
 
+## 0.0.19
+
+### Every package requires Node.js 22.23.4
+
+The October 2026 Node.js security releases shipped in 22.23.4 and 24.22.1, and Astro 7.4.2 declares `"node": ">=22.23.4"`, so `@yapyak/astro` already needs that version to build. Every package now declares the same `engines` range.
+
+**Before**
+
+```sh
+node --version
+v22.22.3
+```
+
+**After**
+
+```sh
+node --version
+v22.23.4
+```
+
+Upgrade to 22.23.4 or later on the 22 line, or to 24.22.1 or later on the 24 line. A CI matrix that pins `22.22` moves to `22.23`.
+
 ## 0.0.18
 
 ### `@yapyak/sveltekit` requires SvelteKit 3

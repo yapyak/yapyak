@@ -4,7 +4,7 @@
 
 ## Prerequisites
 
-- Node.js 22.22 or later
+- Node.js 22.23.4 or later
 - pnpm 11 — the repo pins `pnpm@11.11.0` through `packageManager`, so `corepack enable` gives you the right version
 
 ## Local setup

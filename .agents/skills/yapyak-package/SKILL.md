@@ -96,7 +96,7 @@ Add a new external dep with `pnpm add <pkg>` in the consuming package — `catal
     "yapyak": "workspace:*"
   },
   "engines": {
-    "node": ">=22.22"
+    "node": ">=22.23.4"
   }
 }
 ```

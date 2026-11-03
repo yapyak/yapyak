@@ -60,4 +60,4 @@ Bump a floor in every listed location in one commit.
 | Floor | Bump by editing |
 | --- | --- |
 | pnpm | `packageManager` in root `package.json` — corepack and `pnpm/action-setup` read it |
-| Node | every `engines` field, the `ci.yml` matrix, `docs/content/guide/getting-started/installation.md`, the [[yapyak-package]] `engines` example |
+| Node | every `engines` field, the `ci.yml` matrix, `docs/content/guide/getting-started/installation.md`, `CONTRIBUTING.md`, the requirements line in `skills/yapyak/SKILL.md`, the [[yapyak-package]] `engines` example |
