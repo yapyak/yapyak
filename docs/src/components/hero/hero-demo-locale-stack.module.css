@@ -128,22 +128,22 @@
 
   @keyframes materialize {
     0% {
+      text-shadow: 0 0 0 transparent;
       opacity: 0;
       filter: blur(8px);
       transform: translateY(6px) scale(0.96);
-      text-shadow: 0 0 0 transparent;
     }
     55% {
+      text-shadow: 0 0 18px color-mix(in oklab, var(--brand) 55%, transparent);
       opacity: 1;
       filter: blur(0);
       transform: translateY(0) scale(1);
-      text-shadow: 0 0 18px color-mix(in oklab, var(--brand) 55%, transparent);
     }
     100% {
+      text-shadow: 0 0 0 transparent;
       opacity: 1;
       filter: blur(0);
       transform: translateY(0) scale(1);
-      text-shadow: 0 0 0 transparent;
     }
   }
 
