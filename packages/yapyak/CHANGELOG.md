@@ -1,5 +1,11 @@
 # yapyak
 
+## 0.0.19
+
+### Patch Changes
+
+- [`7bd7677`](https://github.com/yapyak/yapyak/commit/7bd76776564fa6af1159649ccb001790e803de4a) Thanks [@qwuide](https://github.com/qwuide)! - Require Node.js 22.23.4 or later. The October 2026 Node.js security releases shipped in 22.23.4 and 24.22.1, and Astro 7.4.2 declares `"node": ">=22.23.4"`, so `@yapyak/astro` already needs that version to build. Every package now declares the same `engines` range. See `BREAKING.md` for the upgrade steps.
+
 ## 0.0.18
 
 No changes in this release.
