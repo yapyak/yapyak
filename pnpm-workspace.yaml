@@ -72,7 +72,7 @@ catalog:
   '@vue/compiler-sfc': 3.5.44
   astro: 7.4.2
   h3: 1.15.11
-  'happy-dom': 20.14.5
+  'happy-dom': 21.0.4
   isbot: 5.2.2
   jiti: 2.7.0
   knip: 6.43.0
