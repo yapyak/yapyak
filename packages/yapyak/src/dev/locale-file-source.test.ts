@@ -73,7 +73,7 @@ describe('registerLocaleFileSource', () => {
     });
     runTrackers();
 
-    expect(variants['sv']).toBe('Hejsan');
+    expect(variants.sv).toBe('Hejsan');
   });
 
   it('drops the variant when the locale file empties the value', () => {
@@ -119,7 +119,7 @@ describe('registerLocaleFileSource', () => {
     writeFileSync(path, '{ broken');
     runTrackers();
 
-    expect(variants['sv']).toBe('Hej');
+    expect(variants.sv).toBe('Hej');
   });
 
   it('skips a locale file that does not exist', () => {
